@@ -65,7 +65,7 @@ void testing_trmv_batched(const Arguments& arg)
     {
         hipblasStatus_t actual = hipblasTrmvBatchedFn(
             handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx, batch_count);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -80,33 +80,33 @@ void testing_trmv_batched(const Arguments& arg)
     device_batch_vector<T> dA(A_size, 1, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dx.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
 
     hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
     hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
     hres.copy_from(hx);
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrmvBatchedFn(handle,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    N,
-                                                    dA.ptr_on_device(),
-                                                    lda,
-                                                    dx.ptr_on_device(),
-                                                    incx,
-                                                    batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasTrmvBatchedFn(handle,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 N,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 batch_count));
 
-        ASSERT_HIP_SUCCESS(hres.transfer_from(dx));
+        CHECK_HIP_ERROR(hres.transfer_from(dx));
 
         /* =====================================================================
            CPU BLAS
@@ -131,7 +131,7 @@ void testing_trmv_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -139,16 +139,16 @@ void testing_trmv_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrmvBatchedFn(handle,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        N,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        dx.ptr_on_device(),
-                                                        incx,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasTrmvBatchedFn(handle,
+                                                     uplo,
+                                                     transA,
+                                                     diag,
+                                                     N,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dx.ptr_on_device(),
+                                                     incx,
+                                                     batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

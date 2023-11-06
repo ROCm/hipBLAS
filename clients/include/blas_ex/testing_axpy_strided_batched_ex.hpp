@@ -76,20 +76,20 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedExFn(handle,
-                                                             N,
-                                                             nullptr,
-                                                             alphaType,
-                                                             nullptr,
-                                                             xType,
-                                                             incx,
-                                                             stridex,
-                                                             nullptr,
-                                                             yType,
-                                                             incy,
-                                                             stridey,
-                                                             batch_count,
-                                                             executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          yType,
+                                                          incy,
+                                                          stridey,
+                                                          batch_count,
+                                                          executionType));
         return;
     }
 
@@ -123,49 +123,49 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
     hy_device = hy_host;
     hy_cpu    = hy_host;
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy_host, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
          HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedExFn(handle,
-                                                         N,
-                                                         &h_alpha,
-                                                         alphaType,
-                                                         dx,
-                                                         xType,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         yType,
-                                                         incy,
-                                                         stridey,
-                                                         batch_count,
-                                                         executionType));
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                      N,
+                                                      &h_alpha,
+                                                      alphaType,
+                                                      dx,
+                                                      xType,
+                                                      incx,
+                                                      stridex,
+                                                      dy,
+                                                      yType,
+                                                      incy,
+                                                      stridey,
+                                                      batch_count,
+                                                      executionType));
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedExFn(handle,
-                                                         N,
-                                                         d_alpha,
-                                                         alphaType,
-                                                         dx,
-                                                         xType,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         yType,
-                                                         incy,
-                                                         stridey,
-                                                         batch_count,
-                                                         executionType));
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                      N,
+                                                      d_alpha,
+                                                      alphaType,
+                                                      dx,
+                                                      xType,
+                                                      incx,
+                                                      stridex,
+                                                      dy,
+                                                      yType,
+                                                      incy,
+                                                      stridey,
+                                                      batch_count,
+                                                      executionType));
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -197,8 +197,8 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -206,20 +206,20 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedExFn(handle,
-                                                                 N,
-                                                                 d_alpha,
-                                                                 alphaType,
-                                                                 dx,
-                                                                 xType,
-                                                                 incx,
-                                                                 stridex,
-                                                                 dy,
-                                                                 yType,
-                                                                 incy,
-                                                                 stridey,
-                                                                 batch_count,
-                                                                 executionType));
+            CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                              N,
+                                                              d_alpha,
+                                                              alphaType,
+                                                              dx,
+                                                              xType,
+                                                              incx,
+                                                              stridex,
+                                                              dy,
+                                                              yType,
+                                                              incy,
+                                                              stridey,
+                                                              batch_count,
+                                                              executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

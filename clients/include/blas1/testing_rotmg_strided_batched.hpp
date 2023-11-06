@@ -107,47 +107,47 @@ void testing_rotmg_strided_batched(const Arguments& arg)
     device_vector<T> dy1(size_y1);
     device_vector<T> dparams(size_param);
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(dd1, hd1, sizeof(T) * size_d1, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dd2, hd2, sizeof(T) * size_d2, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx1, hx1, sizeof(T) * size_x1, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy1, hy1, sizeof(T) * size_y1, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dparams, hparams, sizeof(T) * size_param, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dd1, hd1, sizeof(T) * size_d1, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dd2, hd2, sizeof(T) * size_d2, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx1, hx1, sizeof(T) * size_x1, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy1, hy1, sizeof(T) * size_y1, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dparams, hparams, sizeof(T) * size_param, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasRotmgStridedBatchedFn(handle,
-                                                            hd1,
-                                                            stride_d1,
-                                                            hd2,
-                                                            stride_d2,
-                                                            hx1,
-                                                            stride_x1,
-                                                            hy1,
-                                                            stride_y1,
-                                                            hparams,
-                                                            stride_param,
-                                                            batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotmgStridedBatchedFn(handle,
+                                                         hd1,
+                                                         stride_d1,
+                                                         hd2,
+                                                         stride_d2,
+                                                         hx1,
+                                                         stride_x1,
+                                                         hy1,
+                                                         stride_y1,
+                                                         hparams,
+                                                         stride_param,
+                                                         batch_count));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasRotmgStridedBatchedFn(handle,
-                                                            dd1,
-                                                            stride_d1,
-                                                            dd2,
-                                                            stride_d2,
-                                                            dx1,
-                                                            stride_x1,
-                                                            dy1,
-                                                            stride_y1,
-                                                            dparams,
-                                                            stride_param,
-                                                            batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasRotmgStridedBatchedFn(handle,
+                                                         dd1,
+                                                         stride_d1,
+                                                         dd2,
+                                                         stride_d2,
+                                                         dx1,
+                                                         stride_x1,
+                                                         dy1,
+                                                         stride_y1,
+                                                         dparams,
+                                                         stride_param,
+                                                         batch_count));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(hd1_d, dd1, sizeof(T) * size_d1, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hd2_d, dd2, sizeof(T) * size_d2, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx1_d, dx1, sizeof(T) * size_x1, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hy1_d, dy1, sizeof(T) * size_y1, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(hipMemcpy(hd1_d, dd1, sizeof(T) * size_d1, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hd2_d, dd2, sizeof(T) * size_d2, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hx1_d, dx1, sizeof(T) * size_x1, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy1_d, dy1, sizeof(T) * size_y1, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
             hipMemcpy(hparams_d, dparams, sizeof(T) * size_param, hipMemcpyDeviceToHost));
 
         for(int b = 0; b < batch_count; b++)
@@ -204,8 +204,8 @@ void testing_rotmg_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -213,18 +213,18 @@ void testing_rotmg_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasRotmgStridedBatchedFn(handle,
-                                                                dd1,
-                                                                stride_d1,
-                                                                dd2,
-                                                                stride_d2,
-                                                                dx1,
-                                                                stride_x1,
-                                                                dy1,
-                                                                stride_y1,
-                                                                dparams,
-                                                                stride_param,
-                                                                batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasRotmgStridedBatchedFn(handle,
+                                                             dd1,
+                                                             stride_d1,
+                                                             dd2,
+                                                             stride_d2,
+                                                             dx1,
+                                                             stride_x1,
+                                                             dy1,
+                                                             stride_y1,
+                                                             dparams,
+                                                             stride_param,
+                                                             batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

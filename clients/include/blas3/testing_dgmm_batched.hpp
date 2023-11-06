@@ -67,7 +67,7 @@ void testing_dgmm_batched(const Arguments& arg)
     {
         hipblasStatus_t actual = hipblasDgmmBatchedFn(
             handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc, batch_count);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -85,9 +85,9 @@ void testing_dgmm_batched(const Arguments& arg)
     device_batch_vector<T> dx(k, incx, batch_count);
     device_batch_vector<T> dC(C_size, 1, batch_count);
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dx.memcheck());
-    ASSERT_HIP_SUCCESS(dC.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dC.memcheck());
 
     double gpu_time_used, hipblas_error;
 
@@ -101,27 +101,27 @@ void testing_dgmm_batched(const Arguments& arg)
     hC_1.copy_from(hC);
     hC_gold.copy_from(hC_gold);
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-    ASSERT_HIP_SUCCESS(dC.transfer_from(hC));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dC.transfer_from(hC));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasDgmmBatchedFn(handle,
-                                                    side,
-                                                    M,
-                                                    N,
-                                                    dA.ptr_on_device(),
-                                                    lda,
-                                                    dx.ptr_on_device(),
-                                                    incx,
-                                                    dC.ptr_on_device(),
-                                                    ldc,
-                                                    batch_count));
-        ASSERT_HIP_SUCCESS(hC_1.transfer_from(dC));
+        CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(handle,
+                                                 side,
+                                                 M,
+                                                 N,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dx.ptr_on_device(),
+                                                 incx,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
+        CHECK_HIP_ERROR(hC_1.transfer_from(dC));
 
         /* =====================================================================
            CPU BLAS
@@ -165,7 +165,7 @@ void testing_dgmm_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -173,17 +173,17 @@ void testing_dgmm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasDgmmBatchedFn(handle,
-                                                        side,
-                                                        M,
-                                                        N,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        dx.ptr_on_device(),
-                                                        incx,
-                                                        dC.ptr_on_device(),
-                                                        ldc,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(handle,
+                                                     side,
+                                                     M,
+                                                     N,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dx.ptr_on_device(),
+                                                     incx,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 

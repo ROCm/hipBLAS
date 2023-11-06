@@ -77,13 +77,13 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
         const T* zero  = &zero_h;
 
         hipblasLocalHandle handle(arg);
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, pointer_mode));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
         {
-            ASSERT_HIP_SUCCESS(hipMemcpy(alpha_d, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(alpha_d, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
             alpha = alpha_d;
-            ASSERT_HIP_SUCCESS(hipMemcpy(zero_d, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(zero_d, zero, sizeof(*zero), hipMemcpyHostToDevice));
             zero = zero_d;
         }
 
@@ -96,9 +96,9 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dBb(B_size, 1, batch_count);
         device_batch_vector<T> dCb(C_size, 1, batch_count);
 
-        ASSERT_HIP_SUCCESS(dAb.memcheck());
-        ASSERT_HIP_SUCCESS(dBb.memcheck());
-        ASSERT_HIP_SUCCESS(dCb.memcheck());
+        CHECK_HIP_ERROR(dAb.memcheck());
+        CHECK_HIP_ERROR(dBb.memcheck());
+        CHECK_HIP_ERROR(dCb.memcheck());
 
         auto dA = dAb.ptr_on_device();
         auto dB = dBb.ptr_on_device();
@@ -107,361 +107,361 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
         auto dOut = inplace ? &dB : &dC;
 
         // invalid enums
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    HIPBLAS_SIDE_BOTH,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   HIPBLAS_SIDE_BOTH,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    HIPBLAS_FILL_MODE_FULL,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   HIPBLAS_FILL_MODE_FULL,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    (hipblasOperation_t)HIPBLAS_SIDE_BOTH,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   (hipblasOperation_t)HIPBLAS_SIDE_BOTH,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    (hipblasDiagType_t)HIPBLAS_SIDE_BOTH,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   (hipblasDiagType_t)HIPBLAS_SIDE_BOTH,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         // invalid sizes
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    -1,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   -1,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    -1,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   -1,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             hipblasTrmmBatchedFn(
                 handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, ldOut, -1),
             HIPBLAS_STATUS_INVALID_VALUE);
 
         // invalid leading dims
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    M - 1,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   M - 1,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    HIPBLAS_SIDE_RIGHT,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    N - 1,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   HIPBLAS_SIDE_RIGHT,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   N - 1,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    M - 1,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   M - 1,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    M - 1,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   M - 1,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
         // nullptr checks
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(nullptr,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(nullptr,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    nullptr,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   nullptr,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    nullptr,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   nullptr,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    nullptr,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   nullptr,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    alpha,
-                                                    dA,
-                                                    lda,
-                                                    dB,
-                                                    ldb,
-                                                    nullptr,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dB,
+                                                   ldb,
+                                                   nullptr,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
 
         // quick return: if alpha == 0, both A & B can be nullptr
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    zero,
-                                                    nullptr,
-                                                    lda,
-                                                    nullptr,
-                                                    ldb,
-                                                    *dOut,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_SUCCESS);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   zero,
+                                                   nullptr,
+                                                   lda,
+                                                   nullptr,
+                                                   ldb,
+                                                   *dOut,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_SUCCESS);
 
         // quick return: if M == 0, then all ptrs can be nullptr
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    0,
-                                                    N,
-                                                    nullptr,
-                                                    nullptr,
-                                                    lda,
-                                                    nullptr,
-                                                    ldb,
-                                                    nullptr,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_SUCCESS);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   0,
+                                                   N,
+                                                   nullptr,
+                                                   nullptr,
+                                                   lda,
+                                                   nullptr,
+                                                   ldb,
+                                                   nullptr,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_SUCCESS);
 
         // quick return: if N == 0, then all ptrs can be nullptr
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    0,
-                                                    nullptr,
-                                                    nullptr,
-                                                    lda,
-                                                    nullptr,
-                                                    ldb,
-                                                    nullptr,
-                                                    ldOut,
-                                                    batch_count),
-                               HIPBLAS_STATUS_SUCCESS);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   0,
+                                                   nullptr,
+                                                   nullptr,
+                                                   lda,
+                                                   nullptr,
+                                                   ldb,
+                                                   nullptr,
+                                                   ldOut,
+                                                   batch_count),
+                              HIPBLAS_STATUS_SUCCESS);
 
         // quick return: if batch_count == 0, then all ptrs can be nullptr
-        EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    nullptr,
-                                                    nullptr,
-                                                    lda,
-                                                    nullptr,
-                                                    ldb,
-                                                    nullptr,
-                                                    ldOut,
-                                                    0),
-                               HIPBLAS_STATUS_SUCCESS);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   nullptr,
+                                                   nullptr,
+                                                   lda,
+                                                   nullptr,
+                                                   ldb,
+                                                   nullptr,
+                                                   ldOut,
+                                                   0),
+                              HIPBLAS_STATUS_SUCCESS);
 
         // in-place only checks
         if(inplace)
         {
             // if inplace, must have ldb == ldc
-            EXPECT_HIPBLAS_STATUS2(hipblasTrmmBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        N,
-                                                        alpha,
-                                                        dA,
-                                                        lda,
-                                                        dB,
-                                                        ldb,
-                                                        *dOut,
-                                                        ldb + 1,
-                                                        batch_count),
-                                   HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmBatchedFn(handle,
+                                                       side,
+                                                       uplo,
+                                                       transA,
+                                                       diag,
+                                                       M,
+                                                       N,
+                                                       alpha,
+                                                       dA,
+                                                       lda,
+                                                       dB,
+                                                       ldb,
+                                                       *dOut,
+                                                       ldb + 1,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
         }
     }
 }
@@ -528,9 +528,9 @@ void testing_trmm_batched(const Arguments& arg)
 
     device_batch_vector<T>* dOut = inplace ? &dB : &dC;
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dB.memcheck());
-    ASSERT_HIP_SUCCESS(dC.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dB.memcheck());
+    CHECK_HIP_ERROR(dC.memcheck());
 
     hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hB, arg, hipblas_client_alpha_sets_nan, false, true);
@@ -541,55 +541,55 @@ void testing_trmm_batched(const Arguments& arg)
     hOut_device.copy_from(hOut_host);
     hOut_gold.copy_from(hOut_host);
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dB.transfer_from(hB));
-    ASSERT_HIP_SUCCESS(dC.transfer_from(hC));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    &h_alpha,
-                                                    dA.ptr_on_device(),
-                                                    lda,
-                                                    dB.ptr_on_device(),
-                                                    ldb,
-                                                    (*dOut).ptr_on_device(),
-                                                    ldOut,
-                                                    batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasTrmmBatchedFn(handle,
+                                                 side,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 N,
+                                                 &h_alpha,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dB.ptr_on_device(),
+                                                 ldb,
+                                                 (*dOut).ptr_on_device(),
+                                                 ldOut,
+                                                 batch_count));
 
-        ASSERT_HIP_SUCCESS(hOut_host.transfer_from(*dOut));
-        ASSERT_HIP_SUCCESS(dB.transfer_from(hB));
-        ASSERT_HIP_SUCCESS(dC.transfer_from(hC));
+        CHECK_HIP_ERROR(hOut_host.transfer_from(*dOut));
+        CHECK_HIP_ERROR(dB.transfer_from(hB));
+        CHECK_HIP_ERROR(dC.transfer_from(hC));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrmmBatchedFn(handle,
-                                                    side,
-                                                    uplo,
-                                                    transA,
-                                                    diag,
-                                                    M,
-                                                    N,
-                                                    d_alpha,
-                                                    dA.ptr_on_device(),
-                                                    lda,
-                                                    dB.ptr_on_device(),
-                                                    ldb,
-                                                    (*dOut).ptr_on_device(),
-                                                    ldOut,
-                                                    batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasTrmmBatchedFn(handle,
+                                                 side,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 N,
+                                                 d_alpha,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dB.ptr_on_device(),
+                                                 ldb,
+                                                 (*dOut).ptr_on_device(),
+                                                 ldOut,
+                                                 batch_count));
 
-        ASSERT_HIP_SUCCESS(hOut_device.transfer_from(*dOut));
+        CHECK_HIP_ERROR(hOut_device.transfer_from(*dOut));
 
         /* =====================================================================
            CPU BLAS
@@ -620,8 +620,8 @@ void testing_trmm_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -629,21 +629,21 @@ void testing_trmm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrmmBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        N,
-                                                        d_alpha,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        dB.ptr_on_device(),
-                                                        ldb,
-                                                        (*dOut).ptr_on_device(),
-                                                        ldOut,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasTrmmBatchedFn(handle,
+                                                     side,
+                                                     uplo,
+                                                     transA,
+                                                     diag,
+                                                     M,
+                                                     N,
+                                                     d_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     (*dOut).ptr_on_device(),
+                                                     ldOut,
+                                                     batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

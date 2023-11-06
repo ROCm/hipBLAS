@@ -67,8 +67,8 @@ void testing_trtri_batched(const Arguments& arg)
     device_batch_vector<T> dA(A_size, 1, batch_count);
     device_batch_vector<T> dinvA(A_size, 1, batch_count);
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dinvA.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dinvA.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
@@ -102,26 +102,26 @@ void testing_trtri_batched(const Arguments& arg)
     }
 
     hB.copy_from(hA);
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dinvA.transfer_from(hA));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dinvA.transfer_from(hA));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrtriBatchedFn(handle,
-                                                     uplo,
-                                                     diag,
-                                                     N,
-                                                     dA.ptr_on_device(),
-                                                     lda,
-                                                     dinvA.ptr_on_device(),
-                                                     ldinvA,
-                                                     batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
+                                                  uplo,
+                                                  diag,
+                                                  N,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  dinvA.ptr_on_device(),
+                                                  ldinvA,
+                                                  batch_count));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hA.transfer_from(dinvA));
+        CHECK_HIP_ERROR(hA.transfer_from(dinvA));
 
         /* =====================================================================
            CPU BLAS
@@ -145,7 +145,7 @@ void testing_trtri_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -153,15 +153,15 @@ void testing_trtri_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrtriBatchedFn(handle,
-                                                         uplo,
-                                                         diag,
-                                                         N,
-                                                         dA.ptr_on_device(),
-                                                         lda,
-                                                         dinvA.ptr_on_device(),
-                                                         ldinvA,
-                                                         batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasTrtriBatchedFn(handle,
+                                                      uplo,
+                                                      diag,
+                                                      N,
+                                                      dA.ptr_on_device(),
+                                                      lda,
+                                                      dinvA.ptr_on_device(),
+                                                      ldinvA,
+                                                      batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

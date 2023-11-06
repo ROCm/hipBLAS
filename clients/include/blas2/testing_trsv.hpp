@@ -63,7 +63,7 @@ void testing_trsv(const Arguments& arg)
     {
         hipblasStatus_t actual
             = hipblasTrsvFn(handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -138,8 +138,8 @@ void testing_trsv(const Arguments& arg)
     hx_or_b_1 = hb;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA.data(), sizeof(T) * size_A, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * size_A, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(
         hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice));
 
     /* =====================================================================
@@ -147,12 +147,11 @@ void testing_trsv(const Arguments& arg)
     =================================================================== */
     if(arg.unit_check || arg.norm_check)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(
-            hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
@@ -168,8 +167,8 @@ void testing_trsv(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -177,7 +176,7 @@ void testing_trsv(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds

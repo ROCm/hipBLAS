@@ -84,38 +84,38 @@ void testing_geqrf_bad_arg(const Arguments& arg)
     device_vector<T> dIpiv(K);
     int              info = 0;
 
-    EXPECT_HIPBLAS_STATUS2(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
+                          HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 }
 
@@ -155,16 +155,16 @@ void testing_geqrf(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    EXPECT_HIPBLAS_STATUS2(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
+    CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
 
     // Copy output from device to CPU
-    ASSERT_HIP_SUCCESS(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    ASSERT_HIP_SUCCESS(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hA1, dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -200,7 +200,7 @@ void testing_geqrf(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -208,7 +208,7 @@ void testing_geqrf(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
+            CHECK_HIPBLAS_ERROR(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, &info));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

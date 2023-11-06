@@ -117,49 +117,49 @@ void testing_getrs_bad_arg(const Arguments& arg)
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    EXPECT_HIPBLAS_STATUS2(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
+                          HIPBLAS_STATUS_SUCCESS);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, -1, nrhs, dA, lda, dIpiv, dB, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, -1, nrhs, dA, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, -1, dA, lda, dIpiv, dB, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, -1, dA, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, nullptr, lda, dIpiv, dB, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, nullptr, lda, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, dA, N - 1, dIpiv, dB, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, N - 1, dIpiv, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, nullptr, dB, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, nullptr, dB, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, nullptr, ldb, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, nullptr, ldb, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, N - 1, &info),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, N - 1, &info),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
     // If N == 0, A, B, and ipiv can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGetrsFn(handle, op, 0, nrhs, nullptr, lda, nullptr, nullptr, ldb, &info),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // if nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS2(hipblasGetrsFn(handle, op, N, 0, dA, lda, dIpiv, nullptr, ldb, &info),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, 0, dA, lda, dIpiv, nullptr, ldb, &info),
+                          HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 }
 
@@ -201,20 +201,19 @@ void testing_getrs(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    EXPECT_HIPBLAS_STATUS2(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
+                          HIPBLAS_STATUS_SUCCESS);
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
+        CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hB1, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(
-            hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hB1, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
@@ -237,7 +236,7 @@ void testing_getrs(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -245,8 +244,7 @@ void testing_getrs(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
-                hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
+            CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

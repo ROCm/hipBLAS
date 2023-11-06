@@ -94,31 +94,31 @@ void testing_rotg_batched(const Arguments& arg)
     rc.copy_from(hc);
     rs.copy_from(hs);
 
-    ASSERT_HIP_SUCCESS(da.transfer_from(ha));
-    ASSERT_HIP_SUCCESS(db.transfer_from(hb));
-    ASSERT_HIP_SUCCESS(dc.transfer_from(hc));
-    ASSERT_HIP_SUCCESS(ds.transfer_from(hs));
+    CHECK_HIP_ERROR(da.transfer_from(ha));
+    CHECK_HIP_ERROR(db.transfer_from(hb));
+    CHECK_HIP_ERROR(dc.transfer_from(hc));
+    CHECK_HIP_ERROR(ds.transfer_from(hs));
 
     if(arg.unit_check || arg.norm_check)
     {
         // hipBLAS
         // test host
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasRotgBatchedFn(handle, ha, hb, hc, hs, batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasRotgBatchedFn(handle, ha, hb, hc, hs, batch_count));
 
         // test device
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS((hipblasRotgBatchedFn(handle,
-                                                     da.ptr_on_device(),
-                                                     db.ptr_on_device(),
-                                                     dc.ptr_on_device(),
-                                                     ds.ptr_on_device(),
-                                                     batch_count)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
+                                                  da.ptr_on_device(),
+                                                  db.ptr_on_device(),
+                                                  dc.ptr_on_device(),
+                                                  ds.ptr_on_device(),
+                                                  batch_count)));
 
-        ASSERT_HIP_SUCCESS(ra.transfer_from(da));
-        ASSERT_HIP_SUCCESS(rb.transfer_from(db));
-        ASSERT_HIP_SUCCESS(rc.transfer_from(dc));
-        ASSERT_HIP_SUCCESS(rs.transfer_from(ds));
+        CHECK_HIP_ERROR(ra.transfer_from(da));
+        CHECK_HIP_ERROR(rb.transfer_from(db));
+        CHECK_HIP_ERROR(rc.transfer_from(dc));
+        CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         // CBLAS
         for(int b = 0; b < batch_count; b++)
@@ -159,8 +159,8 @@ void testing_rotg_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -168,12 +168,12 @@ void testing_rotg_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasRotgBatchedFn(handle,
-                                                         da.ptr_on_device(),
-                                                         db.ptr_on_device(),
-                                                         dc.ptr_on_device(),
-                                                         ds.ptr_on_device(),
-                                                         batch_count)));
+            CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
+                                                      da.ptr_on_device(),
+                                                      db.ptr_on_device(),
+                                                      dc.ptr_on_device(),
+                                                      ds.ptr_on_device(),
+                                                      batch_count)));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -54,7 +54,7 @@ void testing_copy_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(
             hipblasCopyBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
         return;
     }
@@ -72,28 +72,28 @@ void testing_copy_batched(const Arguments& arg)
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
-    ASSERT_HIP_SUCCESS(dx.memcheck());
-    ASSERT_HIP_SUCCESS(dy.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy);
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-    ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasCopyBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
             handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hx.transfer_from(dx));
-        ASSERT_HIP_SUCCESS(hy.transfer_from(dy));
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        CHECK_HIP_ERROR(hy.transfer_from(dy));
 
         /* =====================================================================
                     CPU BLAS
@@ -119,7 +119,7 @@ void testing_copy_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -127,7 +127,7 @@ void testing_copy_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasCopyBatchedFn(
+            CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
                 handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

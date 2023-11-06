@@ -58,72 +58,72 @@ void testing_gels_bad_arg(const Arguments& arg)
     device_vector<int> dInfo(1);
     int                info = 0;
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, nullptr, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, nullptr, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opBad, M, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opBad, M, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, -1, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, -1, N, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, -1, nrhs, dA, lda, dB, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, -1, nrhs, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, -1, dA, lda, dB, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, -1, dA, lda, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, M, N, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, M - 1, dB, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, M - 1, dB, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, nullptr, ldb, &info, dInfo),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
     // Explicit values to check for ldb < M and ldb < N
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, 100, 200, nrhs, dA, lda, dB, 199, &info, dInfo),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, 200, 100, nrhs, dA, 201, dB, 199, &info, dInfo),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, &info, nullptr),
-                           HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, nrhs, dA, lda, dB, ldb, &info, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
 
     // If M == 0 || N == 0, A can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, 0, N, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, M, 0, nrhs, nullptr, lda, dB, ldb, &info, dInfo),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS2(hipblasGelsFn(handle, opN, M, N, 0, dA, lda, nullptr, ldb, &info, dInfo),
-                           HIPBLAS_STATUS_SUCCESS);
+    EXPECT_HIPBLAS_STATUS(hipblasGelsFn(handle, opN, M, N, 0, dA, lda, nullptr, ldb, &info, dInfo),
+                          HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If M == 0 && N == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsFn(handle, opN, 0, 0, nrhs, nullptr, lda, nullptr, ldb, &info, dInfo),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
@@ -192,20 +192,20 @@ void testing_gels(const Arguments& arg)
     }
 
     // Copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(
             hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, &info_input, dInfo));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hB_res, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(&info_res, dInfo, sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hB_res, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(&info_res, dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
@@ -237,7 +237,7 @@ void testing_gels(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -245,7 +245,7 @@ void testing_gels(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, &info_input, dInfo));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

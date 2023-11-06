@@ -64,105 +64,105 @@ void testing_gels_batched_bad_arg(const Arguments& arg)
     T* const* dAp = dA.ptr_on_device();
     T* const* dBp = dB.ptr_on_device();
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, nullptr, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opBad, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-1, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, -1, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-2, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, -1, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-3, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, -1, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-4, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-5, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, M - 1, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-6, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-7, info);
 
     // Explicit values to check for ldb < M and ldb < N
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 100, 200, nrhs, dAp, lda, dBp, 199, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 200, 100, nrhs, dAp, 201, dBp, 199, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-8, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-10, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_EQ(-11, info);
 
     // If M == 0 || N == 0, A can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 0, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, 0, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If nrhs == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, 0, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If M == 0 && N == 0, B can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 0, 0, nrhs, nullptr, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
 
     // If batchCount == 0, dInfo can be nullptr
-    EXPECT_HIPBLAS_STATUS2(
+    EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, 0),
         HIPBLAS_STATUS_SUCCESS);
     EXPECT_EQ(0, info);
@@ -240,30 +240,30 @@ void testing_gels_batched(const Arguments& arg)
     }
 
     // Copy data from CPU to device
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasGelsBatchedFn(handle,
-                                                    trans,
-                                                    M,
-                                                    N,
-                                                    nrhs,
-                                                    dA.ptr_on_device(),
-                                                    lda,
-                                                    dB.ptr_on_device(),
-                                                    ldb,
-                                                    &info_input,
-                                                    dInfo,
-                                                    batchCount));
+        CHECK_HIPBLAS_ERROR(hipblasGelsBatchedFn(handle,
+                                                 trans,
+                                                 M,
+                                                 N,
+                                                 nrhs,
+                                                 dA.ptr_on_device(),
+                                                 lda,
+                                                 dB.ptr_on_device(),
+                                                 ldb,
+                                                 &info_input,
+                                                 dInfo,
+                                                 batchCount));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hB_res.transfer_from(dB));
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(hB_res.transfer_from(dB));
+        CHECK_HIP_ERROR(
             hipMemcpy(info_res.data(), dInfo, sizeof(int) * batchCount, hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -302,7 +302,7 @@ void testing_gels_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -310,18 +310,18 @@ void testing_gels_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGelsBatchedFn(handle,
-                                                        trans,
-                                                        M,
-                                                        N,
-                                                        nrhs,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        dB.ptr_on_device(),
-                                                        ldb,
-                                                        &info_input,
-                                                        dInfo,
-                                                        batchCount));
+            CHECK_HIPBLAS_ERROR(hipblasGelsBatchedFn(handle,
+                                                     trans,
+                                                     M,
+                                                     N,
+                                                     nrhs,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     &info_input,
+                                                     dInfo,
+                                                     batchCount));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

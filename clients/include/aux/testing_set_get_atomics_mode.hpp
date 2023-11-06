@@ -46,18 +46,18 @@ void testing_set_get_atomics_mode(const Arguments& arg)
 
     // Not checking default as rocBLAS defaults to allowed
     // and cuBLAS defaults to not allowed.
-    // ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
+    // CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     // EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 
     // Make sure set()/get() functions work
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED));
-    ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
+    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_NOT_ALLOWED));
+    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_NOT_ALLOWED, mode);
 
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED));
-    ASSERT_HIPBLAS_SUCCESS(hipblasGetAtomicsModeFn(handle, &mode));
+    CHECK_HIPBLAS_ERROR(hipblasSetAtomicsModeFn(handle, HIPBLAS_ATOMICS_ALLOWED));
+    CHECK_HIPBLAS_ERROR(hipblasGetAtomicsModeFn(handle, &mode));
 
     EXPECT_EQ(HIPBLAS_ATOMICS_ALLOWED, mode);
 }

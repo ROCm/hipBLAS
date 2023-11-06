@@ -62,7 +62,7 @@ void testing_scal_ex(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(
             hipblasScalExFn(handle, N, nullptr, alphaType, nullptr, xType, incx, executionType));
         return;
     }
@@ -88,27 +88,27 @@ void testing_scal_ex(const Arguments& arg)
     hx_device = hx_cpu = hx_host;
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx_host, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(
             hipblasScalExFn(handle, N, &h_alpha, alphaType, dx, xType, incx, executionType));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx_host, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx_device, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
             hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx_device, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -141,8 +141,8 @@ void testing_scal_ex(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -150,7 +150,7 @@ void testing_scal_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

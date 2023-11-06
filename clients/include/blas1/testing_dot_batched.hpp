@@ -63,20 +63,20 @@ void testing_dot_batched(const Arguments& arg)
         device_vector<T> d_hipblas_result_0(std::max(batch_count, 1));
         host_vector<T>   h_hipblas_result_0(std::max(1, batch_count));
         hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        ASSERT_HIP_SUCCESS(hipMemcpy(d_hipblas_result_0,
-                                     h_hipblas_result_0,
-                                     sizeof(T) * std::max(1, batch_count),
-                                     hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(T) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasDotBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotBatchedFn(
             handle, N, nullptr, incx, nullptr, incy, batch_count, d_hipblas_result_0));
 
         if(batch_count > 0)
         {
             host_vector<T> cpu_0(batch_count);
             host_vector<T> gpu_0(batch_count);
-            ASSERT_HIP_SUCCESS(hipMemcpy(
+            CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<T>(1, batch_count, 1, cpu_0, gpu_0);
         }
@@ -100,13 +100,13 @@ void testing_dot_batched(const Arguments& arg)
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_hipblas_result(batch_count);
-    ASSERT_HIP_SUCCESS(dx.memcheck());
-    ASSERT_HIP_SUCCESS(dy.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-    ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -114,27 +114,27 @@ void testing_dot_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         // hipblasDot accept both dev/host pointer for the scalar
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotBatchedFn)(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     batch_count,
-                                                     d_hipblas_result));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasDotBatchedFn)(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  incy,
+                                                  batch_count,
+                                                  d_hipblas_result));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotBatchedFn)(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     batch_count,
-                                                     h_hipblas_result1));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR((hipblasDotBatchedFn)(handle,
+                                                  N,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dy.ptr_on_device(),
+                                                  incy,
+                                                  batch_count,
+                                                  h_hipblas_result1));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(
+        CHECK_HIP_ERROR(hipMemcpy(
             h_hipblas_result2, d_hipblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -163,8 +163,8 @@ void testing_dot_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -172,14 +172,14 @@ void testing_dot_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasDotBatchedFn)(handle,
-                                                         N,
-                                                         dx.ptr_on_device(),
-                                                         incx,
-                                                         dy.ptr_on_device(),
-                                                         incy,
-                                                         batch_count,
-                                                         d_hipblas_result));
+            CHECK_HIPBLAS_ERROR((hipblasDotBatchedFn)(handle,
+                                                      N,
+                                                      dx.ptr_on_device(),
+                                                      incx,
+                                                      dy.ptr_on_device(),
+                                                      incy,
+                                                      batch_count,
+                                                      d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

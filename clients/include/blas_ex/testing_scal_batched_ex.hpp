@@ -63,7 +63,7 @@ void testing_scal_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasScalBatchedExFn(
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(
             handle, N, nullptr, alphaType, nullptr, xType, incx, batch_count, executionType));
         return;
     }
@@ -80,7 +80,7 @@ void testing_scal_batched_ex(const Arguments& arg)
     device_batch_vector<Tx> dx(N, incx, batch_count);
     device_vector<Ta>       d_alpha(1);
 
-    ASSERT_HIP_SUCCESS(dx.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -90,40 +90,40 @@ void testing_scal_batched_ex(const Arguments& arg)
     hx_device.copy_from(hx_host);
     hx_cpu.copy_from(hx_host);
 
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx_host));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx_host));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasScalBatchedExFn(handle,
-                                                      N,
-                                                      &h_alpha,
-                                                      alphaType,
-                                                      dx.ptr_on_device(),
-                                                      xType,
-                                                      incx,
-                                                      batch_count,
-                                                      executionType));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
+                                                   N,
+                                                   &h_alpha,
+                                                   alphaType,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   executionType));
 
-        ASSERT_HIP_SUCCESS(hx_host.transfer_from(dx));
-        ASSERT_HIP_SUCCESS(dx.transfer_from(hx_device));
+        CHECK_HIP_ERROR(hx_host.transfer_from(dx));
+        CHECK_HIP_ERROR(dx.transfer_from(hx_device));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasScalBatchedExFn(handle,
-                                                      N,
-                                                      d_alpha,
-                                                      alphaType,
-                                                      dx.ptr_on_device(),
-                                                      xType,
-                                                      incx,
-                                                      batch_count,
-                                                      executionType));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
+                                                   N,
+                                                   d_alpha,
+                                                   alphaType,
+                                                   dx.ptr_on_device(),
+                                                   xType,
+                                                   incx,
+                                                   batch_count,
+                                                   executionType));
 
-        ASSERT_HIP_SUCCESS(hx_device.transfer_from(dx));
+        CHECK_HIP_ERROR(hx_device.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS
@@ -163,8 +163,8 @@ void testing_scal_batched_ex(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -172,15 +172,15 @@ void testing_scal_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasScalBatchedExFn(handle,
-                                                          N,
-                                                          d_alpha,
-                                                          alphaType,
-                                                          dx.ptr_on_device(),
-                                                          xType,
-                                                          incx,
-                                                          batch_count,
-                                                          executionType));
+            CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
+                                                       N,
+                                                       d_alpha,
+                                                       alphaType,
+                                                       dx.ptr_on_device(),
+                                                       xType,
+                                                       incx,
+                                                       batch_count,
+                                                       executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -95,7 +95,7 @@ void testing_dgmm_strided_batched(const Arguments& arg)
                                                              ldc,
                                                              stride_C,
                                                              batch_count);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -127,32 +127,32 @@ void testing_dgmm_strided_batched(const Arguments& arg)
     hC_gold = hC;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasDgmmStridedBatchedFn(handle,
-                                                           side,
-                                                           M,
-                                                           N,
-                                                           dA,
-                                                           lda,
-                                                           stride_A,
-                                                           dx,
-                                                           incx,
-                                                           stride_x,
-                                                           dC,
-                                                           ldc,
-                                                           stride_C,
-                                                           batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                        side,
+                                                        M,
+                                                        N,
+                                                        dA,
+                                                        lda,
+                                                        stride_A,
+                                                        dx,
+                                                        incx,
+                                                        stride_x,
+                                                        dC,
+                                                        ldc,
+                                                        stride_C,
+                                                        batch_count));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hC_1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -200,7 +200,7 @@ void testing_dgmm_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -208,20 +208,20 @@ void testing_dgmm_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasDgmmStridedBatchedFn(handle,
-                                                               side,
-                                                               M,
-                                                               N,
-                                                               dA,
-                                                               lda,
-                                                               stride_A,
-                                                               dx,
-                                                               incx,
-                                                               stride_x,
-                                                               dC,
-                                                               ldc,
-                                                               stride_C,
-                                                               batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                            side,
+                                                            M,
+                                                            N,
+                                                            dA,
+                                                            lda,
+                                                            stride_A,
+                                                            dx,
+                                                            incx,
+                                                            stride_x,
+                                                            dC,
+                                                            ldc,
+                                                            stride_C,
+                                                            batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 

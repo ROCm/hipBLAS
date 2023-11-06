@@ -152,9 +152,9 @@ void testing_gemm_batched(const Arguments& arg)
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dB.memcheck());
-    ASSERT_HIP_SUCCESS(dC.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dB.memcheck());
+    CHECK_HIP_ERROR(dC.memcheck());
 
     hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hB, arg, hipblas_client_alpha_sets_nan);
@@ -163,11 +163,11 @@ void testing_gemm_batched(const Arguments& arg)
     hC_device.copy_from(hC_host);
     hC_copy.copy_from(hC_host);
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dB.transfer_from(hB));
-    ASSERT_HIP_SUCCESS(dC.transfer_from(hC_host));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -190,45 +190,45 @@ void testing_gemm_batched(const Arguments& arg)
         }
 
         // test hipBLAS batched gemm with alpha and beta pointers on device
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasGemmBatchedFn(handle,
-                                                    transA,
-                                                    transB,
-                                                    M,
-                                                    N,
-                                                    K,
-                                                    d_alpha,
-                                                    (const T* const*)dA.ptr_on_device(),
-                                                    lda,
-                                                    (const T* const*)dB.ptr_on_device(),
-                                                    ldb,
-                                                    d_beta,
-                                                    dC.ptr_on_device(),
-                                                    ldc,
-                                                    batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedFn(handle,
+                                                 transA,
+                                                 transB,
+                                                 M,
+                                                 N,
+                                                 K,
+                                                 d_alpha,
+                                                 (const T* const*)dA.ptr_on_device(),
+                                                 lda,
+                                                 (const T* const*)dB.ptr_on_device(),
+                                                 ldb,
+                                                 d_beta,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
 
-        ASSERT_HIP_SUCCESS(hC_device.transfer_from(dC));
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         // test hipBLAS batched gemm with alpha and beta pointers on host
-        ASSERT_HIP_SUCCESS(dC.transfer_from(hC_host));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasGemmBatchedFn(handle,
-                                                    transA,
-                                                    transB,
-                                                    M,
-                                                    N,
-                                                    K,
-                                                    &h_alpha,
-                                                    (const T* const*)dA.ptr_on_device(),
-                                                    lda,
-                                                    (const T* const*)dB.ptr_on_device(),
-                                                    ldb,
-                                                    &h_beta,
-                                                    dC.ptr_on_device(),
-                                                    ldc,
-                                                    batch_count));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_host));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasGemmBatchedFn(handle,
+                                                 transA,
+                                                 transB,
+                                                 M,
+                                                 N,
+                                                 K,
+                                                 &h_alpha,
+                                                 (const T* const*)dA.ptr_on_device(),
+                                                 lda,
+                                                 (const T* const*)dB.ptr_on_device(),
+                                                 ldb,
+                                                 &h_beta,
+                                                 dC.ptr_on_device(),
+                                                 ldc,
+                                                 batch_count));
 
-        ASSERT_HIP_SUCCESS(hC_host.transfer_from(dC));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
         if(arg.unit_check)
         {
@@ -257,11 +257,11 @@ void testing_gemm_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         // gemm has better performance in host mode. In rocBLAS in device mode
         // we need to copy alpha and beta to the host.
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -269,21 +269,21 @@ void testing_gemm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGemmBatchedFn(handle,
-                                                        transA,
-                                                        transB,
-                                                        M,
-                                                        N,
-                                                        K,
-                                                        &h_alpha,
-                                                        (const T* const*)dA.ptr_on_device(),
-                                                        lda,
-                                                        (const T* const*)dB.ptr_on_device(),
-                                                        ldb,
-                                                        &h_beta,
-                                                        dC.ptr_on_device(),
-                                                        ldc,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasGemmBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     K,
+                                                     &h_alpha,
+                                                     (const T* const*)dA.ptr_on_device(),
+                                                     lda,
+                                                     (const T* const*)dB.ptr_on_device(),
+                                                     ldb,
+                                                     &h_beta,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
         }
 
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

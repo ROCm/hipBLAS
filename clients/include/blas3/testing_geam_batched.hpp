@@ -116,9 +116,9 @@ void testing_geam_batched(const Arguments& arg)
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
-    ASSERT_HIP_SUCCESS(dA.memcheck());
-    ASSERT_HIP_SUCCESS(dB.memcheck());
-    ASSERT_HIP_SUCCESS(dC.memcheck());
+    CHECK_HIP_ERROR(dA.memcheck());
+    CHECK_HIP_ERROR(dB.memcheck());
+    CHECK_HIP_ERROR(dC.memcheck());
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(A_size, 1, batch_count);
@@ -133,11 +133,11 @@ void testing_geam_batched(const Arguments& arg)
     hC2.copy_from(hC1);
     hC_copy.copy_from(hC1);
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dB.transfer_from(hB));
-    ASSERT_HIP_SUCCESS(dC.transfer_from(hC1));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC1));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.norm_check || arg.unit_check)
     {
@@ -146,45 +146,45 @@ void testing_geam_batched(const Arguments& arg)
         =================================================================== */
         {
             // &h_alpha and &h_beta are host pointers
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-            ASSERT_HIPBLAS_SUCCESS(hipblasGeamBatchedFn(handle,
-                                                        transA,
-                                                        transB,
-                                                        M,
-                                                        N,
-                                                        &h_alpha,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        &h_beta,
-                                                        dB.ptr_on_device(),
-                                                        ldb,
-                                                        dC.ptr_on_device(),
-                                                        ldc,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     &h_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     &h_beta,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
 
-            ASSERT_HIP_SUCCESS(hC1.transfer_from(dC));
+            CHECK_HIP_ERROR(hC1.transfer_from(dC));
         }
         {
-            ASSERT_HIP_SUCCESS(dC.transfer_from(hC2));
+            CHECK_HIP_ERROR(dC.transfer_from(hC2));
 
             // d_alpha and d_beta are device pointers
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-            ASSERT_HIPBLAS_SUCCESS(hipblasGeamBatchedFn(handle,
-                                                        transA,
-                                                        transB,
-                                                        M,
-                                                        N,
-                                                        d_alpha,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        d_beta,
-                                                        dB.ptr_on_device(),
-                                                        ldb,
-                                                        dC.ptr_on_device(),
-                                                        ldc,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     d_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     d_beta,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
 
-            ASSERT_HIP_SUCCESS(hC2.transfer_from(dC));
+            CHECK_HIP_ERROR(hC2.transfer_from(dC));
         }
 
         /* =====================================================================
@@ -225,8 +225,8 @@ void testing_geam_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -234,20 +234,20 @@ void testing_geam_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGeamBatchedFn(handle,
-                                                        transA,
-                                                        transB,
-                                                        M,
-                                                        N,
-                                                        d_alpha,
-                                                        dA.ptr_on_device(),
-                                                        lda,
-                                                        d_beta,
-                                                        dB.ptr_on_device(),
-                                                        ldb,
-                                                        dC.ptr_on_device(),
-                                                        ldc,
-                                                        batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
+                                                     transA,
+                                                     transB,
+                                                     M,
+                                                     N,
+                                                     d_alpha,
+                                                     dA.ptr_on_device(),
+                                                     lda,
+                                                     d_beta,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     dC.ptr_on_device(),
+                                                     ldc,
+                                                     batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 

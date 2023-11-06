@@ -77,23 +77,23 @@ void testing_rotg(const Arguments& arg)
     device_vector<U> dc(1);
     device_vector<T> ds(1);
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(da, ha, sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(db, hb, sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(ds, hs, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(da, ha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(db, hb, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS((hipblasRotgFn(handle, ha, hb, hc, hs)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, ha, hb, hc, hs)));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS((hipblasRotgFn(handle, da, db, dc, ds)));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(ra, da, sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(rb, db, sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(rc, dc, sizeof(U), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(rs, ds, sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(ra, da, sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(rb, db, sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(rc, dc, sizeof(U), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(rs, ds, sizeof(T), hipMemcpyDeviceToHost));
 
         cblas_rotg<T, U>(ca, cb, cc, cs);
 
@@ -127,8 +127,8 @@ void testing_rotg(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -136,7 +136,7 @@ void testing_rotg(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasRotgFn(handle, da, db, dc, ds)));
+            CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

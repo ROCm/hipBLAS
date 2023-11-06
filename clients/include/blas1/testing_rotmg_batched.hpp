@@ -101,32 +101,32 @@ void testing_rotmg_batched(const Arguments& arg)
     hy1_d.copy_from(hy1);
     hparams_d.copy_from(hparams);
 
-    ASSERT_HIP_SUCCESS(dd1.transfer_from(hd1));
-    ASSERT_HIP_SUCCESS(dd2.transfer_from(hd2));
-    ASSERT_HIP_SUCCESS(dx1.transfer_from(hx1));
-    ASSERT_HIP_SUCCESS(dy1.transfer_from(hy1));
-    ASSERT_HIP_SUCCESS(dparams.transfer_from(hparams));
+    CHECK_HIP_ERROR(dd1.transfer_from(hd1));
+    CHECK_HIP_ERROR(dd2.transfer_from(hd2));
+    CHECK_HIP_ERROR(dx1.transfer_from(hx1));
+    CHECK_HIP_ERROR(dy1.transfer_from(hy1));
+    CHECK_HIP_ERROR(dparams.transfer_from(hparams));
 
     if(arg.unit_check || arg.norm_check)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(
             hipblasRotmgBatchedFn(handle, hd1, hd2, hx1, hy1, hparams, batch_count));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasRotmgBatchedFn(handle,
-                                                     dd1.ptr_on_device(),
-                                                     dd2.ptr_on_device(),
-                                                     dx1.ptr_on_device(),
-                                                     dy1.ptr_on_device(),
-                                                     dparams.ptr_on_device(),
-                                                     batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasRotmgBatchedFn(handle,
+                                                  dd1.ptr_on_device(),
+                                                  dd2.ptr_on_device(),
+                                                  dx1.ptr_on_device(),
+                                                  dy1.ptr_on_device(),
+                                                  dparams.ptr_on_device(),
+                                                  batch_count));
 
-        ASSERT_HIP_SUCCESS(hd1_d.transfer_from(dd1));
-        ASSERT_HIP_SUCCESS(hd2_d.transfer_from(dd2));
-        ASSERT_HIP_SUCCESS(hx1_d.transfer_from(dx1));
-        ASSERT_HIP_SUCCESS(hy1_d.transfer_from(dy1));
-        ASSERT_HIP_SUCCESS(hparams_d.transfer_from(dparams));
+        CHECK_HIP_ERROR(hd1_d.transfer_from(dd1));
+        CHECK_HIP_ERROR(hd2_d.transfer_from(dd2));
+        CHECK_HIP_ERROR(hx1_d.transfer_from(dx1));
+        CHECK_HIP_ERROR(hy1_d.transfer_from(dy1));
+        CHECK_HIP_ERROR(hparams_d.transfer_from(dparams));
 
         // CBLAS
         for(int b = 0; b < batch_count; b++)
@@ -173,8 +173,8 @@ void testing_rotmg_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -182,13 +182,13 @@ void testing_rotmg_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasRotmgBatchedFn(handle,
-                                                         dd1.ptr_on_device(),
-                                                         dd2.ptr_on_device(),
-                                                         dx1.ptr_on_device(),
-                                                         dy1.ptr_on_device(),
-                                                         dparams.ptr_on_device(),
-                                                         batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasRotmgBatchedFn(handle,
+                                                      dd1.ptr_on_device(),
+                                                      dd2.ptr_on_device(),
+                                                      dx1.ptr_on_device(),
+                                                      dy1.ptr_on_device(),
+                                                      dparams.ptr_on_device(),
+                                                      batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

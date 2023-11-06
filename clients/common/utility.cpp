@@ -218,12 +218,16 @@ hipblasLocalHandle::~hipblasLocalHandle()
 {
     if(m_memory)
     {
-        CHECK_HIP_ERROR(hipFree(m_memory));
+        // m_memory never used currently
+        auto hipStatus = hipFree(m_memory);
+        if(hipStatus != hipSuccess)
+            std::cerr << "error freeing hip memory in hipblasLocalHandle: "
+                      << hipGetErrorString(hipStatus) << "\n";
     }
     hipblasStatus_t status = hipblasDestroy(m_handle);
     if(status != HIPBLAS_STATUS_SUCCESS)
     {
-        printf("hipblasDestroy error!\n");
+        std::cerr << "hipblasDestroy error: " << hipblasStatusToString(status) << "\n";
     }
 }
 
@@ -324,10 +328,21 @@ void set_device(int device_id)
  ******************************************************************************/
 hipblasClientProcessor getArch()
 {
-    int device;
-    CHECK_HIP_ERROR(hipGetDevice(&device));
+    int  device;
+    auto hipStatus = hipGetDevice(&device);
+    if(hipStatus != hipSuccess)
+    {
+        std::cerr << "Error with hipGetDevice: " << hipGetErrorString(hipStatus);
+        return static_cast<hipblasClientProcessor>(0);
+    }
+
     hipDeviceProp_t deviceProperties;
-    CHECK_HIP_ERROR(hipGetDeviceProperties(&deviceProperties, device));
+    hipStatus = hipGetDeviceProperties(&deviceProperties, device);
+    if(hipStatus != hipSuccess)
+    {
+        std::cerr << "Error with hipGetDeviceProperties: " << hipGetErrorString(hipStatus);
+        return static_cast<hipblasClientProcessor>(0);
+    }
 
     // strip out xnack/ecc from name
     std::string deviceFullString(deviceProperties.gcnArchName);
