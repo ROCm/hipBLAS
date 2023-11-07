@@ -37,7 +37,7 @@ inline void testname_geqrf(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t setup_geqrf_testing(
+void setup_geqrf_testing(
     host_vector<T>& hA, device_vector<T>& dA, device_vector<T>& dIpiv, int M, int N, int lda)
 {
     size_t A_size = size_t(lda) * N;
@@ -62,8 +62,6 @@ inline hipblasStatus_t setup_geqrf_testing(
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dIpiv, 0, K * sizeof(T)));
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -82,41 +80,49 @@ void testing_geqrf_bad_arg(const Arguments& arg)
 
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(K);
-    int              info = 0;
+    int              info         = 0;
+    int              expectedInfo = 0;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    setup_geqrf_testing(hA, dA, dIpiv, M, N, lda);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, dIpiv, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, -1, N, dA, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-1, info);
+    expectedInfo = -1;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, -1, dA, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-2, info);
+    expectedInfo = -2;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, nullptr, lda, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
+    expectedInfo = -3;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, M - 1, dIpiv, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
+    expectedInfo = -4;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, N, dA, lda, nullptr, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-5, info);
+    expectedInfo = -5;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, 0, N, nullptr, lda, nullptr, &info),
                           HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfFn(handle, M, 0, nullptr, lda, nullptr, &info),
                           HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 }
 
 template <typename T>
@@ -155,7 +161,7 @@ void testing_geqrf(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_testing(hA, dA, dIpiv, M, N, lda), HIPBLAS_STATUS_SUCCESS);
+    setup_geqrf_testing(hA, dA, dIpiv, M, N, lda);
 
     /* =====================================================================
            HIPBLAS

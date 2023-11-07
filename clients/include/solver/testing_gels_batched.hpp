@@ -60,6 +60,7 @@ void testing_gels_batched_bad_arg(const Arguments& arg)
     device_batch_vector<T> dB(B_size, 1, batchCount);
     device_vector<int>     dInfo(batchCount);
     int                    info = 0;
+    int                    expectedInfo;
 
     T* const* dAp = dA.ptr_on_device();
     T* const* dBp = dB.ptr_on_device();
@@ -73,99 +74,115 @@ void testing_gels_batched_bad_arg(const Arguments& arg)
         hipblasGelsBatchedFn(
             handle, opBad, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-1, info);
+    expectedInfo = -1;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, -1, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-2, info);
+    expectedInfo = -2;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, -1, nrhs, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
+    expectedInfo = -3;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, -1, dAp, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
+    expectedInfo = -4;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-5, info);
+    expectedInfo = -5;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, M - 1, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-6, info);
+    expectedInfo = -6;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-7, info);
+    expectedInfo = -7;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // Explicit values to check for ldb < M and ldb < N
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 100, 200, nrhs, dAp, lda, dBp, 199, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-8, info);
+    expectedInfo = -8;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 200, 100, nrhs, dAp, 201, dBp, 199, &info, dInfo, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-8, info);
+    expectedInfo = -8;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, batchCount),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-10, info);
+    expectedInfo = -10;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, dInfo, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-11, info);
+    expectedInfo = -11;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If M == 0 || N == 0, A can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 0, N, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, 0, nrhs, nullptr, lda, dBp, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, M, N, 0, dAp, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If M == 0 && N == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(
             handle, opN, 0, 0, nrhs, nullptr, lda, nullptr, ldb, &info, dInfo, batchCount),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If batchCount == 0, dInfo can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGelsBatchedFn(handle, opN, M, N, nrhs, dAp, lda, dBp, ldb, &info, nullptr, 0),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 }
 
 template <typename T>

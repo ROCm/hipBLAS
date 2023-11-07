@@ -37,15 +37,15 @@ inline void testname_geqrf_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
-inline hipblasStatus_t setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
-                                                           device_vector<T>& dA,
-                                                           device_vector<T>& dIpiv,
-                                                           int               M,
-                                                           int               N,
-                                                           int               lda,
-                                                           hipblasStride     strideA,
-                                                           hipblasStride     strideP,
-                                                           int               batch_count)
+void setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
+                                         device_vector<T>& dA,
+                                         device_vector<T>& dIpiv,
+                                         int               M,
+                                         int               N,
+                                         int               lda,
+                                         hipblasStride     strideA,
+                                         hipblasStride     strideP,
+                                         int               batch_count)
 {
     size_t A_size    = strideA * batch_count;
     size_t Ipiv_size = strideP * batch_count;
@@ -74,8 +74,6 @@ inline hipblasStatus_t setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -101,10 +99,9 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
     device_vector<T> dA(A_size);
     device_vector<T> dIpiv(Ipiv_size);
     int              info = 0;
+    int              expectedInfo;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_strided_batched_testing(
-                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+    setup_geqrf_strided_batched_testing(hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, M, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
@@ -113,46 +110,54 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, -1, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-1, info);
+    expectedInfo = -1;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, M, -1, dA, lda, strideA, dIpiv, strideP, &info, batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-2, info);
+    expectedInfo = -2;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfStridedBatchedFn(
             handle, M, N, nullptr, lda, strideA, dIpiv, strideP, &info, batch_count),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
+    expectedInfo = -3;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, M, N, dA, M - 1, strideA, dIpiv, strideP, &info, batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
+    expectedInfo = -4;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, M, N, dA, lda, strideA, nullptr, strideP, &info, batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-6, info);
+    expectedInfo = -6;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfStridedBatchedFn(handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-9, info);
+    expectedInfo = -9;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If M == 0 || N == 0, A and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfStridedBatchedFn(
             handle, 0, N, nullptr, lda, strideA, nullptr, strideP, &info, batch_count),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfStridedBatchedFn(
             handle, M, 0, nullptr, lda, strideA, nullptr, strideP, &info, batch_count),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
 }
@@ -217,9 +222,7 @@ void testing_geqrf_strided_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error;
 
-    EXPECT_HIPBLAS_STATUS(setup_geqrf_strided_batched_testing(
-                              hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count),
-                          HIPBLAS_STATUS_SUCCESS);
+    setup_geqrf_strided_batched_testing(hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
 
     /* =====================================================================
            HIPBLAS

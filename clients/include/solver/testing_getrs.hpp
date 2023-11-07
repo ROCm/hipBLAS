@@ -37,16 +37,16 @@ inline void testname_getrs(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-inline hipblasStatus_t setup_getrs_testing(host_vector<T>&     hA,
-                                           host_vector<T>&     hB,
-                                           host_vector<T>&     hX,
-                                           host_vector<int>&   hIpiv,
-                                           device_vector<T>&   dA,
-                                           device_vector<T>&   dB,
-                                           device_vector<int>& dIpiv,
-                                           int                 N,
-                                           int                 lda,
-                                           int                 ldb)
+void setup_getrs_testing(host_vector<T>&     hA,
+                         host_vector<T>&     hB,
+                         host_vector<T>&     hX,
+                         host_vector<int>&   hIpiv,
+                         device_vector<T>&   dA,
+                         device_vector<T>&   dB,
+                         device_vector<int>& dIpiv,
+                         int                 N,
+                         int                 lda,
+                         int                 ldb)
 {
     const size_t A_size    = size_t(N) * lda;
     const size_t B_size    = ldb;
@@ -78,15 +78,14 @@ inline hipblasStatus_t setup_getrs_testing(host_vector<T>&     hA,
     if(info != 0)
     {
         std::cerr << "LU decomposition failed" << std::endl;
-        return HIPBLAS_STATUS_INTERNAL_ERROR;
+        int expectedInfo = 0;
+        unit_check_general(1, 1, 1, &expectedInfo, &info);
     }
 
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -114,53 +113,62 @@ void testing_getrs_bad_arg(const Arguments& arg)
     device_vector<T>   dB(B_size);
     device_vector<int> dIpiv(Ipiv_size);
     int                info = 0;
+    int                expectedInfo;
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
-                          HIPBLAS_STATUS_SUCCESS);
+    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, -1, nrhs, dA, lda, dIpiv, dB, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-2, info);
+    expectedInfo = -2;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, -1, dA, lda, dIpiv, dB, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
+    expectedInfo = -3;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, nullptr, lda, dIpiv, dB, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
+    expectedInfo = -4;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, N - 1, dIpiv, dB, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-5, info);
+    expectedInfo = -5;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, nullptr, dB, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-6, info);
+    expectedInfo = -6;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, nullptr, ldb, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-7, info);
+    expectedInfo = -7;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, N - 1, &info),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-8, info);
+    expectedInfo = -8;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If N == 0, A, B, and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsFn(handle, op, 0, nrhs, nullptr, lda, nullptr, nullptr, ldb, &info),
         HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // if nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, 0, dA, lda, dIpiv, nullptr, ldb, &info),
                           HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 }
 
 template <typename T>
@@ -201,8 +209,7 @@ void testing_getrs(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    EXPECT_HIPBLAS_STATUS(setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb),
-                          HIPBLAS_STATUS_SUCCESS);
+    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
 
     if(arg.unit_check || arg.norm_check)
     {

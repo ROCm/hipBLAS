@@ -37,20 +37,20 @@ inline void testname_getrs_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
-inline hipblasStatus_t setup_getrs_strided_batched_testing(host_vector<T>&     hA,
-                                                           host_vector<T>&     hB,
-                                                           host_vector<T>&     hX,
-                                                           host_vector<int>&   hIpiv,
-                                                           device_vector<T>&   dA,
-                                                           device_vector<T>&   dB,
-                                                           device_vector<int>& dIpiv,
-                                                           int                 N,
-                                                           int                 lda,
-                                                           int                 ldb,
-                                                           hipblasStride       strideA,
-                                                           hipblasStride       strideB,
-                                                           hipblasStride       strideP,
-                                                           int                 batch_count)
+void setup_getrs_strided_batched_testing(host_vector<T>&     hA,
+                                         host_vector<T>&     hB,
+                                         host_vector<T>&     hX,
+                                         host_vector<int>&   hIpiv,
+                                         device_vector<T>&   dA,
+                                         device_vector<T>&   dB,
+                                         device_vector<int>& dIpiv,
+                                         int                 N,
+                                         int                 lda,
+                                         int                 ldb,
+                                         hipblasStride       strideA,
+                                         hipblasStride       strideB,
+                                         hipblasStride       strideP,
+                                         int                 batch_count)
 {
     size_t A_size    = strideA * batch_count;
     size_t B_size    = strideB * batch_count;
@@ -89,7 +89,8 @@ inline hipblasStatus_t setup_getrs_strided_batched_testing(host_vector<T>&     h
         if(info != 0)
         {
             std::cerr << "LU decomposition failed" << std::endl;
-            return HIPBLAS_STATUS_INTERNAL_ERROR;
+            int expectedInfo = 0;
+            unit_check_general(1, 1, 1, &expectedInfo, &info);
         }
     }
 
@@ -97,8 +98,6 @@ inline hipblasStatus_t setup_getrs_strided_batched_testing(host_vector<T>&     h
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
-
-    return HIPBLAS_STATUS_SUCCESS;
 }
 
 template <typename T>
@@ -131,13 +130,13 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
     device_vector<T>   dB(B_size);
     device_vector<int> dIpiv(Ipiv_size);
     int                info = 0;
+    int                expectedInfo;
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    EXPECT_HIPBLAS_STATUS(
-        setup_getrs_strided_batched_testing(
-            hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count),
-        HIPBLAS_STATUS_SUCCESS);
+
+    setup_getrs_strided_batched_testing(
+        hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -170,7 +169,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-2, info);
+    expectedInfo = -2;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -187,7 +187,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-3, info);
+    expectedInfo = -3;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -204,7 +205,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-4, info);
+    expectedInfo = -4;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -221,7 +223,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-5, info);
+    expectedInfo = -5;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -238,7 +241,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-7, info);
+    expectedInfo = -7;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -255,7 +259,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-9, info);
+    expectedInfo = -9;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -272,13 +277,15 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-10, info);
+    expectedInfo = -10;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsStridedBatchedFn(
             handle, op, N, nrhs, dA, lda, strideA, dIpiv, strideP, dB, ldb, strideB, &info, -1),
         HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_EQ(-13, info);
+    expectedInfo = -13;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // If N == 0, A, B, and ipiv can be nullptr
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
@@ -296,7 +303,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // if nrhs == 0, B can be nullptr
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
@@ -314,7 +322,8 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
                                                        &info,
                                                        batch_count),
                           HIPBLAS_STATUS_SUCCESS);
-    EXPECT_EQ(0, info);
+    expectedInfo = 0;
+    unit_check_general(1, 1, 1, &expectedInfo, &info);
 
     // can't make any assumptions about ptrs when batch_count < 0, this is handled by rocSOLVER
 }
@@ -367,10 +376,8 @@ void testing_getrs_strided_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    EXPECT_HIPBLAS_STATUS(
-        setup_getrs_strided_batched_testing(
-            hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count),
-        HIPBLAS_STATUS_SUCCESS);
+    setup_getrs_strided_batched_testing(
+        hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count);
 
     if(arg.unit_check || arg.norm_check)
     {
