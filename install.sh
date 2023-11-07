@@ -46,7 +46,9 @@ cat <<EOF
     -c, --clients                 Build the library clients benchmark and gtest.
                                   (Generated binaries will be located at builddir/clients/staging)
 
-    --cuda, --use-cuda            Build library for CUDA backend.
+    --cuda, --use-cuda            Build library for CUDA backend (deprecated).
+                                  The target HIP platform is determined by `hipconfig --platform`.
+                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
 
     --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
 
@@ -505,6 +507,8 @@ while true; do
         compiler=${2}
         shift 2 ;;
     --cuda|--use-cuda)
+        echo "--cuda option is deprecated (use HIP_PLATFORM=nvidia)"
+        export HIP_PLATFORM="nvidia"
         build_cuda=true
         shift ;;
     --cudapath)
@@ -647,6 +651,17 @@ pushd .
   # configure & build
   # #################################################
 
+  # Support deprecated use of --cuda by only calling
+  # hipconfig when --cuda is not used.
+  if [[ "${build_cuda}" != true ]]; then
+    hip_platform="$(hipconfig --platform)"
+    if [[ "${hip_platform}" == "nvidia" ]]; then
+      build_cuda=true
+    else # hip_platform=amd; or default
+      build_cuda=false
+    fi
+  fi
+
   if [[ "${build_static}" == true ]]; then
     if [[ "${build_cuda}" == true ]]; then
       printf "Static library not supported for CUDA backend.\n"
@@ -665,13 +680,6 @@ pushd .
   else
     mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
     cmake_common_options+=("-DCMAKE_BUILD_TYPE=Debug")
-  fi
-
-  # cuda
-  if [[ "${build_cuda}" == true ]]; then
-    cmake_common_options+=("-DUSE_CUDA=ON")
-  else
-    cmake_common_options+=("-DUSE_CUDA=OFF")
   fi
 
   # clients

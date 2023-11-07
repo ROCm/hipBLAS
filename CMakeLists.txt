@@ -100,22 +100,29 @@ endif( )
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
-# Find CUDA if the user wants a CUDA version.
-option(USE_CUDA "Look for CUDA and use that as a backend if found" OFF)
-if (USE_CUDA)
-	find_package( CUDA REQUIRED )
+# Deprecated USE_CUDA option
+if(DEFINED USE_CUDA)
+  if(USE_CUDA)
+    set(ENV{HIP_PLATFORM} nvidia)
+    message(DEPRECATED "USE_CUDA is deprecated (use HIP_PLATFORM=nvidia)")
+  else()
+    set(ENV{HIP_PLATFORM} amd)
+    message(DEPRECATION "USE_CUDA is deprecated (use HIP_PLATFORM=amd)")
+  endif()
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-if( USE_CUDA )
-    find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
-    # support for cuda backend with hip < 6.0
-    if( NOT hip_FOUND )
-        find_package( HIP MODULE REQUIRED )
-        list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
-    endif()
-else()
-    find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
+find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
+
+# support for cuda backend with hip < 6.0
+if(NOT hip_FOUND)
+    find_package( HIP MODULE REQUIRED )
+    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+    set(ENV{HIP_PLATFORM} nvidia)
+endif()
+
+if(HIP_PLATFORM STREQUAL nvidia)
+	find_package( CUDA REQUIRED )
 endif()
 
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
@@ -201,7 +208,7 @@ if( WIN32 )
 endif( )
 
 # Package specific CPACK vars
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   rocm_package_add_dependencies(DEPENDS "rocblas >= 4.1.0" "rocsolver >= 3.25.0")
 endif( )
 
@@ -224,7 +231,7 @@ endif( )
 set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" )
 
 # Give hipblas compiled for CUDA backend a different name
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
     set( package_name hipblas )
 else( )
     set( package_name hipblas-alt )
