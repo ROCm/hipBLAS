@@ -507,7 +507,7 @@ while true; do
         compiler=${2}
         shift 2 ;;
     --cuda|--use-cuda)
-        echo "--cuda option is deprecated (use HIP_PLATFORM=nvidia)"
+        echo "--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)"
         export HIP_PLATFORM="nvidia"
         build_cuda=true
         shift ;;
