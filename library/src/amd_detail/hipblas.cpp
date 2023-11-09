@@ -259,8 +259,10 @@ rocblas_datatype HIPDatatypeToRocblasDatatype_v2(hipDataType type)
 
     case HIP_C_16BF:
         return rocblas_datatype_bf16_c;
+
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
@@ -314,8 +316,9 @@ rocblas_datatype HIPDatatypeToRocblasDatatype(hipblasDatatype_t type)
 
     case HIPBLAS_C_16B:
         return rocblas_datatype_bf16_c;
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
@@ -345,8 +348,9 @@ hipblasDatatype_t RocblasDatatypeToHIPDatatype(rocblas_datatype type)
 
     case rocblas_datatype_f64_c:
         return HIPBLAS_C_64F;
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_gemm_algo HIPGemmAlgoToRocblasGemmAlgo(hipblasGemmAlgo_t algo)
@@ -365,8 +369,9 @@ hipblasGemmAlgo_t RocblasGemmAlgoToHIPGemmAlgo(rocblas_gemm_algo algo)
     {
     case rocblas_gemm_algo_standard:
         return HIPBLAS_GEMM_DEFAULT;
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_gemm_flags HIPGemmFlagsToRocblasGemmFlags(hipblasGemmFlags_t flags)
@@ -383,8 +388,9 @@ rocblas_gemm_flags HIPGemmFlagsToRocblasGemmFlags(hipblasGemmFlags_t flags)
         return rocblas_gemm_flags_check_solution_index;
     case HIPBLAS_GEMM_FLAGS_FP16_ALT_IMPL_RNZ:
         return rocblas_gemm_flags_fp16_alt_impl_rnz;
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 hipblasGemmFlags_t RocblasGemmFlagsToHIPGemmFlags(rocblas_gemm_flags flags)
@@ -401,8 +407,9 @@ hipblasGemmFlags_t RocblasGemmFlagsToHIPGemmFlags(rocblas_gemm_flags flags)
         return HIPBLAS_GEMM_FLAGS_CHECK_SOLUTION_INDEX;
     case rocblas_gemm_flags_fp16_alt_impl_rnz:
         return HIPBLAS_GEMM_FLAGS_FP16_ALT_IMPL_RNZ;
+    default:
+        throw HIPBLAS_STATUS_INVALID_ENUM;
     }
-    throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
 rocblas_atomics_mode HIPAtomicsModeToRocblasAtomicsMode(hipblasAtomicsMode_t mode)

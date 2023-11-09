@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 
 #include "hipblas.h"
 #include "hipblas_vector.hpp"
+#include "utility.h"
 
 /* =====================================================================
         Norm check: norm(A-B)/norm(A), evaluate relative error
@@ -169,11 +170,11 @@ double vector_norm_1(int M, int incx, T* hx_gold, T* hx)
     double max_err      = 0.0;
     for(int i = 0; i < M; i++)
     {
-        max_err += std::abs((hx_gold[i * incx] - hx[i * incx]));
-        max_err_scal += std::abs(hx_gold[i * incx]);
+        max_err += hipblas_abs((hx_gold[i * incx] - hx[i * incx]));
+        max_err_scal += hipblas_abs(hx_gold[i * incx]);
     }
 
-    if(std::abs(max_err_scal) < 1e6)
+    if(hipblas_abs(max_err_scal) < 1e6)
         max_err_scal = 1;
 
     return max_err / max_err_scal;

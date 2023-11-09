@@ -290,9 +290,10 @@ void testing_gemm_ex(const Arguments& arg)
         }
         if(norm_check)
         {
-            hipblas_error_host = std::abs(norm_check_general<To>('F', M, N, ldc, hC_gold, hC_host));
+            hipblas_error_host
+                = hipblas_abs(norm_check_general<To>('F', M, N, ldc, hC_gold, hC_host));
             hipblas_error_device
-                = std::abs(norm_check_general<To>('F', M, N, ldc, hC_gold, hC_device));
+                = hipblas_abs(norm_check_general<To>('F', M, N, ldc, hC_gold, hC_device));
         }
     }
 

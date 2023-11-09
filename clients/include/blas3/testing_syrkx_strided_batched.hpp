@@ -196,9 +196,9 @@ void testing_syrkx_strided_batched(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = std::abs(
+            hipblas_error_host = hipblas_abs(
                 norm_check_general<T>('F', N, N, ldc, stride_C, hC_gold, hC_host, batch_count));
-            hipblas_error_device = std::abs(
+            hipblas_error_device = hipblas_abs(
                 norm_check_general<T>('F', N, N, ldc, stride_C, hC_gold, hC_device, batch_count));
         }
     }

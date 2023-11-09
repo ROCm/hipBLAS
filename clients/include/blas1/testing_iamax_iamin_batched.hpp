@@ -125,9 +125,9 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
             for(int b = 0; b < batch_count; b++)
             {
                 hipblas_error_host   = std::max(hipblas_error_host,
-                                              std::abs(hipblas_result_host[b] - cpu_result[b]));
-                hipblas_error_device = std::max(hipblas_error_device,
-                                                std::abs(hipblas_result_device[b] - cpu_result[b]));
+                                              hipblas_abs(hipblas_result_host[b] - cpu_result[b]));
+                hipblas_error_device = std::max(
+                    hipblas_error_device, hipblas_abs(hipblas_result_device[b] - cpu_result[b]));
             }
         }
     } // end of if unit/norm check

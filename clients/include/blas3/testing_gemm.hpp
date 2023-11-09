@@ -188,9 +188,10 @@ void testing_gemm(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
+            hipblas_error_host
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
             hipblas_error_device
-                = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_device));
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_device));
         }
 
     } // end of if unit/norm check

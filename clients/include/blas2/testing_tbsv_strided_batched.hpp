@@ -169,7 +169,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            hipblas_error = std::abs(vector_norm_1<T>(
+            hipblas_error = hipblas_abs(vector_norm_1<T>(
                 N, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
             if(arg.unit_check)
             {

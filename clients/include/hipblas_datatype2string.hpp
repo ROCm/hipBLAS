@@ -133,8 +133,10 @@ inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
         return "bf16_r";
     case HIPBLAS_C_16B:
         return "bf16_c";
+#ifndef HIPBLAS_V2
     case HIPBLAS_DATATYPE_INVALID:
         return "invalid";
+#endif
     default:
         // Missing some datatypes for hipDataType with HIPBLAS_V2. Types included
         // here are thorough for our use cases for now, can be expanded on once hipDataType

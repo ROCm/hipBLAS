@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -194,16 +194,6 @@ namespace std
     inline hipblasDoubleComplex conj(const hipblasDoubleComplex& z)
     {
         return {z.real(), -z.imag()};
-    }
-
-    inline float abs(const hipblasComplex& z)
-    {
-        return abs(reinterpret_cast<const complex<float>&>(z));
-    }
-
-    inline double abs(const hipblasDoubleComplex& z)
-    {
-        return abs(reinterpret_cast<const complex<double>&>(z));
     }
 
     inline float conj(const float& r)

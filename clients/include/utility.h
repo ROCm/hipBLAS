@@ -151,6 +151,41 @@ inline float half_to_float(hipblasHalf val)
 }
 
 /* =============================================================================================== */
+/* Absolute values                                                                                 */
+template <typename T>
+inline double hipblas_abs(const T& x)
+{
+    return x < 0 ? -x : x;
+}
+
+template <>
+inline double hipblas_abs(const hipblasHalf& x)
+{
+    return std::abs(half_to_float(x));
+}
+
+template <>
+inline double hipblas_abs(const hipblasBfloat16& x)
+{
+    return std::abs(bfloat16_to_float(x));
+}
+
+inline double hipblas_abs(const hipblasComplex& x)
+{
+    return abs(reinterpret_cast<const std::complex<float>&>(x));
+}
+
+inline double hipblas_abs(const hipblasDoubleComplex& x)
+{
+    return abs(reinterpret_cast<const std::complex<double>&>(x));
+}
+
+inline int hipblas_abs(const int& x)
+{
+    return x < 0 ? -x : x;
+}
+
+/* =============================================================================================== */
 /* Complex / real helpers.                                                                         */
 template <typename T>
 static constexpr bool is_complex = false;
@@ -817,7 +852,7 @@ void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
         for(int j = 0; j < N; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
-            t += std::abs(AAT[i + j * lda]);
+            t += hipblas_abs(AAT[i + j * lda]);
         }
         hA[i + i * lda] = t;
     }

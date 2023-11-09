@@ -114,7 +114,7 @@ void testing_trsv_batched(const Arguments& arg)
             for(int j = 0; j < N; j++)
             {
                 hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += std::abs(AAT[b][i + j * lda]);
+                t += hipblas_abs(AAT[b][i + j * lda]);
             }
             hA[b][i + i * lda] = t;
         }
@@ -176,7 +176,7 @@ void testing_trsv_batched(const Arguments& arg)
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b_1[b]));
+            hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b_1[b]));
             if(arg.unit_check)
             {
                 double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;
