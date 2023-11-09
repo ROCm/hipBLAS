@@ -1,18 +1,21 @@
-# **hipBLAS**
+# hipBLAS
 
-**hipBLAS** is a Basic Linear Algebra Subprograms (**BLAS**) marshalling library, with multiple supported backends.  It sits between the application and a 'worker' BLAS library, marshalling inputs into the backend library and marshalling results back to the application.  **hipBLAS** exports an interface that does not require the client to change, regardless of the chosen backend.  Currently, **hipBLAS** supports **rocBLAS** and **cuBLAS** as backends.
+hipBLAS is a Basic Linear Algebra Subprograms (BLAS) marshalling library with multiple supported
+backends. It sits between your application and a 'worker' BLAS library, where it marshals inputs to the
+backend library and marshals results to your application.  hipBLAS exports an interface that doesn't
+require the client to change, regardless of the chosen backend. Currently, hipBLAS supports rocBLAS
+and cuBLAS backends.
+
+To use hipBLAS, you must first install rocBLAS and rocSOLVER or cuBLAS.
 
 ## Documentation
 
-For a detailed description of the **hipBLAS** library, its implemented routines, the installation process and user guide, see the [**hipBLAS** Documentation](https://hipblas.readthedocs.io/en/latest/).
+Documentation for hipBLAS is available at
+[https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-hipBLAS requires either **rocBLAS** + **rocSOLVER** or **cuBLAS** APIs for BLAS implementation. For more information dependent **roc*** libraries see [rocBLAS documentation](https://rocblas.readthedocs.io/en/latest/), and [rocSolver documentation](https://rocsolver.readthedocs.io/en/latest/).
+To build our documentation locally, use the following code:
 
-### How to build documentation
-
-Run the steps below to build documentation locally.
-
-```
+```bash
 cd docs
 
 pip3 install -r .sphinx/requirements.txt
@@ -20,26 +23,32 @@ pip3 install -r .sphinx/requirements.txt
 python3 -m sphinx -T -E -b html -d _build/doctrees -D language=en . _build/html
 ```
 
-## Quickstart build
+## Build and install
 
-To download the **hipBLAS** source code, use the below command to clone the repository
+1. Download the hipBLAS source code (clone this repository):
 
-```bash
-    git clone https://github.com/ROCmSoftwarePlatform/hipBLAS.git
-```
+    ```bash
+        git clone https://github.com/ROCmSoftwarePlatform/hipBLAS.git
+    ```
 
-**hipBLAS** requires specific version of **rocBLAS** & **rocSOLVER** to be installed on the system. The required **rocBLAS** and **rocSOLVER** versions to build **hipBLAS** is provided [here](https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/library/CMakeLists.txt).
+    ```note
+        hipBLAS requires specific versions of rocBLAS and rocSOLVER. Refer to
+        [CMakeLists.txt](https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/library/CMakeLists.txt)
+        for details.
+    ```
 
-Once the dependent libraries are installed, the following command will build hipBLAS and install to `/opt/rocm/hipblas`:
+2. Build hipBLAS and install it into `/opt/rocm/hipblas`:
 
-```bash
-    cd hipblas
-    ./install.sh -i
-```
+    ```bash
+        cd hipblas
+        ./install.sh -i
+    ```
 
-## hipBLAS interface examples
+## Interface examples
 
-The hipBLAS interface is compatible with rocBLAS and cuBLAS-v2 APIs.  Porting a CUDA application which originally calls the cuBLAS API to an application calling hipBLAS API should be relatively straightforward. For example, the hipBLAS SGEMV interface is
+The hipBLAS interface is compatible with rocBLAS and cuBLAS-v2 APIs. Porting a CUDA application
+that originally calls the cuBLAS API to an application that calls the hipBLAS API is relatively
+straightforward. For example, the hipBLAS SGEMV interface is:
 
 ### GEMV API
 
@@ -55,8 +64,8 @@ hipblasSgemv( hipblasHandle_t handle,
 
 ### Batched and strided GEMM API
 
-hipBLAS GEMM can process matrices in batches with regular strides.  There are several permutations of these API's, the
-following is an example that takes everything
+hipBLAS GEMM can process matrices in batches with regular strides. The following example uses all
+permutations of the API.
 
 ```c
 hipblasStatus_t
@@ -69,8 +78,5 @@ hipblasSgemmStridedBatched( hipblasHandle_t handle,
               int batchCount);
 ```
 
-hipBLAS assumes matrices A and vectors x, y are allocated in GPU memory space filled with data.  Users are responsible for copying data from/to the host and device memory.
-
-## Supported functionality
-
-For a complete list of all supported functions, see the [hipBLAS user guide](https://hipblas.readthedocs.io/en/latest/usermanual.html) and [hipBLAS functions](https://hipblas.readthedocs.io/en/latest/functions.html#hipblas-functions).
+hipBLAS assumes matrix A and vectors x, y are allocated in GPU memory space filled with data. You
+are responsible for copying data to and from the host and device memory.
