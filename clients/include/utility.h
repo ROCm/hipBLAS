@@ -184,7 +184,8 @@ inline float half_to_float(hipblasHalf val)
 #endif
 }
 
-// Absolute values
+/* =============================================================================================== */
+/* Absolute values                                                                                 */
 template <typename T>
 inline double hipblas_abs(const T& x)
 {
@@ -211,6 +212,11 @@ inline double hipblas_abs(const hipblasComplex& x)
 inline double hipblas_abs(const hipblasDoubleComplex& x)
 {
     return abs(reinterpret_cast<const std::complex<double>&>(x));
+}
+
+inline int hipblas_abs(const int& x)
+{
+    return x < 0 ? -x : x;
 }
 
 /* =============================================================================================== */
