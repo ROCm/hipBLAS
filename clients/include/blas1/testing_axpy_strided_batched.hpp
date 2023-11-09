@@ -69,7 +69,7 @@ void testing_axpy_strided_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
             handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return;
     }
@@ -99,30 +99,29 @@ void testing_axpy_strided_batched(const Arguments& arg)
     hx_cpu = hx;
     hy_cpu = hy_host;
 
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(
-        hipMemcpy(dy_host, hy_host.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy_host, hy_host.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(
         hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
                     HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
             handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
             handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -155,8 +154,8 @@ void testing_axpy_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -164,7 +163,7 @@ void testing_axpy_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasAxpyStridedBatchedFn(
+            CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
                 handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -177,11 +176,4 @@ void testing_axpy_strided_batched(const Arguments& arg)
                                                      hipblas_error_host,
                                                      hipblas_error_device);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_axpy_strided_batched_ret(const Arguments& arg)
-{
-    testing_axpy_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

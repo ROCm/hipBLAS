@@ -49,41 +49,7 @@
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
  */
 
-#define CHECK_HIP_ERROR(error)                        \
-    do                                                \
-    {                                                 \
-        hipError_t error__ = (error);                 \
-        if(error__ != hipSuccess)                     \
-        {                                             \
-            fprintf(stderr,                           \
-                    "hip error: '%s'(%d) at %s:%d\n", \
-                    hipGetErrorString(error__),       \
-                    error__,                          \
-                    __FILE__,                         \
-                    __LINE__);                        \
-            exit(EXIT_FAILURE);                       \
-        }                                             \
-    } while(0)
-
 #ifdef __cplusplus
-
-#ifndef CHECK_HIPBLAS_ERROR
-#define EXPECT_HIPBLAS_STATUS(status, expected)      \
-    do                                               \
-    {                                                \
-        hipblasStatus_t status__ = (status);         \
-        if(status__ != expected)                     \
-        {                                            \
-            fprintf(stderr,                          \
-                    "hipBLAS error: %s at %s:%d\n",  \
-                    hipblasStatusToString(status__), \
-                    __FILE__,                        \
-                    __LINE__);                       \
-            return (status__);                       \
-        }                                            \
-    } while(0)
-#define CHECK_HIPBLAS_ERROR(STATUS) EXPECT_HIPBLAS_STATUS(STATUS, HIPBLAS_STATUS_SUCCESS)
-#endif
 
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
@@ -1041,6 +1007,10 @@ public:
         return m_handle;
     }
 };
+
+hipblasStatus_t hipblas_internal_convert_hip_to_hipblas_status(hipError_t status);
+
+hipblasStatus_t hipblas_internal_convert_hip_to_hipblas_status_and_log(hipError_t status);
 
 #include "hipblas_arguments.hpp"
 

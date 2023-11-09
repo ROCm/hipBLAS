@@ -77,29 +77,29 @@ void testing_dot_strided_batched(const Arguments& arg)
         device_vector<T> d_hipblas_result_0(std::max(batch_count, 1));
         host_vector<T>   h_hipblas_result_0(std::max(1, batch_count));
         hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        ASSERT_HIP_SUCCESS(hipMemcpy(d_hipblas_result_0,
-                                     h_hipblas_result_0,
-                                     sizeof(T) * std::max(1, batch_count),
-                                     hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(T) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasDotStridedBatchedFn(handle,
-                                                          N,
-                                                          nullptr,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count,
-                                                          d_hipblas_result_0));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotStridedBatchedFn(handle,
+                                                       N,
+                                                       nullptr,
+                                                       incx,
+                                                       stridex,
+                                                       nullptr,
+                                                       incy,
+                                                       stridey,
+                                                       batch_count,
+                                                       d_hipblas_result_0));
 
         if(batch_count > 0)
         {
             host_vector<T> cpu_0(batch_count);
             host_vector<T> gpu_0(batch_count);
 
-            ASSERT_HIP_SUCCESS(hipMemcpy(
+            CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<T>(1, batch_count, 1, cpu_0, gpu_0);
         }
@@ -126,8 +126,8 @@ void testing_dot_strided_batched(const Arguments& arg)
         hy, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -135,31 +135,31 @@ void testing_dot_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         // hipblasDot accept both dev/host pointer for the scalar
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
-                                                            N,
-                                                            dx,
-                                                            incx,
-                                                            stridex,
-                                                            dy,
-                                                            incy,
-                                                            stridey,
-                                                            batch_count,
-                                                            d_hipblas_result));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                         N,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dy,
+                                                         incy,
+                                                         stridey,
+                                                         batch_count,
+                                                         d_hipblas_result));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
-                                                            N,
-                                                            dx,
-                                                            incx,
-                                                            stridex,
-                                                            dy,
-                                                            incy,
-                                                            stridey,
-                                                            batch_count,
-                                                            h_hipblas_result1));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                         N,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dy,
+                                                         incy,
+                                                         stridey,
+                                                         batch_count,
+                                                         h_hipblas_result1));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(
+        CHECK_HIP_ERROR(hipMemcpy(
             h_hipblas_result2, d_hipblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -193,8 +193,8 @@ void testing_dot_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -202,16 +202,16 @@ void testing_dot_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasDotStridedBatchedFn)(handle,
-                                                                N,
-                                                                dx,
-                                                                incx,
-                                                                stridex,
-                                                                dy,
-                                                                incy,
-                                                                stridey,
-                                                                batch_count,
-                                                                d_hipblas_result));
+            CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
+                                                             N,
+                                                             dx,
+                                                             incx,
+                                                             stridex,
+                                                             dy,
+                                                             incy,
+                                                             stridey,
+                                                             batch_count,
+                                                             d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -226,22 +226,7 @@ void testing_dot_strided_batched(const Arguments& arg)
 }
 
 template <typename T>
-inline hipblasStatus_t testing_dotc_strided_batched(const Arguments& arg)
+void testing_dotc_strided_batched(const Arguments& arg)
 {
     testing_dot_strided_batched<T, true>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T, bool CONJ = false>
-inline hipblasStatus_t testing_dot_strided_batched_ret(const Arguments& arg)
-{
-    testing_dot_strided_batched<T, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
-template <typename T>
-inline hipblasStatus_t testing_dotc_strided_batched_ret(const Arguments& arg)
-{
-    testing_dotc_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

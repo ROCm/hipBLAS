@@ -30,6 +30,7 @@
 #include "hipblas_data.hpp"
 #include "hipblas_datatype2string.hpp"
 #include "hipblas_parse_data.hpp"
+#include "hipblas_test.hpp"
 #include "test_cleanup.hpp"
 #include "type_dispatch.hpp"
 #include "utility.h"

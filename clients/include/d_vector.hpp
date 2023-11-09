@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 #include <cinttypes>
 #include <clocale>
 #include <cstdio>
+#include <iostream>
 
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */
@@ -76,13 +77,15 @@ protected:
             if(PAD > 0)
             {
                 // Copy guard to device memory before allocated memory
-                CHECK_HIP_ERROR(hipMemcpy(d, guard, sizeof(guard), hipMemcpyHostToDevice));
+                if(hipMemcpy(d, guard, sizeof(guard), hipMemcpyHostToDevice))
+                    std::cerr << "Error: hipMemcpy pre-guard copy failure." << std::endl;
 
                 // Point to allocated block
                 d += PAD;
 
                 // Copy guard to device memory after allocated memory
-                CHECK_HIP_ERROR(hipMemcpy(d + size, guard, sizeof(guard), hipMemcpyHostToDevice));
+                if(hipMemcpy(d + size, guard, sizeof(guard), hipMemcpyHostToDevice))
+                    std::cerr << "Error: hipMemcpy post-guard copy failure." << std::endl;
             }
         }
 #endif

@@ -60,20 +60,20 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
         device_vector<int> d_hipblas_result_0(std::max(1, batch_count));
         host_vector<int>   h_hipblas_result_0(std::max(1, batch_count));
         hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        ASSERT_HIP_SUCCESS(hipMemcpy(d_hipblas_result_0,
-                                     h_hipblas_result_0,
-                                     sizeof(int) * std::max(1, batch_count),
-                                     hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(int) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(
             func(handle, N, nullptr, incx, stridex, batch_count, d_hipblas_result_0));
 
         if(batch_count > 0)
         {
             host_vector<int> cpu_0(batch_count);
             host_vector<int> gpu_0(batch_count);
-            ASSERT_HIP_SUCCESS(hipMemcpy(
+            CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);
         }
@@ -95,7 +95,7 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
         hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
     double gpu_time_used;
     int    hipblas_error_host = 0, hipblas_error_device = 0;
@@ -106,18 +106,17 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
                     HIPBLAS
         =================================================================== */
         // device_pointer
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(hipblas_result_device,
-                                     d_hipblas_result,
-                                     sizeof(int) * batch_count,
-                                     hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(int) * batch_count,
+                                  hipMemcpyDeviceToHost));
 
         // host_pointer
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(
-            func(handle, N, dx, incx, stridex, batch_count, hipblas_result_host));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, stridex, batch_count, hipblas_result_host));
 
         /* =====================================================================
                     CPU BLAS
@@ -151,8 +150,8 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -160,8 +159,7 @@ void testing_iamax_iamin_strided_batched(const Arguments&                       
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
-                func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+            CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -190,13 +188,6 @@ void testing_iamax_strided_batched(const Arguments& arg)
     testing_iamax_iamin_strided_batched<T, cblas_iamax<T>>(arg, hipblasIamaxStridedBatchedFn);
 }
 
-template <typename T>
-hipblasStatus_t testing_iamax_strided_batched_ret(const Arguments& arg)
-{
-    testing_iamax_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
-}
-
 inline void testname_iamin_strided_batched(const Arguments& arg, std::string& name)
 {
     hipblasIamaxIaminStridedBatchedModel{}.test_name(arg, name);
@@ -210,11 +201,4 @@ void testing_iamin_strided_batched(const Arguments& arg)
         = FORTRAN ? hipblasIaminStridedBatched<T, true> : hipblasIaminStridedBatched<T, false>;
 
     testing_iamax_iamin_strided_batched<T, cblas_iamin<T>>(arg, hipblasIaminStridedBatchedFn);
-}
-
-template <typename T>
-hipblasStatus_t testing_iamin_strided_batched_ret(const Arguments& arg)
-{
-    testing_iamin_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

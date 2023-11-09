@@ -56,7 +56,7 @@ void testing_rot_batched(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS((hipblasRotBatchedFn(
+        CHECK_HIPBLAS_ERROR((hipblasRotBatchedFn(
             handle, N, nullptr, incx, nullptr, incy, nullptr, nullptr, batch_count)));
         return;
     }
@@ -106,23 +106,23 @@ void testing_rot_batched(const Arguments& arg)
     {
         // Test host
         {
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-            ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-            ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
-            ASSERT_HIPBLAS_SUCCESS((hipblasRotBatchedFn(handle,
-                                                        N,
-                                                        dx.ptr_on_device(),
-                                                        incx,
-                                                        dy.ptr_on_device(),
-                                                        incy,
-                                                        hc,
-                                                        hs,
-                                                        batch_count)));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIP_ERROR(dx.transfer_from(hx));
+            CHECK_HIP_ERROR(dy.transfer_from(hy));
+            CHECK_HIPBLAS_ERROR((hipblasRotBatchedFn(handle,
+                                                     N,
+                                                     dx.ptr_on_device(),
+                                                     incx,
+                                                     dy.ptr_on_device(),
+                                                     incy,
+                                                     hc,
+                                                     hs,
+                                                     batch_count)));
 
             host_batch_vector<T> rx(N, incx, batch_count);
             host_batch_vector<T> ry(N, incy, batch_count);
-            ASSERT_HIP_SUCCESS(rx.transfer_from(dx));
-            ASSERT_HIP_SUCCESS(ry.transfer_from(dy));
+            CHECK_HIP_ERROR(rx.transfer_from(dx));
+            CHECK_HIP_ERROR(ry.transfer_from(dy));
 
             if(arg.unit_check)
             {
@@ -143,25 +143,25 @@ void testing_rot_batched(const Arguments& arg)
 
         // Test device
         {
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-            ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-            ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-            ASSERT_HIP_SUCCESS(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-            ASSERT_HIPBLAS_SUCCESS((hipblasRotBatchedFn(handle,
-                                                        N,
-                                                        dx.ptr_on_device(),
-                                                        incx,
-                                                        dy.ptr_on_device(),
-                                                        incy,
-                                                        dc,
-                                                        ds,
-                                                        batch_count)));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIP_ERROR(dx.transfer_from(hx));
+            CHECK_HIP_ERROR(dy.transfer_from(hy));
+            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR((hipblasRotBatchedFn(handle,
+                                                     N,
+                                                     dx.ptr_on_device(),
+                                                     incx,
+                                                     dy.ptr_on_device(),
+                                                     incy,
+                                                     dc,
+                                                     ds,
+                                                     batch_count)));
 
             host_batch_vector<T> rx(N, incx, batch_count);
             host_batch_vector<T> ry(N, incy, batch_count);
-            ASSERT_HIP_SUCCESS(rx.transfer_from(dx));
-            ASSERT_HIP_SUCCESS(ry.transfer_from(dy));
+            CHECK_HIP_ERROR(rx.transfer_from(dx));
+            CHECK_HIP_ERROR(ry.transfer_from(dy));
 
             if(arg.unit_check)
             {
@@ -182,13 +182,13 @@ void testing_rot_batched(const Arguments& arg)
     }
     if(arg.timing)
     {
-        ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-        ASSERT_HIP_SUCCESS(dy.transfer_from(hy));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-        ASSERT_HIP_SUCCESS(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dx.transfer_from(hx));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
+        CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -196,15 +196,15 @@ void testing_rot_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS((hipblasRotBatchedFn(handle,
-                                                        N,
-                                                        dx.ptr_on_device(),
-                                                        incx,
-                                                        dy.ptr_on_device(),
-                                                        incy,
-                                                        dc,
-                                                        ds,
-                                                        batch_count)));
+            CHECK_HIPBLAS_ERROR((hipblasRotBatchedFn(handle,
+                                                     N,
+                                                     dx.ptr_on_device(),
+                                                     incx,
+                                                     dy.ptr_on_device(),
+                                                     incy,
+                                                     dc,
+                                                     ds,
+                                                     batch_count)));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -216,11 +216,4 @@ void testing_rot_batched(const Arguments& arg)
                                              hipblas_error_host,
                                              hipblas_error_device);
     }
-}
-
-template <typename T, typename U = T, typename V = T>
-hipblasStatus_t testing_rot_batched_ret(const Arguments& arg)
-{
-    testing_rot_batched<T, U, V>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

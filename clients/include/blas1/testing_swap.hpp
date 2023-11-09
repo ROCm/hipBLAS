@@ -55,7 +55,7 @@ void testing_swap(const Arguments& arg)
     // memory
     if(N <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasSwapFn(handle, N, nullptr, incx, nullptr, incy));
+        CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, nullptr, incx, nullptr, incy));
         return;
     }
 
@@ -89,19 +89,19 @@ void testing_swap(const Arguments& arg)
     hy_cpu = hy;
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSwapFn(handle, N, dx, incx, dy, incy));
+        CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, dx, incx, dy, incy));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -125,7 +125,7 @@ void testing_swap(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -133,7 +133,7 @@ void testing_swap(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasSwapFn(handle, N, dx, incx, dy, incy));
+            CHECK_HIPBLAS_ERROR(hipblasSwapFn(handle, N, dx, incx, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -144,11 +144,4 @@ void testing_swap(const Arguments& arg)
                                        swap_gbyte_count<T>(N),
                                        hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_swap_ret(const Arguments& arg)
-{
-    testing_swap<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

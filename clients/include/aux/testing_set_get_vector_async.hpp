@@ -78,12 +78,12 @@ void testing_set_get_vector_async(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(
+    CHECK_HIPBLAS_ERROR(
         hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
-    ASSERT_HIPBLAS_SUCCESS(
+    CHECK_HIPBLAS_ERROR(
         hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
 
-    ASSERT_HIP_SUCCESS(hipStreamSynchronize(stream));
+    CHECK_HIP_ERROR(hipStreamSynchronize(stream));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -112,7 +112,7 @@ void testing_set_get_vector_async(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -120,9 +120,9 @@ void testing_set_get_vector_async(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasSetVectorAsyncFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd, stream));
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasGetVectorAsyncFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy, stream));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -134,11 +134,4 @@ void testing_set_get_vector_async(const Arguments& arg)
                                                     set_get_vector_gbyte_count<T>(M),
                                                     hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_set_get_vector_async_ret(const Arguments& arg)
-{
-    testing_set_get_vector_async<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

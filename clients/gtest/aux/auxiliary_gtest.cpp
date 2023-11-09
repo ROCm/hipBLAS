@@ -21,7 +21,6 @@
  *
  * ************************************************************************ */
 
-#include "testing_exceptions.hpp"
 #include "utility.h"
 #include <math.h>
 #include <stdexcept>
@@ -35,16 +34,6 @@ namespace
         EXPECT_EQ(0,
                   strcmp("HIPBLAS_STATUS_ALLOC_FAILED",
                          hipblasStatusToString(HIPBLAS_STATUS_ALLOC_FAILED)));
-    }
-
-    TEST(hipblas_auxiliary, badOperation)
-    {
-        EXPECT_EQ(testing_bad_operation(), HIPBLAS_STATUS_INVALID_ENUM);
-    }
-
-    TEST(hipblas_auxiliary, createHandle)
-    {
-        EXPECT_EQ(testing_handle(), HIPBLAS_STATUS_SUCCESS);
     }
 
 } // namespace

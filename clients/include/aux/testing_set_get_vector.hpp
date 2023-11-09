@@ -79,9 +79,9 @@ void testing_set_get_vector(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
+    CHECK_HIPBLAS_ERROR(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
 
-    ASSERT_HIPBLAS_SUCCESS(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
+    CHECK_HIPBLAS_ERROR(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -110,7 +110,7 @@ void testing_set_get_vector(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -118,10 +118,8 @@ void testing_set_get_vector(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
-                hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
-            ASSERT_HIPBLAS_SUCCESS(
-                hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
+            CHECK_HIPBLAS_ERROR(hipblasSetVectorFn(M, sizeof(T), (void*)hx, incx, (void*)db, incd));
+            CHECK_HIPBLAS_ERROR(hipblasGetVectorFn(M, sizeof(T), (void*)db, incd, (void*)hy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -132,11 +130,4 @@ void testing_set_get_vector(const Arguments& arg)
                                                set_get_vector_gbyte_count<T>(M),
                                                hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_set_get_vector_ret(const Arguments& arg)
-{
-    testing_set_get_vector<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

@@ -75,11 +75,8 @@ typedef long long ssize_t; /* x64 only supported */
 #ifdef GOOGLE_TEST
 
 // Extra macro so that macro arguments get expanded before calling Google Test
-// Note that gtest's ASSERT_EQ must be placed in a void function. Renaming this
-// ASSERT_HIP_SUCCESS to be used alongside CHECK_HIP_ERROR defined in utility.h
-// until this version can be used everywhere.
 #define CHECK_HIP_ERROR2(ERROR) ASSERT_EQ(ERROR, hipSuccess)
-#define ASSERT_HIP_SUCCESS(ERROR) CHECK_HIP_ERROR2(ERROR)
+#define CHECK_HIP_ERROR(ERROR) CHECK_HIP_ERROR2(ERROR)
 
 #define CHECK_DEVICE_ALLOCATION(ERROR)                   \
     do                                                   \
@@ -99,7 +96,7 @@ typedef long long ssize_t; /* x64 only supported */
 // This wraps the hipBLAS call with catch_signals_and_exceptions_as_failures().
 // By placing it at the hipBLAS call site, memory resources are less likely to
 // be leaked in the event of a caught signal.
-#define EXPECT_HIPBLAS_STATUS2(STATUS, EXPECT)                \
+#define EXPECT_HIPBLAS_STATUS(STATUS, EXPECT)                 \
     do                                                        \
     {                                                         \
         volatile bool signal_or_exception = true;             \
@@ -130,7 +127,7 @@ inline void hipblas_expect_status(hipblasStatus_t status, hipblasStatus_t expect
     }
 }
 
-#define ASSERT_HIP_SUCCESS(ERROR)                                                   \
+#define CHECK_HIP_ERROR(ERROR)                                                      \
     do                                                                              \
     {                                                                               \
         /* Use error__ in case ERROR contains "error" */                            \
@@ -143,14 +140,14 @@ inline void hipblas_expect_status(hipblasStatus_t status, hipblasStatus_t expect
         }                                                                           \
     } while(0)
 
-#define CHECK_DEVICE_ALLOCATION ASSERT_HIP_SUCCESS
+#define CHECK_DEVICE_ALLOCATION CHECK_HIP_ERROR
 
-#define EXPECT_HIPBLAS_STATUS2 hipblas_expect_status
+#define EXPECT_HIPBLAS_STATUS hipblas_expect_status
 
 #endif // GOOGLE_TEST
 
-#define CHECK_HIPBLAS_ERROR2(STATUS) EXPECT_HIPBLAS_STATUS2(STATUS, HIPBLAS_STATUS_SUCCESS)
-#define ASSERT_HIPBLAS_SUCCESS(STATUS) CHECK_HIPBLAS_ERROR2(STATUS)
+#define CHECK_HIPBLAS_ERROR2(STATUS) EXPECT_HIPBLAS_STATUS(STATUS, HIPBLAS_STATUS_SUCCESS)
+#define CHECK_HIPBLAS_ERROR(STATUS) CHECK_HIPBLAS_ERROR2(STATUS)
 
 #ifdef GOOGLE_TEST
 

@@ -61,20 +61,20 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         device_vector<Tr> d_hipblas_result_0(std::max(1, batch_count));
         host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
         hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        ASSERT_HIP_SUCCESS(hipMemcpy(d_hipblas_result_0,
-                                     h_hipblas_result_0,
-                                     sizeof(Tr) * std::max(1, batch_count),
-                                     hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
+                                  h_hipblas_result_0,
+                                  sizeof(Tr) * std::max(1, batch_count),
+                                  hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2StridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
             handle, N, nullptr, incx, stridex, batch_count, d_hipblas_result_0));
 
         if(batch_count > 0)
         {
             host_vector<Tr> cpu_0(batch_count);
             host_vector<Tr> gpu_0(batch_count);
-            ASSERT_HIP_SUCCESS(hipMemcpy(
+            CHECK_HIP_ERROR(hipMemcpy(
                 gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
             unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
         }
@@ -99,23 +99,23 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2StridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
             handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2StridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
             handle, N, dx, incx, stridex, batch_count, h_hipblas_result_host));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(h_hipblas_result_device,
-                                     d_hipblas_result,
-                                     sizeof(Tr) * batch_count,
-                                     hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
+                                  d_hipblas_result,
+                                  sizeof(Tr) * batch_count,
+                                  hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -147,8 +147,8 @@ void testing_nrm2_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -156,7 +156,7 @@ void testing_nrm2_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasNrm2StridedBatchedFn(
+            CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
                 handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -169,11 +169,4 @@ void testing_nrm2_strided_batched(const Arguments& arg)
                                                      hipblas_error_host,
                                                      hipblas_error_device);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_nrm2_strided_batched_ret(const Arguments& arg)
-{
-    testing_nrm2_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

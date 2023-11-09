@@ -90,7 +90,7 @@ void testing_tbmv_strided_batched(const Arguments& arg)
                                                              incx,
                                                              stride_x,
                                                              batch_count);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -114,19 +114,19 @@ void testing_tbmv_strided_batched(const Arguments& arg)
     hx_cpu = hx;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasTbmvStridedBatchedFn(
+        CHECK_HIPBLAS_ERROR(hipblasTbmvStridedBatchedFn(
             handle, uplo, transA, diag, M, K, dA, lda, stride_A, dx, incx, stride_x, batch_count));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx_res.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hx_res.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -159,10 +159,10 @@ void testing_tbmv_strided_batched(const Arguments& arg)
 
     if(arg.timing)
     {
-        ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
 
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -170,19 +170,19 @@ void testing_tbmv_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTbmvStridedBatchedFn(handle,
-                                                               uplo,
-                                                               transA,
-                                                               diag,
-                                                               M,
-                                                               K,
-                                                               dA,
-                                                               lda,
-                                                               stride_A,
-                                                               dx,
-                                                               incx,
-                                                               stride_x,
-                                                               batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasTbmvStridedBatchedFn(handle,
+                                                            uplo,
+                                                            transA,
+                                                            diag,
+                                                            M,
+                                                            K,
+                                                            dA,
+                                                            lda,
+                                                            stride_A,
+                                                            dx,
+                                                            incx,
+                                                            stride_x,
+                                                            batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -193,11 +193,4 @@ void testing_tbmv_strided_batched(const Arguments& arg)
                                                      tbmv_gbyte_count<T>(M, K),
                                                      hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_tbmv_strided_batched_ret(const Arguments& arg)
-{
-    testing_tbmv_strided_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }
