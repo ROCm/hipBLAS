@@ -49,41 +49,7 @@
  * \brief provide data initialization, timing, hipblas type <-> lapack char conversion utilities.
  */
 
-#define CHECK_HIP_ERROR(error)                        \
-    do                                                \
-    {                                                 \
-        hipError_t error__ = (error);                 \
-        if(error__ != hipSuccess)                     \
-        {                                             \
-            fprintf(stderr,                           \
-                    "hip error: '%s'(%d) at %s:%d\n", \
-                    hipGetErrorString(error__),       \
-                    error__,                          \
-                    __FILE__,                         \
-                    __LINE__);                        \
-            exit(EXIT_FAILURE);                       \
-        }                                             \
-    } while(0)
-
 #ifdef __cplusplus
-
-#ifndef CHECK_HIPBLAS_ERROR
-#define EXPECT_HIPBLAS_STATUS(status, expected)      \
-    do                                               \
-    {                                                \
-        hipblasStatus_t status__ = (status);         \
-        if(status__ != expected)                     \
-        {                                            \
-            fprintf(stderr,                          \
-                    "hipBLAS error: %s at %s:%d\n",  \
-                    hipblasStatusToString(status__), \
-                    __FILE__,                        \
-                    __LINE__);                       \
-            return (status__);                       \
-        }                                            \
-    } while(0)
-#define CHECK_HIPBLAS_ERROR(STATUS) EXPECT_HIPBLAS_STATUS(STATUS, HIPBLAS_STATUS_SUCCESS)
-#endif
 
 #define BLAS_1_RESULT_PRINT                                \
     do                                                     \
@@ -182,6 +148,41 @@ inline float half_to_float(hipblasHalf val)
 #else
     return _cvtsh_ss(val);
 #endif
+}
+
+/* =============================================================================================== */
+/* Absolute values                                                                                 */
+template <typename T>
+inline double hipblas_abs(const T& x)
+{
+    return x < 0 ? -x : x;
+}
+
+template <>
+inline double hipblas_abs(const hipblasHalf& x)
+{
+    return std::abs(half_to_float(x));
+}
+
+template <>
+inline double hipblas_abs(const hipblasBfloat16& x)
+{
+    return std::abs(bfloat16_to_float(x));
+}
+
+inline double hipblas_abs(const hipblasComplex& x)
+{
+    return abs(reinterpret_cast<const std::complex<float>&>(x));
+}
+
+inline double hipblas_abs(const hipblasDoubleComplex& x)
+{
+    return abs(reinterpret_cast<const std::complex<double>&>(x));
+}
+
+inline int hipblas_abs(const int& x)
+{
+    return x < 0 ? -x : x;
 }
 
 /* =============================================================================================== */
@@ -851,7 +852,7 @@ void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
         for(int j = 0; j < N; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
-            t += std::abs(AAT[i + j * lda]);
+            t += hipblas_abs(AAT[i + j * lda]);
         }
         hA[i + i * lda] = t;
     }
@@ -1041,6 +1042,10 @@ public:
         return m_handle;
     }
 };
+
+hipblasStatus_t hipblas_internal_convert_hip_to_hipblas_status(hipError_t status);
+
+hipblasStatus_t hipblas_internal_convert_hip_to_hipblas_status_and_log(hipError_t status);
 
 #include "hipblas_arguments.hpp"
 

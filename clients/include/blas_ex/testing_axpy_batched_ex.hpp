@@ -66,18 +66,18 @@ void testing_axpy_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasAxpyBatchedExFn(handle,
-                                                      N,
-                                                      nullptr,
-                                                      alphaType,
-                                                      nullptr,
-                                                      xType,
-                                                      incx,
-                                                      nullptr,
-                                                      yType,
-                                                      incy,
-                                                      batch_count,
-                                                      executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
+                                                   N,
+                                                   nullptr,
+                                                   alphaType,
+                                                   nullptr,
+                                                   xType,
+                                                   incx,
+                                                   nullptr,
+                                                   yType,
+                                                   incy,
+                                                   batch_count,
+                                                   executionType));
         return;
     }
 
@@ -96,8 +96,8 @@ void testing_axpy_batched_ex(const Arguments& arg)
     device_batch_vector<Ty> dy(N, incy, batch_count);
     device_vector<Ta>       d_alpha(1);
 
-    ASSERT_HIP_SUCCESS(dx.memcheck());
-    ASSERT_HIP_SUCCESS(dy.memcheck());
+    CHECK_HIP_ERROR(dx.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -108,45 +108,45 @@ void testing_axpy_batched_ex(const Arguments& arg)
     hy_device.copy_from(hy_host);
     hy_cpu.copy_from(hy_host);
 
-    ASSERT_HIP_SUCCESS(dx.transfer_from(hx));
-    ASSERT_HIP_SUCCESS(dy.transfer_from(hy_host));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
          HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    ASSERT_HIPBLAS_SUCCESS(hipblasAxpyBatchedExFn(handle,
-                                                  N,
-                                                  &h_alpha,
-                                                  alphaType,
-                                                  dx.ptr_on_device(),
-                                                  xType,
-                                                  incx,
-                                                  dy.ptr_on_device(),
-                                                  yType,
-                                                  incy,
-                                                  batch_count,
-                                                  executionType));
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
+                                               N,
+                                               &h_alpha,
+                                               alphaType,
+                                               dx.ptr_on_device(),
+                                               xType,
+                                               incx,
+                                               dy.ptr_on_device(),
+                                               yType,
+                                               incy,
+                                               batch_count,
+                                               executionType));
 
-    ASSERT_HIP_SUCCESS(hy_host.transfer_from(dy));
-    ASSERT_HIP_SUCCESS(dy.transfer_from(hy_device));
+    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_device));
 
-    ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    ASSERT_HIPBLAS_SUCCESS(hipblasAxpyBatchedExFn(handle,
-                                                  N,
-                                                  d_alpha,
-                                                  alphaType,
-                                                  dx.ptr_on_device(),
-                                                  xType,
-                                                  incx,
-                                                  dy.ptr_on_device(),
-                                                  yType,
-                                                  incy,
-                                                  batch_count,
-                                                  executionType));
+    CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
+                                               N,
+                                               d_alpha,
+                                               alphaType,
+                                               dx.ptr_on_device(),
+                                               xType,
+                                               incx,
+                                               dy.ptr_on_device(),
+                                               yType,
+                                               incy,
+                                               batch_count,
+                                               executionType));
 
-    ASSERT_HIP_SUCCESS(hy_device.transfer_from(dy));
+    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -178,8 +178,8 @@ void testing_axpy_batched_ex(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -187,18 +187,18 @@ void testing_axpy_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasAxpyBatchedExFn(handle,
-                                                          N,
-                                                          d_alpha,
-                                                          alphaType,
-                                                          dx.ptr_on_device(),
-                                                          xType,
-                                                          incx,
-                                                          dy.ptr_on_device(),
-                                                          yType,
-                                                          incy,
-                                                          batch_count,
-                                                          executionType));
+            CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
+                                                       N,
+                                                       d_alpha,
+                                                       alphaType,
+                                                       dx.ptr_on_device(),
+                                                       xType,
+                                                       incx,
+                                                       dy.ptr_on_device(),
+                                                       yType,
+                                                       incy,
+                                                       batch_count,
+                                                       executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -210,11 +210,4 @@ void testing_axpy_batched_ex(const Arguments& arg)
                                                  hipblas_error_host,
                                                  hipblas_error_device);
     }
-}
-
-template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
-hipblasStatus_t testing_axpy_batched_ex_ret(const Arguments& arg)
-{
-    testing_axpy_batched_ex<Ta, Tx, Ty, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

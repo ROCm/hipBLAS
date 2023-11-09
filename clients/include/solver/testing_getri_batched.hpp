@@ -101,31 +101,31 @@ void testing_getri_batched(const Arguments& arg)
         hInfo[b]    = cblas_getrf(M, N, hA[b], lda, hIpivb);
     }
 
-    ASSERT_HIP_SUCCESS(dA.transfer_from(hA));
-    ASSERT_HIP_SUCCESS(dC.transfer_from(hC));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemset(dInfo, 0, batch_count * sizeof(int)));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dC.transfer_from(hC));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetriBatchedFn(handle,
-                                                     N,
-                                                     dA.ptr_on_device(),
-                                                     lda,
-                                                     dIpiv,
-                                                     dC.ptr_on_device(),
-                                                     lda,
-                                                     dInfo,
-                                                     batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasGetriBatchedFn(handle,
+                                                  N,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  dIpiv,
+                                                  dC.ptr_on_device(),
+                                                  lda,
+                                                  dInfo,
+                                                  batch_count));
 
         // Copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hA1.transfer_from(dC));
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(hA1.transfer_from(dC));
+        CHECK_HIP_ERROR(
             hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -155,7 +155,7 @@ void testing_getri_batched(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -163,15 +163,15 @@ void testing_getri_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGetriBatchedFn(handle,
-                                                         N,
-                                                         dA.ptr_on_device(),
-                                                         lda,
-                                                         dIpiv,
-                                                         dC.ptr_on_device(),
-                                                         lda,
-                                                         dInfo,
-                                                         batch_count));
+            CHECK_HIPBLAS_ERROR(hipblasGetriBatchedFn(handle,
+                                                      N,
+                                                      dA.ptr_on_device(),
+                                                      lda,
+                                                      dIpiv,
+                                                      dC.ptr_on_device(),
+                                                      lda,
+                                                      dInfo,
+                                                      batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -182,11 +182,4 @@ void testing_getri_batched(const Arguments& arg)
                                                ArgumentLogging::NA_value,
                                                hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_getri_batched_ret(const Arguments& arg)
-{
-    testing_getri_batched<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

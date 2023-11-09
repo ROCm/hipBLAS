@@ -67,25 +67,25 @@ void testing_dot_ex(const Arguments& arg)
         device_vector<Tr> d_hipblas_result_0(1);
         host_vector<Tr>   h_hipblas_result_0(1);
         hipblas_init_nan(h_hipblas_result_0.data(), 1);
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasDotExFn(handle,
-                                              N,
-                                              nullptr,
-                                              xType,
-                                              incx,
-                                              nullptr,
-                                              yType,
-                                              incy,
-                                              d_hipblas_result_0,
-                                              resultType,
-                                              executionType));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           nullptr,
+                                           xType,
+                                           incx,
+                                           nullptr,
+                                           yType,
+                                           incy,
+                                           d_hipblas_result_0,
+                                           resultType,
+                                           executionType));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
-        ASSERT_HIP_SUCCESS(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
         unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
         return;
     }
@@ -116,41 +116,41 @@ void testing_dot_ex(const Arguments& arg)
     hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasDotExFn(handle,
-                                              N,
-                                              dx,
-                                              xType,
-                                              incx,
-                                              dy,
-                                              yType,
-                                              incy,
-                                              &hipblas_result_host,
-                                              resultType,
-                                              executionType));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           dx,
+                                           xType,
+                                           incx,
+                                           dy,
+                                           yType,
+                                           incy,
+                                           &hipblas_result_host,
+                                           resultType,
+                                           executionType));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasDotExFn(handle,
-                                              N,
-                                              dx,
-                                              xType,
-                                              incx,
-                                              dy,
-                                              yType,
-                                              incy,
-                                              d_hipblas_result,
-                                              resultType,
-                                              executionType));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                           N,
+                                           dx,
+                                           xType,
+                                           incx,
+                                           dy,
+                                           yType,
+                                           incy,
+                                           d_hipblas_result,
+                                           resultType,
+                                           executionType));
 
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -185,8 +185,8 @@ void testing_dot_ex(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -194,17 +194,17 @@ void testing_dot_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasDotExFn(handle,
-                                                  N,
-                                                  dx,
-                                                  xType,
-                                                  incx,
-                                                  dy,
-                                                  yType,
-                                                  incy,
-                                                  d_hipblas_result,
-                                                  resultType,
-                                                  executionType));
+            CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
+                                               N,
+                                               dx,
+                                               xType,
+                                               incx,
+                                               dy,
+                                               yType,
+                                               incy,
+                                               d_hipblas_result,
+                                               resultType,
+                                               executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -222,11 +222,4 @@ template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr>
 void testing_dotc_ex(const Arguments& arg)
 {
     testing_dot_ex<Tx, Ty, Tr, Tex, true>(arg);
-}
-
-template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
-hipblasStatus_t testing_dot_ex_ret(const Arguments& arg)
-{
-    testing_dot_ex<Tx, Ty, Tr, Tex, CONJ>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

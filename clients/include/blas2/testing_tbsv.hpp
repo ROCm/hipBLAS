@@ -60,7 +60,7 @@ void testing_tbsv(const Arguments& arg)
     {
         hipblasStatus_t actual
             = hipblasTbsvFn(handle, uplo, transA, diag, N, K, nullptr, lda, nullptr, incx);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -97,13 +97,13 @@ void testing_tbsv(const Arguments& arg)
     }
 
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
-    ASSERT_HIP_SUCCESS(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
     cblas_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(
+    CHECK_HIP_ERROR(
         hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice));
 
     /* =====================================================================
@@ -111,15 +111,15 @@ void testing_tbsv(const Arguments& arg)
     =================================================================== */
     if(arg.unit_check || arg.norm_check)
     {
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(
             hipblasTbsvFn(handle, uplo, transA, diag, N, K, dAB, lda, dx_or_b, incx));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
-        hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
 
         if(arg.unit_check)
         {
@@ -131,7 +131,7 @@ void testing_tbsv(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -139,7 +139,7 @@ void testing_tbsv(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasTbsvFn(handle, uplo, transA, diag, N, K, dAB, lda, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
@@ -151,11 +151,4 @@ void testing_tbsv(const Arguments& arg)
                                        tbsv_gbyte_count<T>(N, K),
                                        hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_tbsv_ret(const Arguments& arg)
-{
-    testing_tbsv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

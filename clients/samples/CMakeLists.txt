@@ -26,7 +26,7 @@ add_executable( hipblas-example-scal-ex-v2 example_scal_ex_v2.cpp ${hipblas_samp
 add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-strmm example_strmm.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm-strided-batched example_sgemm_strided_batched.cpp ${hipblas_samples_common} )
-add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
+# add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} ) # TODO: Add back when HIP bug fixd
 add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
 add_executable( hipblas-example-gemmEx_v2 example_gemm_ex_v2.cpp ${hipblas_samples_common})
@@ -44,11 +44,12 @@ endif()
 
 if(HIP_PLATFORM STREQUAL amd)
   add_executable(hipblas-example-bfdot-hip-bfloat16 example_bfdot_hip_bfloat16.cpp ${hipblas_samples_common})
-endif()
 
-# We test for C99 compatibility in the example_c.c test
-set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
-set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
+  add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
+  # We test for C99 compatibility in the example_c.c test
+  set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
+endif()
 
 # We test for C++11 compatibility in one of the samples
 #set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
@@ -60,12 +61,12 @@ if( NOT TARGET hipblas )
   endif( )
 endif( )
 
-list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-c hipblas-example-hip-complex-her2 hipblas-example-hgemm-half ${sample_list_fortran} )
+list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-hip-complex-her2 hipblas-example-hgemm-half ${sample_list_fortran} )
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
 if(HIP_PLATFORM STREQUAL amd)
-  list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16)
+  list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16 hipblas-example-c)
   target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
 endif()
 

@@ -127,31 +127,31 @@ void testing_gemm(const Arguments& arg)
     hC_device = hC_host;
 
     // copy data from CPU to device, does not work for lda != A_row
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA, sizeof(T) * lda * A_col, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dB, hB, sizeof(T) * ldb * B_col, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dC, hC_host, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * lda * A_col, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * ldb * B_col, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         // library interface
-        ASSERT_HIPBLAS_SUCCESS(hipblasGemmFn(
+        CHECK_HIPBLAS_ERROR(hipblasGemmFn(
             handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hC_host, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(dC, hC_device, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasGemmFn(
+        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGemmFn(
             handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hC_device, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -188,9 +188,10 @@ void testing_gemm(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
+            hipblas_error_host
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
             hipblas_error_device
-                = std::abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_device));
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_device));
         }
 
     } // end of if unit/norm check
@@ -198,11 +199,11 @@ void testing_gemm(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         // gemm has better performance in host mode. In rocBLAS in device mode
         // we need to copy alpha and beta to the host.
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -210,7 +211,7 @@ void testing_gemm(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGemmFn(
+            CHECK_HIPBLAS_ERROR(hipblasGemmFn(
                 handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -223,11 +224,4 @@ void testing_gemm(const Arguments& arg)
                                        hipblas_error_host,
                                        hipblas_error_device);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_gemm_ret(const Arguments& arg)
-{
-    testing_gemm<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

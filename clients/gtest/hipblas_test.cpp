@@ -189,6 +189,14 @@ void catch_signals_and_exceptions_as_failures(std::function<void()> test, bool s
 #endif
     // Restore the previous handler
     t_handler = old_handler;
+
+    if(hipPeekAtLastError() != hipSuccess)
+    {
+        std::cerr << "hipGetLastError at end of test: "
+                  << ::testing::UnitTest::GetInstance()->current_test_info()->name() << std::endl;
+        (void)hipblas_internal_convert_hip_to_hipblas_status_and_log(
+            hipGetLastError()); // clear last error
+    }
 }
 
 // Convert stream to normalized Google Test name
