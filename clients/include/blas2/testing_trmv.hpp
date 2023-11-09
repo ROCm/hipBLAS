@@ -63,7 +63,7 @@ void testing_trmv(const Arguments& arg)
     {
         hipblasStatus_t actual
             = hipblasTrmvFn(handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx);
-        EXPECT_HIPBLAS_STATUS2(
+        EXPECT_HIPBLAS_STATUS(
             actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
         return;
     }
@@ -86,18 +86,18 @@ void testing_trmv(const Arguments& arg)
     hres = hx;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
+        CHECK_HIPBLAS_ERROR(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hres.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -119,7 +119,7 @@ void testing_trmv(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -127,7 +127,7 @@ void testing_trmv(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
+            CHECK_HIPBLAS_ERROR(hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, dx, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -138,11 +138,4 @@ void testing_trmv(const Arguments& arg)
                                        trmv_gbyte_count<T>(N),
                                        hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_trmv_ret(const Arguments& arg)
-{
-    testing_trmv<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

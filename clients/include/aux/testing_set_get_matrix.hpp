@@ -77,7 +77,7 @@ void testing_set_get_matrix(const Arguments& arg)
     {
         hc[i] = 100 + i;
     };
-    ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
     for(int i = 0; i < cols * ldc; i++)
     {
         hc[i] = 99.0;
@@ -86,10 +86,8 @@ void testing_set_get_matrix(const Arguments& arg)
     /* =====================================================================
            HIPBLAS
     =================================================================== */
-    ASSERT_HIPBLAS_SUCCESS(
-        hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
-    ASSERT_HIPBLAS_SUCCESS(
-        hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
+    CHECK_HIPBLAS_ERROR(hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
+    CHECK_HIPBLAS_ERROR(hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -121,7 +119,7 @@ void testing_set_get_matrix(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -129,9 +127,9 @@ void testing_set_get_matrix(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasSetMatrixFn(rows, cols, sizeof(T), (void*)ha, lda, (void*)dc, ldc));
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasGetMatrixFn(rows, cols, sizeof(T), (void*)dc, ldc, (void*)hb, ldb));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -143,11 +141,4 @@ void testing_set_get_matrix(const Arguments& arg)
                                                set_get_matrix_gbyte_count<T>(rows, cols),
                                                hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_set_get_matrix_ret(const Arguments& arg)
-{
-    testing_set_get_matrix<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

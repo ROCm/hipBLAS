@@ -54,7 +54,7 @@ void testing_scal(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(hipblasScalFn(handle, N, nullptr, nullptr, incx));
+        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, nullptr, nullptr, incx));
         return;
     }
 
@@ -76,17 +76,17 @@ void testing_scal(const Arguments& arg)
     hz = hx;
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasScalFn(handle, N, &alpha, dx, incx));
+        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, &alpha, dx, incx));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
 
         /* =====================================================================
                     CPU BLAS
@@ -111,7 +111,7 @@ void testing_scal(const Arguments& arg)
     if(timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -119,7 +119,7 @@ void testing_scal(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasScalFn(handle, N, &alpha, dx, incx));
+            CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, &alpha, dx, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -130,11 +130,4 @@ void testing_scal(const Arguments& arg)
                                        scal_gbyte_count<T>(N),
                                        hipblas_error);
     }
-}
-
-template <typename T, typename U = T>
-hipblasStatus_t testing_scal_ret(const Arguments& arg)
-{
-    testing_scal<T, U>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

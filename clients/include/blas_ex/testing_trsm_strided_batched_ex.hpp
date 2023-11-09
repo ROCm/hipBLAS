@@ -156,9 +156,9 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
     hB_device = hB_cpu = hB_host;
 
     // copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     // calculate invA
     int sub_stride_A    = TRSM_BLOCK * lda + TRSM_BLOCK;
@@ -169,22 +169,22 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
     {
         if(blocks > 0)
         {
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrtriStridedBatched<T>(handle,
-                                                                 uplo,
-                                                                 diag,
-                                                                 TRSM_BLOCK,
-                                                                 dA + b * strideA,
-                                                                 lda,
-                                                                 sub_stride_A,
-                                                                 dinvA + b * stride_invA,
-                                                                 TRSM_BLOCK,
-                                                                 sub_stride_invA,
-                                                                 blocks));
+            CHECK_HIPBLAS_ERROR(hipblasTrtriStridedBatched<T>(handle,
+                                                              uplo,
+                                                              diag,
+                                                              TRSM_BLOCK,
+                                                              dA + b * strideA,
+                                                              lda,
+                                                              sub_stride_A,
+                                                              dinvA + b * stride_invA,
+                                                              TRSM_BLOCK,
+                                                              sub_stride_invA,
+                                                              blocks));
         }
 
         if(K % TRSM_BLOCK != 0 || blocks == 0)
         {
-            ASSERT_HIPBLAS_SUCCESS(
+            CHECK_HIPBLAS_ERROR(
                 hipblasTrtriStridedBatched<T>(handle,
                                               uplo,
                                               diag,
@@ -204,53 +204,53 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrsmStridedBatchedExFn(handle,
-                                                             side,
-                                                             uplo,
-                                                             transA,
-                                                             diag,
-                                                             M,
-                                                             N,
-                                                             &h_alpha,
-                                                             dA,
-                                                             lda,
-                                                             strideA,
-                                                             dB,
-                                                             ldb,
-                                                             strideB,
-                                                             batch_count,
-                                                             dinvA,
-                                                             invA_size,
-                                                             stride_invA,
-                                                             arg.compute_type));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedExFn(handle,
+                                                          side,
+                                                          uplo,
+                                                          transA,
+                                                          diag,
+                                                          M,
+                                                          N,
+                                                          &h_alpha,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dB,
+                                                          ldb,
+                                                          strideB,
+                                                          batch_count,
+                                                          dinvA,
+                                                          invA_size,
+                                                          stride_invA,
+                                                          arg.compute_type));
 
         // copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasTrsmStridedBatchedExFn(handle,
-                                                             side,
-                                                             uplo,
-                                                             transA,
-                                                             diag,
-                                                             M,
-                                                             N,
-                                                             d_alpha,
-                                                             dA,
-                                                             lda,
-                                                             strideA,
-                                                             dB,
-                                                             ldb,
-                                                             strideB,
-                                                             batch_count,
-                                                             dinvA,
-                                                             invA_size,
-                                                             stride_invA,
-                                                             arg.compute_type));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedExFn(handle,
+                                                          side,
+                                                          uplo,
+                                                          transA,
+                                                          diag,
+                                                          M,
+                                                          N,
+                                                          d_alpha,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dB,
+                                                          ldb,
+                                                          strideB,
+                                                          batch_count,
+                                                          dinvA,
+                                                          invA_size,
+                                                          stride_invA,
+                                                          arg.compute_type));
 
-        ASSERT_HIP_SUCCESS(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
@@ -288,8 +288,8 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -299,25 +299,25 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
             }
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasTrsmStridedBatchedExFn(handle,
-                                                                 side,
-                                                                 uplo,
-                                                                 transA,
-                                                                 diag,
-                                                                 M,
-                                                                 N,
-                                                                 d_alpha,
-                                                                 dA,
-                                                                 lda,
-                                                                 strideA,
-                                                                 dB,
-                                                                 ldb,
-                                                                 strideB,
-                                                                 batch_count,
-                                                                 dinvA,
-                                                                 invA_size,
-                                                                 stride_invA,
-                                                                 arg.compute_type));
+            CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedExFn(handle,
+                                                              side,
+                                                              uplo,
+                                                              transA,
+                                                              diag,
+                                                              M,
+                                                              N,
+                                                              d_alpha,
+                                                              dA,
+                                                              lda,
+                                                              strideA,
+                                                              dB,
+                                                              ldb,
+                                                              strideB,
+                                                              batch_count,
+                                                              dinvA,
+                                                              invA_size,
+                                                              stride_invA,
+                                                              arg.compute_type));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -329,11 +329,4 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                        hipblas_error_host,
                                                        hipblas_error_device);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_trsm_strided_batched_ex_ret(const Arguments& arg)
-{
-    testing_trsm_strided_batched_ex<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

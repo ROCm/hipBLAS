@@ -57,16 +57,16 @@ void testing_nrm2_ex(const Arguments& arg)
         device_vector<Tr> d_hipblas_result_0(1);
         host_vector<Tr>   h_hipblas_result_0(1);
         hipblas_init_nan(h_hipblas_result_0.data(), 1);
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2ExFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
             handle, N, nullptr, xType, incx, d_hipblas_result_0, resultType, executionType));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
-        ASSERT_HIP_SUCCESS(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(Tr), hipMemcpyDeviceToHost));
         unit_check_general<Tr>(1, 1, 1, cpu_0, gpu_0);
         return;
     }
@@ -87,20 +87,20 @@ void testing_nrm2_ex(const Arguments& arg)
     hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
 
     // copy data from CPU to device, does not work for incx != 1
-    ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2ExFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
             handle, N, dx, xType, incx, d_hipblas_result, resultType, executionType));
 
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        ASSERT_HIPBLAS_SUCCESS(hipblasNrm2ExFn(
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+        CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
             handle, N, dx, xType, incx, &hipblas_result_host, resultType, executionType));
 
-        ASSERT_HIP_SUCCESS(
+        CHECK_HIP_ERROR(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
 
         /* =====================================================================
@@ -135,8 +135,8 @@ void testing_nrm2_ex(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -144,7 +144,7 @@ void testing_nrm2_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasNrm2ExFn(
+            CHECK_HIPBLAS_ERROR(hipblasNrm2ExFn(
                 handle, N, dx, xType, incx, d_hipblas_result, resultType, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
@@ -157,11 +157,4 @@ void testing_nrm2_ex(const Arguments& arg)
                                           hipblas_error_host,
                                           hipblas_error_device);
     }
-}
-
-template <typename Tx, typename Tr = Tx, typename Tex = Tr>
-hipblasStatus_t testing_nrm2_ex_ret(const Arguments& arg)
-{
-    testing_nrm2_ex<Tx, Tr, Tex>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

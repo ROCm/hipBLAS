@@ -85,19 +85,19 @@ void testing_getrf_npvt(const Arguments& arg)
     }
 
     // Copy data from CPU to device
-    ASSERT_HIP_SUCCESS(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
-    ASSERT_HIP_SUCCESS(hipMemset(dInfo, 0, sizeof(int)));
+    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemset(dInfo, 0, sizeof(int)));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
+        CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
 
         // Copy output from device to CPU
-        ASSERT_HIP_SUCCESS(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-        ASSERT_HIP_SUCCESS(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hInfo1.data(), dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
@@ -117,7 +117,7 @@ void testing_getrf_npvt(const Arguments& arg)
     if(arg.timing)
     {
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -125,7 +125,7 @@ void testing_getrf_npvt(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
+            CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, N, dA, lda, nullptr, dInfo));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -136,11 +136,4 @@ void testing_getrf_npvt(const Arguments& arg)
                                             ArgumentLogging::NA_value,
                                             hipblas_error);
     }
-}
-
-template <typename T>
-hipblasStatus_t testing_getrf_npvt_ret(const Arguments& arg)
-{
-    testing_getrf_npvt<T>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }

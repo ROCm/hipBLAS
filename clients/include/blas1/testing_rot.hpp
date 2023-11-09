@@ -53,7 +53,7 @@ void testing_rot(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0)
     {
-        ASSERT_HIPBLAS_SUCCESS(
+        CHECK_HIPBLAS_ERROR(
             hipblasRotFn(handle, N, nullptr, incx, nullptr, incy, nullptr, nullptr));
         return;
     }
@@ -101,15 +101,15 @@ void testing_rot(const Arguments& arg)
     {
         // Test host
         {
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-            ASSERT_HIPBLAS_SUCCESS(hipblasRotFn(handle, N, dx, incx, dy, incy, hc, hs));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, hc, hs));
 
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
-            ASSERT_HIP_SUCCESS(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-            ASSERT_HIP_SUCCESS(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
                 near_check_general(1, N, abs_incx, cx.data(), rx.data(), double(rel_error));
@@ -124,16 +124,16 @@ void testing_rot(const Arguments& arg)
 
         // Test device
         {
-            ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-            ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-            ASSERT_HIP_SUCCESS(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-            ASSERT_HIPBLAS_SUCCESS(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
+            CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+            CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
-            ASSERT_HIP_SUCCESS(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
-            ASSERT_HIP_SUCCESS(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hipMemcpy(ry, dy, sizeof(T) * size_y, hipMemcpyDeviceToHost));
             if(arg.unit_check)
             {
                 near_check_general(1, N, abs_incx, cx.data(), rx.data(), double(rel_error));
@@ -149,13 +149,13 @@ void testing_rot(const Arguments& arg)
 
     if(arg.timing)
     {
-        ASSERT_HIP_SUCCESS(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-        ASSERT_HIP_SUCCESS(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-        ASSERT_HIP_SUCCESS(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
         hipStream_t stream;
-        ASSERT_HIPBLAS_SUCCESS(hipblasGetStream(handle, &stream));
-        ASSERT_HIPBLAS_SUCCESS(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
+        CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
         int runs = arg.cold_iters + arg.iters;
         for(int iter = 0; iter < runs; iter++)
@@ -163,7 +163,7 @@ void testing_rot(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            ASSERT_HIPBLAS_SUCCESS(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
+            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
@@ -175,11 +175,4 @@ void testing_rot(const Arguments& arg)
                                       hipblas_error_host,
                                       hipblas_error_device);
     }
-}
-
-template <typename T, typename U = T, typename V = T>
-hipblasStatus_t testing_rot_ret(const Arguments& arg)
-{
-    testing_rot<T, U, V>(arg);
-    return HIPBLAS_STATUS_SUCCESS;
 }
