@@ -119,7 +119,7 @@ void testing_tbsv(const Arguments& arg)
             hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
 
         // Calculating error
-        hipblas_error = std::abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
 
         if(arg.unit_check)
         {

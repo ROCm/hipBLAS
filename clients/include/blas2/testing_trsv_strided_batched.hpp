@@ -126,7 +126,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
             for(int j = 0; j < N; j++)
             {
                 hAb[i + j * lda] = AATb[i + j * lda];
-                t += std::abs(AATb[i + j * lda]);
+                t += hipblas_abs(AATb[i + j * lda]);
             }
             hAb[i + i * lda] = t;
         }
@@ -180,7 +180,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(int b = 0; b < batch_count; b++)
         {
-            hipblas_error = std::abs(vector_norm_1<T>(
+            hipblas_error = hipblas_abs(vector_norm_1<T>(
                 N, abs_incx, hx.data() + b * stridex, hx_or_b_1.data() + b * stridex));
             if(arg.unit_check)
             {

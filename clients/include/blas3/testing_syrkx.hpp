@@ -131,9 +131,10 @@ void testing_syrkx(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            hipblas_error_host = std::abs(norm_check_general<T>('F', N, N, ldc, hC_gold, hC_host));
+            hipblas_error_host
+                = hipblas_abs(norm_check_general<T>('F', N, N, ldc, hC_gold, hC_host));
             hipblas_error_device
-                = std::abs(norm_check_general<T>('F', N, N, ldc, hC_gold, hC_device));
+                = hipblas_abs(norm_check_general<T>('F', N, N, ldc, hC_gold, hC_device));
         }
     }
 
