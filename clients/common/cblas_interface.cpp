@@ -991,34 +991,16 @@ void cblas_iamax<hipblasDoubleComplex>(int n, const hipblasDoubleComplex* x, int
 // amin
 // amin is not implemented in cblas, make local version
 template <typename T>
-double abs_helper(T val)
-{
-    return val < 0 ? -val : val;
-}
-
-template <>
-double abs_helper(hipblasComplex val)
-{
-    return std::abs(val.real()) + std::abs(val.imag());
-}
-
-template <>
-double abs_helper(hipblasDoubleComplex val)
-{
-    return std::abs(val.real()) + std::abs(val.imag());
-}
-
-template <typename T>
 int cblas_iamin_helper(int N, const T* X, int incx)
 {
     int minpos = -1;
     if(N > 0 && incx > 0)
     {
-        auto min = abs_helper(X[0]);
+        auto min = hipblas_abs(X[0]);
         minpos   = 0;
         for(size_t i = 1; i < N; ++i)
         {
-            auto a = abs_helper(X[i * incx]);
+            auto a = hipblas_abs(X[i * incx]);
             if(a < min)
             {
                 min    = a;

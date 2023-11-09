@@ -113,8 +113,8 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
         }
         if(arg.norm_check)
         {
-            hipblas_error_host   = std::abs(hipblas_result_host - cpu_result);
-            hipblas_error_device = std::abs(hipblas_result_device - cpu_result);
+            hipblas_error_host   = hipblas_abs(hipblas_result_host - cpu_result);
+            hipblas_error_device = hipblas_abs(hipblas_result_device - cpu_result);
         }
     }
 
