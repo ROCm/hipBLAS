@@ -6,7 +6,7 @@ backend library and marshals results to your application.  hipBLAS exports an in
 require the client to change, regardless of the chosen backend. Currently, hipBLAS supports rocBLAS
 and cuBLAS backends.
 
-To use hipBLAS, you must first install rocBLAS and rocSOLVER or cuBLAS.
+To use hipBLAS, you must first install rocBLAS, rocSPARSE, and rocSOLVER or cuBLAS.
 
 ## Documentation
 
@@ -64,8 +64,8 @@ hipblasSgemv( hipblasHandle_t handle,
 
 ### Batched and strided GEMM API
 
-hipBLAS GEMM can process matrices in batches with regular strides. The following example uses all
-permutations of the API.
+hipBLAS GEMM can process matrices in batches with regular strides by using the strided-batched
+version of the API:
 
 ```c
 hipblasStatus_t
