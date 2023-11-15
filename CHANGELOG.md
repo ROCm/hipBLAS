@@ -5,11 +5,17 @@ Documentation for hipBLAS is available at
 
 ## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
 
+### Additions
+
+* New option to define `HIPBLAS_USE_HIP_BFLOAT16` to switch API to use the `hip_bfloat16` type
+* New `hipblasGemmExWithFlags` API
+
 ### Deprecations
 
 * `hipblasDatatype_t`; use `hipDataType` instead
 * `hipblasComplex`; use `hipComplex` instead
 * `hipblasDoubleComplex`; use `hipDoubleComplex` instead
+* Use of `hipblasDatatype_t` for `hipblasGemmEx` for compute-type; use `hipblasComputeType_t` instead
 
 ### Removals
 
