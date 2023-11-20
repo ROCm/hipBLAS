@@ -7,7 +7,7 @@ Documentation for hipBLAS is available at
 
 ### Changes
 
-* Updated C interface to use 'n' as a variable name instead of 'm' for L2 matrices where applicable
+* Some Level 2 function argument names have changed from 'm' to 'n' to match legacy BLAS, there was no change in implementation.
 * Updated client code to use yaml-based testing
 
 ## hipBLAS 2.0.0 for ROCm 6.0.0
