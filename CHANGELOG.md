@@ -3,7 +3,14 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
+## (Unreleased) hipBLAS 2.1.0
+
+### Changes
+
+* Updated C interface to use 'n' as a variable name instead of 'm' for L2 matrices where applicable
+* Updated client code to use yaml-based testing
+
+## hipBLAS 2.0.0 for ROCm 6.0.0
 
 ### Additions
 
