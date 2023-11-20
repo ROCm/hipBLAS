@@ -38,6 +38,41 @@ inline void testname_asum_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_asum_strided_batched_bad_arg(const Arguments& arg)
+{
+    using Tr                         = real_t<T>;
+    bool FORTRAN                     = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAsumStridedBatchedFn = FORTRAN ? hipblasAsumStridedBatched<T, Tr, true>
+                                               : hipblasAsumStridedBatched<T, Tr, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t       N           = 100;
+        int64_t       incx        = 1;
+        hipblasStride stride_x    = N;
+        int64_t       batch_count = 2;
+
+        // Host-side result invalid for device mode, but shouldn't matter for bad-arg test cases
+        Tr res = 10;
+
+        device_vector<T> dx(stride_x * batch_count);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAsumStridedBatchedFn(nullptr, N, dx, incx, stride_x, batch_count, &res),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAsumStridedBatchedFn(handle, N, nullptr, incx, stride_x, batch_count, &res),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAsumStridedBatchedFn(handle, N, dx, incx, stride_x, batch_count, nullptr),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_asum_strided_batched(const Arguments& arg)
 {
     using Tr                         = real_t<T>;

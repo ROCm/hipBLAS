@@ -75,13 +75,14 @@ namespace
 
     // This tells whether the BLAS1 tests are enabled
     template <blas1 BLAS1, typename Ti, typename To, typename Tc>
-    using asum_enabled = std::integral_constant<
-        bool,
-        ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
-          || BLAS1 == blas1::asum_strided_batched)
-         && std::is_same_v<
-             Ti,
-             To> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, hipblasComplex> || std::is_same_v<Ti, hipblasDoubleComplex> || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
+    using asum_enabled
+        = std::integral_constant<bool,
+                                 ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
+                                   || BLAS1 == blas1::asum_strided_batched)
+                                  && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>
+                                  && (std::is_same_v<Ti, hipblasComplex>
+                                      || std::is_same_v<Ti, hipblasDoubleComplex>
+                                      || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
 
 // Creates tests for one of the BLAS 1 functions
 // ARG passes 1-3 template arguments to the testing_* function
@@ -101,8 +102,8 @@ namespace
             {                                                                                 \
                 if(!strcmp(arg.function, #NAME))                                              \
                     testing_##NAME<ARG(Ti, To, Tc)>(arg);                                     \
-                /*else if(!strcmp(arg.function, #NAME "_bad_arg"))*/                          \
-                /*testing_##NAME##_bad_arg<ARG(Ti, To, Tc)>(arg);*/                           \
+                else if(!strcmp(arg.function, #NAME "_bad_arg"))                              \
+                    testing_##NAME##_bad_arg<ARG(Ti, To, Tc)>(arg);                           \
                 else                                                                          \
                     FAIL() << "Internal error: Test called with unknown function: "           \
                            << arg.function;                                                   \
@@ -115,7 +116,7 @@ namespace
     template <>                                                                               \
     inline bool NAME::function_filter(const Arguments& arg)                                   \
     {                                                                                         \
-        return !strcmp(arg.function, #NAME); /* || !strcmp(arg.function, #NAME "_bad_arg");*/ \
+        return !strcmp(arg.function, #NAME) || !strcmp(arg.function, #NAME "_bad_arg");       \
     }                                                                                         \
                                                                                               \
     TEST_P(NAME, blas1)                                                                       \

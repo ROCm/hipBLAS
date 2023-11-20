@@ -37,6 +37,35 @@ inline void testname_asum(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_asum_bad_arg(const Arguments& arg)
+{
+    using Tr           = real_t<T>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAsumFn = FORTRAN ? hipblasAsum<T, Tr, true> : hipblasAsum<T, Tr, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N    = 100;
+        int64_t incx = 1;
+
+        // Host-side result invalid for device mode, but shouldn't matter for bad-arg test cases
+        Tr res = 10;
+
+        device_vector<T> dx(N * incx);
+
+        EXPECT_HIPBLAS_STATUS(hipblasAsumFn(nullptr, N, dx, incx, &res),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, nullptr, incx, &res),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, dx, incx, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_asum(const Arguments& arg)
 {
     using Tr           = real_t<T>;
