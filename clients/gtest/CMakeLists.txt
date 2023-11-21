@@ -36,9 +36,9 @@ find_package( GTest REQUIRED )
 set(hipblas_test_source
   hipblas_gtest_main.cpp
   hipblas_test.cpp
-  aux/auxiliary_gtest.cpp
-  aux/set_get_mode_gtest.cpp
-  aux/set_get_matrix_vector_gtest.cpp
+  auxil/auxiliary_gtest.cpp
+  auxil/set_get_mode_gtest.cpp
+  auxil/set_get_matrix_vector_gtest.cpp
   blas1/asum_gtest.cpp
   blas1/axpy_gtest.cpp
   blas1/copy_gtest.cpp
@@ -258,7 +258,7 @@ set_target_properties( hipblas-test PROPERTIES
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")
 set( HIPBLAS_V2_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_v2_gtest.data")
 
-set( HIPBLAS_AUX_YAML_DATA aux/set_get_matrix_vector_gtest.yaml aux/set_get_mode_gtest.yaml )
+set( HIPBLAS_AUX_YAML_DATA auxil/set_get_matrix_vector_gtest.yaml auxil/set_get_mode_gtest.yaml )
 
 set( HIPBLAS_L1_YAML_DATA blas1/asum_gtest.yaml blas1/axpy_gtest.yaml blas1/copy_gtest.yaml
                           blas1/dot_gtest.yaml  blas1/iamaxmin_gtest.yaml blas1/nrm2_gtest.yaml
