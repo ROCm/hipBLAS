@@ -3,7 +3,14 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.0.0 for ROCm 6.0.0
+## (Unreleased) hipBLAS 2.1.0
+
+### Changes
+
+* Some Level 2 function argument names have changed from 'm' to 'n' to match legacy BLAS, there was no change in implementation.
+* Updated client code to use yaml-based testing
+
+## hipBLAS 2.0.0 for ROCm 6.0.0
 
 ### Additions
 
