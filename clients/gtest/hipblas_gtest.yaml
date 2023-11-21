@@ -56,5 +56,5 @@ include: solver/geqrf_gtest.yaml
 include: solver/getrf_gtest.yaml
 include: solver/getri_gtest.yaml
 include: solver/getrs_gtest.yaml
-include: aux/set_get_matrix_vector_gtest.yaml
-include: aux/set_get_mode_gtest.yaml
+include: auxil/set_get_matrix_vector_gtest.yaml
+include: auxil/set_get_mode_gtest.yaml

@@ -20,8 +20,8 @@
  *
  * ************************************************************************ */
 
-#include "aux/testing_set_get_atomics_mode.hpp"
-#include "aux/testing_set_get_pointer_mode.hpp"
+#include "auxil/testing_set_get_atomics_mode.hpp"
+#include "auxil/testing_set_get_pointer_mode.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
 #include "type_dispatch.hpp"

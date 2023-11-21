@@ -43,10 +43,10 @@
 #include <string>
 #include <type_traits>
 // aux
-#include "aux/testing_set_get_matrix.hpp"
-#include "aux/testing_set_get_matrix_async.hpp"
-#include "aux/testing_set_get_vector.hpp"
-#include "aux/testing_set_get_vector_async.hpp"
+#include "auxil/testing_set_get_matrix.hpp"
+#include "auxil/testing_set_get_matrix_async.hpp"
+#include "auxil/testing_set_get_vector.hpp"
+#include "auxil/testing_set_get_vector_async.hpp"
 // blas1
 #include "blas1/testing_asum.hpp"
 #include "blas1/testing_asum_batched.hpp"
