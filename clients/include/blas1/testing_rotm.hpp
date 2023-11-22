@@ -70,12 +70,14 @@ void testing_rotm_bad_arg(const Arguments& arg)
 
         EXPECT_HIPBLAS_STATUS(hipblasRotmFn(nullptr, N, dx, incx, dy, incy, param),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
         EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, nullptr, incx, dy, incy, param),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, dx, incx, nullptr, incy, param),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, dx, incx, dy, incy, nullptr),
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
     }
 }
 

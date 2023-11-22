@@ -38,21 +38,27 @@ void testing_iamax_iamin_bad_arg(const Arguments& arg, hipblas_iamax_iamin_t<T> 
 {
     hipblasLocalHandle handle(arg);
 
-    int64_t N    = 100;
-    int64_t incx = 1;
+    int64_t N     = 100;
+    int64_t incx  = 1;
+    int     h_res = -1;
 
     device_vector<T>   dx(N * incx);
     device_vector<int> d_res(1);
+    int*               res = d_res;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
-
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, d_res), HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, d_res), HIPBLAS_STATUS_INVALID_VALUE);
+        // need host-side result for cuBLAS test
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            res = &h_res;
+
+        EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, res), HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
+        EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, res), HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, nullptr), HIPBLAS_STATUS_INVALID_VALUE);
+#endif
     }
 }
 

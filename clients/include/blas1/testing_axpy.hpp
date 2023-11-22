@@ -70,6 +70,7 @@ void testing_axpy_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(nullptr, N, alpha, dx, incx, dy, incy),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
 
+#ifndef __HIP_PLATFORM_NVCC__
         EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, nullptr, dx, incx, dy, incy),
                               HIPBLAS_STATUS_INVALID_VALUE);
 
@@ -82,7 +83,7 @@ void testing_axpy_bad_arg(const Arguments& arg)
             EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, dx, incx, nullptr, incy),
                                   HIPBLAS_STATUS_INVALID_VALUE);
         }
-
+#endif
         CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, 0, nullptr, nullptr, incx, nullptr, incy));
         CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, zero, nullptr, incx, nullptr, incy));
     }

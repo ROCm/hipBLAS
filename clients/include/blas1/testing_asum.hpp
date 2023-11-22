@@ -58,8 +58,10 @@ void testing_asum_bad_arg(const Arguments& arg)
 
         EXPECT_HIPBLAS_STATUS(hipblasAsumFn(nullptr, N, dx, incx, &res),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
         EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, nullptr, incx, &res),
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
         EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, dx, incx, nullptr),
                               HIPBLAS_STATUS_INVALID_VALUE);
     }

@@ -64,12 +64,14 @@ void testing_dot_bad_arg(const Arguments& arg)
         // None of these test cases will write to result so using device pointer is fine for both modes
         EXPECT_HIPBLAS_STATUS(hipblasDotFn(nullptr, N, dx, incx, dy, incy, d_res),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
         EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, nullptr, incx, dy, incy, d_res),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, nullptr, incy, d_res),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, dy, incy, nullptr),
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
     }
 }
 

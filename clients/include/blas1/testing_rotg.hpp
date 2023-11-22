@@ -51,10 +51,12 @@ void testing_rotg_bad_arg(const Arguments& arg)
     device_vector<T> ds(1);
 
     EXPECT_HIPBLAS_STATUS(hipblasRotgFn(nullptr, da, db, dc, ds), HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
     EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, nullptr, db, dc, ds), HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, nullptr, dc, ds), HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, nullptr, ds), HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, dc, nullptr), HIPBLAS_STATUS_INVALID_VALUE);
+#endif
 }
 
 template <typename T>

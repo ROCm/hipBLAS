@@ -60,13 +60,15 @@ Tests:
   - name: dot_bad_arg
     category: pre_checkin
     function:
-      - dot_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dot_bad_arg: *single_double_precisions_complex_real
       - dotc_bad_arg: *single_double_precisions_complex
     api: [ FORTRAN, C ]
 
   - name: dot_bad_arg
     category: pre_checkin
     function:
+      - dot_bad_arg: *half_precision
+      - dot_bad_arg: *bf16_precision
       - dot_batched_bad_arg: *half_bfloat_single_double_complex_real_precisions
       - dot_strided_batched_bad_arg: *half_bfloat_single_double_complex_real_precisions
       - dotc_batched_bad_arg: *single_double_precisions_complex
@@ -74,3 +76,4 @@ Tests:
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...
+

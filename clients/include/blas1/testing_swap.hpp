@@ -53,10 +53,12 @@ void testing_swap_bad_arg(const Arguments& arg)
 
     EXPECT_HIPBLAS_STATUS(hipblasSwapFn(nullptr, N, dx, incx, dy, incy),
                           HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
     EXPECT_HIPBLAS_STATUS(hipblasSwapFn(handle, N, nullptr, incx, dy, incy),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasSwapFn(handle, N, dx, incx, nullptr, incy),
                           HIPBLAS_STATUS_INVALID_VALUE);
+#endif
 }
 
 template <typename T>

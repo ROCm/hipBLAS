@@ -64,15 +64,15 @@ Tests:
     category: pre_checkin
     function:
       - axpy_bad_arg
-    precision: *single_double_precisions_complex_real_half_real
+    precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
 
   - name: axpy_bad_arg
     category: pre_checkin
     function:
-      - axpy_batched_bad_arg
-      - axpy_strided_batched_bad_arg
-    precision: *single_double_precisions_complex_real_half_real
+        - axpy_bad_arg: *half_precision
+        - axpy_batched_bad_arg: *single_double_precisions_complex_real_half_real
+        - axpy_strided_batched_bad_arg: *single_double_precisions_complex_real_half_real
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...

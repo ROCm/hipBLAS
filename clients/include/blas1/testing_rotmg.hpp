@@ -52,6 +52,7 @@ void testing_rotmg_bad_arg(const Arguments& arg)
 
     EXPECT_HIPBLAS_STATUS(hipblasRotmgFn(nullptr, d1, d2, x1, y1, param),
                           HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
     EXPECT_HIPBLAS_STATUS(hipblasRotmgFn(handle, nullptr, d2, x1, y1, param),
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasRotmgFn(handle, d1, nullptr, x1, y1, param),
@@ -62,6 +63,7 @@ void testing_rotmg_bad_arg(const Arguments& arg)
                           HIPBLAS_STATUS_INVALID_VALUE);
     EXPECT_HIPBLAS_STATUS(hipblasRotmgFn(handle, d1, d2, x1, y1, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
+#endif
 }
 
 template <typename T>

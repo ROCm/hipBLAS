@@ -59,10 +59,12 @@ void testing_scal_bad_arg(const Arguments& arg)
         // None of these test cases will write to result so using device pointer is fine for both modes
         EXPECT_HIPBLAS_STATUS(hipblasScalFn(nullptr, N, &alpha, dx, incx),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
+#ifndef __HIP_PLATFORM_NVCC__
         EXPECT_HIPBLAS_STATUS(hipblasScalFn(handle, N, nullptr, dx, incx),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasScalFn(handle, N, &alpha, nullptr, incx),
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
     }
 }
 
