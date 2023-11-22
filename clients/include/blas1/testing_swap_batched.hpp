@@ -37,6 +37,31 @@ inline void testname_swap_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_swap_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasSwapBatchedFn
+        = FORTRAN ? hipblasSwapBatched<T, true> : hipblasSwapBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t incy        = 1;
+    int64_t batch_count = 2;
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasSwapBatchedFn(nullptr, N, dx, incx, dy, incy, batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(hipblasSwapBatchedFn(handle, N, nullptr, incx, dy, incy, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasSwapBatchedFn(handle, N, dx, incx, nullptr, incy, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T>
 void testing_swap_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

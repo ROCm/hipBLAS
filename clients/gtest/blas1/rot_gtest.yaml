@@ -73,4 +73,22 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  # bad arg tests
+  - name: rot_bad_arg
+    category: pre_checkin
+    function:
+      - rot_bad_arg: *rot_precisions
+      - rot_batched_bad_arg: *rot_precisions
+      - rot_strided_batched_bad_arg: *rot_precisions
+      - rotm_bad_arg: *single_double_precisions
+      - rotm_batched_bad_arg: *single_double_precisions
+      - rotm_strided_batched_bad_arg: *single_double_precisions
+      - rotg_bad_arg: *rotg_precisions
+      - rotg_batched_bad_arg: *rotg_precisions
+      - rotg_strided_batched_bad_arg: *rotg_precisions
+      - rotmg_bad_arg: *single_double_precisions
+      - rotmg_batched_bad_arg: *single_double_precisions
+      - rotmg_strided_batched_bad_arg: *single_double_precisions
+    api: [ FORTRAN, C ]
 ...

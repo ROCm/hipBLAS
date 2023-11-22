@@ -37,6 +37,35 @@ inline void testname_rot(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T, typename V = T>
+void testing_rot_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotFn = FORTRAN ? hipblasRot<T, U, V, true> : hipblasRot<T, U, V, false>;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+    int64_t incy = 1;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(N * incx);
+    device_vector<T> dy(N * incy);
+    device_vector<U> dc(1);
+    device_vector<V> ds(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(nullptr, N, dx, incx, dy, incy, dc, ds),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(handle, N, nullptr, incx, dy, incy, dc, ds),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(handle, N, dx, incx, nullptr, incy, dc, ds),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(handle, N, dx, incx, dy, incy, nullptr, ds),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, nullptr),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T, typename U = T, typename V = T>
 void testing_rot(const Arguments& arg)
 {
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;

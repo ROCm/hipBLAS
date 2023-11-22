@@ -59,4 +59,13 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: axpy_bad_arg
+    category: pre_checkin
+    function:
+      - axpy_bad_arg
+      - axpy_batched_bad_arg
+      - axpy_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real_half_real
+    api: [ FORTRAN, C ]
 ...

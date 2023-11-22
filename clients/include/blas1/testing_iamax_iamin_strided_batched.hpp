@@ -39,6 +39,55 @@ using hipblas_iamax_iamin_strided_batched_t = hipblasStatus_t (*)(hipblasHandle_
                                                                   int             batch_count,
                                                                   int*            result);
 
+template <typename T>
+void testing_iamax_iamin_strided_batched_bad_arg(const Arguments&                         arg,
+                                                 hipblas_iamax_iamin_strided_batched_t<T> func)
+{
+    hipblasLocalHandle handle(arg);
+
+    int64_t       N           = 100;
+    int64_t       incx        = 1;
+    int64_t       batch_count = 2;
+    hipblasStride stride_x    = N * incx;
+
+    device_vector<T>   dx(stride_x * batch_count);
+    device_vector<int> d_res(batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, stride_x, batch_count, d_res),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, stride_x, batch_count, d_res),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, stride_x, batch_count, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
+void testing_iamax_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIamaxStridedBatchedFn
+        = FORTRAN ? hipblasIamaxStridedBatched<T, true> : hipblasIamaxStridedBatched<T, false>;
+
+    testing_iamax_iamin_strided_batched_bad_arg<T>(arg, hipblasIamaxStridedBatchedFn);
+}
+
+template <typename T>
+void testing_iamin_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIaminStridedBatchedFn
+        = FORTRAN ? hipblasIaminStridedBatched<T, true> : hipblasIaminStridedBatched<T, false>;
+
+    testing_iamax_iamin_strided_batched_bad_arg<T>(arg, hipblasIaminStridedBatchedFn);
+}
+
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
 void testing_iamax_iamin_strided_batched(const Arguments&                         arg,
                                          hipblas_iamax_iamin_strided_batched_t<T> func)

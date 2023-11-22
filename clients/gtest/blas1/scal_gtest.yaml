@@ -49,4 +49,15 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: scal_bad_arg
+    category: pre_checkin
+    function:
+      - scal_bad_arg: *single_double_precisions_complex_real
+      - scal_bad_arg: *single_double_complex_real_in_complex_out
+      - scal_batched_bad_arg: *single_double_precisions_complex_real
+      - scal_batched_bad_arg: *single_double_complex_real_in_complex_out
+      - scal_strided_batched_bad_arg: *single_double_precisions_complex_real
+      - scal_strided_batched_bad_arg: *single_double_complex_real_in_complex_out
+    api: [ FORTRAN, C ]
 ...

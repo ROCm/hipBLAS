@@ -75,14 +75,13 @@ namespace
 
     // This tells whether the BLAS1 tests are enabled
     template <blas1 BLAS1, typename Ti, typename To, typename Tc>
-    using asum_enabled
-        = std::integral_constant<bool,
-                                 ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
-                                   || BLAS1 == blas1::asum_strided_batched)
-                                  && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>
-                                  && (std::is_same_v<Ti, hipblasComplex>
-                                      || std::is_same_v<Ti, hipblasDoubleComplex>
-                                      || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
+    using asum_enabled = std::integral_constant<
+        bool,
+        ((BLAS1 == blas1::asum || BLAS1 == blas1::asum_batched
+          || BLAS1 == blas1::asum_strided_batched)
+         && std::is_same_v<
+             Ti,
+             To> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, hipblasComplex> || std::is_same_v<Ti, hipblasDoubleComplex> || std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
 
 // Creates tests for one of the BLAS 1 functions
 // ARG passes 1-3 template arguments to the testing_* function

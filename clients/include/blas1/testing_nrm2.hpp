@@ -37,6 +37,35 @@ inline void testname_nrm2(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_nrm2_bad_arg(const Arguments& arg)
+{
+    using Tr           = real_t<T>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasNrm2Fn = FORTRAN ? hipblasNrm2<T, Tr, true> : hipblasNrm2<T, Tr, false>;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T>  dx(N * incx);
+    device_vector<Tr> d_res(1);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(hipblasNrm2Fn(nullptr, N, dx, incx, d_res),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasNrm2Fn(handle, N, nullptr, incx, d_res),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasNrm2Fn(handle, N, dx, incx, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_nrm2(const Arguments& arg)
 {
     using Tr           = real_t<T>;

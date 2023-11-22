@@ -56,4 +56,15 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: dot_bad_arg
+    category: pre_checkin
+    function:
+      - dot_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dot_batched_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dot_strided_batched_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dotc_bad_arg: *single_double_precisions_complex
+      - dotc_batched_bad_arg: *single_double_precisions_complex
+      - dotc_strided_batched_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C ]
 ...
