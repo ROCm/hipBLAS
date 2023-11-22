@@ -47,8 +47,15 @@ Tests:
     category: pre_checkin
     function:
       - swap_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+
+  - name: swap_bad_arg
+    category: pre_checkin
+    function:
       - swap_batched_bad_arg
       - swap_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

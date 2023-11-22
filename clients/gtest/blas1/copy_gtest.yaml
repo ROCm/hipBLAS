@@ -47,8 +47,15 @@ Tests:
     category: pre_checkin
     function:
       - copy_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+
+  - name: copy_bad_arg
+    category: pre_checkin
+    function:
       - copy_batched_bad_arg
       - copy_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

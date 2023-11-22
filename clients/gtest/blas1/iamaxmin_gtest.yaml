@@ -48,11 +48,18 @@ Tests:
     category: pre_checkin
     function:
       - iamax_bad_arg
+      - iamin_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+
+  - name: iamaxmin_bad_arg
+    category: pre_checkin
+    function:
       - iamax_batched_bad_arg
       - iamax_strided_batched_bad_arg
-      - iamin_bad_arg
       - iamin_batched_bad_arg
       - iamin_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...
