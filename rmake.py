@@ -74,10 +74,10 @@ def parse_args():
     parser.add_argument( '-r', '--relocatable', required=False, default=False, action='store_true',
                         help='Linux only: Add RUNPATH (based on ROCM_RPATH) and remove ldconf entry.')
 
-    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default="C:/hipSDK",
+    parser.add_argument('--rocblas-path', dest='rocblas_path', type=str, required=False, default=None,
                         help='Specify path to an existing rocBLAS install directory(optional, e.g. /src/rocBLAS/build/release/rocblas-install).')
 
-    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default="C:/hipSDK",
+    parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default=None,
                         help='Specify path to an existing rocSOLVER install directory (optional, e.g. /src/rocSOLVER/build/release/rocsolver-install).')
 
     parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",
@@ -246,10 +246,25 @@ def config_cmd():
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 
-    raw_rocblas_path = cmake_path(args.rocblas_path)
-    raw_rocsolver_path = cmake_path(args.rocsolver_path)
-    rocblas_path_cmake =  f'"{raw_rocblas_path}"'
-    rocsolver_path_cmake =  f'"{raw_rocsolver_path}"'
+    if args.rocblas_path is not None:
+        # "Custom" rocblas
+        raw_rocblas_path = cmake_path(args.rocblas_path)
+        rocblas_path_cmake =  f'"{raw_rocblas_path}"'
+        cmake_options.append( f"-DCUSTOM_ROCBLAS={rocblas_path_cmake}")
+    else:
+        args.rocblas_path = "C:/hipSDK"
+        raw_rocblas_path = cmake_path(args.rocblas_path)
+        rocblas_path_cmake =  f'"{raw_rocblas_path}"'
+
+    if args.rocsolver_path is not None:
+        # "Custom" rocsolver
+        raw_rocsolver_path = cmake_path(args.rocsolver_path)
+        rocsolver_path_cmake =  f'"{raw_rocsolver_path}"'
+        cmake_options.append( f"-DCUSTOM_ROCSOLVER={rocsolver_path_cmake}")
+    else:
+        args.rocsolver_path = "C:/hipSDK"
+        raw_rocsolver_path = cmake_path(args.rocsolver_path)
+        rocsolver_path_cmake =  f'"{raw_rocsolver_path}"'
 
     cmake_options.append( f"-DROCBLAS_PATH={rocblas_path_cmake}")
     cmake_options.append( f"-DROCSOLVER_PATH={rocsolver_path_cmake}")
