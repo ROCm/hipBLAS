@@ -18,7 +18,7 @@ def runCI =
     //customize for project
     prj.paths.build_command = buildCommand
 
-    if (pullRequest.labels.contains("noSolver"))
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
         prj.libraryDependencies = ['rocBLAS']
     }
