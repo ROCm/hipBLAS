@@ -16,7 +16,7 @@ def runCI =
     def prj  = new rocProject('hipBLAS', 'StaticLibrary')
     prj.paths.build_command = './install.sh -cd --static -p /opt/rocm/lib/cmake'
 
-    if (pullRequest.labels.contains("noSolver"))
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
         prj.libraryDependencies = ['rocBLAS']
     }

@@ -20,10 +20,10 @@
  *
  * ************************************************************************ */
 
-#include "aux/testing_set_get_matrix.hpp"
-#include "aux/testing_set_get_matrix_async.hpp"
-#include "aux/testing_set_get_vector.hpp"
-#include "aux/testing_set_get_vector_async.hpp"
+#include "auxil/testing_set_get_matrix.hpp"
+#include "auxil/testing_set_get_matrix_async.hpp"
+#include "auxil/testing_set_get_vector.hpp"
+#include "auxil/testing_set_get_vector_async.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
 #include "type_dispatch.hpp"
