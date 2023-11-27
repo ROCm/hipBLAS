@@ -38,7 +38,7 @@ endfunction( )
 # ########################################################################
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
 else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
@@ -65,7 +65,7 @@ add_library( hipblas
 add_library( roc::hipblas ALIAS hipblas )
 
 # Build hipblas from source on AMD platform
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   if( NOT TARGET rocblas )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
@@ -177,7 +177,7 @@ rocm_install_targets(
 )
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
-if ( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
     rocm_export_targets(
         TARGETS roc::hipblas
 	DEPENDS PACKAGE hip

@@ -42,7 +42,7 @@ if(NOT WIN32)
     set( sample_list_fortran hipblas-example-sscal-fortran hipblas-example-gemmEx-fortran )
 endif()
 
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   add_executable(hipblas-example-bfdot-hip-bfloat16 example_bfdot_hip_bfloat16.cpp ${hipblas_samples_common})
 
   add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
@@ -65,7 +65,7 @@ list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-s
 if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16 hipblas-example-c)
   target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
 endif()
@@ -95,7 +95,7 @@ foreach( exe IN LISTS hipblas-example-executables)
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )
 
-  if( NOT USE_CUDA )
+  if(HIP_PLATFORM STREQUAL amd)
     target_link_libraries( ${exe} PRIVATE hip::host )
 
     if( CUSTOM_TARGET )
