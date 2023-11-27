@@ -177,7 +177,7 @@ target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-decla
 target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
 target_compile_definitions( hipblas_v2-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2 )
 
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-test PRIVATE hip::host )
   target_link_libraries( hipblas_v2-test PRIVATE hip::host )
 
