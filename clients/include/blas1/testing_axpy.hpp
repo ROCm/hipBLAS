@@ -70,22 +70,24 @@ void testing_axpy_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(nullptr, N, alpha, dx, incx, dy, incy),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
 
-#ifndef __HIP_PLATFORM_NVCC__
-        EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, nullptr, dx, incx, dy, incy),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        // Can only check for nullptr for dx/dy with host mode because
-        //device mode may not check as it could be quick-return success
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
-        {
-            EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, nullptr, incx, dy, incy),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, dx, incx, nullptr, incy),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-        }
-#endif
         CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, 0, nullptr, nullptr, incx, nullptr, incy));
         CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, zero, nullptr, incx, nullptr, incy));
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, nullptr, dx, incx, dy, incy),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            // Can only check for nullptr for dx/dy with host mode because
+            //device mode may not check as it could be quick-return success
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, nullptr, incx, dy, incy),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, dx, incx, nullptr, incy),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+        }
     }
 }
 

@@ -53,12 +53,14 @@ void testing_copy_bad_arg(const Arguments& arg)
 
     EXPECT_HIPBLAS_STATUS(hipblasCopyFn(nullptr, N, dx, incx, dy, incy),
                           HIPBLAS_STATUS_NOT_INITIALIZED);
-#ifndef __HIP_PLATFORM_NVCC__
-    EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, nullptr, incx, dy, incy),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, dx, incx, nullptr, incy),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-#endif
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, nullptr, incx, dy, incy),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, dx, incx, nullptr, incy),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
 }
 
 template <typename T>

@@ -55,10 +55,13 @@ void testing_iamax_iamin_bad_arg(const Arguments& arg, hipblas_iamax_iamin_t<T> 
             res = &h_res;
 
         EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, res), HIPBLAS_STATUS_NOT_INITIALIZED);
-#ifndef __HIP_PLATFORM_NVCC__
-        EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, res), HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, nullptr), HIPBLAS_STATUS_INVALID_VALUE);
-#endif
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, res),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, nullptr), HIPBLAS_STATUS_INVALID_VALUE);
+        }
     }
 }
 

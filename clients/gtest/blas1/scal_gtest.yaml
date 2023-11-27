@@ -56,6 +56,16 @@ Tests:
       - scal_bad_arg: *single_double_precisions_complex_real
       - scal_bad_arg: *single_double_complex_real_in_complex_out
     api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: scal_bad_arg
+    category: pre_checkin
+    function:
+      - scal_bad_arg: *single_double_precisions_complex_real
+      - scal_bad_arg: *single_double_complex_real_in_complex_out
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 
   - name: scal_bad_arg
     category: pre_checkin

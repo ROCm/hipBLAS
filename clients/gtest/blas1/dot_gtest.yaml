@@ -63,6 +63,16 @@ Tests:
       - dot_bad_arg: *single_double_precisions_complex_real
       - dotc_bad_arg: *single_double_precisions_complex
     api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: dot_bad_arg
+    category: pre_checkin
+    function:
+      - dot_bad_arg: *single_double_precisions_complex_real
+      - dotc_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 
   - name: dot_bad_arg
     category: pre_checkin

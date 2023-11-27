@@ -47,6 +47,16 @@ Tests:
       - asum_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: asum_bad_arg
+    category: pre_checkin
+    function:
+      - asum_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 
   - name: asum_bad_arg
     category: pre_checkin
