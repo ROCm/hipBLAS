@@ -303,3 +303,5 @@ add_dependencies( hipblas_v2-test hipblas_v2-test-data hipblas-common )
 
 rocm_install(TARGETS hipblas-test COMPONENT tests)
 rocm_install(TARGETS hipblas_v2-test COMPONENT tests)
+rocm_install(FILES ${HIPBLAS_TEST_DATA} DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT tests)
+rocm_install(FILES ${HIPBLAS_V2_TEST_DATA} DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT tests)
