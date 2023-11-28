@@ -38,6 +38,74 @@ inline void testname_axpy_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_axpy_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAxpyStridedBatchedFn
+        = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t       N           = 100;
+        int64_t       incx        = 1;
+        int64_t       incy        = 1;
+        int64_t       batch_count = 2;
+        hipblasStride stride_x    = N;
+        hipblasStride stride_y    = N;
+
+        device_vector<T> d_alpha(1), d_zero(1);
+        device_vector<T> dx(stride_x * batch_count);
+        device_vector<T> dy(stride_y * batch_count);
+
+        const T  h_alpha(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(h_alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, &h_zero, sizeof(h_zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAxpyStridedBatchedFn(
+                nullptr, N, alpha, dx, incx, stride_x, dy, incy, stride_y, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAxpyStridedBatchedFn(
+                handle, N, nullptr, dx, incx, stride_x, dy, incy, stride_y, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+        // Can only check for nullptr for dx/dy with host mode because
+        //device mode may not check as it could be quick-return success
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasAxpyStridedBatchedFn(
+                    handle, N, alpha, nullptr, incx, stride_x, dy, incy, stride_y, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasAxpyStridedBatchedFn(
+                    handle, N, alpha, dx, incx, stride_x, nullptr, incy, stride_y, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, 0, nullptr, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, zero, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
+            handle, N, nullptr, nullptr, incx, stride_x, nullptr, incy, stride_y, 0));
+    }
+}
+
+template <typename T>
 void testing_axpy_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

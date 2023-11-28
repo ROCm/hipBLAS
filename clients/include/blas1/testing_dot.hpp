@@ -42,6 +42,48 @@ inline void testname_dotc(const Arguments& arg, std::string& name)
 }
 
 template <typename T, bool CONJ = false>
+void testing_dot_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
+                                : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N    = 100;
+        int64_t incx = 1;
+        int64_t incy = 1;
+
+        device_vector<T> dx(N * incx);
+        device_vector<T> dy(N * incy);
+        device_vector<T> d_res(1);
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(hipblasDotFn(nullptr, N, dx, incx, dy, incy, d_res),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, nullptr, incx, dy, incy, d_res),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, nullptr, incy, d_res),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, dy, incy, nullptr),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename T>
+void testing_dotc_bad_arg(const Arguments& arg)
+{
+    testing_dot_bad_arg<T, true>(arg);
+}
+
+template <typename T, bool CONJ = false>
 void testing_dot(const Arguments& arg)
 {
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;

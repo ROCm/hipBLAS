@@ -33,6 +33,56 @@ template <typename T>
 using hipblas_iamax_iamin_t
     = hipblasStatus_t (*)(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
+template <typename T>
+void testing_iamax_iamin_bad_arg(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
+{
+    hipblasLocalHandle handle(arg);
+
+    int64_t N     = 100;
+    int64_t incx  = 1;
+    int     h_res = -1;
+
+    device_vector<T>   dx(N * incx);
+    device_vector<int> d_res(1);
+    int*               res = d_res;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // need host-side result for cuBLAS test
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            res = &h_res;
+
+        EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, res), HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, res),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, nullptr), HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename T>
+void testing_iamax_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
+
+    testing_iamax_iamin_bad_arg<T>(arg, hipblasIamaxFn);
+}
+
+template <typename T>
+void testing_iamin_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
+
+    testing_iamax_iamin_bad_arg<T>(arg, hipblasIaminFn);
+}
+
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
 void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
 {

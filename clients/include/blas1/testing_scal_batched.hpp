@@ -38,6 +38,38 @@ inline void testname_scal_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T>
+void testing_scal_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasScalBatchedFn
+        = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t batch_count = 2;
+    U       alpha       = (U)0.6;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
+
+        // None of these test cases will write to result so using host pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(hipblasScalBatchedFn(nullptr, N, &alpha, dx, incx, batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasScalBatchedFn(handle, N, nullptr, dx, incx, batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasScalBatchedFn(handle, N, &alpha, nullptr, incx, batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T, typename U = T>
 void testing_scal_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

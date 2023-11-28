@@ -37,6 +37,35 @@ inline void testname_rotg(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_rotg_bad_arg(const Arguments& arg)
+{
+    using U            = real_t<T>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> da(1);
+    device_vector<T> db(1);
+    device_vector<U> dc(1);
+    device_vector<T> ds(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotgFn(nullptr, da, db, dc, ds), HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, nullptr, db, dc, ds),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, nullptr, dc, ds),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, nullptr, ds),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, dc, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_rotg(const Arguments& arg)
 {
     using U            = real_t<T>;

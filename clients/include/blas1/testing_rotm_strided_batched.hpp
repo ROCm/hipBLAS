@@ -38,6 +38,89 @@ inline void testname_rotm_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_rotm_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotmStridedBatchedFn
+        = FORTRAN ? hipblasRotmStridedBatched<T, true> : hipblasRotmStridedBatched<T, false>;
+
+    int64_t       N           = 100;
+    int64_t       incx        = 1;
+    int64_t       incy        = 1;
+    int64_t       batch_count = 2;
+    hipblasStride stride_x    = N * incx;
+    hipblasStride stride_y    = N * incy;
+    hipblasStride stride_p    = 5;
+
+    hipblasLocalHandle handle(arg);
+
+    T h_param[10];
+
+    device_vector<T> dx(stride_x * batch_count);
+    device_vector<T> dy(stride_y * batch_count);
+    device_vector<T> dparam(stride_p * batch_count);
+    T*               param = dparam;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            param = h_param;
+
+            // if pointer_mode_host, param[0] == -2, and strideparam = 0, can quick return
+            param[0] = -2;
+            CHECK_HIPBLAS_ERROR(hipblasRotmStridedBatchedFn(handle,
+                                                            N,
+                                                            nullptr,
+                                                            incx,
+                                                            stride_x,
+                                                            nullptr,
+                                                            incy,
+                                                            stride_y,
+                                                            param,
+                                                            0,
+                                                            batch_count));
+            param[0] = 0;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmStridedBatchedFn(
+                nullptr, N, dx, incx, stride_x, dy, incy, stride_y, param, stride_p, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasRotmStridedBatchedFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          incx,
+                                                          stride_x,
+                                                          dy,
+                                                          incy,
+                                                          stride_y,
+                                                          param,
+                                                          stride_p,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotmStridedBatchedFn(handle,
+                                                          N,
+                                                          dx,
+                                                          incx,
+                                                          stride_x,
+                                                          nullptr,
+                                                          incy,
+                                                          stride_y,
+                                                          param,
+                                                          stride_p,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmStridedBatchedFn(
+                handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, stride_p, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_rotm_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

@@ -44,6 +44,49 @@ inline void testname_rot_strided_batched(const Arguments& arg, std::string& name
 }
 
 template <typename T, typename U = T, typename V = T>
+void testing_rot_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN                    = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
+                                              : hipblasRotStridedBatched<T, U, V, false>;
+
+    int64_t       N           = 100;
+    int64_t       incx        = 1;
+    int64_t       incy        = 1;
+    int64_t       batch_count = 2;
+    hipblasStride stride_x    = N * incx;
+    hipblasStride stride_y    = N * incy;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(stride_x * batch_count);
+    device_vector<T> dy(stride_y * batch_count);
+    device_vector<U> dc(1);
+    device_vector<V> ds(1);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotStridedBatchedFn(
+            nullptr, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count),
+        HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotStridedBatchedFn(
+            handle, N, nullptr, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotStridedBatchedFn(
+            handle, N, dx, incx, stride_x, nullptr, incy, stride_y, dc, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotStridedBatchedFn(
+            handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotStridedBatchedFn(
+            handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T, typename U = T, typename V = T>
 void testing_rot_strided_batched(const Arguments& arg)
 {
     bool FORTRAN                    = arg.api == hipblas_client_api::FORTRAN;

@@ -37,6 +37,46 @@ inline void testname_rotm_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_rotm_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotmBatchedFn
+        = FORTRAN ? hipblasRotmBatched<T, true> : hipblasRotmBatched<T, false>;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t incy        = 1;
+    int64_t batch_count = 2;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
+    device_batch_vector<T> dparam(5, 1, batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // No param checking for batched version
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmBatchedFn(nullptr, N, dx, incx, dy, incy, dparam, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmBatchedFn(handle, N, nullptr, incx, dy, incy, dparam, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmBatchedFn(handle, N, dx, incx, nullptr, incy, dparam, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotmBatchedFn(handle, N, dx, incx, dy, incy, nullptr, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_rotm_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
