@@ -37,6 +37,33 @@ inline void testname_swap(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_swap_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasSwapFn = FORTRAN ? hipblasSwap<T, true> : hipblasSwap<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+    int64_t incy = 1;
+
+    device_vector<T> dx(N * incx);
+    device_vector<T> dy(N * incy);
+
+    EXPECT_HIPBLAS_STATUS(hipblasSwapFn(nullptr, N, dx, incx, dy, incy),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasSwapFn(handle, N, nullptr, incx, dy, incy),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSwapFn(handle, N, dx, incx, nullptr, incy),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_swap(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;

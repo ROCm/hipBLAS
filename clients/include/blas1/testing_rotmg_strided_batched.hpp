@@ -37,6 +37,108 @@ inline void testname_rotmg_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
+void testing_rotmg_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotmgStridedBatchedFn
+        = FORTRAN ? hipblasRotmgStridedBatched<T, true> : hipblasRotmgStridedBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t       batch_count = 2;
+    hipblasStride stride_d1   = 5;
+    hipblasStride stride_d2   = 5;
+    hipblasStride stride_x1   = 5;
+    hipblasStride stride_y1   = 5;
+    hipblasStride stride_p    = 10;
+
+    device_vector<T> d1(stride_d1 * batch_count);
+    device_vector<T> d2(stride_d2 * batch_count);
+    device_vector<T> x1(stride_x1 * batch_count);
+    device_vector<T> y1(stride_y1 * batch_count);
+    device_vector<T> param(stride_p * batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(nullptr,
+                                                       d1,
+                                                       stride_d1,
+                                                       d2,
+                                                       stride_d2,
+                                                       x1,
+                                                       stride_x1,
+                                                       y1,
+                                                       stride_y1,
+                                                       param,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(handle,
+                                                       nullptr,
+                                                       stride_d1,
+                                                       d2,
+                                                       stride_d2,
+                                                       x1,
+                                                       stride_x1,
+                                                       y1,
+                                                       stride_y1,
+                                                       param,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(handle,
+                                                       d1,
+                                                       stride_d1,
+                                                       nullptr,
+                                                       stride_d2,
+                                                       x1,
+                                                       stride_x1,
+                                                       y1,
+                                                       stride_y1,
+                                                       param,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(handle,
+                                                       d1,
+                                                       stride_d1,
+                                                       d2,
+                                                       stride_d2,
+                                                       nullptr,
+                                                       stride_x1,
+                                                       y1,
+                                                       stride_y1,
+                                                       param,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(handle,
+                                                       d1,
+                                                       stride_d1,
+                                                       d2,
+                                                       stride_d2,
+                                                       x1,
+                                                       stride_x1,
+                                                       nullptr,
+                                                       stride_y1,
+                                                       param,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasRotmgStridedBatchedFn(handle,
+                                                       d1,
+                                                       stride_d1,
+                                                       d2,
+                                                       stride_d2,
+                                                       x1,
+                                                       stride_x1,
+                                                       y1,
+                                                       stride_y1,
+                                                       nullptr,
+                                                       stride_p,
+                                                       batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T>
 void testing_rotmg_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

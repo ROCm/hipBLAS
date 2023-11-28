@@ -43,6 +43,57 @@ inline void testname_dotc_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T, bool CONJ = false>
+void testing_dot_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotStridedBatchedFn
+        = FORTRAN
+              ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
+              : (CONJ ? hipblasDotcStridedBatched<T, false> : hipblasDotStridedBatched<T, false>);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t       N           = 100;
+        int64_t       incx        = 1;
+        int64_t       incy        = 1;
+        int64_t       batch_count = 2;
+        hipblasStride stride_x    = N * incx;
+        hipblasStride stride_y    = N * incy;
+
+        device_vector<T> dx(stride_x * batch_count);
+        device_vector<T> dy(stride_x * batch_count);
+        device_vector<T> d_res(batch_count);
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotStridedBatchedFn(
+                nullptr, N, dx, incx, stride_x, dy, incy, stride_y, batch_count, d_res),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotStridedBatchedFn(
+                handle, N, nullptr, incx, stride_x, dy, incy, stride_y, batch_count, d_res),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotStridedBatchedFn(
+                handle, N, dx, incx, stride_x, nullptr, incy, stride_y, batch_count, d_res),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotStridedBatchedFn(
+                handle, N, dx, incx, stride_x, dy, incy, stride_y, batch_count, nullptr),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
+void testing_dotc_strided_batched_bad_arg(const Arguments& arg)
+{
+    testing_dot_strided_batched_bad_arg<T, true>(arg);
+}
+
+template <typename T, bool CONJ = false>
 void testing_dot_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

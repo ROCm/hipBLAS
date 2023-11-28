@@ -38,6 +38,68 @@ inline void testname_axpy_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_axpy_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAxpyBatchedFn
+        = FORTRAN ? hipblasAxpyBatched<T, true> : hipblasAxpyBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N           = 100;
+        int64_t incx        = 1;
+        int64_t incy        = 1;
+        int64_t batch_count = 2;
+
+        device_vector<T>       d_alpha(1), d_zero(1);
+        device_batch_vector<T> dx(N, incx, batch_count);
+        device_batch_vector<T> dy(N, incy, batch_count);
+
+        const T  h_alpha(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(h_alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, &h_zero, sizeof(h_zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAxpyBatchedFn(nullptr, N, alpha, dx, incx, dy, incy, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAxpyBatchedFn(handle, N, nullptr, dx, incx, dy, incy, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+        // Can only check for nullptr for dx/dy with host mode because
+        //device mode may not check as it could be quick-return success
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasAxpyBatchedFn(handle, N, alpha, nullptr, incx, dy, incy, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasAxpyBatchedFn(handle, N, alpha, dx, incx, nullptr, incy, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        CHECK_HIPBLAS_ERROR(
+            hipblasAxpyBatchedFn(handle, 0, nullptr, nullptr, incx, nullptr, incy, batch_count));
+        CHECK_HIPBLAS_ERROR(
+            hipblasAxpyBatchedFn(handle, N, zero, nullptr, incx, nullptr, incy, batch_count));
+        CHECK_HIPBLAS_ERROR(
+            hipblasAxpyBatchedFn(handle, N, nullptr, nullptr, incx, nullptr, incy, 0));
+    }
+}
+
+template <typename T>
 void testing_axpy_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

@@ -37,6 +37,49 @@ inline void testname_rotg_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_rotg_strided_batched_bad_arg(const Arguments& arg)
+{
+    using U      = real_t<T>;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotgStridedBatchedFn
+        = FORTRAN ? hipblasRotgStridedBatched<T, U, true> : hipblasRotgStridedBatched<T, U, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    hipblasStride stride_a    = 10;
+    hipblasStride stride_b    = 10;
+    hipblasStride stride_c    = 10;
+    hipblasStride stride_s    = 10;
+    int64_t       batch_count = 5;
+
+    device_vector<T> da(stride_a * batch_count);
+    device_vector<T> db(stride_b * batch_count);
+    device_vector<U> dc(stride_c * batch_count);
+    device_vector<T> ds(stride_s * batch_count);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotgStridedBatchedFn(
+            nullptr, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count),
+        HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotgStridedBatchedFn(
+            handle, nullptr, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotgStridedBatchedFn(
+            handle, da, stride_a, nullptr, stride_b, dc, stride_c, ds, stride_s, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotgStridedBatchedFn(
+            handle, da, stride_a, db, stride_b, nullptr, stride_c, ds, stride_s, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotgStridedBatchedFn(
+            handle, da, stride_a, db, stride_b, dc, stride_c, nullptr, stride_s, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T>
 void testing_rotg_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;

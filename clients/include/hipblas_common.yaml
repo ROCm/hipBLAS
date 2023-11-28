@@ -509,6 +509,7 @@ Arguments:
   - backend_flags: hipblas_backend
   - api: hipblas_client_api
   - initialization: hipblas_initialization
+  - bad_arg_all: c_bool
   # - known_bug_platforms: c_char*64
   # - c_noalias_d: c_bool
 
@@ -594,6 +595,7 @@ Defaults:
   backend_flags: ALL_BACKEND
   api: C
   initialization: rand_int
+  bad_arg_all: true
   compute_type_gemm: 2
 #workspace_size: 0
 #  known_bug_platforms: ''

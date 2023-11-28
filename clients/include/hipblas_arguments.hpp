@@ -180,6 +180,10 @@ struct Arguments
 
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
+    // if true, test all bad_arg as supported by rocBLAS backend
+    // these tests are often not supported with cuBLAS backend
+    bool bad_arg_all;
+
     // clang-format off
 
 // Generic macro which operates over the list of arguments in order of declaration
@@ -244,7 +248,8 @@ struct Arguments
     OPER(os_flags) SEP               \
     OPER(backend_flags) SEP          \
     OPER(api) SEP                    \
-    OPER(initialization)
+    OPER(initialization) SEP         \
+    OPER(bad_arg_all)
 
     // clang-format on
 

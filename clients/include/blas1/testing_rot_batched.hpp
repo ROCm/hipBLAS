@@ -38,6 +38,41 @@ inline void testname_rot_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T, typename V = T>
+void testing_rot_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotBatchedFn
+        = FORTRAN ? hipblasRotBatched<T, U, V, true> : hipblasRotBatched<T, U, V, false>;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t incy        = 1;
+    int64_t batch_count = 2;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
+    device_vector<U>       dc(1);
+    device_vector<V>       ds(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotBatchedFn(nullptr, N, dx, incx, dy, incy, dc, ds, batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotBatchedFn(handle, N, nullptr, incx, dy, incy, dc, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotBatchedFn(handle, N, dx, incx, nullptr, incy, dc, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotBatchedFn(handle, N, dx, incx, dy, incy, nullptr, ds, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotBatchedFn(handle, N, dx, incx, dy, incy, dc, nullptr, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+}
+
+template <typename T, typename U = T, typename V = T>
 void testing_rot_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

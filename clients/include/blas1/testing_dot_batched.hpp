@@ -42,6 +42,50 @@ inline void testname_dotc_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T, bool CONJ = false>
+void testing_dot_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotBatchedFn
+        = FORTRAN ? (CONJ ? hipblasDotcBatched<T, true> : hipblasDotBatched<T, true>)
+                  : (CONJ ? hipblasDotcBatched<T, false> : hipblasDotBatched<T, false>);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N           = 100;
+        int64_t incx        = 1;
+        int64_t incy        = 1;
+        int64_t batch_count = 1;
+
+        device_batch_vector<T> dx(N, incx, batch_count);
+        device_batch_vector<T> dy(N, incy, batch_count);
+        device_vector<T>       d_res(batch_count);
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotBatchedFn(nullptr, N, dx, incx, dy, incy, batch_count, d_res),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotBatchedFn(handle, N, nullptr, incx, dy, incy, batch_count, d_res),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotBatchedFn(handle, N, dx, incx, nullptr, incy, batch_count, d_res),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotBatchedFn(handle, N, dx, incx, dy, incy, batch_count, nullptr),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
+void testing_dotc_batched_bad_arg(const Arguments& arg)
+{
+    testing_dot_batched_bad_arg<T, true>(arg);
+}
+
+template <typename T, bool CONJ = false>
 void testing_dot_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

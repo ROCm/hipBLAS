@@ -33,6 +33,53 @@ template <typename T>
 using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(
     hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
 
+template <typename T>
+void testing_iamax_iamin_batched_bad_arg(const Arguments&                 arg,
+                                         hipblas_iamax_iamin_batched_t<T> func)
+{
+    hipblasLocalHandle handle(arg);
+    int64_t            N           = 100;
+    int64_t            incx        = 1;
+    int64_t            batch_count = 2;
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_vector<int>     d_res(batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(func(nullptr, N, dx, incx, batch_count, d_res),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(func(handle, N, nullptr, incx, batch_count, d_res),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(func(handle, N, dx, incx, batch_count, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
+void testing_iamax_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIamaxBatchedFn
+        = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+
+    testing_iamax_iamin_batched_bad_arg<T>(arg, hipblasIamaxBatchedFn);
+}
+
+template <typename T>
+void testing_iamin_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasIaminBatchedFn
+        = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+
+    testing_iamax_iamin_batched_bad_arg<T>(arg, hipblasIaminBatchedFn);
+}
+
 template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
 void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batched_t<T> func)
 {

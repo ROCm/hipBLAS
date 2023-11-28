@@ -37,6 +37,40 @@ inline void testname_scal(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T>
+void testing_scal_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
+
+    int64_t N     = 100;
+    int64_t incx  = 1;
+    U       alpha = (U)0.6;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(N * incx);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(hipblasScalFn(nullptr, N, &alpha, dx, incx),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasScalFn(handle, N, nullptr, dx, incx),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasScalFn(handle, N, &alpha, nullptr, incx),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename T, typename U = T>
 void testing_scal(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;

@@ -37,6 +37,53 @@ inline void testname_rotm(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_rotm_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotmFn = FORTRAN ? hipblasRotm<T, true> : hipblasRotm<T, false>;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+    int64_t incy = 1;
+    T       h_param[5];
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(N * incx);
+    device_vector<T> dy(N * incy);
+    device_vector<T> dparam(5);
+    T*               param = dparam;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            param = h_param;
+
+            // if pointer_mode_host and param[0] == -2, can quick return
+            param[0] = -2;
+            CHECK_HIPBLAS_ERROR(hipblasRotmFn(handle, N, nullptr, incx, nullptr, incy, param));
+            param[0] = 0;
+        }
+
+        EXPECT_HIPBLAS_STATUS(hipblasRotmFn(nullptr, N, dx, incx, dy, incy, param),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, nullptr, incx, dy, incy, param),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, dx, incx, nullptr, incy, param),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasRotmFn(handle, N, dx, incx, dy, incy, nullptr),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename T>
 void testing_rotm(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
