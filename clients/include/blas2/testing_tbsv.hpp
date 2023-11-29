@@ -87,15 +87,15 @@ void testing_tbsv_bad_arg(const Arguments& arg)
                                             incx),
                               HIPBLAS_STATUS_INVALID_ENUM);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTbsvFn(handle, uplo, transA, diag, N, K, nullptr, lda, dx, incx),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTbsvFn(handle, uplo, transA, diag, N, K, dA, lda, nullptr, incx),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        // }
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTbsvFn(handle, uplo, transA, diag, N, K, nullptr, lda, dx, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTbsvFn(handle, uplo, transA, diag, N, K, dA, lda, nullptr, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(

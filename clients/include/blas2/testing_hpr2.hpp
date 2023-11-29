@@ -78,33 +78,33 @@ void testing_hpr2_bad_arg(const Arguments& arg)
             hipblasHpr2Fn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dy, incy, dA),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(hipblasHpr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHpr2Fn(handle, uplo, N, alpha, nullptr, incx, dy, incy, dA),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasHpr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHpr2Fn(handle, uplo, N, alpha, nullptr, incx, dy, incy, dA),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0, can have all nullptrs
+            CHECK_HIPBLAS_ERROR(
+                hipblasHpr2Fn(handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr));
         }
-        // }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(
             hipblasHpr2Fn(handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr));
-
-        // With alpha == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(
-            hipblasHpr2Fn(handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr));
     }
 }
 

@@ -72,13 +72,13 @@ void testing_tpsv_bad_arg(const Arguments& arg)
                 handle, uplo, transA, (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL, N, dA, dx, incx),
             HIPBLAS_STATUS_INVALID_ENUM);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvFn(handle, uplo, transA, diag, N, nullptr, dx, incx),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvFn(handle, uplo, transA, diag, N, dA, nullptr, incx),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        // }
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasTpsvFn(handle, uplo, transA, diag, N, nullptr, dx, incx),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasTpsvFn(handle, uplo, transA, diag, N, dA, nullptr, incx),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(hipblasTpsvFn(handle, uplo, transA, diag, 0, nullptr, nullptr, incx));

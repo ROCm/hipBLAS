@@ -76,33 +76,33 @@ void testing_ger_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(hipblasGerFn(nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(
-                hipblasGerFn(handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasGerFn(handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasGerFn(handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have all nullptrs
+            CHECK_HIPBLAS_ERROR(
+                hipblasGerFn(handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
         }
-        // }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(
             hipblasGerFn(handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
-
-        // With alpha == 0 can have x nullptr
-        CHECK_HIPBLAS_ERROR(
-            hipblasGerFn(handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
     }
 }
 

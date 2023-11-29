@@ -88,41 +88,44 @@ void testing_hbmv_bad_arg(const Arguments& arg)
                 handle, HIPBLAS_FILL_MODE_FULL, N, K, alpha, dA, lda, dx, incx, beta, dy, incy),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(
-            hipblasHbmvFn(handle, uplo, N, K, nullptr, dA, lda, dx, incx, beta, dy, incy),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasHbmvFn(handle, uplo, N, K, alpha, dA, lda, dx, incx, nullptr, dy, incy),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
             EXPECT_HIPBLAS_STATUS(
-                hipblasHbmvFn(handle, uplo, N, K, alpha, nullptr, lda, dx, incx, beta, dy, incy),
+                hipblasHbmvFn(handle, uplo, N, K, nullptr, dA, lda, dx, incx, beta, dy, incy),
                 HIPBLAS_STATUS_INVALID_VALUE);
             EXPECT_HIPBLAS_STATUS(
-                hipblasHbmvFn(handle, uplo, N, K, alpha, dA, lda, nullptr, incx, beta, dy, incy),
+                hipblasHbmvFn(handle, uplo, N, K, alpha, dA, lda, dx, incx, nullptr, dy, incy),
                 HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHbmvFn(handle, uplo, N, K, alpha, dA, lda, dx, incx, beta, nullptr, incy),
-                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHbmvFn(
+                        handle, uplo, N, K, alpha, nullptr, lda, dx, incx, beta, dy, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHbmvFn(
+                        handle, uplo, N, K, alpha, dA, lda, nullptr, incx, beta, dy, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHbmvFn(
+                        handle, uplo, N, K, alpha, dA, lda, dx, incx, beta, nullptr, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have A and x nullptr
+            CHECK_HIPBLAS_ERROR(hipblasHbmvFn(
+                handle, uplo, N, K, zero, nullptr, lda, nullptr, incx, beta, dy, incy));
+
+            // With alpha == 0 && beta == 1, all other ptrs can be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasHbmvFn(
+                handle, uplo, N, K, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
         }
-        // }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(hipblasHbmvFn(
             handle, uplo, 0, K, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
-
-        // With alpha == 0 can have A and x nullptr
-        CHECK_HIPBLAS_ERROR(
-            hipblasHbmvFn(handle, uplo, N, K, zero, nullptr, lda, nullptr, incx, beta, dy, incy));
-
-        // With alpha == 0 && beta == 1, all other ptrs can be nullptr
-        CHECK_HIPBLAS_ERROR(hipblasHbmvFn(
-            handle, uplo, N, K, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
     }
 }
 

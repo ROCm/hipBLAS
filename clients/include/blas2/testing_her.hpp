@@ -77,26 +77,26 @@ void testing_her_bad_arg(const Arguments& arg)
             hipblasHerFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA, lda),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, nullptr, dx, incx, dA, lda),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, alpha, nullptr, incx, dA, lda),
+            EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, nullptr, dx, incx, dA, lda),
                                   HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, alpha, dx, incx, nullptr, lda),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, alpha, nullptr, incx, dA, lda),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasHerFn(handle, uplo, N, alpha, dx, incx, nullptr, lda),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0, can have all nullptrs
+            CHECK_HIPBLAS_ERROR(hipblasHerFn(handle, uplo, N, zero, nullptr, incx, nullptr, lda));
         }
-        // }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(hipblasHerFn(handle, uplo, 0, nullptr, nullptr, incx, nullptr, lda));
-
-        // With alpha == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHerFn(handle, uplo, N, zero, nullptr, incx, nullptr, lda));
     }
 }
 

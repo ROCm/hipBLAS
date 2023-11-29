@@ -78,33 +78,34 @@ void testing_syr2_bad_arg(const Arguments& arg)
             hipblasSyr2Fn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dy, incy, dA, lda),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // if(arg.bad_arg_all)
-        // {
-        EXPECT_HIPBLAS_STATUS(hipblasSyr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA, lda),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
             EXPECT_HIPBLAS_STATUS(
-                hipblasSyr2Fn(handle, uplo, N, alpha, nullptr, incx, dy, incy, dA, lda),
+                hipblasSyr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA, lda),
                 HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasSyr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA, lda),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasSyr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr, lda),
-                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasSyr2Fn(handle, uplo, N, alpha, nullptr, incx, dy, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasSyr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasSyr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0, can have all nullptrs
+            CHECK_HIPBLAS_ERROR(
+                hipblasSyr2Fn(handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
         }
-        // }
 
         // With N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(
             hipblasSyr2Fn(handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
-
-        // With alpha == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(
-            hipblasSyr2Fn(handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
     }
 }
 
