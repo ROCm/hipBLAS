@@ -74,7 +74,7 @@ Tests:
     category: pre_checkin
     function:
       - spr_bad_arg
-    precision: *single_double_precisions_complex_real
+    precision: *single_double_precisions
     uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
