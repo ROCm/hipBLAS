@@ -58,4 +58,33 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: symv_bad_arg
+    category: pre_checkin
+    function:
+      - symv_bad_arg
+    precision: *single_double_precisions_complex_real
+    uplo: L
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: symv_bad_arg
+    category: pre_checkin
+    function:
+      - symv_bad_arg
+    precision: *single_double_precisions_complex_real
+    uplo: L
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
+
+  - name: symv_bad_arg
+    category: pre_checkin
+    function:
+      - symv_batched_bad_arg
+      - symv_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    uplo: L
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

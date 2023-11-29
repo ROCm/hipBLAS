@@ -38,6 +38,67 @@ inline void testname_trsv(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trsv_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrsvFn = FORTRAN ? hipblasTrsv<T, true> : hipblasTrsv<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasOperation_t transA = HIPBLAS_OP_N;
+        hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_UPPER;
+        hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N      = 100;
+        int64_t            lda    = 100;
+        int64_t            incx   = 1;
+
+        device_vector<T> dA(N * lda);
+        device_vector<T> dx(N * incx);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(nullptr, uplo, transA, diag, N, dA, lda, dx, incx),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(handle,
+                                            uplo,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            diag,
+                                            N,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(handle,
+                                            uplo,
+                                            transA,
+                                            (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                            N,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        // if(arg.bad_arg_all)
+        // {
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(handle, uplo, transA, diag, N, nullptr, lda, dx, incx),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(handle, uplo, transA, diag, N, dA, lda, nullptr, incx),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        // }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(
+            hipblasTrsvFn(handle, uplo, transA, diag, 0, nullptr, lda, nullptr, incx));
+    }
+}
+
+template <typename T>
 void testing_trsv(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;

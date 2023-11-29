@@ -49,4 +49,33 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: hpr_bad_arg
+    category: pre_checkin
+    function:
+      - hpr_bad_arg
+    precision: *single_double_precisions_complex
+    uplo: L
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: hpr_bad_arg
+    category: pre_checkin
+    function:
+      - hpr_bad_arg
+    precision: *single_double_precisions_complex
+    uplo: L
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
+
+  - name: hpr_bad_arg
+    category: pre_checkin
+    function:
+      - hpr_batched_bad_arg
+      - hpr_strided_batched_bad_arg
+    precision: *single_double_precisions_complex
+    uplo: L
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...
