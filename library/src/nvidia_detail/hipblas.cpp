@@ -75,6 +75,8 @@ cublasFillMode_t hipFillToCudaFill(hipblasFillMode_t fill)
         return CUBLAS_FILL_MODE_UPPER;
     case HIPBLAS_FILL_MODE_LOWER:
         return CUBLAS_FILL_MODE_LOWER;
+    case HIPBLAS_FILL_MODE_FULL:
+        return CUBLAS_FILL_MODE_FULL;
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;
     }
@@ -88,6 +90,8 @@ hipblasFillMode_t CudaFillToHIPFill(cublasFillMode_t fill)
         return HIPBLAS_FILL_MODE_UPPER;
     case CUBLAS_FILL_MODE_LOWER:
         return HIPBLAS_FILL_MODE_LOWER;
+    case CUBLAS_FILL_MODE_FULL:
+        return HIPBLAS_FILL_MODE_FULL;
     default:
         throw HIPBLAS_STATUS_INVALID_ENUM;
     }
