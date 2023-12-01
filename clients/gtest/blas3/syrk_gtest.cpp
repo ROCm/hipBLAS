@@ -67,11 +67,13 @@ namespace
             switch(SYRK_TYPE)
             {
             case SYRK:
-                return !strcmp(arg.function, "syrk");
+                return !strcmp(arg.function, "syrk") || !strcmp(arg.function, "syrk_bad_arg");
             case SYRK_BATCHED:
-                return !strcmp(arg.function, "syrk_batched");
+                return !strcmp(arg.function, "syrk_batched")
+                       || !strcmp(arg.function, "syrk_batched_bad_arg");
             case SYRK_STRIDED_BATCHED:
-                return !strcmp(arg.function, "syrk_strided_batched");
+                return !strcmp(arg.function, "syrk_strided_batched")
+                       || !strcmp(arg.function, "syrk_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "syrk"))
                 testing_syrk<T>(arg);
+            else if(!strcmp(arg.function, "syrk_bad_arg"))
+                testing_syrk_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syrk_batched"))
                 testing_syrk_batched<T>(arg);
+            else if(!strcmp(arg.function, "syrk_batched_bad_arg"))
+                testing_syrk_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syrk_strided_batched"))
                 testing_syrk_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "syrk_strided_batched_bad_arg"))
+                testing_syrk_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

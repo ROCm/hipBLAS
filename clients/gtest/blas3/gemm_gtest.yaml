@@ -53,4 +53,29 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: gemm_bad_arg
+    category: pre_checkin
+    function:
+      - gemm_bad_arg
+      - gemm_batched_bad_arg
+      - gemm_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real_half_real
+    transA: N
+    transB: N
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: gemm_bad_arg
+    category: pre_checkin
+    function:
+      - gemm_bad_arg
+      - gemm_batched_bad_arg
+      - gemm_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real_half_real
+    transA: N
+    transB: N
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

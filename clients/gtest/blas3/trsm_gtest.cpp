@@ -67,11 +67,13 @@ namespace
             switch(TRSM_TYPE)
             {
             case TRSM:
-                return !strcmp(arg.function, "trsm");
+                return !strcmp(arg.function, "trsm") || !strcmp(arg.function, "trsm_bad_arg");
             case TRSM_BATCHED:
-                return !strcmp(arg.function, "trsm_batched");
+                return !strcmp(arg.function, "trsm_batched")
+                       || !strcmp(arg.function, "trsm_batched_bad_arg");
             case TRSM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "trsm_strided_batched");
+                return !strcmp(arg.function, "trsm_strided_batched")
+                       || !strcmp(arg.function, "trsm_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "trsm"))
                 testing_trsm<T>(arg);
+            else if(!strcmp(arg.function, "trsm_bad_arg"))
+                testing_trsm_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trsm_batched"))
                 testing_trsm_batched<T>(arg);
+            else if(!strcmp(arg.function, "trsm_batched_bad_arg"))
+                testing_trsm_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trsm_strided_batched"))
                 testing_trsm_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "trsm_strided_batched_bad_arg"))
+                testing_trsm_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
