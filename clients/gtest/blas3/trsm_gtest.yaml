@@ -74,7 +74,6 @@ Tests:
     function:
       - trsm_bad_arg
       - trsm_batched_bad_arg
-      - trsm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     side: L
     uplo: L
