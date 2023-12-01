@@ -91,7 +91,11 @@ void testing_symm_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasSymmFn(
                 handle, HIPBLAS_SIDE_BOTH, uplo, M, N, alpha, dA, lda, dB, ldb, beta, dC, ldc),
+#ifdef __HIP_PLATFORM_NVCC__
+            HIPBLAS_STATUS_INVALID_ENUM);
+#else
             HIPBLAS_STATUS_INVALID_VALUE);
+#endif
         EXPECT_HIPBLAS_STATUS(hipblasSymmFn(handle,
                                             (hipblasSideMode_t)HIPBLAS_OP_N,
                                             uplo,

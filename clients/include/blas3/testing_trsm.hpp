@@ -85,7 +85,11 @@ void testing_trsm_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsmFn(
                 handle, HIPBLAS_SIDE_BOTH, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb),
+#ifdef __HIP_PLATFORM_NVCC__
+            HIPBLAS_STATUS_INVALID_ENUM);
+#else
             HIPBLAS_STATUS_INVALID_VALUE);
+#endif
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsmFn(
                 handle, side, HIPBLAS_FILL_MODE_FULL, transA, diag, M, N, alpha, dA, lda, dB, ldb),
