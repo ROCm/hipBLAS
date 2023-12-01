@@ -117,7 +117,11 @@ void testing_trsm_batched_bad_arg(const Arguments& arg)
                                                    dB.ptr_on_device(),
                                                    ldb,
                                                    batch_count),
+#ifdef __HIP_PLATFORM_NVCC__
+                              HIPBLAS_STATUS_INVALID_ENUM);
+#else
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
         EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
                                                    side,
                                                    HIPBLAS_FILL_MODE_FULL,

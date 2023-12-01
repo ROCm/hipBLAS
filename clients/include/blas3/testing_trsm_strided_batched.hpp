@@ -124,7 +124,11 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                                                           ldb,
                                                           strideB,
                                                           batch_count),
+#ifdef __HIP_PLATFORM_NVCC__
+                              HIPBLAS_STATUS_INVALID_ENUM);
+#else
                               HIPBLAS_STATUS_INVALID_VALUE);
+#endif
         EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
                                                           side,
                                                           HIPBLAS_FILL_MODE_FULL,
