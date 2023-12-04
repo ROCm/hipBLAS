@@ -61,7 +61,6 @@ Tests:
     function:
       - hbmv_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -70,7 +69,6 @@ Tests:
     function:
       - hbmv_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
@@ -81,7 +79,6 @@ Tests:
       - hbmv_batched_bad_arg
       - hbmv_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...

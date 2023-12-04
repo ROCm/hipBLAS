@@ -61,9 +61,6 @@ Tests:
     function:
       - tbsv_bad_arg
     precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
-    diag: N
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -72,9 +69,6 @@ Tests:
     function:
       - tbsv_bad_arg
     precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
-    diag: N
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
@@ -85,9 +79,6 @@ Tests:
       - tbsv_batched_bad_arg
       - tbsv_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
-    diag: N
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...

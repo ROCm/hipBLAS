@@ -55,7 +55,6 @@ Tests:
     function:
       - hpr_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -64,7 +63,6 @@ Tests:
     function:
       - hpr_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
@@ -75,7 +73,6 @@ Tests:
       - hpr_batched_bad_arg
       - hpr_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...

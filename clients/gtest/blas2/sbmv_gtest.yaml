@@ -62,7 +62,6 @@ Tests:
     function:
       - sbmv_bad_arg
     precision: *single_double_precisions
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -71,7 +70,6 @@ Tests:
     function:
       - sbmv_bad_arg
     precision: *single_double_precisions
-    uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
@@ -82,7 +80,6 @@ Tests:
       - sbmv_batched_bad_arg
       - sbmv_strided_batched_bad_arg
     precision: *single_double_precisions
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...
