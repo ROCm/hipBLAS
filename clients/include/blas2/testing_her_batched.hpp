@@ -39,6 +39,99 @@ inline void testname_her_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_her_batched_bad_arg(const Arguments& arg)
+{
+    using U      = real_t<T>;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasHerBatchedFn
+        = FORTRAN ? hipblasHerBatched<T, U, true> : hipblasHerBatched<T, U, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_UPPER;
+        int64_t           N           = 100;
+        int64_t           lda         = 100;
+        int64_t           incx        = 1;
+        int64_t           batch_count = 2;
+
+        device_vector<U> d_alpha(1), d_zero(1);
+
+        const U  h_alpha(1), h_zero(0);
+        const U* alpha = &h_alpha;
+        const U* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        device_batch_vector<T> dx(N, incx, batch_count);
+
+        EXPECT_HIPBLAS_STATUS(hipblasHerBatchedFn(nullptr,
+                                                  uplo,
+                                                  N,
+                                                  alpha,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasHerBatchedFn(handle,
+                                                  HIPBLAS_FILL_MODE_FULL,
+                                                  N,
+                                                  alpha,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+
+        EXPECT_HIPBLAS_STATUS(hipblasHerBatchedFn(handle,
+                                                  uplo,
+                                                  N,
+                                                  nullptr,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHerBatchedFn(
+                    handle, uplo, N, alpha, nullptr, incx, dA.ptr_on_device(), lda, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHerBatchedFn(
+                    handle, uplo, N, alpha, dx.ptr_on_device(), incx, nullptr, lda, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasHerBatchedFn(
+            handle, uplo, 0, nullptr, nullptr, incx, nullptr, lda, batch_count));
+        CHECK_HIPBLAS_ERROR(
+            hipblasHerBatchedFn(handle, uplo, N, nullptr, nullptr, incx, nullptr, lda, 0));
+
+        // With alpha == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(
+            hipblasHerBatchedFn(handle, uplo, N, zero, nullptr, incx, nullptr, lda, batch_count));
+    }
+}
+
+template <typename T>
 void testing_her_batched(const Arguments& arg)
 {
     using U      = real_t<T>;

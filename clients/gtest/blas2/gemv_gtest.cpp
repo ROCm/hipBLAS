@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "gemv"))
                 testing_gemv<T>(arg);
+            else if(!strcmp(arg.function, "gemv_bad_arg"))
+                testing_gemv_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemv_batched"))
                 testing_gemv_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemv_batched_bad_arg"))
+                testing_gemv_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemv_strided_batched"))
                 testing_gemv_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemv_strided_batched_bad_arg"))
+                testing_gemv_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

@@ -39,6 +39,112 @@ inline void testname_tbmv_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_tbmv_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTbmvBatchedFn
+        = FORTRAN ? hipblasTbmvBatched<T, true> : hipblasTbmvBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
+        hipblasOperation_t transA      = HIPBLAS_OP_N;
+        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N           = 100;
+        int64_t            K           = 5;
+        int64_t            lda         = 100;
+        int64_t            incx        = 1;
+        int64_t            batch_count = 2;
+
+        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        device_batch_vector<T> dx(N, incx, batch_count);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(nullptr,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(handle,
+                                                   HIPBLAS_FILL_MODE_FULL,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(handle,
+                                                   uplo,
+                                                   (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(handle,
+                                                   uplo,
+                                                   transA,
+                                                   (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(handle,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   nullptr,
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvBatchedFn(handle,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   nullptr,
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasTbmvBatchedFn(
+            handle, uplo, transA, diag, 0, K, nullptr, lda, nullptr, incx, batch_count));
+        CHECK_HIPBLAS_ERROR(
+            hipblasTbmvBatchedFn(handle, uplo, transA, diag, N, K, nullptr, lda, nullptr, incx, 0));
+    }
+}
+
+template <typename T>
 void testing_tbmv_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;

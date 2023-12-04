@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "spr"))
                 testing_spr<T>(arg);
+            else if(!strcmp(arg.function, "spr_bad_arg"))
+                testing_spr_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "spr_batched"))
                 testing_spr_batched<T>(arg);
+            else if(!strcmp(arg.function, "spr_batched_bad_arg"))
+                testing_spr_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "spr_strided_batched"))
                 testing_spr_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "spr_strided_batched_bad_arg"))
+                testing_spr_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
