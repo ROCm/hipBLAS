@@ -55,8 +55,6 @@ Tests:
       - syr2k_batched_bad_arg
       - syr2k_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -65,8 +63,6 @@ Tests:
     function:
       - syr2k_bad_arg
     precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA

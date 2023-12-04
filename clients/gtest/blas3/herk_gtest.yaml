@@ -60,8 +60,6 @@ Tests:
       - herk_batched_bad_arg
       - herk_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    transA: N
-    uplo: L
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -70,8 +68,6 @@ Tests:
     function:
       - herk_bad_arg
     precision: *single_double_precisions_complex
-    transA: N
-    uplo: L
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA

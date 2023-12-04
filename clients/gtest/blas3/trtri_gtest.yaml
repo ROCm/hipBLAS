@@ -54,8 +54,6 @@ Tests:
       - trtri_batched_bad_arg
       - trtri_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    uplo: L
-    diag: N
     api: [ FORTRAN, C ]
     backend_flags: AMD
 ...

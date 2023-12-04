@@ -62,10 +62,6 @@ Tests:
       - trmm_batched_bad_arg
       - trmm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    side: L
-    uplo: L
-    transA: N
-    diag: N
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -74,10 +70,6 @@ Tests:
     function:
       - trmm_bad_arg
     precision: *single_double_precisions_complex_real
-    side: L
-    uplo: L
-    transA: N
-    diag: N
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
