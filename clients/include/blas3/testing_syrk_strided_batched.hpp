@@ -258,7 +258,7 @@ void testing_syrk_strided_batched_bad_arg(const Arguments& arg)
                                                             batch_count));
         }
 
-        // If N == 0, can have nullptrs
+        // If N == 0 batch_count == 0, can have nullptrs
         CHECK_HIPBLAS_ERROR(hipblasSyrkStridedBatchedFn(handle,
                                                         uplo,
                                                         transA,

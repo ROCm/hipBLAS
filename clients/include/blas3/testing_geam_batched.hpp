@@ -291,7 +291,7 @@ void testing_geam_batched_bad_arg(const Arguments& arg)
                                                      batch_count));
         }
 
-        // If M == 0 || N == 0, can have nullptrs
+        // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
         CHECK_HIPBLAS_ERROR(hipblasGeamBatchedFn(handle,
                                                  transA,
                                                  transB,

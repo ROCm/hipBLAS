@@ -88,9 +88,9 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
             zero = zero_d;
         }
 
-        hipblasStride strideA = size_t(lda) * K;
-        hipblasStride strideB = size_t(ldb) * N;
-        hipblasStride strideC = size_t(ldc) * N;
+        hipblasStride strideA = lda * K;
+        hipblasStride strideB = ldb * N;
+        hipblasStride strideC = ldc * N;
         size_t        A_size  = strideA * batch_count;
         size_t        B_size  = strideB * batch_count;
 

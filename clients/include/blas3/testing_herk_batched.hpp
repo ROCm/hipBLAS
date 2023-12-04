@@ -217,7 +217,7 @@ void testing_herk_batched_bad_arg(const Arguments& arg)
                 handle, uplo, transA, N, K, zero, nullptr, lda, one, nullptr, ldc, batch_count));
         }
 
-        // If N == 0, can have nullptrs
+        // If N == 0 batch_count == 0, can have nullptrs
         CHECK_HIPBLAS_ERROR(hipblasHerkBatchedFn(
             handle, uplo, transA, 0, K, nullptr, nullptr, lda, nullptr, nullptr, ldc, batch_count));
         CHECK_HIPBLAS_ERROR(hipblasHerkBatchedFn(
