@@ -52,6 +52,8 @@ Tests:
     category: pre_checkin
     function:
       - syrkx_bad_arg
+      - syrkx_batched_bad_arg
+      - syrkx_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     transA: N
     uplo: L
@@ -68,15 +70,4 @@ Tests:
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
-
-  - name: syrkx_bad_arg
-    category: pre_checkin
-    function:
-      - syrkx_batched_bad_arg
-      - syrkx_strided_batched_bad_arg
-    precision: *single_double_precisions_complex_real
-    transA: N
-    uplo: L
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
 ...

@@ -50,6 +50,8 @@ Tests:
     category: pre_checkin
     function:
       - dgmm_bad_arg
+      - dgmm_batched_bad_arg
+      - dgmm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     side: L
     api: [ FORTRAN, C ]
@@ -64,14 +66,4 @@ Tests:
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
-
-  - name: dgmm_bad_arg
-    category: pre_checkin
-    function:
-      - dgmm_batched_bad_arg
-      - dgmm_strided_batched_bad_arg
-    precision: *single_double_precisions_complex_real
-    side: L
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
 ...

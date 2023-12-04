@@ -53,6 +53,8 @@ Tests:
     category: pre_checkin
     function:
       - symm_bad_arg
+      - symm_batched_bad_arg
+      - symm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     side: L
     uplo: L
@@ -69,15 +71,4 @@ Tests:
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
-
-  - name: symm_bad_arg
-    category: pre_checkin
-    function:
-      - symm_batched_bad_arg
-      - symm_strided_batched_bad_arg
-    precision: *single_double_precisions_complex_real
-    side: L
-    uplo: L
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
 ...
