@@ -189,7 +189,9 @@ public:
 
         // Output (name, value) pairs to name_list and value_list
         auto print = [&](const char* name, auto&& value) mutable {
-            name_list << sep << name << sep << value;
+            if(std::string(arg.function).find("bad_arg") == std::string::npos
+               || std::string(name).find("_type") != std::string::npos)
+                name_list << sep << name << sep << value;
         };
 
 #if __cplusplus >= 201703L
