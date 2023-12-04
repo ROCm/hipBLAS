@@ -52,7 +52,7 @@ void testing_spr_batched_bad_arg(const Arguments& arg)
         int64_t           N           = 100;
         int64_t           incx        = 1;
         int64_t           batch_count = 2;
-        int64_t           A_size      = int64_t(N) * (N + 1) / 2;
+        int64_t           A_size      = N * (N + 1) / 2;
 
         device_vector<T> d_alpha(1), d_zero(1);
 

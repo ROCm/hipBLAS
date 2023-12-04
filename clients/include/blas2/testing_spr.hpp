@@ -51,7 +51,7 @@ void testing_spr_bad_arg(const Arguments& arg)
         hipblasFillMode_t uplo   = HIPBLAS_FILL_MODE_UPPER;
         int64_t           N      = 100;
         int64_t           incx   = 1;
-        int64_t           A_size = int64_t(N) * (N + 1) / 2;
+        int64_t           A_size = N * (N + 1) / 2;
 
         device_vector<T> d_alpha(1), d_zero(1);
 

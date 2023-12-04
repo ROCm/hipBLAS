@@ -63,7 +63,6 @@ Tests:
       - ger_bad_arg: *single_double_precisions
       - geru_bad_arg: *single_double_precisions_complex
       - gerc_bad_arg: *single_double_precisions_complex
-    precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
@@ -73,8 +72,6 @@ Tests:
       - ger_bad_arg: *single_double_precisions
       - geru_bad_arg: *single_double_precisions_complex
       - gerc_bad_arg: *single_double_precisions_complex
-    precision: *single_double_precisions_complex_real
-    precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA

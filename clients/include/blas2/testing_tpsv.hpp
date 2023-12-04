@@ -53,7 +53,7 @@ void testing_tpsv_bad_arg(const Arguments& arg)
         hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
         int64_t            N      = 100;
         int64_t            incx   = 1;
-        int64_t            A_size = int64_t(N) * (N + 1) / 2;
+        int64_t            A_size = N * (N + 1) / 2;
 
         device_vector<T> dA(A_size);
         device_vector<T> dx(N * incx);
