@@ -43,6 +43,85 @@ inline void testname_dotc_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
+void testing_dot_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.fortran;
+    auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
+                                  : (CONJ ? hipblasDotcEx : hipblasDotEx);
+
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t resultType    = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N    = 100;
+        int64_t incx = 1;
+        int64_t incy = 1;
+
+        device_vector<Tx> dx(N * incx);
+        device_vector<Ty> dy(N * incy);
+        device_vector<Tr> d_res(1);
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasDotExFn(
+                nullptr, N, dx, xType, incx, dy, yType, incy, d_res, resultType, executionType),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
+                                                 N,
+                                                 nullptr,
+                                                 xType,
+                                                 incx,
+                                                 dy,
+                                                 yType,
+                                                 incy,
+                                                 d_res,
+                                                 resultType,
+                                                 executionType),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
+                                                 N,
+                                                 dx,
+                                                 xType,
+                                                 incx,
+                                                 nullptr,
+                                                 yType,
+                                                 incy,
+                                                 d_res,
+                                                 resultType,
+                                                 executionType),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
+                                                 N,
+                                                 dx,
+                                                 xType,
+                                                 incx,
+                                                 dy,
+                                                 yType,
+                                                 incy,
+                                                 nullptr,
+                                                 resultType,
+                                                 executionType),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr>
+void testing_dotc_ex_bad_arg(const Arguments& arg)
+{
+    testing_dot_ex_bad_arg<Tx, Ty, Tr, Tex, true>(arg);
+}
+
+template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;
