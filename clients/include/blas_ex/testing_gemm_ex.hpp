@@ -240,20 +240,6 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
                                       HIPBLAS_STATUS_INVALID_VALUE);
             }
 
-//             // If alpha == 0 && beta == 1, can have A, B, C be nullptr
-//             // This currently doesn't work in rocBLAS as it assumes we still have to copy dC -> dD
-//             // There is an open ticket to quick-return with alpha == 0 && beta == 1 && dC == dD
-//             CHECK_HIPBLAS_ERROR(hipblasGemmExFn(handle, transA, transB, M, N, K, zero,
-//                                               nullptr, aType, lda,
-//                                               nullptr, bType, ldb, one,
-//                                               nullptr, cType, ldc,
-// #ifdef HIPBLAS_V2
-//                                               computeTypeGemm,
-// #else
-//                                               computeType,
-// #endif
-//                                               algo, flags));
-
             // If alpha == 0, A and B can be nullptr
             CHECK_HIPBLAS_ERROR(hipblasGemmExFn(
                 handle, transA, transB, M, N, K, zero,
