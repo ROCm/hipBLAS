@@ -80,15 +80,19 @@ Tests:
       - gemm_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
       - gemm_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
       - gemm_strided_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
-    api: [ FORTRAN, C ]
-
-  - name: gemm_ex_bad_arg
-    category: pre_checkin
-    function:
       - gemm_ex_bad_arg: *hpa_half_precision
       - gemm_batched_ex_bad_arg: *hpa_half_precision
       - gemm_strided_batched_ex_bad_arg: *hpa_half_precision
     api: [ FORTRAN, C ]
-    bad_arg_all: false
     backend_flags: AMD
+
+  - name: gemm_ex_bad_arg
+    category: pre_checkin
+    function:
+      - gemm_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
+      - gemm_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
+      - gemm_strided_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...
