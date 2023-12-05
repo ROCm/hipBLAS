@@ -67,11 +67,13 @@ namespace
             switch(TRMM_TYPE)
             {
             case TRMM:
-                return !strcmp(arg.function, "trmm");
+                return !strcmp(arg.function, "trmm") || !strcmp(arg.function, "trmm_bad_arg");
             case TRMM_BATCHED:
-                return !strcmp(arg.function, "trmm_batched");
+                return !strcmp(arg.function, "trmm_batched")
+                       || !strcmp(arg.function, "trmm_batched_bad_arg");
             case TRMM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "trmm_strided_batched");
+                return !strcmp(arg.function, "trmm_strided_batched")
+                       || !strcmp(arg.function, "trmm_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "trmm"))
                 testing_trmm<T>(arg);
+            else if(!strcmp(arg.function, "trmm_bad_arg"))
+                testing_trmm_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trmm_batched"))
                 testing_trmm_batched<T>(arg);
+            else if(!strcmp(arg.function, "trmm_batched_bad_arg"))
+                testing_trmm_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trmm_strided_batched"))
                 testing_trmm_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "trmm_strided_batched_bad_arg"))
+                testing_trmm_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

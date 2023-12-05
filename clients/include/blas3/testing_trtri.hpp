@@ -38,6 +38,47 @@ inline void testname_trtri(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trtri_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.fortran;
+    auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t           N    = 100;
+    int64_t           lda  = 102;
+    hipblasFillMode_t uplo = HIPBLAS_FILL_MODE_LOWER;
+    hipblasDiagType_t diag = HIPBLAS_DIAG_NON_UNIT;
+
+    device_vector<T> dA(N * lda);
+    device_vector<T> dinvA(N * lda);
+
+    EXPECT_HIPBLAS_STATUS(hipblasTrtriFn(nullptr, uplo, diag, N, dA, lda, dinvA, lda),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasTrtriFn(handle, HIPBLAS_FILL_MODE_FULL, diag, N, dA, lda, dinvA, lda),
+        HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasTrtriFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, diag, N, dA, lda, dinvA, lda),
+        HIPBLAS_STATUS_INVALID_ENUM);
+    EXPECT_HIPBLAS_STATUS(
+        hipblasTrtriFn(handle, uplo, (hipblasDiagType_t)HIPBLAS_OP_N, N, dA, lda, dinvA, lda),
+        HIPBLAS_STATUS_INVALID_ENUM);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasTrtriFn(handle, uplo, diag, N, nullptr, lda, dinvA, lda),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrtriFn(handle, uplo, diag, N, nullptr, lda, nullptr, lda),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+
+    // If N == 0, can have nullptrs
+    CHECK_HIPBLAS_ERROR(hipblasTrtriFn(handle, uplo, diag, 0, nullptr, lda, nullptr, lda));
+}
+
+template <typename T>
 void testing_trtri(const Arguments& arg)
 {
     bool FORTRAN        = arg.fortran;

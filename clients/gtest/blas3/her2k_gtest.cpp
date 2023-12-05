@@ -67,11 +67,13 @@ namespace
             switch(HER2K_TYPE)
             {
             case HER2K:
-                return !strcmp(arg.function, "her2k");
+                return !strcmp(arg.function, "her2k") || !strcmp(arg.function, "her2k_bad_arg");
             case HER2K_BATCHED:
-                return !strcmp(arg.function, "her2k_batched");
+                return !strcmp(arg.function, "her2k_batched")
+                       || !strcmp(arg.function, "her2k_batched_bad_arg");
             case HER2K_STRIDED_BATCHED:
-                return !strcmp(arg.function, "her2k_strided_batched");
+                return !strcmp(arg.function, "her2k_strided_batched")
+                       || !strcmp(arg.function, "her2k_strided_batched_bad_arg");
             }
             return false;
         }
@@ -110,10 +112,16 @@ namespace
         {
             if(!strcmp(arg.function, "her2k"))
                 testing_her2k<T>(arg);
+            else if(!strcmp(arg.function, "her2k_bad_arg"))
+                testing_her2k_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "her2k_batched"))
                 testing_her2k_batched<T>(arg);
+            else if(!strcmp(arg.function, "her2k_batched_bad_arg"))
+                testing_her2k_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "her2k_strided_batched"))
                 testing_her2k_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "her2k_strided_batched_bad_arg"))
+                testing_her2k_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

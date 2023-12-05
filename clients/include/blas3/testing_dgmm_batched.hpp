@@ -39,6 +39,105 @@ inline void testname_dgmm_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_dgmm_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
+    auto hipblasDgmmBatchedFn
+        = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t M           = 101;
+    int64_t N           = 100;
+    int64_t lda         = 102;
+    int64_t incx        = 1;
+    int64_t ldc         = 103;
+    int64_t batch_count = 2;
+
+    hipblasSideMode_t side = HIPBLAS_SIDE_LEFT;
+
+    int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
+
+    device_batch_vector<T> dA(N * lda, 1, batch_count);
+    device_batch_vector<T> dx(K, incx, batch_count);
+    device_batch_vector<T> dC(N * ldc, 1, batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(nullptr,
+                                               side,
+                                               M,
+                                               N,
+                                               dA.ptr_on_device(),
+                                               lda,
+                                               dx.ptr_on_device(),
+                                               incx,
+                                               dC.ptr_on_device(),
+                                               ldc,
+                                               batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(handle,
+                                               (hipblasSideMode_t)HIPBLAS_FILL_MODE_FULL,
+                                               M,
+                                               N,
+                                               dA.ptr_on_device(),
+                                               lda,
+                                               dx.ptr_on_device(),
+                                               incx,
+                                               dC.ptr_on_device(),
+                                               ldc,
+                                               batch_count),
+                          HIPBLAS_STATUS_INVALID_ENUM);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(handle,
+                                                   side,
+                                                   M,
+                                                   N,
+                                                   nullptr,
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   dC.ptr_on_device(),
+                                                   ldc,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(handle,
+                                                   side,
+                                                   M,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   nullptr,
+                                                   incx,
+                                                   dC.ptr_on_device(),
+                                                   ldc,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(handle,
+                                                   side,
+                                                   M,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   nullptr,
+                                                   ldc,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+
+    // If M == 0 || N == 0 || batch_count == 0, can have all nullptrs
+    CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(
+        handle, side, 0, N, nullptr, lda, nullptr, incx, nullptr, ldc, batch_count));
+    CHECK_HIPBLAS_ERROR(hipblasDgmmBatchedFn(
+        handle, side, M, 0, nullptr, lda, nullptr, incx, nullptr, ldc, batch_count));
+    CHECK_HIPBLAS_ERROR(
+        hipblasDgmmBatchedFn(handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc, 0));
+}
+
+template <typename T>
 void testing_dgmm_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;
