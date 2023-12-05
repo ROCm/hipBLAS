@@ -67,11 +67,13 @@ namespace
             switch(SYRKX_TYPE)
             {
             case SYRKX:
-                return !strcmp(arg.function, "syrkx");
+                return !strcmp(arg.function, "syrkx") || !strcmp(arg.function, "syrkx_bad_arg");
             case SYRKX_BATCHED:
-                return !strcmp(arg.function, "syrkx_batched");
+                return !strcmp(arg.function, "syrkx_batched")
+                       || !strcmp(arg.function, "syrkx_batched_bad_arg");
             case SYRKX_STRIDED_BATCHED:
-                return !strcmp(arg.function, "syrkx_strided_batched");
+                return !strcmp(arg.function, "syrkx_strided_batched")
+                       || !strcmp(arg.function, "syrkx_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "syrkx"))
                 testing_syrkx<T>(arg);
+            else if(!strcmp(arg.function, "syrkx_bad_arg"))
+                testing_syrkx_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syrkx_batched"))
                 testing_syrkx_batched<T>(arg);
+            else if(!strcmp(arg.function, "syrkx_batched_bad_arg"))
+                testing_syrkx_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syrkx_strided_batched"))
                 testing_syrkx_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "syrkx_strided_batched_bad_arg"))
+                testing_syrkx_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
