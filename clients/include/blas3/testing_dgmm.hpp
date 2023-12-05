@@ -38,6 +38,53 @@ inline void testname_dgmm(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_dgmm_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
+    auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t M    = 101;
+    int64_t N    = 100;
+    int64_t lda  = 102;
+    int64_t incx = 1;
+    int64_t ldc  = 103;
+
+    hipblasSideMode_t side = HIPBLAS_SIDE_LEFT;
+
+    int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
+
+    device_vector<T> dA(N * lda);
+    device_vector<T> dx(incx * K);
+    device_vector<T> dC(N * ldc);
+
+    EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(nullptr, side, M, N, dA, lda, dx, incx, dC, ldc),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasDgmmFn(
+            handle, (hipblasSideMode_t)HIPBLAS_FILL_MODE_FULL, M, N, dA, lda, dx, incx, dC, ldc),
+        HIPBLAS_STATUS_INVALID_ENUM);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, nullptr, lda, dx, incx, dC, ldc),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, dA, lda, nullptr, incx, dC, ldc),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, nullptr, ldc),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+
+    // If M == 0 || N == 0, can have nullptrs
+    CHECK_HIPBLAS_ERROR(
+        hipblasDgmmFn(handle, side, 0, N, nullptr, lda, nullptr, incx, nullptr, ldc));
+    CHECK_HIPBLAS_ERROR(
+        hipblasDgmmFn(handle, side, M, 0, nullptr, lda, nullptr, incx, nullptr, ldc));
+}
+
+template <typename T>
 void testing_dgmm(const Arguments& arg)
 {
     bool FORTRAN       = arg.fortran;

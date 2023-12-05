@@ -42,6 +42,160 @@ inline void testname_geam(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_geam_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
+    auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t M   = 101;
+    int64_t N   = 100;
+    int64_t lda = 102;
+    int64_t ldb = 103;
+    int64_t ldc = 104;
+
+    hipblasOperation_t transA = HIPBLAS_OP_N;
+    hipblasOperation_t transB = HIPBLAS_OP_N;
+
+    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
+    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+
+    device_vector<T> dA(colsA * lda);
+    device_vector<T> dB(colsB * ldb);
+    device_vector<T> dC(N * ldc);
+
+    device_vector<T> d_alpha(1), d_beta(1), d_zero(1);
+    const T          h_alpha(1), h_beta(2), h_zero(0);
+
+    const T* alpha = &h_alpha;
+    const T* beta  = &h_beta;
+    const T* zero  = &h_zero;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_beta, beta, sizeof(*beta), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            beta  = d_beta;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGeamFn(nullptr, transA, transB, M, N, alpha, dA, lda, beta, dB, ldb, dC, ldc),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(hipblasGeamFn(handle,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            transB,
+                                            M,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dB,
+                                            ldb,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasGeamFn(handle,
+                                            transA,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            M,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dB,
+                                            ldb,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            // (dA == dC) => (lda == ldc) else invalid_value
+            EXPECT_HIPBLAS_STATUS(
+                hipblasGeamFn(
+                    handle, transA, transB, M, N, alpha, dA, lda, beta, dB, ldb, dA, lda + 1),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            // (dB == dC) => (ldb == ldc) else invalid value
+            EXPECT_HIPBLAS_STATUS(
+                hipblasGeamFn(
+                    handle, transA, transB, M, N, alpha, dA, lda, beta, dB, ldb, dB, ldb + 1),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            EXPECT_HIPBLAS_STATUS(
+                hipblasGeamFn(
+                    handle, transA, transB, M, N, nullptr, dA, lda, beta, dB, ldb, dC, ldc),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasGeamFn(
+                    handle, transA, transB, M, N, alpha, dA, lda, nullptr, dB, ldb, dC, ldc),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasGeamFn(
+                    handle, transA, transB, M, N, alpha, dA, lda, beta, dB, ldb, nullptr, ldc),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGeamFn(
+                        handle, transA, transB, M, N, alpha, nullptr, lda, beta, dB, ldb, dC, ldc),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGeamFn(
+                        handle, transA, transB, M, N, alpha, dA, lda, beta, nullptr, ldb, dC, ldc),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // alpha == 0, can have A be nullptr. beta == 0 can have B be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasGeamFn(
+                handle, transA, transB, M, N, zero, nullptr, lda, beta, dB, ldb, dC, ldc));
+            CHECK_HIPBLAS_ERROR(hipblasGeamFn(
+                handle, transA, transB, M, N, alpha, dA, lda, zero, nullptr, ldb, dC, ldc));
+        }
+
+        // If M == 0 || N == 0, can have nullptrs, but quirk of needing lda == ldb == ldc since A == B == C
+        CHECK_HIPBLAS_ERROR(hipblasGeamFn(handle,
+                                          transA,
+                                          transB,
+                                          0,
+                                          N,
+                                          nullptr,
+                                          nullptr,
+                                          lda,
+                                          nullptr,
+                                          nullptr,
+                                          lda,
+                                          nullptr,
+                                          lda));
+        CHECK_HIPBLAS_ERROR(hipblasGeamFn(handle,
+                                          transA,
+                                          transB,
+                                          M,
+                                          0,
+                                          nullptr,
+                                          nullptr,
+                                          lda,
+                                          nullptr,
+                                          nullptr,
+                                          lda,
+                                          nullptr,
+                                          lda));
+    }
+}
+
+template <typename T>
 void testing_geam(const Arguments& arg)
 {
     bool FORTRAN       = arg.fortran;

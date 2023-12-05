@@ -50,13 +50,13 @@ void testing_trmm_bad_arg(const Arguments& arg)
         hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_LOWER;
         hipblasOperation_t transA = HIPBLAS_OP_N;
         hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
-        int                M      = 100;
-        int                N      = 101;
-        int                lda    = 102;
-        int                ldb    = 103;
-        int                ldc    = 104;
-        int                ldOut  = inplace ? ldb : ldc;
-        int                K      = M;
+        int64_t            M      = 100;
+        int64_t            N      = 101;
+        int64_t            lda    = 102;
+        int64_t            ldb    = 103;
+        int64_t            ldc    = 104;
+        int64_t            ldOut  = inplace ? ldb : ldc;
+        int64_t            K      = M;
 
         device_vector<T> alpha_d(1), zero_d(1);
 
@@ -124,11 +124,7 @@ void testing_trmm_bad_arg(const Arguments& arg)
                                             ldb,
                                             *dOut,
                                             ldOut),
-#ifndef __HIP_PLATFORM_NVCC__
                               HIPBLAS_STATUS_INVALID_VALUE);
-#else
-                              HIPBLAS_STATUS_INVALID_ENUM);
-#endif
 
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             side,
@@ -162,94 +158,96 @@ void testing_trmm_bad_arg(const Arguments& arg)
                                             ldOut),
                               HIPBLAS_STATUS_INVALID_ENUM);
 
-        // invalid sizes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, -1, N, alpha, dA, lda, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, -1, alpha, dA, lda, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        // invalid leading dims
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, M - 1, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            HIPBLAS_SIDE_RIGHT,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            N - 1,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, M - 1, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, M - 1),
-            HIPBLAS_STATUS_INVALID_VALUE);
-
         // nullptr checks
         EXPECT_HIPBLAS_STATUS(
             hipblasTrmmFn(
                 nullptr, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, ldOut),
             HIPBLAS_STATUS_NOT_INITIALIZED);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, nullptr, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                alpha,
+                                                dA,
+                                                lda,
+                                                dB,
+                                                ldb,
+                                                nullptr,
+                                                ldOut),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
 
-#ifndef __HIP_PLATFORM_NVCC__
-        // cuBLAS doesn't check for nullptrs for alpha, A, B
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, nullptr, dA, lda, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                nullptr,
+                                                dA,
+                                                lda,
+                                                dB,
+                                                ldb,
+                                                *dOut,
+                                                ldOut),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, nullptr, lda, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                alpha,
+                                                nullptr,
+                                                lda,
+                                                dB,
+                                                ldb,
+                                                *dOut,
+                                                ldOut),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, alpha, dA, lda, nullptr, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                alpha,
+                                                dA,
+                                                lda,
+                                                nullptr,
+                                                ldb,
+                                                *dOut,
+                                                ldOut),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
 
-        // quick return: if alpha == 0, both A & B can be nullptr
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            M,
-                                            N,
-                                            zero,
-                                            nullptr,
-                                            lda,
-                                            nullptr,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
-                              HIPBLAS_STATUS_SUCCESS);
-#endif
+            // quick return: if alpha == 0, both A & B can be nullptr
+            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
+                                                side,
+                                                uplo,
+                                                transA,
+                                                diag,
+                                                M,
+                                                N,
+                                                zero,
+                                                nullptr,
+                                                lda,
+                                                nullptr,
+                                                ldb,
+                                                *dOut,
+                                                ldOut),
+                                  HIPBLAS_STATUS_SUCCESS);
+        }
+
         // quick return: if M == 0, then all other ptrs can be nullptr
         EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
                                             side,

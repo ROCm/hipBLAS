@@ -39,6 +39,120 @@ inline void testname_trsm(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trsm_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
+    auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t            M      = 101;
+    int64_t            N      = 100;
+    int64_t            lda    = 102;
+    int64_t            ldb    = 103;
+    hipblasSideMode_t  side   = HIPBLAS_SIDE_LEFT;
+    hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_LOWER;
+    hipblasOperation_t transA = HIPBLAS_OP_N;
+    hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
+
+    int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
+
+    device_vector<T> dA(K * lda);
+    device_vector<T> dB(N * ldb);
+
+    device_vector<T> d_alpha(1), d_zero(1);
+    const T          h_alpha(1), h_zero(0);
+
+    const T* alpha = &h_alpha;
+    const T* zero  = &h_zero;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsmFn(nullptr, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsmFn(
+                handle, HIPBLAS_SIDE_BOTH, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb),
+#ifdef __HIP_PLATFORM_NVCC__
+            HIPBLAS_STATUS_INVALID_ENUM);
+#else
+            HIPBLAS_STATUS_INVALID_VALUE);
+#endif
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsmFn(
+                handle, side, HIPBLAS_FILL_MODE_FULL, transA, diag, M, N, alpha, dA, lda, dB, ldb),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmFn(handle,
+                                            side,
+                                            uplo,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            diag,
+                                            M,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dB,
+                                            ldb),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmFn(handle,
+                                            side,
+                                            uplo,
+                                            transA,
+                                            (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                            M,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dB,
+                                            ldb),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTrsmFn(handle, side, uplo, transA, diag, M, N, nullptr, dA, lda, dB, ldb),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasTrsmFn(
+                        handle, side, uplo, transA, diag, M, N, alpha, nullptr, lda, dB, ldb),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasTrsmFn(
+                        handle, side, uplo, transA, diag, M, N, alpha, dA, lda, nullptr, ldb),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // If alpha == 0, then A can be nullptr
+            CHECK_HIPBLAS_ERROR(
+                hipblasTrsmFn(handle, side, uplo, transA, diag, M, N, zero, nullptr, lda, dB, ldb));
+        }
+
+        // If M == 0 || N == 0, can have nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasTrsmFn(
+            handle, side, uplo, transA, diag, 0, N, nullptr, nullptr, lda, nullptr, ldb));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmFn(
+            handle, side, uplo, transA, diag, M, 0, nullptr, nullptr, lda, nullptr, ldb));
+    }
+}
+
+template <typename T>
 void testing_trsm(const Arguments& arg)
 {
     bool FORTRAN       = arg.fortran;

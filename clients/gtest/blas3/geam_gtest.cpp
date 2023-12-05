@@ -67,11 +67,13 @@ namespace
             switch(GEAM_TYPE)
             {
             case GEAM:
-                return !strcmp(arg.function, "geam");
+                return !strcmp(arg.function, "geam") || !strcmp(arg.function, "geam_bad_arg");
             case GEAM_BATCHED:
-                return !strcmp(arg.function, "geam_batched");
+                return !strcmp(arg.function, "geam_batched")
+                       || !strcmp(arg.function, "geam_batched_bad_arg");
             case GEAM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "geam_strided_batched");
+                return !strcmp(arg.function, "geam_strided_batched")
+                       || !strcmp(arg.function, "geam_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "geam"))
                 testing_geam<T>(arg);
+            else if(!strcmp(arg.function, "geam_bad_arg"))
+                testing_geam_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "geam_batched"))
                 testing_geam_batched<T>(arg);
+            else if(!strcmp(arg.function, "geam_batched_bad_arg"))
+                testing_geam_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "geam_strided_batched"))
                 testing_geam_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "geam_strided_batched_bad_arg"))
+                testing_geam_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

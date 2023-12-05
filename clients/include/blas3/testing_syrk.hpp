@@ -39,6 +39,117 @@ inline void testname_syrk(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_syrk_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.fortran;
+    auto hipblasSyrkFn = FORTRAN ? hipblasSyrk<T, true> : hipblasSyrk<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t            N      = 101;
+    int64_t            K      = 100;
+    int64_t            lda    = 102;
+    int64_t            ldc    = 104;
+    hipblasOperation_t transA = HIPBLAS_OP_N;
+    hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_LOWER;
+
+    int64_t cols = transA == HIPBLAS_OP_N ? K : N;
+
+    device_vector<T> dA(cols * lda);
+    device_vector<T> dC(N * ldc);
+
+    device_vector<T> d_alpha(1), d_zero(1), d_beta(1), d_one(1);
+    const T          h_alpha(1), h_zero(0), h_beta(2), h_one(1);
+
+    const T* alpha = &h_alpha;
+    const T* beta  = &h_beta;
+    const T* one   = &h_one;
+    const T* zero  = &h_zero;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_beta, beta, sizeof(*beta), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_one, one, sizeof(*one), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            beta  = d_beta;
+            one   = d_one;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasSyrkFn(nullptr, uplo, transA, N, K, alpha, dA, lda, beta, dC, ldc),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasSyrkFn(
+                handle, HIPBLAS_FILL_MODE_FULL, transA, N, K, alpha, dA, lda, beta, dC, ldc),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSyrkFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            transA,
+                                            N,
+                                            K,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasSyrkFn(handle,
+                                            uplo,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            N,
+                                            K,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasSyrkFn(handle, uplo, transA, N, K, nullptr, dA, lda, beta, dC, ldc),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasSyrkFn(handle, uplo, transA, N, K, alpha, dA, lda, nullptr, dC, ldc),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasSyrkFn(handle, uplo, transA, N, K, alpha, nullptr, lda, beta, dC, ldc),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasSyrkFn(handle, uplo, transA, N, K, alpha, dA, lda, beta, nullptr, ldc),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // If k == 0 && beta == 1, A, C may be nullptr
+            CHECK_HIPBLAS_ERROR(
+                hipblasSyrkFn(handle, uplo, transA, N, 0, alpha, nullptr, lda, one, nullptr, ldc));
+
+            // If alpha == 0 && beta == 1, A, C may be nullptr
+            CHECK_HIPBLAS_ERROR(
+                hipblasSyrkFn(handle, uplo, transA, N, K, zero, nullptr, lda, one, nullptr, ldc));
+        }
+
+        // If N == 0, can have nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasSyrkFn(
+            handle, uplo, transA, 0, K, nullptr, nullptr, lda, nullptr, nullptr, ldc));
+    }
+}
+
+template <typename T>
 void testing_syrk(const Arguments& arg)
 {
     bool FORTRAN       = arg.fortran;
