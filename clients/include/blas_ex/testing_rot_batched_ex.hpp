@@ -46,7 +46,7 @@ inline void testname_rot_batched_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN               = arg.fortran;
+    bool FORTRAN               = arg.api == FORTRAN;
     auto hipblasRotBatchedExFn = FORTRAN ? hipblasRotBatchedExFortran : hipblasRotBatchedEx;
 
     hipblasDatatype_t xType         = arg.a_type;
@@ -145,7 +145,7 @@ void testing_rot_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN               = arg.fortran;
+    bool FORTRAN               = arg.api == FORTRAN;
     auto hipblasRotBatchedExFn = FORTRAN ? hipblasRotBatchedExFortran : hipblasRotBatchedEx;
 
     int N           = arg.N;

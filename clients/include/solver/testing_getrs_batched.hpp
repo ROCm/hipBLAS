@@ -94,7 +94,7 @@ template <typename T>
 void testing_getrs_batched_bad_arg(const Arguments& arg)
 {
     auto hipblasGetrsBatchedFn
-        = arg.fortran ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          N           = 100;
@@ -210,7 +210,7 @@ template <typename T>
 void testing_getrs_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasGetrsBatchedFn
         = FORTRAN ? hipblasGetrsBatched<T, true> : hipblasGetrsBatched<T, false>;
 

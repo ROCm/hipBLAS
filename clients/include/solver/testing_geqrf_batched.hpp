@@ -72,7 +72,7 @@ template <typename T>
 void testing_geqrf_batched_bad_arg(const Arguments& arg)
 {
     auto hipblasGeqrfBatchedFn
-        = arg.fortran ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
@@ -157,7 +157,7 @@ template <typename T>
 void testing_geqrf_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasGeqrfBatchedFn
         = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
 

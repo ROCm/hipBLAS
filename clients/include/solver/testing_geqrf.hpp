@@ -67,7 +67,7 @@ void setup_geqrf_testing(
 template <typename T>
 void testing_geqrf_bad_arg(const Arguments& arg)
 {
-    auto hipblasGeqrfFn = arg.fortran ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
+    auto hipblasGeqrfFn = arg.api == FORTRAN ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          M      = 100;
@@ -129,7 +129,7 @@ template <typename T>
 void testing_geqrf(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == FORTRAN;
     auto hipblasGeqrfFn = FORTRAN ? hipblasGeqrf<T, true> : hipblasGeqrf<T, false>;
 
     int M   = arg.M;

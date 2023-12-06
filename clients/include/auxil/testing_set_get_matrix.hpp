@@ -40,7 +40,7 @@ inline void testname_set_get_matrix(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_set_get_matrix(const Arguments& arg)
 {
-    bool FORTRAN            = arg.fortran;
+    bool FORTRAN            = arg.api == FORTRAN;
     auto hipblasSetMatrixFn = FORTRAN ? hipblasSetMatrixFortran : hipblasSetMatrix;
     auto hipblasGetMatrixFn = FORTRAN ? hipblasGetMatrixFortran : hipblasGetMatrix;
 

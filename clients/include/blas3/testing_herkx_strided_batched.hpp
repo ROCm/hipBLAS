@@ -52,7 +52,7 @@ template <typename T>
 void testing_herkx_strided_batched_bad_arg(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.fortran;
+    bool FORTRAN                      = arg.api == FORTRAN;
     auto hipblasHerkxStridedBatchedFn = FORTRAN ? hipblasHerkxStridedBatched<T, U, true>
                                                 : hipblasHerkxStridedBatched<T, U, false>;
 
@@ -358,7 +358,7 @@ template <typename T>
 void testing_herkx_strided_batched(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.fortran;
+    bool FORTRAN                      = arg.api == FORTRAN;
     auto hipblasHerkxStridedBatchedFn = FORTRAN ? hipblasHerkxStridedBatched<T, U, true>
                                                 : hipblasHerkxStridedBatched<T, U, false>;
 

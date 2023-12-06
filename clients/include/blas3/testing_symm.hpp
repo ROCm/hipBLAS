@@ -41,7 +41,7 @@ inline void testname_symm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_symm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasSymmFn = FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -170,7 +170,7 @@ void testing_symm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasSymmFn = FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(arg.side);

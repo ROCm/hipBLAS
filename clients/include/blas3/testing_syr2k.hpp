@@ -41,7 +41,7 @@ inline void testname_syr2k(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_syr2k_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == FORTRAN;
     auto hipblasSyr2kFn = FORTRAN ? hipblasSyr2k<T, true> : hipblasSyr2k<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -187,7 +187,7 @@ void testing_syr2k_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2k(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == FORTRAN;
     auto hipblasSyr2kFn = FORTRAN ? hipblasSyr2k<T, true> : hipblasSyr2k<T, false>;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);

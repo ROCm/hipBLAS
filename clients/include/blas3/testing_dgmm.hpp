@@ -40,7 +40,7 @@ inline void testname_dgmm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_dgmm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -87,7 +87,7 @@ void testing_dgmm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_dgmm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(arg.side);

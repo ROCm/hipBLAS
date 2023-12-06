@@ -50,7 +50,7 @@ inline void testname_hemm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hemm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasHemmBatchedFn
         = FORTRAN ? hipblasHemmBatched<T, true> : hipblasHemmBatched<T, false>;
 
@@ -320,7 +320,7 @@ void testing_hemm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hemm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasHemmBatchedFn
         = FORTRAN ? hipblasHemmBatched<T, true> : hipblasHemmBatched<T, false>;
 

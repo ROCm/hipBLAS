@@ -42,7 +42,7 @@ template <typename T>
 void testing_herk_bad_arg(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
     hipblasLocalHandle handle(arg);
@@ -152,7 +152,7 @@ template <typename T>
 void testing_herk(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
     int N   = arg.N;

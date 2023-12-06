@@ -51,7 +51,7 @@ template <typename T>
 inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 {
     auto hipblasTrmmBatchedFn
-        = arg.fortran ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
     bool inplace = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
@@ -360,7 +360,7 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasTrmmBatchedFn
         = FORTRAN ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
     bool inplace = arg.inplace;

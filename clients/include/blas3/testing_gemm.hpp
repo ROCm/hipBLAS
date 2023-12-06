@@ -51,7 +51,7 @@ inline void testname_gemm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gemm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -270,7 +270,7 @@ void testing_gemm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_gemm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == FORTRAN;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);

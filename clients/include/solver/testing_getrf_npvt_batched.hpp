@@ -39,7 +39,7 @@ template <typename T>
 void testing_getrf_npvt_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasGetrfBatchedFn
         = FORTRAN ? hipblasGetrfBatched<T, true> : hipblasGetrfBatched<T, false>;
 

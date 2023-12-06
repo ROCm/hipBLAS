@@ -50,7 +50,7 @@ inline void testname_trsm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
@@ -265,7 +265,7 @@ void testing_trsm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 

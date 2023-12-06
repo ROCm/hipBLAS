@@ -40,7 +40,7 @@ inline void testname_set_get_vector_async(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_set_get_vector_async(const Arguments& arg)
 {
-    bool FORTRAN                 = arg.fortran;
+    bool FORTRAN                 = arg.api == FORTRAN;
     auto hipblasSetVectorAsyncFn = FORTRAN ? hipblasSetVectorAsyncFortran : hipblasSetVectorAsync;
     auto hipblasGetVectorAsyncFn = FORTRAN ? hipblasGetVectorAsyncFortran : hipblasGetVectorAsync;
 

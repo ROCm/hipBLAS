@@ -51,7 +51,7 @@ inline void testname_symm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_symm_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasSymmStridedBatchedFn
         = FORTRAN ? hipblasSymmStridedBatched<T, true> : hipblasSymmStridedBatched<T, false>;
 
@@ -367,7 +367,7 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symm_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasSymmStridedBatchedFn
         = FORTRAN ? hipblasSymmStridedBatched<T, true> : hipblasSymmStridedBatched<T, false>;
 

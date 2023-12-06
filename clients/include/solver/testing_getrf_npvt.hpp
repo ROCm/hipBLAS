@@ -39,7 +39,7 @@ template <typename T>
 void testing_getrf_npvt(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     int M   = arg.N;

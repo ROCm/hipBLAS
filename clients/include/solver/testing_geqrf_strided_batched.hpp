@@ -79,8 +79,8 @@ void setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
 template <typename T>
 void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasGeqrfStridedBatchedFn
-        = arg.fortran ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
+    auto hipblasGeqrfStridedBatchedFn = arg.api == FORTRAN ? hipblasGeqrfStridedBatched<T, true>
+                                                           : hipblasGeqrfStridedBatched<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
@@ -166,7 +166,7 @@ template <typename T>
 void testing_geqrf_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasGeqrfStridedBatchedFn
         = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
 
