@@ -91,6 +91,18 @@ void testing_syr_strided_batched_bad_arg(const Arguments& arg)
                                                          strideA,
                                                          batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSyrStridedBatchedFn(handle,
+                                                         (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                         N,
+                                                         alpha,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dA,
+                                                         lda,
+                                                         strideA,
+                                                         batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(
             hipblasSyrStridedBatchedFn(

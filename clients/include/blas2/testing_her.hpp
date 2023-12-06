@@ -76,6 +76,9 @@ void testing_her_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasHerFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA, lda),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHerFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dA, lda),
+            HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {

@@ -105,8 +105,20 @@ void testing_her2k_bad_arg(const Arguments& arg)
                                              dC,
                                              ldc),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHer2kFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHer2kFn(handle,
+                                             (hipblasFillMode_t)HIPBLAS_OP_N,
+                                             transA,
+                                             N,
+                                             K,
+                                             alpha,
+                                             dA,
+                                             lda,
+                                             dB,
+                                             ldb,
+                                             beta,
+                                             dC,
+                                             ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         // EXPECT_HIPBLAS_STATUS(
         //     hipblasHer2kFn(
         //         handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),

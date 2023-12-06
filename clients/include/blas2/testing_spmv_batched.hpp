@@ -105,6 +105,18 @@ void testing_spmv_batched_bad_arg(const Arguments& arg)
                                                    incy,
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSpmvBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   beta,
+                                                   dy.ptr_on_device(),
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasSpmvBatchedFn(handle,
                                                    uplo,

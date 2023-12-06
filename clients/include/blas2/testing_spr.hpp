@@ -74,6 +74,9 @@ void testing_spr_bad_arg(const Arguments& arg)
                               HIPBLAS_STATUS_NOT_INITIALIZED);
         EXPECT_HIPBLAS_STATUS(hipblasSprFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasSprFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dA),
+            HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {

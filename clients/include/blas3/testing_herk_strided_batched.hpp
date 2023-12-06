@@ -127,8 +127,21 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                                                           strideC,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkStridedBatchedFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, strideA, beta, dC, ldc, strideC, batch_count),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          N,
+                                                          K,
+                                                          alpha,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          beta,
+                                                          dC,
+                                                          ldc,
+                                                          strideC,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasHerkStridedBatchedFn(handle,
                                                           uplo,
                                                           HIPBLAS_OP_T,
