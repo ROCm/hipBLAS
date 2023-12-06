@@ -116,18 +116,18 @@ void testing_axpy_ex_bad_arg(const Arguments& arg)
             }
         }
 
-        CHECK_HIP_ERROR(hipblasAxpyExFn(handle,
-                                        0,
-                                        nullptr,
-                                        alphaType,
-                                        nullptr,
-                                        xType,
-                                        incx,
-                                        nullptr,
-                                        yType,
-                                        incy,
-                                        executionType));
-        CHECK_HIP_ERROR(hipblasAxpyExFn(
+        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(handle,
+                                            0,
+                                            nullptr,
+                                            alphaType,
+                                            nullptr,
+                                            xType,
+                                            incx,
+                                            nullptr,
+                                            yType,
+                                            incy,
+                                            executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
             handle, N, zero, alphaType, nullptr, xType, incx, nullptr, yType, incy, executionType));
     }
 }
