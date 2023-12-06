@@ -38,6 +38,49 @@ inline void testname_nrm2_batched_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
+void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN                = arg.fortran;
+    auto hipblasNrm2BatchedExFn = FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t batch_count = 2;
+
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<Tx> dx(N, incx, batch_count);
+    device_vector<Tr>       d_res(batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasNrm2BatchedExFn(
+                nullptr, N, dx, xType, incx, batch_count, d_res, resultType, executionType),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasNrm2BatchedExFn(
+                    handle, N, nullptr, xType, incx, batch_count, d_res, resultType, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasNrm2BatchedExFn(
+                    handle, N, dx, xType, incx, batch_count, nullptr, resultType, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_batched_ex(const Arguments& arg)
 {
     bool FORTRAN                = arg.fortran;

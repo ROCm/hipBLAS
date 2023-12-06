@@ -58,4 +58,24 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: scal_ex_bad_arg
+    category: pre_checkin
+    function:
+      - scal_ex_bad_arg: *scal_ex_precision_all
+      - scal_batched_ex_bad_arg: *scal_ex_precision_all
+      - scal_strided_batched_ex_bad_arg: *scal_ex_precision_all
+      - scal_ex_bad_arg: *scal_ex_precision_amd
+      - scal_batched_ex_bad_arg: *scal_ex_precision_amd
+      - scal_strided_batched_ex_bad_arg: *scal_ex_precision_amd
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: scal_ex_bad_arg
+    category: pre_checkin
+    function:
+      - scal_ex_bad_arg: *scal_ex_precision_all
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

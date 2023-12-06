@@ -46,6 +46,163 @@ inline void testname_axpy_strided_batched_ex(const Arguments& arg, std::string& 
 }
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
+void testing_axpy_strided_batched_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
+    auto hipblasAxpyStridedBatchedExFn
+        = FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasDatatype_t alphaType     = arg.a_type;
+        hipblasDatatype_t xType         = arg.b_type;
+        hipblasDatatype_t yType         = arg.c_type;
+        hipblasDatatype_t executionType = arg.compute_type;
+
+        int64_t N           = 100;
+        int64_t incx        = 1;
+        int64_t incy        = 1;
+        int64_t batch_count = 2;
+
+        hipblasStride stridex = N * incx;
+        hipblasStride stridey = N * incy;
+
+        device_vector<Ta> d_alpha(1), d_zero(1);
+        device_vector<Tx> dx(stridex * batch_count);
+        device_vector<Ty> dy(stridey * batch_count);
+
+        const Ta  h_alpha(1), h_zero(0);
+        const Ta* alpha = &h_alpha;
+        const Ta* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(h_alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, &h_zero, sizeof(h_zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(nullptr,
+                                                            N,
+                                                            alpha,
+                                                            alphaType,
+                                                            dx,
+                                                            xType,
+                                                            incx,
+                                                            stridex,
+                                                            dy,
+                                                            yType,
+                                                            incy,
+                                                            stridey,
+                                                            batch_count,
+                                                            executionType),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
+                                                                N,
+                                                                nullptr,
+                                                                alphaType,
+                                                                dx,
+                                                                xType,
+                                                                incx,
+                                                                stridex,
+                                                                dy,
+                                                                yType,
+                                                                incy,
+                                                                stridey,
+                                                                batch_count,
+                                                                executionType),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            // Can only check for nullptr for dx/dy with host mode because
+            // device mode may not check as it could be quick-return success
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
+                                                                    N,
+                                                                    alpha,
+                                                                    alphaType,
+                                                                    nullptr,
+                                                                    xType,
+                                                                    incx,
+                                                                    stridex,
+                                                                    dy,
+                                                                    yType,
+                                                                    incy,
+                                                                    stridey,
+                                                                    batch_count,
+                                                                    executionType),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
+                                                                    N,
+                                                                    alpha,
+                                                                    alphaType,
+                                                                    dx,
+                                                                    xType,
+                                                                    incx,
+                                                                    stridex,
+                                                                    nullptr,
+                                                                    yType,
+                                                                    incy,
+                                                                    stridey,
+                                                                    batch_count,
+                                                                    executionType),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+        }
+
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                          0,
+                                                          nullptr,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          yType,
+                                                          incy,
+                                                          stridey,
+                                                          batch_count,
+                                                          executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                          N,
+                                                          zero,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          yType,
+                                                          incy,
+                                                          stridey,
+                                                          batch_count,
+                                                          executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
+                                                          N,
+                                                          nullptr,
+                                                          alphaType,
+                                                          nullptr,
+                                                          xType,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          yType,
+                                                          incy,
+                                                          stridey,
+                                                          0,
+                                                          executionType));
+    }
+}
+
+template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_strided_batched_ex(const Arguments& arg)
 {
     bool FORTRAN = arg.fortran;

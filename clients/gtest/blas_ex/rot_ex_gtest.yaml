@@ -43,4 +43,21 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: rot_ex_bad_arg
+    category: pre_checkin
+    function:
+      - rot_ex_bad_arg: *rot_ex_precisions
+      - rot_batched_ex_bad_arg: *rot_ex_precisions
+      - rot_strided_batched_ex_bad_arg: *rot_ex_precisions
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: rot_ex_bad_arg
+    category: pre_checkin
+    function:
+      - rot_ex_bad_arg: *rot_ex_precisions
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

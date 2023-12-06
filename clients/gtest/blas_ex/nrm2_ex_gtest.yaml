@@ -40,4 +40,21 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: nrm2_ex_bad_arg
+    category: pre_checkin
+    function:
+      - nrm2_ex_bad_arg: *nrm2_ex_precisions
+      - nrm2_batched_ex_bad_arg: *nrm2_ex_precisions
+      - nrm2_strided_batched_ex_bad_arg: *nrm2_ex_precisions
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: nrm2_ex_bad_arg
+    category: pre_checkin
+    function:
+      - nrm2_ex_bad_arg: *nrm2_ex_precisions
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...
