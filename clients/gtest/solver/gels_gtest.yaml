@@ -48,4 +48,22 @@ Tests:
     stride_scale: [ 2.0 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: gels_bad_arg
+    category: quick
+    function:
+      - gels_bad_arg
+      - gels_batched_bad_arg
+      - gels_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: gels_bad_arg
+    category: quick
+    function:
+      - gels_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: NVIDIA
 ...

@@ -35,4 +35,22 @@ Tests:
     stride_scale: [ 2.0 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: geqrf_bad_arg
+    category: quick
+    function:
+      - geqrf_bad_arg
+      - geqrf_batched_bad_arg
+      - geqrf_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: geqrf_bad_arg
+    category: quick
+    function:
+      - geqrf_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: NVIDIA
 ...
