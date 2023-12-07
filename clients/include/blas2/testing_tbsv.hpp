@@ -64,6 +64,10 @@ void testing_tbsv_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasTbsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, K, dA, lda, dx, incx),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTbsvFn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, K, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasTbsvFn(handle,
                                             uplo,
                                             (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,

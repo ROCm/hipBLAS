@@ -87,6 +87,19 @@ void testing_hbmv_bad_arg(const Arguments& arg)
             hipblasHbmvFn(
                 handle, HIPBLAS_FILL_MODE_FULL, N, K, alpha, dA, lda, dx, incx, beta, dy, incy),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHbmvFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            N,
+                                            K,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx,
+                                            beta,
+                                            dy,
+                                            incy),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {

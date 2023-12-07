@@ -92,9 +92,18 @@ void testing_herk_bad_arg(const Arguments& arg)
                 handle, HIPBLAS_FILL_MODE_FULL, transA, N, K, alpha, dA, lda, beta, dC, ldc),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // TODO: we are just using a simple cast for rocBLAS backend, should give invalid_enum for this test
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, beta, dC, ldc),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            transA,
+                                            N,
+                                            K,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         // TODO: Supported in cuBLAS but not in rocBLAS? Need to investigate.
         // EXPECT_HIPBLAS_STATUS(
