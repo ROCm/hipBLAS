@@ -87,6 +87,19 @@ void testing_trsv_strided_batched_bad_arg(const Arguments& arg)
                                                           stridex,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsvStridedBatchedFn(handle,
                                         uplo,

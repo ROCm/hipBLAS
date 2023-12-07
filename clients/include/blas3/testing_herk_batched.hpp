@@ -120,8 +120,19 @@ void testing_herk_batched_bad_arg(const Arguments& arg)
                                                    ldc,
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA.ptr_on_device(), lda, beta, dC.ptr_on_device(), ldc, batch_count),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   transA,
+                                                   N,
+                                                   K,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   beta,
+                                                   dC.ptr_on_device(),
+                                                   ldc,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle,
                                                    uplo,
                                                    HIPBLAS_OP_T,

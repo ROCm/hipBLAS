@@ -86,6 +86,18 @@ void testing_symv_bad_arg(const Arguments& arg)
             hipblasSymvFn(
                 handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dA, lda, dx, incx, beta, dy, incy),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSymvFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx,
+                                            beta,
+                                            dy,
+                                            incy),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {

@@ -79,6 +79,18 @@ void testing_tpmv_strided_batched_bad_arg(const Arguments& arg)
                                                           stridex,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTpmvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          dA,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(
             hipblasTpmvStridedBatchedFn(handle,
                                         uplo,

@@ -84,6 +84,15 @@ void testing_spr_batched_bad_arg(const Arguments& arg)
                                                   dA.ptr_on_device(),
                                                   batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSprBatchedFn(handle,
+                                                  (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                  N,
+                                                  alpha,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasSprBatchedFn(handle,
                                                   uplo,
