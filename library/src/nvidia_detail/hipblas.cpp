@@ -4505,19 +4505,19 @@ hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t    handle,
                                     int                batchCount)
 try
 {
-    return hipCUBLASStatusToHIPStatus(cublasSgemv((cublasHandle_t)handle,
-                                                  hipOperationToCudaOperation(trans),
-                                                  m,
-                                                  n,
-                                                  alpha,
-                                                  A,
-                                                  lda,
-                                                  x,
-                                                  incx,
-                                                  beta,
-                                                  y,
-                                                  incy,
-                                                  batch_count));
+    return hipCUBLASStatusToHIPStatus(cublasSgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -4539,19 +4539,19 @@ hipblasStatus_t hipblasDgemvBatched(hipblasHandle_t     handle,
                                     int                 batchCount)
 try
 {
-    return hipCUBLASStatusToHIPStatus(cublasDgemv((cublasHandle_t)handle,
-                                                  hipOperationToCudaOperation(trans),
-                                                  m,
-                                                  n,
-                                                  alpha,
-                                                  A,
-                                                  lda,
-                                                  x,
-                                                  incx,
-                                                  beta,
-                                                  y,
-                                                  incy,
-                                                  batch_count));
+    return hipCUBLASStatusToHIPStatus(cublasDgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -4572,19 +4572,19 @@ hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             handle,
                                     int                         incy,
                                     int                         batchCount)
 {
-    return hipCUBLASStatusToHIPStatus(cublasCgemv((cublasHandle_t)handle,
-                                                  hipOperationToCudaOperation(trans),
-                                                  m,
-                                                  n,
-                                                  alpha,
-                                                  A,
-                                                  lda,
-                                                  x,
-                                                  incx,
-                                                  beta,
-                                                  y,
-                                                  incy,
-                                                  batch_count));
+    return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
 }
 
 hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
@@ -4601,19 +4601,19 @@ hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
                                     int                               incy,
                                     int                               batchCount)
 {
-    return hipCUBLASStatusToHIPStatus(cublasZgemv((cublasHandle_t)handle,
-                                                  hipOperationToCudaOperation(trans),
-                                                  m,
-                                                  n,
-                                                  alpha,
-                                                  A,
-                                                  lda,
-                                                  x,
-                                                  incx,
-                                                  beta,
-                                                  y,
-                                                  incy,
-                                                  batch_count));
+    return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
 }
 
 hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
@@ -4630,7 +4630,19 @@ hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
                                        int                     incy,
                                        int                     batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuComplex*)alpha,
+                                                         (const cuComplex**)A,
+                                                         lda,
+                                                         (const cuComplex**)x,
+                                                         incx,
+                                                         beta,
+                                                         (cuComplex**)y,
+                                                         incy,
+                                                         batchCount));
 }
 
 hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
@@ -4647,7 +4659,19 @@ hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
                                        int                           incy,
                                        int                           batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuComplex*)alpha,
+                                                         (const cuComplex**)A,
+                                                         lda,
+                                                         (const cuComplex**)x,
+                                                         incx,
+                                                         beta,
+                                                         (cuComplex**)y,
+                                                         incy,
+                                                         batchCount));
 }
 
 // gemv_strided_batched
