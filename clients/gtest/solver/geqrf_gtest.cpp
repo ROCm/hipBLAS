@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "geqrf"))
                 testing_geqrf<T>(arg);
+            else if(!strcmp(arg.function, "geqrf_bad_arg"))
+                testing_geqrf_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "geqrf_batched"))
                 testing_geqrf_batched<T>(arg);
+            else if(!strcmp(arg.function, "geqrf_batched_bad_arg"))
+                testing_geqrf_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "geqrf_strided_batched"))
                 testing_geqrf_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "geqrf_strided_batched_bad_arg"))
+                testing_geqrf_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
