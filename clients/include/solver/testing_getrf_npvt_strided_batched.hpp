@@ -37,6 +37,50 @@ inline void testname_getrf_npvt_strided_batched(const Arguments& arg, std::strin
 }
 
 template <typename T>
+void testing_getrf_npvt_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.fortran;
+    auto hipblasGetrfStridedBatchedFn
+        = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N           = 101;
+    int64_t            M           = N;
+    int64_t            lda         = 102;
+    int64_t            batch_count = 2;
+    hipblasStride      strideA     = N * lda;
+
+    device_vector<T>   dA(strideA * batch_count);
+    device_vector<int> dInfo(batch_count);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfStridedBatchedFn(nullptr, N, dA, lda, strideA, nullptr, 0, dInfo, batch_count),
+        HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfStridedBatchedFn(handle, -1, dA, lda, strideA, nullptr, 0, dInfo, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfStridedBatchedFn(handle, N, dA, N - 1, strideA, nullptr, 0, dInfo, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfStridedBatchedFn(handle, N, dA, lda, strideA, nullptr, 0, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
+                                  handle, N, nullptr, lda, strideA, nullptr, 0, dInfo, batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
+                                  handle, N, dA, lda, strideA, nullptr, 0, nullptr, batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getrf_npvt_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
