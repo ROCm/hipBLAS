@@ -69,9 +69,9 @@ void testing_copy(const Arguments& arg)
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -83,10 +83,10 @@ void testing_copy(const Arguments& arg)
         return;
     }
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t sizeX    = size_t(N) * abs_incx;
-    size_t sizeY    = size_t(N) * abs_incy;
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
+    int64_t sizeX    = N * abs_incx;
+    int64_t sizeY    = N * abs_incy;
     if(!sizeX)
         sizeX = 1;
     if(!sizeY)

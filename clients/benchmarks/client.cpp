@@ -47,7 +47,6 @@
 #include <type_traits>
 
 using namespace roc; // For emulated program_options
-typedef int hipblas_int;
 
 int hipblas_bench_datafile()
 {
@@ -143,8 +142,8 @@ try
     std::string compute_type;
     std::string compute_type_gemm;
     std::string initialization;
-    hipblas_int device_id;
-    hipblas_int parallel_devices;
+    int         device_id;
+    int         parallel_devices;
 
     bool datafile            = hipblas_parse_data(argc, argv);
     bool atomics_not_allowed = false;
@@ -157,44 +156,44 @@ try
     desc.add_options()
 
         ("sizem,m",
-         value<hipblas_int>(&arg.M)->default_value(128),
+         value<int64_t>(&arg.M)->default_value(128),
          "Specific matrix size: sizem is only applicable to BLAS-2 & BLAS-3: the number of "
          "rows or columns in matrix.")
 
         ("sizen,n",
-         value<hipblas_int>(&arg.N)->default_value(128),
+         value<int64_t>(&arg.N)->default_value(128),
          "Specific matrix/vector size: BLAS-1: the length of the vector. BLAS-2 & "
          "BLAS-3: the number of rows or columns in matrix")
 
         ("sizek,k",
-         value<hipblas_int>(&arg.K)->default_value(128),
+         value<int64_t>(&arg.K)->default_value(128),
          "Specific matrix size: BLAS-2: the number of sub or super-diagonals of A. BLAS-3: "
          "the number of columns in A and rows in B.")
 
         ("kl",
-         value<hipblas_int>(&arg.KL)->default_value(128),
+         value<int64_t>(&arg.KL)->default_value(128),
          "Specific matrix size: kl is only applicable to BLAS-2: The number of sub-diagonals "
          "of the banded matrix A.")
 
         ("ku",
-         value<hipblas_int>(&arg.KU)->default_value(128),
+         value<int64_t>(&arg.KU)->default_value(128),
          "Specific matrix size: ku is only applicable to BLAS-2: The number of super-diagonals "
          "of the banded matrix A.")
 
         ("lda",
-         value<hipblas_int>(&arg.lda)->default_value(128),
+         value<int64_t>(&arg.lda)->default_value(128),
          "Leading dimension of matrix A, is only applicable to BLAS-2 & BLAS-3.")
 
         ("ldb",
-         value<hipblas_int>(&arg.ldb)->default_value(128),
+         value<int64_t>(&arg.ldb)->default_value(128),
          "Leading dimension of matrix B, is only applicable to BLAS-2 & BLAS-3.")
 
         ("ldc",
-         value<hipblas_int>(&arg.ldc)->default_value(128),
+         value<int64_t>(&arg.ldc)->default_value(128),
          "Leading dimension of matrix C, is only applicable to BLAS-2 & BLAS-3.")
 
         ("ldd",
-         value<hipblas_int>(&arg.ldd)->default_value(128),
+         value<int64_t>(&arg.ldd)->default_value(128),
          "Leading dimension of matrix D, is only applicable to BLAS-EX ")
 
         ("stride_a",
@@ -228,11 +227,11 @@ try
          "BLAS_2: leading dimension.")
 
         ("incx",
-         value<hipblas_int>(&arg.incx)->default_value(1),
+         value<int64_t>(&arg.incx)->default_value(1),
          "increment between values in x vector")
 
         ("incy",
-         value<hipblas_int>(&arg.incy)->default_value(1),
+         value<int64_t>(&arg.incy)->default_value(1),
          "increment between values in y vector")
 
         ("alpha",
@@ -305,7 +304,7 @@ try
          "U = unit diagonal, N = non unit diagonal. Only applicable to certain routines") // xtrsm xtrsm_ex xtrsv xtrmm
 
         ("batch_count",
-         value<hipblas_int>(&arg.batch_count)->default_value(1),
+         value<int64_t>(&arg.batch_count)->default_value(1),
          "Number of matrices. Only applicable to batched and strided_batched routines")
 
         ("inplace",
@@ -313,15 +312,15 @@ try
          "Whether or not to use the in place version of the algorithm. Only applicable to trmm routines")
 
         ("verify,v",
-         value<hipblas_int>(&arg.norm_check)->default_value(0),
+         value<int>(&arg.norm_check)->default_value(0),
          "Validate GPU results with CPU? 0 = No, 1 = Yes (default: No)")
 
         ("iters,i",
-         value<hipblas_int>(&arg.iters)->default_value(10),
+         value<int>(&arg.iters)->default_value(10),
          "Iterations to run inside timing loop")
 
         ("cold_iters,j",
-         value<hipblas_int>(&arg.cold_iters)->default_value(2),
+         value<int>(&arg.cold_iters)->default_value(2),
          "Cold Iterations to run before entering the timing loop")
 
         ("algo",
@@ -341,11 +340,11 @@ try
          "Atomic operations with non-determinism in results are not allowed")
 
         ("device",
-         value<hipblas_int>(&device_id)->default_value(0),
+         value<int>(&device_id)->default_value(0),
          "Set default device to be used for subsequent program runs")
 
         ("parallel_devices",
-         value<hipblas_int>(&parallel_devices)->default_value(0),
+         value<int>(&parallel_devices)->default_value(0),
          "Set number of devices used for parallel runs (device 0 to parallel_devices-1)")
 
         // ("c_noalias_d",
@@ -397,7 +396,7 @@ try
     ArgumentModel_set_log_datatype(log_datatype);
 
     // Device Query
-    hipblas_int device_count = query_device_property();
+    int device_count = query_device_property();
 
     std::cout << std::endl;
     if(device_count <= device_id)

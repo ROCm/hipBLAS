@@ -1,0 +1,171 @@
+/* ************************************************************************
+ * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell cop-
+ * ies of the Software, and to permit persons to whom the Software is furnished
+ * to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IM-
+ * PLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNE-
+ * CTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * ************************************************************************ */
+
+#if defined(HIPBLAS_INTERNAL_ILP64)
+#define HIPBLAS_FAPI(_f) _f##_64Fortran
+#define hipblas_int int64_t
+#else
+#define HIPBLAS_FAPI(_f) _f##Fortran
+#define hipblas_int int
+#endif
+
+#ifdef HIPBLAS_V2
+#define hipblasComplex hipComplex
+#define hipblasDoubleComplex hipDoubleComplex
+#endif
+
+/* ==========
+ *    L1
+ * ========== */
+
+// amax
+
+// amin
+
+// asum
+
+// axpy
+
+// copy
+hipblasStatus_t HIPBLAS_FAPI(hipblasScopy)(hipblasHandle_t handle,
+                                           hipblas_int     n,
+                                           const float*    x,
+                                           hipblas_int     incx,
+                                           float*          y,
+                                           hipblas_int     incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDcopy)(hipblasHandle_t handle,
+                                           hipblas_int     n,
+                                           const double*   x,
+                                           hipblas_int     incx,
+                                           double*         y,
+                                           hipblas_int     incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCcopy)(hipblasHandle_t       handle,
+                                           hipblas_int           n,
+                                           const hipblasComplex* x,
+                                           hipblas_int           incx,
+                                           hipblasComplex*       y,
+                                           hipblas_int           incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZcopy)(hipblasHandle_t             handle,
+                                           hipblas_int                 n,
+                                           const hipblasDoubleComplex* x,
+                                           hipblas_int                 incx,
+                                           hipblasDoubleComplex*       y,
+                                           hipblas_int                 incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScopyBatched)(hipblasHandle_t    handle,
+                                                  hipblas_int        n,
+                                                  const float* const x[],
+                                                  hipblas_int        incx,
+                                                  float* const       y[],
+                                                  hipblas_int        incy,
+                                                  hipblas_int        batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDcopyBatched)(hipblasHandle_t     handle,
+                                                  hipblas_int         n,
+                                                  const double* const x[],
+                                                  hipblas_int         incx,
+                                                  double* const       y[],
+                                                  hipblas_int         incy,
+                                                  hipblas_int         batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCcopyBatched)(hipblasHandle_t             handle,
+                                                  hipblas_int                 n,
+                                                  const hipblasComplex* const x[],
+                                                  hipblas_int                 incx,
+                                                  hipblasComplex* const       y[],
+                                                  hipblas_int                 incy,
+                                                  hipblas_int                 batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZcopyBatched)(hipblasHandle_t                   handle,
+                                                  hipblas_int                       n,
+                                                  const hipblasDoubleComplex* const x[],
+                                                  hipblas_int                       incx,
+                                                  hipblasDoubleComplex* const       y[],
+                                                  hipblas_int                       incy,
+                                                  hipblas_int                       batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScopyStridedBatched)(hipblasHandle_t handle,
+                                                         hipblas_int     n,
+                                                         const float*    x,
+                                                         hipblas_int     incx,
+                                                         hipblasStride   stridex,
+                                                         float*          y,
+                                                         hipblas_int     incy,
+                                                         hipblasStride   stridey,
+                                                         hipblas_int     batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDcopyStridedBatched)(hipblasHandle_t handle,
+                                                         hipblas_int     n,
+                                                         const double*   x,
+                                                         hipblas_int     incx,
+                                                         hipblasStride   stridex,
+                                                         double*         y,
+                                                         hipblas_int     incy,
+                                                         hipblasStride   stridey,
+                                                         hipblas_int     batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCcopyStridedBatched)(hipblasHandle_t       handle,
+                                                         hipblas_int           n,
+                                                         const hipblasComplex* x,
+                                                         hipblas_int           incx,
+                                                         hipblasStride         stridex,
+                                                         hipblasComplex*       y,
+                                                         hipblas_int           incy,
+                                                         hipblasStride         stridey,
+                                                         hipblas_int           batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZcopyStridedBatched)(hipblasHandle_t             handle,
+                                                         hipblas_int                 n,
+                                                         const hipblasDoubleComplex* x,
+                                                         hipblas_int                 incx,
+                                                         hipblasStride               stridex,
+                                                         hipblasDoubleComplex*       y,
+                                                         hipblas_int                 incy,
+                                                         hipblasStride               stridey,
+                                                         hipblas_int                 batch_count);
+
+// dot
+
+// nrm2
+
+// rot
+
+// rotg
+
+// rotm
+
+// rotmg
+
+// scal
+
+// swap
+
+#ifdef HIPBLAS_V2
+#undef hipblasComplex
+#undef hipblasDoubleComplex
+#endif
+
+#undef HIPBLAS_FAPI
+#undef hipblas_int

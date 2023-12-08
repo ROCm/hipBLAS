@@ -146,11 +146,11 @@ public:
         // will be printed by hipblas_test or hipblas_bench. For example, the function:
         //
         //  hipblas_ddot(hipblas_handle handle,
-        //                                 hipblas_int    n,
+        //                                 int            n,
         //                                 const double*  x,
-        //                                 hipblas_int    incx,
+        //                                 int            incx,
         //                                 const double*  y,
-        //                                 hipblas_int    incy,
+        //                                 int            incy,
         //                                 double*        result);
         // will have <Args> = <e_N, e_incx, e_incy>
         //

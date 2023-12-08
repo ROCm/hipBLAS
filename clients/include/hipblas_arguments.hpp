@@ -58,8 +58,10 @@ typedef enum hipblas_backend_
 
 typedef enum hipblas_client_api_
 {
-    C,
-    FORTRAN,
+    C          = 0,
+    C_64       = 1,
+    FORTRAN    = 2,
+    FORTRAN_64 = 3
 } hipblas_client_api;
 
 // conversion helpers
