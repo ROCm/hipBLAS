@@ -39,7 +39,7 @@ inline void testname_getrf_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_getrf_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == FORTRAN;
     auto hipblasGetrfStridedBatchedFn
         = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
 

@@ -38,7 +38,7 @@ inline void testname_getrf_npvt(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_getrf_npvt_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     hipblasLocalHandle handle(arg);
