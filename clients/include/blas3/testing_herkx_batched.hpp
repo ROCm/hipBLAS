@@ -51,7 +51,7 @@ template <typename T>
 void testing_herkx_batched_bad_arg(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxBatchedFn
         = FORTRAN ? hipblasHerkxBatched<T, U, true> : hipblasHerkxBatched<T, U, false>;
 
@@ -326,7 +326,7 @@ template <typename T>
 void testing_herkx_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxBatchedFn
         = FORTRAN ? hipblasHerkxBatched<T, U, true> : hipblasHerkxBatched<T, U, false>;
 

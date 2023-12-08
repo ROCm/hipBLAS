@@ -40,7 +40,7 @@ inline void testname_trtri_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trtri_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrtriBatchedFn
         = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 
@@ -119,7 +119,7 @@ void testing_trtri_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trtri_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrtriBatchedFn
         = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 

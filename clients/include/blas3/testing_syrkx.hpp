@@ -41,7 +41,7 @@ inline void testname_syrkx(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_syrkx_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyrkxFn = FORTRAN ? hipblasSyrkx<T, true> : hipblasSyrkx<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -187,7 +187,7 @@ void testing_syrkx_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syrkx(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyrkxFn = FORTRAN ? hipblasSyrkx<T, true> : hipblasSyrkx<T, false>;
 
     hipblasFillMode_t  uplo  = char2hipblas_fill(arg.uplo);

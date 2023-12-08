@@ -45,7 +45,7 @@ inline void testname_dotc_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
                                   : (CONJ ? hipblasDotcEx : hipblasDotEx);
 
@@ -124,7 +124,7 @@ void testing_dotc_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
                                   : (CONJ ? hipblasDotcEx : hipblasDotEx);
 

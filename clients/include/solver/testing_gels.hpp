@@ -39,7 +39,8 @@ inline void testname_gels(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gels_bad_arg(const Arguments& arg)
 {
-    auto hipblasGelsFn = arg.api == FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
+    auto hipblasGelsFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
 
     hipblasLocalHandle       handle(arg);
     const int                M     = 100;
@@ -148,7 +149,7 @@ template <typename T>
 void testing_gels(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.api == FORTRAN;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGelsFn = FORTRAN ? hipblasGels<T, true> : hipblasGels<T, false>;
 
     char transc = arg.transA;

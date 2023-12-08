@@ -40,7 +40,7 @@ inline void testname_nrm2_batched_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == FORTRAN;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2BatchedExFn = FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
 
     int64_t N           = 100;
@@ -83,7 +83,7 @@ void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == FORTRAN;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2BatchedExFn = FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
 
     int N           = arg.N;

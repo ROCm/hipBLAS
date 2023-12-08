@@ -41,8 +41,9 @@ inline void testname_trmm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trmm_bad_arg(const Arguments& arg)
 {
-    auto hipblasTrmmFn = arg.api == FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
-    bool inplace       = arg.inplace;
+    auto hipblasTrmmFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
+    bool inplace = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
     {
@@ -308,7 +309,7 @@ void testing_trmm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == FORTRAN;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrmmFn = FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
     bool inplace       = arg.inplace;
 

@@ -54,7 +54,7 @@ inline void testname_geam_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_geam_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamStridedBatchedFn
         = FORTRAN ? hipblasGeamStridedBatched<T, true> : hipblasGeamStridedBatched<T, false>;
 
@@ -392,7 +392,7 @@ void testing_geam_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_geam_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamStridedBatchedFn
         = FORTRAN ? hipblasGeamStridedBatched<T, true> : hipblasGeamStridedBatched<T, false>;
 

@@ -41,7 +41,7 @@ inline void testname_dgmm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_dgmm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDgmmBatchedFn
         = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
 
@@ -140,7 +140,7 @@ void testing_dgmm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_dgmm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDgmmBatchedFn
         = FORTRAN ? hipblasDgmmBatched<T, true> : hipblasDgmmBatched<T, false>;
 

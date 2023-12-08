@@ -53,7 +53,7 @@ inline void testname_trsm_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename T>
 void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmStridedBatchedExFn
         = FORTRAN ? hipblasTrsmStridedBatchedEx : hipblasTrsmStridedBatchedEx;
 
@@ -395,7 +395,7 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmStridedBatchedExFn
         = FORTRAN ? hipblasTrsmStridedBatchedEx : hipblasTrsmStridedBatchedEx;
 

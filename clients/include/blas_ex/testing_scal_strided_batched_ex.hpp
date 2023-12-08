@@ -46,7 +46,7 @@ inline void testname_scal_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedExFn
         = FORTRAN ? hipblasScalStridedBatchedExFortran : hipblasScalStridedBatchedEx;
 
@@ -116,7 +116,7 @@ void testing_scal_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == FORTRAN;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedExFn
         = FORTRAN ? hipblasScalStridedBatchedExFortran : hipblasScalStridedBatchedEx;
 

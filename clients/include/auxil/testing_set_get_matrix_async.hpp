@@ -40,7 +40,7 @@ inline void testname_set_get_matrix_async(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_set_get_matrix_async(const Arguments& arg)
 {
-    bool FORTRAN                 = arg.api == FORTRAN;
+    bool FORTRAN                 = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSetMatrixAsyncFn = FORTRAN ? hipblasSetMatrixAsyncFortran : hipblasSetMatrixAsync;
     auto hipblasGetMatrixAsyncFn = FORTRAN ? hipblasGetMatrixAsyncFortran : hipblasGetMatrixAsync;
 

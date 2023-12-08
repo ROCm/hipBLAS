@@ -38,7 +38,7 @@ inline void testname_getrf(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_getrf_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -77,7 +77,7 @@ template <typename T>
 void testing_getrf(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.api == FORTRAN;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     int M   = arg.N;

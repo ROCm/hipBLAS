@@ -59,7 +59,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 {
     // Note: hipblasGemmEx and hipblasGemmExWithFlags are essentially the exact same.
     //       Only testing WithFlags version as it has slightly more functionality.
-    bool FORTRAN         = arg.api == FORTRAN;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
 
     hipblasLocalHandle handle(arg);
@@ -295,7 +295,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 template <typename Ti, typename To = Ti, typename Tex = To>
 void testing_gemm_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == FORTRAN;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
     auto hipblasGemmExWithFlagsFn
         = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;

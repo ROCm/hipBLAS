@@ -52,7 +52,7 @@ template <typename T>
 void testing_her2k_strided_batched_bad_arg(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.api == FORTRAN;
+    bool FORTRAN                      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2kStridedBatchedFn = FORTRAN ? hipblasHer2kStridedBatched<T, U, true>
                                                 : hipblasHer2kStridedBatched<T, U, false>;
 
@@ -374,7 +374,7 @@ template <typename T>
 void testing_her2k_strided_batched(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.api == FORTRAN;
+    bool FORTRAN                      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2kStridedBatchedFn = FORTRAN ? hipblasHer2kStridedBatched<T, U, true>
                                                 : hipblasHer2kStridedBatched<T, U, false>;
 
