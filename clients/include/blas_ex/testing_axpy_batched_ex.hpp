@@ -47,7 +47,7 @@ inline void testname_axpy_batched_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.fortran;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyBatchedExFn = FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -186,7 +186,7 @@ void testing_axpy_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.fortran;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyBatchedExFn = FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
 
     int N           = arg.N;

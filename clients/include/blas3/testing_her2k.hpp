@@ -42,7 +42,7 @@ template <typename T>
 void testing_her2k_bad_arg(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2kFn = FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
 
     hipblasLocalHandle handle(arg);
@@ -195,7 +195,7 @@ template <typename T>
 void testing_her2k(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2kFn = FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
 
     int N   = arg.N;

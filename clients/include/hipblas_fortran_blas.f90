@@ -87,7 +87,7 @@ function hipblasGetMatrixFortran(rows, cols, elemSize, A, lda, B, ldb) &
     type(c_ptr), value :: B
     integer(c_int), value :: ldb
             hipblasGetMatrixFortran = &
-        hipblasSetMatrix(rows, cols, elemSize, A, lda, B, ldb)
+        hipblasGetMatrix(rows, cols, elemSize, A, lda, B, ldb)
 end function hipblasGetMatrixFortran
 
 function hipblasSetVectorAsyncFortran(n, elemSize, x, incx, y, incy, stream) &

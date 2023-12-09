@@ -51,7 +51,7 @@ inline void testname_dotc_batched_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcBatchedExFortran : hipblasDotBatchedExFortran)
                   : (CONJ ? hipblasDotcBatchedEx : hipblasDotBatchedEx);
@@ -144,7 +144,7 @@ void testing_dotc_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcBatchedExFortran : hipblasDotBatchedExFortran)
                   : (CONJ ? hipblasDotcBatchedEx : hipblasDotBatchedEx);

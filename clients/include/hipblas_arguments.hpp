@@ -156,7 +156,6 @@ struct Arguments
     int apiCallCount = 1;
     int batch_count  = 10;
 
-    bool fortran    = false;
     bool inplace    = false; // only for trmm
     bool with_flags = false;
 
@@ -176,7 +175,7 @@ struct Arguments
 
     hipblas_client_os  os_flags;
     hipblas_backend    backend_flags;
-    hipblas_client_api api;
+    hipblas_client_api api = hipblas_client_api::C;
 
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
@@ -230,7 +229,6 @@ struct Arguments
     OPER(diag) SEP                   \
     OPER(apiCallCount) SEP           \
     OPER(batch_count) SEP            \
-    OPER(fortran) SEP                \
     OPER(inplace) SEP                \
     OPER(with_flags) SEP             \
     OPER(norm_check) SEP             \

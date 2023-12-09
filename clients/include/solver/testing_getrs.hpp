@@ -91,7 +91,8 @@ void setup_getrs_testing(host_vector<T>&     hA,
 template <typename T>
 void testing_getrs_bad_arg(const Arguments& arg)
 {
-    auto hipblasGetrsFn = arg.fortran ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
+    auto hipblasGetrsFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          N         = 100;
@@ -175,7 +176,7 @@ template <typename T>
 void testing_getrs(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
     int N   = arg.N;
