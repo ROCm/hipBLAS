@@ -38,7 +38,7 @@ inline void testname_getri_npvt_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_getri_npvt_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetriBatchedFn
         = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
 
@@ -129,7 +129,7 @@ template <typename T>
 void testing_getri_npvt_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetriBatchedFn
         = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
 

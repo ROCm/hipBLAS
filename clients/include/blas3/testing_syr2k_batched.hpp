@@ -50,7 +50,7 @@ inline void testname_syr2k_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_syr2k_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyr2kBatchedFn
         = FORTRAN ? hipblasSyr2kBatched<T, true> : hipblasSyr2kBatched<T, false>;
 
@@ -307,7 +307,7 @@ void testing_syr2k_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2k_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyr2kBatchedFn
         = FORTRAN ? hipblasSyr2kBatched<T, true> : hipblasSyr2kBatched<T, false>;
 

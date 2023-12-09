@@ -52,7 +52,7 @@ inline void testname_dotc_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotStridedBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcStridedBatchedExFortran : hipblasDotStridedBatchedExFortran)
                   : (CONJ ? hipblasDotcStridedBatchedEx : hipblasDotStridedBatchedEx);
@@ -156,7 +156,7 @@ void testing_dotc_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotStridedBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcStridedBatchedExFortran : hipblasDotStridedBatchedExFortran)
                   : (CONJ ? hipblasDotcStridedBatchedEx : hipblasDotStridedBatchedEx);

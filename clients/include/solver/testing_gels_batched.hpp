@@ -40,8 +40,9 @@ inline void testname_gels_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gels_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasGelsBatchedFn
-        = arg.fortran ? hipblasGelsBatched<T, true> : hipblasGelsBatched<T, false>;
+    auto hipblasGelsBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                    ? hipblasGelsBatched<T, true>
+                                    : hipblasGelsBatched<T, false>;
 
     hipblasLocalHandle       handle(arg);
     const int                M          = 100;
@@ -213,7 +214,7 @@ template <typename T>
 void testing_gels_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGelsBatchedFn
         = FORTRAN ? hipblasGelsBatched<T, true> : hipblasGelsBatched<T, false>;
 

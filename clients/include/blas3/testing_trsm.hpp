@@ -41,7 +41,7 @@ inline void testname_trsm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -155,7 +155,7 @@ void testing_trsm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
 
     hipblasSideMode_t  side   = char2hipblas_side(arg.side);
