@@ -14204,6 +14204,7 @@ hipblasStatus_t
 }
 
 // scal
+// Need these temporarily during transition period between hipblasComplex -> hipComplex
 #ifdef HIPBLAS_V2
 hipblasStatus_t hipblasCscalCast(
     hipblasHandle_t handle, int n, const hipblasComplex* alpha, hipblasComplex* x, int incx)

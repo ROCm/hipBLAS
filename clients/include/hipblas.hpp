@@ -50,94 +50,94 @@
 #if !defined(HIPBLAS_V2) \
     && !defined(         \
         WIN32) // HIPBLAS_V2 doesn't have fortran tests during transition period, WIN doesn't have fortran tests
-#define MAP2CF3(FN, A, PFN)         \
-    template <>                     \
-    static auto FN<A, false> = PFN; \
-    template <>                     \
-    static auto FN<A, true> = PFN##Fortran
-#define MAP2CF4(FN, A, B, PFN)         \
-    template <>                        \
-    static auto FN<A, B, false> = PFN; \
-    template <>                        \
-    static auto FN<A, B, true> = PFN##Fortran
-#define MAP2CF5(FN, A, B, C, PFN)         \
-    template <>                           \
-    static auto FN<A, B, C, false> = PFN; \
-    template <>                           \
-    static auto FN<A, B, C, true> = PFN##Fortran
+#define MAP2CF3(FN, A, PFN)  \
+    template <>              \
+    auto FN<A, false> = PFN; \
+    template <>              \
+    auto FN<A, true> = PFN##Fortran
+#define MAP2CF4(FN, A, B, PFN)  \
+    template <>                 \
+    auto FN<A, B, false> = PFN; \
+    template <>                 \
+    auto FN<A, B, true> = PFN##Fortran
+#define MAP2CF5(FN, A, B, C, PFN)  \
+    template <>                    \
+    auto FN<A, B, C, false> = PFN; \
+    template <>                    \
+    auto FN<A, B, C, true> = PFN##Fortran
 // dual API C and FORTRAN
-#define MAP2DCF3(FN, A, PFN)                  \
-    template <>                               \
-    static auto FN<A, false> = PFN;           \
-    template <>                               \
-    static auto FN<A, true> = PFN##Fortran;   \
-    template <>                               \
-    static auto FN##_64<A, false> = PFN##_64; \
-    template <>                               \
-    static auto FN##_64<A, true> = PFN##_64Fortran
-#define MAP2DCF4(FN, A, B, PFN)                  \
-    template <>                                  \
-    static auto FN<A, B, false> = PFN;           \
-    template <>                                  \
-    static auto FN<A, B, true> = PFN##Fortran;   \
-    template <>                                  \
-    static auto FN##_64<A, B, false> = PFN##_64; \
-    template <>                                  \
-    static auto FN##_64<A, B, true> = PFN##_64Fortran
-#define MAP2DCF5(FN, A, B, C, PFN)                  \
-    template <>                                     \
-    static auto FN<A, B, C, false> = PFN;           \
-    template <>                                     \
-    static auto FN<A, B, C, true> = PFN##Fortran;   \
-    template <>                                     \
-    static auto FN##_64<A, B, C, false> = PFN##_64; \
-    template <>                                     \
-    static auto FN##_64<A, B, C, true> = PFN##_64Fortran
+#define MAP2DCF3(FN, A, PFN)           \
+    template <>                        \
+    auto FN<A, false> = PFN;           \
+    template <>                        \
+    auto FN<A, true> = PFN##Fortran;   \
+    template <>                        \
+    auto FN##_64<A, false> = PFN##_64; \
+    template <>                        \
+    auto FN##_64<A, true> = PFN##_64Fortran
+#define MAP2DCF4(FN, A, B, PFN)           \
+    template <>                           \
+    auto FN<A, B, false> = PFN;           \
+    template <>                           \
+    auto FN<A, B, true> = PFN##Fortran;   \
+    template <>                           \
+    auto FN##_64<A, B, false> = PFN##_64; \
+    template <>                           \
+    auto FN##_64<A, B, true> = PFN##_64Fortran
+#define MAP2DCF5(FN, A, B, C, PFN)           \
+    template <>                              \
+    auto FN<A, B, C, false> = PFN;           \
+    template <>                              \
+    auto FN<A, B, C, true> = PFN##Fortran;   \
+    template <>                              \
+    auto FN##_64<A, B, C, false> = PFN##_64; \
+    template <>                              \
+    auto FN##_64<A, B, C, true> = PFN##_64Fortran
 #else
 // mapping fortran and C to C API
-#define MAP2CF3(FN, A, PFN)         \
-    template <>                     \
-    static auto FN<A, false> = PFN; \
-    template <>                     \
-    static auto FN<A, true> = PFN
-#define MAP2CF4(FN, A, B, PFN)         \
-    template <>                        \
-    static auto FN<A, B, false> = PFN; \
-    template <>                        \
-    static auto FN<A, B, true> = PFN
-#define MAP2CF5(FN, A, B, C, PFN)         \
-    template <>                           \
-    static auto FN<A, B, C, false> = PFN; \
-    template <>                           \
-    static auto FN<A, B, C, true> = PFN
+#define MAP2CF3(FN, A, PFN)  \
+    template <>              \
+    auto FN<A, false> = PFN; \
+    template <>              \
+    auto FN<A, true> = PFN
+#define MAP2CF4(FN, A, B, PFN)  \
+    template <>                 \
+    auto FN<A, B, false> = PFN; \
+    template <>                 \
+    auto FN<A, B, true> = PFN
+#define MAP2CF5(FN, A, B, C, PFN)  \
+    template <>                    \
+    auto FN<A, B, C, false> = PFN; \
+    template <>                    \
+    auto FN<A, B, C, true> = PFN
 // dual API C and FORTRAN
-#define MAP2DCF3(FN, A, PFN)                  \
-    template <>                               \
-    static auto FN<A, false> = PFN;           \
-    template <>                               \
-    static auto FN<A, true> = PFN;            \
-    template <>                               \
-    static auto FN##_64<A, false> = PFN##_64; \
-    template <>                               \
-    static auto FN##_64<A, true> = PFN##_64
-#define MAP2DCF4(FN, A, B, PFN)                  \
-    template <>                                  \
-    static auto FN<A, B, false> = PFN;           \
-    template <>                                  \
-    static auto FN<A, B, true> = PFN;            \
-    template <>                                  \
-    static auto FN##_64<A, B, false> = PFN##_64; \
-    template <>                                  \
-    static auto FN##_64<A, B, true> = PFN##_64
-#define MAP2DCF5(FN, A, B, C, PFN)                  \
-    template <>                                     \
-    static auto FN<A, B, C, false> = PFN;           \
-    template <>                                     \
-    static auto FN<A, B, C, true> = PFN;            \
-    template <>                                     \
-    static auto FN##_64<A, B, C, false> = PFN##_64; \
-    template <>                                     \
-    static auto FN##_64<A, B, C, true> = PFN##_64
+#define MAP2DCF3(FN, A, PFN)           \
+    template <>                        \
+    auto FN<A, false> = PFN;           \
+    template <>                        \
+    auto FN<A, true> = PFN;            \
+    template <>                        \
+    auto FN##_64<A, false> = PFN##_64; \
+    template <>                        \
+    auto FN##_64<A, true> = PFN##_64
+#define MAP2DCF4(FN, A, B, PFN)           \
+    template <>                           \
+    auto FN<A, B, false> = PFN;           \
+    template <>                           \
+    auto FN<A, B, true> = PFN;            \
+    template <>                           \
+    auto FN##_64<A, B, false> = PFN##_64; \
+    template <>                           \
+    auto FN##_64<A, B, true> = PFN##_64
+#define MAP2DCF5(FN, A, B, C, PFN)           \
+    template <>                              \
+    auto FN<A, B, C, false> = PFN;           \
+    template <>                              \
+    auto FN<A, B, C, true> = PFN;            \
+    template <>                              \
+    auto FN##_64<A, B, C, false> = PFN##_64; \
+    template <>                              \
+    auto FN##_64<A, B, C, true> = PFN##_64
 #endif
 
 #ifndef HIPBLAS_V2
@@ -147,23 +147,6 @@
 #define MAP2CF_D64_V2(...) MAP2CF_D64(__VA_ARGS__##Cast)
 #define MAP2CF_V2(...) MAP2CF(__VA_ARGS__##Cast)
 #endif
-
-// Scal
-template <typename T, typename U = T, bool FORTRAN = false>
-hipblasStatus_t (*hipblasScal)(hipblasHandle_t handle, int n, const U* alpha, T* x, int incx);
-
-template <typename T, typename U = T, bool FORTRAN = false>
-hipblasStatus_t (*hipblasScalBatched)(
-    hipblasHandle_t handle, int n, const U* alpha, T* const x[], int incx, int batch_count);
-
-template <typename T, typename U = T, bool FORTRAN = false>
-hipblasStatus_t (*hipblasScalStridedBatched)(hipblasHandle_t handle,
-                                             int             n,
-                                             const U*        alpha,
-                                             T*              x,
-                                             int             incx,
-                                             hipblasStride   stridex,
-                                             int             batch_count);
 
 // Need these temporarily during transition period between hipblasComplex -> hipComplex
 hipblasStatus_t hipblasCscalCast(
@@ -230,55 +213,7 @@ hipblasStatus_t hipblasZdscalStridedBatchedCast(hipblasHandle_t       handle,
                                                 hipblasStride         stridex,
                                                 int                   batch_count);
 
-MAP2CF(hipblasScal, float, float, hipblasSscal);
-MAP2CF(hipblasScal, double, double, hipblasDscal);
-MAP2CF_V2(hipblasScal, hipblasComplex, hipblasComplex, hipblasCscal);
-MAP2CF_V2(hipblasScal, hipblasDoubleComplex, hipblasDoubleComplex, hipblasZscal);
-MAP2CF_V2(hipblasScal, hipblasComplex, float, hipblasCsscal);
-MAP2CF_V2(hipblasScal, hipblasDoubleComplex, double, hipblasZdscal);
-
-MAP2CF(hipblasScalBatched, float, float, hipblasSscalBatched);
-MAP2CF(hipblasScalBatched, double, double, hipblasDscalBatched);
-MAP2CF_V2(hipblasScalBatched, hipblasComplex, hipblasComplex, hipblasCscalBatched);
-MAP2CF_V2(hipblasScalBatched, hipblasDoubleComplex, hipblasDoubleComplex, hipblasZscalBatched);
-MAP2CF_V2(hipblasScalBatched, hipblasComplex, float, hipblasCsscalBatched);
-MAP2CF_V2(hipblasScalBatched, hipblasDoubleComplex, double, hipblasZdscalBatched);
-
-MAP2CF(hipblasScalStridedBatched, float, float, hipblasSscalStridedBatched);
-MAP2CF(hipblasScalStridedBatched, double, double, hipblasDscalStridedBatched);
-MAP2CF_V2(hipblasScalStridedBatched, hipblasComplex, hipblasComplex, hipblasCscalStridedBatched);
-MAP2CF_V2(hipblasScalStridedBatched,
-          hipblasDoubleComplex,
-          hipblasDoubleComplex,
-          hipblasZscalStridedBatched);
-MAP2CF_V2(hipblasScalStridedBatched, hipblasComplex, float, hipblasCsscalStridedBatched);
-MAP2CF_V2(hipblasScalStridedBatched, hipblasDoubleComplex, double, hipblasZdscalStridedBatched);
-
-// Copy
-template <typename T, bool FORTRAN = false>
-static hipblasStatus_t (*hipblasCopy)(
-    hipblasHandle_t handle, int n, const T* x, int incx, T* y, int incy);
-
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t (*hipblasCopyBatched)(hipblasHandle_t handle,
-                                      int             n,
-                                      const T* const  x[],
-                                      int             incx,
-                                      T* const        y[],
-                                      int             incy,
-                                      int             batch_count);
-
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t (*hipblasCopyStridedBatched)(hipblasHandle_t handle,
-                                             int             n,
-                                             const T*        x,
-                                             int             incx,
-                                             hipblasStride   stridex,
-                                             T*              y,
-                                             int             incy,
-                                             hipblasStride   stridey,
-                                             int             batch_count);
-
+// copy
 hipblasStatus_t hipblasCcopyCast(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy);
 hipblasStatus_t hipblasZcopyCast(hipblasHandle_t             handle,
@@ -320,20 +255,92 @@ hipblasStatus_t hipblasZcopyStridedBatchedCast(hipblasHandle_t             handl
                                                hipblasStride               stridey,
                                                int                         batch_count);
 
-MAP2CF(hipblasCopy, float, hipblasScopy);
-MAP2CF(hipblasCopy, double, hipblasDcopy);
-MAP2CF_V2(hipblasCopy, hipblasComplex, hipblasCcopy);
-MAP2CF_V2(hipblasCopy, hipblasDoubleComplex, hipblasZcopy);
+namespace
+{
+    // Scal
+    template <typename T, typename U = T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasScal)(hipblasHandle_t handle, int n, const U* alpha, T* x, int incx);
 
-MAP2CF(hipblasCopyBatched, float, hipblasScopyBatched);
-MAP2CF(hipblasCopyBatched, double, hipblasDcopyBatched);
-MAP2CF_V2(hipblasCopyBatched, hipblasComplex, hipblasCcopyBatched);
-MAP2CF_V2(hipblasCopyBatched, hipblasDoubleComplex, hipblasZcopyBatched);
+    template <typename T, typename U = T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasScalBatched)(
+        hipblasHandle_t handle, int n, const U* alpha, T* const x[], int incx, int batch_count);
 
-MAP2CF(hipblasCopyStridedBatched, float, hipblasScopyStridedBatched);
-MAP2CF(hipblasCopyStridedBatched, double, hipblasDcopyStridedBatched);
-MAP2CF_V2(hipblasCopyStridedBatched, hipblasComplex, hipblasCcopyStridedBatched);
-MAP2CF_V2(hipblasCopyStridedBatched, hipblasDoubleComplex, hipblasZcopyStridedBatched);
+    template <typename T, typename U = T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasScalStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const U*        alpha,
+                                                 T*              x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 int             batch_count);
+
+    MAP2CF(hipblasScal, float, float, hipblasSscal);
+    MAP2CF(hipblasScal, double, double, hipblasDscal);
+    MAP2CF_V2(hipblasScal, hipblasComplex, hipblasComplex, hipblasCscal);
+    MAP2CF_V2(hipblasScal, hipblasDoubleComplex, hipblasDoubleComplex, hipblasZscal);
+    MAP2CF_V2(hipblasScal, hipblasComplex, float, hipblasCsscal);
+    MAP2CF_V2(hipblasScal, hipblasDoubleComplex, double, hipblasZdscal);
+
+    MAP2CF(hipblasScalBatched, float, float, hipblasSscalBatched);
+    MAP2CF(hipblasScalBatched, double, double, hipblasDscalBatched);
+    MAP2CF_V2(hipblasScalBatched, hipblasComplex, hipblasComplex, hipblasCscalBatched);
+    MAP2CF_V2(hipblasScalBatched, hipblasDoubleComplex, hipblasDoubleComplex, hipblasZscalBatched);
+    MAP2CF_V2(hipblasScalBatched, hipblasComplex, float, hipblasCsscalBatched);
+    MAP2CF_V2(hipblasScalBatched, hipblasDoubleComplex, double, hipblasZdscalBatched);
+
+    MAP2CF(hipblasScalStridedBatched, float, float, hipblasSscalStridedBatched);
+    MAP2CF(hipblasScalStridedBatched, double, double, hipblasDscalStridedBatched);
+    MAP2CF_V2(hipblasScalStridedBatched,
+              hipblasComplex,
+              hipblasComplex,
+              hipblasCscalStridedBatched);
+    MAP2CF_V2(hipblasScalStridedBatched,
+              hipblasDoubleComplex,
+              hipblasDoubleComplex,
+              hipblasZscalStridedBatched);
+    MAP2CF_V2(hipblasScalStridedBatched, hipblasComplex, float, hipblasCsscalStridedBatched);
+    MAP2CF_V2(hipblasScalStridedBatched, hipblasDoubleComplex, double, hipblasZdscalStridedBatched);
+
+    // Copy
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasCopy)(
+        hipblasHandle_t handle, int n, const T* x, int incx, T* y, int incy);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasCopyBatched)(hipblasHandle_t handle,
+                                          int             n,
+                                          const T* const  x[],
+                                          int             incx,
+                                          T* const        y[],
+                                          int             incy,
+                                          int             batch_count);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasCopyStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const T*        x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 T*              y,
+                                                 int             incy,
+                                                 hipblasStride   stridey,
+                                                 int             batch_count);
+
+    MAP2CF(hipblasCopy, float, hipblasScopy);
+    MAP2CF(hipblasCopy, double, hipblasDcopy);
+    MAP2CF_V2(hipblasCopy, hipblasComplex, hipblasCcopy);
+    MAP2CF_V2(hipblasCopy, hipblasDoubleComplex, hipblasZcopy);
+
+    MAP2CF(hipblasCopyBatched, float, hipblasScopyBatched);
+    MAP2CF(hipblasCopyBatched, double, hipblasDcopyBatched);
+    MAP2CF_V2(hipblasCopyBatched, hipblasComplex, hipblasCcopyBatched);
+    MAP2CF_V2(hipblasCopyBatched, hipblasDoubleComplex, hipblasZcopyBatched);
+
+    MAP2CF(hipblasCopyStridedBatched, float, hipblasScopyStridedBatched);
+    MAP2CF(hipblasCopyStridedBatched, double, hipblasDcopyStridedBatched);
+    MAP2CF_V2(hipblasCopyStridedBatched, hipblasComplex, hipblasCcopyStridedBatched);
+    MAP2CF_V2(hipblasCopyStridedBatched, hipblasDoubleComplex, hipblasZcopyStridedBatched);
+}
 
 // Swap
 template <typename T, bool FORTRAN = false>
