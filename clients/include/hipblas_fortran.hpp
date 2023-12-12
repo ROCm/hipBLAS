@@ -2229,7 +2229,7 @@ hipblasStatus_t hipblasSsbmvBatchedFortran(hipblasHandle_t    handle,
                                            const float* const x[],
                                            int                incx,
                                            const float*       beta,
-                                           float*             y[],
+                                           float* const       y[],
                                            int                incy,
                                            int                batchCount);
 
@@ -2243,7 +2243,7 @@ hipblasStatus_t hipblasDsbmvBatchedFortran(hipblasHandle_t     handle,
                                            const double* const x[],
                                            int                 incx,
                                            const double*       beta,
-                                           double*             y[],
+                                           double* const       y[],
                                            int                 incy,
                                            int                 batchCount);
 
@@ -2314,7 +2314,7 @@ hipblasStatus_t hipblasSspmvBatchedFortran(hipblasHandle_t    handle,
                                            const float* const x[],
                                            int                incx,
                                            const float*       beta,
-                                           float*             y[],
+                                           float* const       y[],
                                            int                incy,
                                            int                batchCount);
 
@@ -2326,7 +2326,7 @@ hipblasStatus_t hipblasDspmvBatchedFortran(hipblasHandle_t     handle,
                                            const double* const x[],
                                            int                 incx,
                                            const double*       beta,
-                                           double*             y[],
+                                           double* const       y[],
                                            int                 incy,
                                            int                 batchCount);
 
