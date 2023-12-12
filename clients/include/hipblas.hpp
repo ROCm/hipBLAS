@@ -255,6 +255,544 @@ hipblasStatus_t hipblasZcopyStridedBatchedCast(hipblasHandle_t             handl
                                                hipblasStride               stridey,
                                                int                         batch_count);
 
+// axpy
+hipblasStatus_t hipblasCaxpyCast(hipblasHandle_t       handle,
+                                 int                   n,
+                                 const hipblasComplex* alpha,
+                                 const hipblasComplex* x,
+                                 int                   incx,
+                                 hipblasComplex*       y,
+                                 int                   incy);
+
+hipblasStatus_t hipblasZaxpyCast(hipblasHandle_t             handle,
+                                 int                         n,
+                                 const hipblasDoubleComplex* alpha,
+                                 const hipblasDoubleComplex* x,
+                                 int                         incx,
+                                 hipblasDoubleComplex*       y,
+                                 int                         incy);
+
+hipblasStatus_t hipblasCaxpyBatchedCast(hipblasHandle_t             handle,
+                                        int                         n,
+                                        const hipblasComplex*       alpha,
+                                        const hipblasComplex* const x[],
+                                        int                         incx,
+                                        hipblasComplex* const       y[],
+                                        int                         incy,
+                                        int                         batch_count);
+
+hipblasStatus_t hipblasZaxpyBatchedCast(hipblasHandle_t                   handle,
+                                        int                               n,
+                                        const hipblasDoubleComplex*       alpha,
+                                        const hipblasDoubleComplex* const x[],
+                                        int                               incx,
+                                        hipblasDoubleComplex* const       y[],
+                                        int                               incy,
+                                        int                               batch_count);
+
+hipblasStatus_t hipblasCaxpyStridedBatchedCast(hipblasHandle_t       handle,
+                                               int                   n,
+                                               const hipblasComplex* alpha,
+                                               const hipblasComplex* x,
+                                               int                   incx,
+                                               hipblasStride         stridex,
+                                               hipblasComplex*       y,
+                                               int                   incy,
+                                               hipblasStride         stridey,
+                                               int                   batch_count);
+
+hipblasStatus_t hipblasZaxpyStridedBatchedCast(hipblasHandle_t             handle,
+                                               int                         n,
+                                               const hipblasDoubleComplex* alpha,
+                                               const hipblasDoubleComplex* x,
+                                               int                         incx,
+                                               hipblasStride               stridex,
+                                               hipblasDoubleComplex*       y,
+                                               int                         incy,
+                                               hipblasStride               stridey,
+                                               int                         batch_count);
+
+// swap
+hipblasStatus_t hipblasCswapCast(
+    hipblasHandle_t handle, int n, hipblasComplex* x, int incx, hipblasComplex* y, int incy);
+
+hipblasStatus_t hipblasZswapCast(hipblasHandle_t       handle,
+                                 int                   n,
+                                 hipblasDoubleComplex* x,
+                                 int                   incx,
+                                 hipblasDoubleComplex* y,
+                                 int                   incy);
+
+hipblasStatus_t hipblasCswapBatchedCast(hipblasHandle_t       handle,
+                                        int                   n,
+                                        hipblasComplex* const x[],
+                                        int                   incx,
+                                        hipblasComplex* const y[],
+                                        int                   incy,
+                                        int                   batch_count);
+
+hipblasStatus_t hipblasZswapBatchedCast(hipblasHandle_t             handle,
+                                        int                         n,
+                                        hipblasDoubleComplex* const x[],
+                                        int                         incx,
+                                        hipblasDoubleComplex* const y[],
+                                        int                         incy,
+                                        int                         batch_count);
+
+hipblasStatus_t hipblasCswapStridedBatchedCast(hipblasHandle_t handle,
+                                               int             n,
+                                               hipblasComplex* x,
+                                               int             incx,
+                                               hipblasStride   stridex,
+                                               hipblasComplex* y,
+                                               int             incy,
+                                               hipblasStride   stridey,
+                                               int             batch_count);
+
+hipblasStatus_t hipblasZswapStridedBatchedCast(hipblasHandle_t       handle,
+                                               int                   n,
+                                               hipblasDoubleComplex* x,
+                                               int                   incx,
+                                               hipblasStride         stridex,
+                                               hipblasDoubleComplex* y,
+                                               int                   incy,
+                                               hipblasStride         stridey,
+                                               int                   batch_count);
+
+// dot
+hipblasStatus_t hipblasCdotuCast(hipblasHandle_t       handle,
+                                 int                   n,
+                                 const hipblasComplex* x,
+                                 int                   incx,
+                                 const hipblasComplex* y,
+                                 int                   incy,
+                                 hipblasComplex*       result);
+
+hipblasStatus_t hipblasCdotcCast(hipblasHandle_t       handle,
+                                 int                   n,
+                                 const hipblasComplex* x,
+                                 int                   incx,
+                                 const hipblasComplex* y,
+                                 int                   incy,
+                                 hipblasComplex*       result);
+
+hipblasStatus_t hipblasZdotuCast(hipblasHandle_t             handle,
+                                 int                         n,
+                                 const hipblasDoubleComplex* x,
+                                 int                         incx,
+                                 const hipblasDoubleComplex* y,
+                                 int                         incy,
+                                 hipblasDoubleComplex*       result);
+
+hipblasStatus_t hipblasZdotcCast(hipblasHandle_t             handle,
+                                 int                         n,
+                                 const hipblasDoubleComplex* x,
+                                 int                         incx,
+                                 const hipblasDoubleComplex* y,
+                                 int                         incy,
+                                 hipblasDoubleComplex*       result);
+
+hipblasStatus_t hipblasCdotuBatchedCast(hipblasHandle_t             handle,
+                                        int                         n,
+                                        const hipblasComplex* const x[],
+                                        int                         incx,
+                                        const hipblasComplex* const y[],
+                                        int                         incy,
+                                        int                         batch_count,
+                                        hipblasComplex*             result);
+
+hipblasStatus_t hipblasCdotcBatchedCast(hipblasHandle_t             handle,
+                                        int                         n,
+                                        const hipblasComplex* const x[],
+                                        int                         incx,
+                                        const hipblasComplex* const y[],
+                                        int                         incy,
+                                        int                         batch_count,
+                                        hipblasComplex*             result);
+
+hipblasStatus_t hipblasZdotuBatchedCast(hipblasHandle_t                   handle,
+                                        int                               n,
+                                        const hipblasDoubleComplex* const x[],
+                                        int                               incx,
+                                        const hipblasDoubleComplex* const y[],
+                                        int                               incy,
+                                        int                               batch_count,
+                                        hipblasDoubleComplex*             result);
+
+hipblasStatus_t hipblasZdotcBatchedCast(hipblasHandle_t                   handle,
+                                        int                               n,
+                                        const hipblasDoubleComplex* const x[],
+                                        int                               incx,
+                                        const hipblasDoubleComplex* const y[],
+                                        int                               incy,
+                                        int                               batch_count,
+                                        hipblasDoubleComplex*             result);
+
+hipblasStatus_t hipblasCdotuStridedBatchedCast(hipblasHandle_t       handle,
+                                               int                   n,
+                                               const hipblasComplex* x,
+                                               int                   incx,
+                                               hipblasStride         stridex,
+                                               const hipblasComplex* y,
+                                               int                   incy,
+                                               hipblasStride         stridey,
+                                               int                   batch_count,
+                                               hipblasComplex*       result);
+
+hipblasStatus_t hipblasCdotcStridedBatchedCast(hipblasHandle_t       handle,
+                                               int                   n,
+                                               const hipblasComplex* x,
+                                               int                   incx,
+                                               hipblasStride         stridex,
+                                               const hipblasComplex* y,
+                                               int                   incy,
+                                               hipblasStride         stridey,
+                                               int                   batch_count,
+                                               hipblasComplex*       result);
+
+hipblasStatus_t hipblasZdotuStridedBatchedCast(hipblasHandle_t             handle,
+                                               int                         n,
+                                               const hipblasDoubleComplex* x,
+                                               int                         incx,
+                                               hipblasStride               stridex,
+                                               const hipblasDoubleComplex* y,
+                                               int                         incy,
+                                               hipblasStride               stridey,
+                                               int                         batch_count,
+                                               hipblasDoubleComplex*       result);
+
+hipblasStatus_t hipblasZdotcStridedBatchedCast(hipblasHandle_t             handle,
+                                               int                         n,
+                                               const hipblasDoubleComplex* x,
+                                               int                         incx,
+                                               hipblasStride               stridex,
+                                               const hipblasDoubleComplex* y,
+                                               int                         incy,
+                                               hipblasStride               stridey,
+                                               int                         batch_count,
+                                               hipblasDoubleComplex*       result);
+
+// asum
+hipblasStatus_t hipblasScasumCast(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result);
+
+hipblasStatus_t hipblasDzasumCast(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
+
+hipblasStatus_t hipblasScasumBatchedCast(hipblasHandle_t             handle,
+                                         int                         n,
+                                         const hipblasComplex* const x[],
+                                         int                         incx,
+                                         int                         batch_count,
+                                         float*                      result);
+
+hipblasStatus_t hipblasDzasumBatchedCast(hipblasHandle_t                   handle,
+                                         int                               n,
+                                         const hipblasDoubleComplex* const x[],
+                                         int                               incx,
+                                         int                               batch_count,
+                                         double*                           result);
+
+hipblasStatus_t hipblasScasumStridedBatchedCast(hipblasHandle_t       handle,
+                                                int                   n,
+                                                const hipblasComplex* x,
+                                                int                   incx,
+                                                hipblasStride         stridex,
+                                                int                   batch_count,
+                                                float*                result);
+
+hipblasStatus_t hipblasDzasumStridedBatchedCast(hipblasHandle_t             handle,
+                                                int                         n,
+                                                const hipblasDoubleComplex* x,
+                                                int                         incx,
+                                                hipblasStride               stridex,
+                                                int                         batch_count,
+                                                double*                     result);
+
+// nrm2
+hipblasStatus_t hipblasScnrm2Cast(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result);
+
+hipblasStatus_t hipblasDznrm2Cast(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
+
+hipblasStatus_t hipblasScnrm2BatchedCast(hipblasHandle_t             handle,
+                                         int                         n,
+                                         const hipblasComplex* const x[],
+                                         int                         incx,
+                                         int                         batch_count,
+                                         float*                      result);
+
+hipblasStatus_t hipblasDznrm2BatchedCast(hipblasHandle_t                   handle,
+                                         int                               n,
+                                         const hipblasDoubleComplex* const x[],
+                                         int                               incx,
+                                         int                               batch_count,
+                                         double*                           result);
+
+hipblasStatus_t hipblasScnrm2StridedBatchedCast(hipblasHandle_t       handle,
+                                                int                   n,
+                                                const hipblasComplex* x,
+                                                int                   incx,
+                                                hipblasStride         stridex,
+                                                int                   batch_count,
+                                                float*                result);
+
+hipblasStatus_t hipblasDznrm2StridedBatchedCast(hipblasHandle_t             handle,
+                                                int                         n,
+                                                const hipblasDoubleComplex* x,
+                                                int                         incx,
+                                                hipblasStride               stridex,
+                                                int                         batch_count,
+                                                double*                     result);
+
+// rot
+hipblasStatus_t hipblasCrotCast(hipblasHandle_t       handle,
+                                int                   n,
+                                hipblasComplex*       x,
+                                int                   incx,
+                                hipblasComplex*       y,
+                                int                   incy,
+                                const float*          c,
+                                const hipblasComplex* s);
+
+hipblasStatus_t hipblasCsrotCast(hipblasHandle_t handle,
+                                 int             n,
+                                 hipblasComplex* x,
+                                 int             incx,
+                                 hipblasComplex* y,
+                                 int             incy,
+                                 const float*    c,
+                                 const float*    s);
+
+hipblasStatus_t hipblasZrotCast(hipblasHandle_t             handle,
+                                int                         n,
+                                hipblasDoubleComplex*       x,
+                                int                         incx,
+                                hipblasDoubleComplex*       y,
+                                int                         incy,
+                                const double*               c,
+                                const hipblasDoubleComplex* s);
+
+hipblasStatus_t hipblasZdrotCast(hipblasHandle_t       handle,
+                                 int                   n,
+                                 hipblasDoubleComplex* x,
+                                 int                   incx,
+                                 hipblasDoubleComplex* y,
+                                 int                   incy,
+                                 const double*         c,
+                                 const double*         s);
+
+hipblasStatus_t hipblasCrotBatchedCast(hipblasHandle_t       handle,
+                                       int                   n,
+                                       hipblasComplex* const x[],
+                                       int                   incx,
+                                       hipblasComplex* const y[],
+                                       int                   incy,
+                                       const float*          c,
+                                       const hipblasComplex* s,
+                                       int                   batch_count);
+
+hipblasStatus_t hipblasCsrotBatchedCast(hipblasHandle_t       handle,
+                                        int                   n,
+                                        hipblasComplex* const x[],
+                                        int                   incx,
+                                        hipblasComplex* const y[],
+                                        int                   incy,
+                                        const float*          c,
+                                        const float*          s,
+                                        int                   batch_count);
+
+hipblasStatus_t hipblasZrotBatchedCast(hipblasHandle_t             handle,
+                                       int                         n,
+                                       hipblasDoubleComplex* const x[],
+                                       int                         incx,
+                                       hipblasDoubleComplex* const y[],
+                                       int                         incy,
+                                       const double*               c,
+                                       const hipblasDoubleComplex* s,
+                                       int                         batch_count);
+
+hipblasStatus_t hipblasZdrotBatchedCast(hipblasHandle_t             handle,
+                                        int                         n,
+                                        hipblasDoubleComplex* const x[],
+                                        int                         incx,
+                                        hipblasDoubleComplex* const y[],
+                                        int                         incy,
+                                        const double*               c,
+                                        const double*               s,
+                                        int                         batch_count);
+
+hipblasStatus_t hipblasCrotStridedBatchedCast(hipblasHandle_t       handle,
+                                              int                   n,
+                                              hipblasComplex*       x,
+                                              int                   incx,
+                                              hipblasStride         stridex,
+                                              hipblasComplex*       y,
+                                              int                   incy,
+                                              hipblasStride         stridey,
+                                              const float*          c,
+                                              const hipblasComplex* s,
+                                              int                   batch_count);
+
+hipblasStatus_t hipblasCsrotStridedBatchedCast(hipblasHandle_t handle,
+                                               int             n,
+                                               hipblasComplex* x,
+                                               int             incx,
+                                               hipblasStride   stridex,
+                                               hipblasComplex* y,
+                                               int             incy,
+                                               hipblasStride   stridey,
+                                               const float*    c,
+                                               const float*    s,
+                                               int             batch_count);
+
+hipblasStatus_t hipblasZrotStridedBatchedCast(hipblasHandle_t             handle,
+                                              int                         n,
+                                              hipblasDoubleComplex*       x,
+                                              int                         incx,
+                                              hipblasStride               stridex,
+                                              hipblasDoubleComplex*       y,
+                                              int                         incy,
+                                              hipblasStride               stridey,
+                                              const double*               c,
+                                              const hipblasDoubleComplex* s,
+                                              int                         batch_count);
+
+hipblasStatus_t hipblasZdrotStridedBatchedCast(hipblasHandle_t       handle,
+                                               int                   n,
+                                               hipblasDoubleComplex* x,
+                                               int                   incx,
+                                               hipblasStride         stridex,
+                                               hipblasDoubleComplex* y,
+                                               int                   incy,
+                                               hipblasStride         stridey,
+                                               const double*         c,
+                                               const double*         s,
+                                               int                   batch_count);
+
+// rotg
+hipblasStatus_t hipblasCrotgCast(
+    hipblasHandle_t handle, hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
+
+hipblasStatus_t hipblasZrotgCast(hipblasHandle_t       handle,
+                                 hipblasDoubleComplex* a,
+                                 hipblasDoubleComplex* b,
+                                 double*               c,
+                                 hipblasDoubleComplex* s);
+
+hipblasStatus_t hipblasCrotgBatchedCast(hipblasHandle_t       handle,
+                                        hipblasComplex* const a[],
+                                        hipblasComplex* const b[],
+                                        float* const          c[],
+                                        hipblasComplex* const s[],
+                                        int                   batch_count);
+
+hipblasStatus_t hipblasZrotgBatchedCast(hipblasHandle_t             handle,
+                                        hipblasDoubleComplex* const a[],
+                                        hipblasDoubleComplex* const b[],
+                                        double* const               c[],
+                                        hipblasDoubleComplex* const s[],
+                                        int                         batch_count);
+
+hipblasStatus_t hipblasCrotgStridedBatchedCast(hipblasHandle_t handle,
+                                               hipblasComplex* a,
+                                               hipblasStride   stridea,
+                                               hipblasComplex* b,
+                                               hipblasStride   strideb,
+                                               float*          c,
+                                               hipblasStride   stridec,
+                                               hipblasComplex* s,
+                                               hipblasStride   strides,
+                                               int             batch_count);
+
+hipblasStatus_t hipblasZrotgStridedBatchedCast(hipblasHandle_t       handle,
+                                               hipblasDoubleComplex* a,
+                                               hipblasStride         stridea,
+                                               hipblasDoubleComplex* b,
+                                               hipblasStride         strideb,
+                                               double*               c,
+                                               hipblasStride         stridec,
+                                               hipblasDoubleComplex* s,
+                                               hipblasStride         strides,
+                                               int                   batch_count);
+
+// rotm, rotmg - no complex versions
+
+// amax
+hipblasStatus_t hipblasIcamaxCast(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result);
+
+hipblasStatus_t hipblasIzamaxCast(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+
+hipblasStatus_t hipblasIcamaxBatchedCast(hipblasHandle_t             handle,
+                                         int                         n,
+                                         const hipblasComplex* const x[],
+                                         int                         incx,
+                                         int                         batch_count,
+                                         int*                        result);
+
+hipblasStatus_t hipblasIzamaxBatchedCast(hipblasHandle_t                   handle,
+                                         int                               n,
+                                         const hipblasDoubleComplex* const x[],
+                                         int                               incx,
+                                         int                               batch_count,
+                                         int*                              result);
+
+hipblasStatus_t hipblasIcamaxStridedBatchedCast(hipblasHandle_t       handle,
+                                                int                   n,
+                                                const hipblasComplex* x,
+                                                int                   incx,
+                                                hipblasStride         stridex,
+                                                int                   batch_count,
+                                                int*                  result);
+
+hipblasStatus_t hipblasIzamaxStridedBatchedCast(hipblasHandle_t             handle,
+                                                int                         n,
+                                                const hipblasDoubleComplex* x,
+                                                int                         incx,
+                                                hipblasStride               stridex,
+                                                int                         batch_count,
+                                                int*                        result);
+
+// amin
+hipblasStatus_t hipblasIcaminCast(
+    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result);
+
+hipblasStatus_t hipblasIzaminCast(
+    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result);
+
+hipblasStatus_t hipblasIcaminBatchedCast(hipblasHandle_t             handle,
+                                         int                         n,
+                                         const hipblasComplex* const x[],
+                                         int                         incx,
+                                         int                         batch_count,
+                                         int*                        result);
+
+hipblasStatus_t hipblasIzaminBatchedCast(hipblasHandle_t                   handle,
+                                         int                               n,
+                                         const hipblasDoubleComplex* const x[],
+                                         int                               incx,
+                                         int                               batch_count,
+                                         int*                              result);
+
+hipblasStatus_t hipblasIcaminStridedBatchedCast(hipblasHandle_t       handle,
+                                                int                   n,
+                                                const hipblasComplex* x,
+                                                int                   incx,
+                                                hipblasStride         stridex,
+                                                int                   batch_count,
+                                                int*                  result);
+
+hipblasStatus_t hipblasIzaminStridedBatchedCast(hipblasHandle_t             handle,
+                                                int                         n,
+                                                const hipblasDoubleComplex* x,
+                                                int                         incx,
+                                                hipblasStride               stridex,
+                                                int                         batch_count,
+                                                int*                        result);
+
 namespace
 {
     // Scal
@@ -340,272 +878,473 @@ namespace
     MAP2CF(hipblasCopyStridedBatched, double, hipblasDcopyStridedBatched);
     MAP2CF_V2(hipblasCopyStridedBatched, hipblasComplex, hipblasCcopyStridedBatched);
     MAP2CF_V2(hipblasCopyStridedBatched, hipblasDoubleComplex, hipblasZcopyStridedBatched);
-}
 
-// Swap
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasSwap(hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy);
+    // Swap
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSwap)(hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasSwapBatched(
-    hipblasHandle_t handle, int n, T* const x[], int incx, T* const y[], int incy, int batch_count);
-
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasSwapStridedBatched(hipblasHandle_t handle,
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSwapBatched)(hipblasHandle_t handle,
                                           int             n,
-                                          T*              x,
+                                          T* const        x[],
                                           int             incx,
-                                          hipblasStride   stridex,
-                                          T*              y,
+                                          T* const        y[],
                                           int             incy,
-                                          hipblasStride   stridey,
                                           int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDot(
-    hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSwapStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 T*              x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 T*              y,
+                                                 int             incy,
+                                                 hipblasStride   stridey,
+                                                 int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDotc(
-    hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+    MAP2CF(hipblasSwap, float, hipblasSswap);
+    MAP2CF(hipblasSwap, double, hipblasDswap);
+    MAP2CF_V2(hipblasSwap, hipblasComplex, hipblasCswap);
+    MAP2CF_V2(hipblasSwap, hipblasDoubleComplex, hipblasZswap);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDotBatched(hipblasHandle_t handle,
-                                  int             n,
-                                  const T* const  x[],
-                                  int             incx,
-                                  const T* const  y[],
-                                  int             incy,
-                                  int             batch_count,
-                                  T*              result);
+    MAP2CF(hipblasSwapBatched, float, hipblasSswapBatched);
+    MAP2CF(hipblasSwapBatched, double, hipblasDswapBatched);
+    MAP2CF_V2(hipblasSwapBatched, hipblasComplex, hipblasCswapBatched);
+    MAP2CF_V2(hipblasSwapBatched, hipblasDoubleComplex, hipblasZswapBatched);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDotcBatched(hipblasHandle_t handle,
-                                   int             n,
-                                   const T* const  x[],
-                                   int             incx,
-                                   const T* const  y[],
-                                   int             incy,
-                                   int             batch_count,
-                                   T*              result);
+    MAP2CF(hipblasSwapStridedBatched, float, hipblasSswapStridedBatched);
+    MAP2CF(hipblasSwapStridedBatched, double, hipblasDswapStridedBatched);
+    MAP2CF_V2(hipblasSwapStridedBatched, hipblasComplex, hipblasCswapStridedBatched);
+    MAP2CF_V2(hipblasSwapStridedBatched, hipblasDoubleComplex, hipblasZswapStridedBatched);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDotStridedBatched(hipblasHandle_t handle,
+    // Dot
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDot)(
+        hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDotc)(
+        hipblasHandle_t handle, int n, const T* x, int incx, const T* y, int incy, T* result);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDotBatched)(hipblasHandle_t handle,
                                          int             n,
-                                         const T*        x,
+                                         const T* const  x[],
                                          int             incx,
-                                         hipblasStride   stridex,
-                                         const T*        y,
+                                         const T* const  y[],
                                          int             incy,
-                                         hipblasStride   stridey,
                                          int             batch_count,
                                          T*              result);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasDotcStridedBatched(hipblasHandle_t handle,
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDotcBatched)(hipblasHandle_t handle,
                                           int             n,
-                                          const T*        x,
+                                          const T* const  x[],
                                           int             incx,
-                                          hipblasStride   stridex,
-                                          const T*        y,
+                                          const T* const  y[],
                                           int             incy,
-                                          hipblasStride   stridey,
                                           int             batch_count,
                                           T*              result);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasAsum(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDotStridedBatched)(hipblasHandle_t handle,
+                                                int             n,
+                                                const T*        x,
+                                                int             incx,
+                                                hipblasStride   stridex,
+                                                const T*        y,
+                                                int             incy,
+                                                hipblasStride   stridey,
+                                                int             batch_count,
+                                                T*              result);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasAsumBatched(
-    hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasDotcStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const T*        x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 const T*        y,
+                                                 int             incy,
+                                                 hipblasStride   stridey,
+                                                 int             batch_count,
+                                                 T*              result);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasAsumStridedBatched(hipblasHandle_t handle,
-                                          int             n,
-                                          const T1*       x,
-                                          int             incx,
-                                          hipblasStride   stridex,
-                                          int             batch_count,
-                                          T2*             result);
+    MAP2CF(hipblasDot, hipblasHalf, hipblasHdot);
+    MAP2CF(hipblasDot, hipblasBfloat16, hipblasBfdot);
+    MAP2CF(hipblasDot, float, hipblasSdot);
+    MAP2CF(hipblasDot, double, hipblasDdot);
+    MAP2CF_V2(hipblasDot, hipblasComplex, hipblasCdotu);
+    MAP2CF_V2(hipblasDot, hipblasDoubleComplex, hipblasZdotu);
+    MAP2CF_V2(hipblasDotc, hipblasComplex, hipblasCdotc);
+    MAP2CF_V2(hipblasDotc, hipblasDoubleComplex, hipblasZdotc);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasNrm2(hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
+    MAP2CF(hipblasDotBatched, hipblasHalf, hipblasHdotBatched);
+    MAP2CF(hipblasDotBatched, hipblasBfloat16, hipblasBfdotBatched);
+    MAP2CF(hipblasDotBatched, float, hipblasSdotBatched);
+    MAP2CF(hipblasDotBatched, double, hipblasDdotBatched);
+    MAP2CF_V2(hipblasDotBatched, hipblasComplex, hipblasCdotuBatched);
+    MAP2CF_V2(hipblasDotBatched, hipblasDoubleComplex, hipblasZdotuBatched);
+    MAP2CF_V2(hipblasDotcBatched, hipblasComplex, hipblasCdotcBatched);
+    MAP2CF_V2(hipblasDotcBatched, hipblasDoubleComplex, hipblasZdotcBatched);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasNrm2Batched(
-    hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
+    MAP2CF(hipblasDotStridedBatched, hipblasHalf, hipblasHdotStridedBatched);
+    MAP2CF(hipblasDotStridedBatched, hipblasBfloat16, hipblasBfdotStridedBatched);
+    MAP2CF(hipblasDotStridedBatched, float, hipblasSdotStridedBatched);
+    MAP2CF(hipblasDotStridedBatched, double, hipblasDdotStridedBatched);
+    MAP2CF_V2(hipblasDotStridedBatched, hipblasComplex, hipblasCdotuStridedBatched);
+    MAP2CF_V2(hipblasDotStridedBatched, hipblasDoubleComplex, hipblasZdotuStridedBatched);
+    MAP2CF_V2(hipblasDotcStridedBatched, hipblasComplex, hipblasCdotcStridedBatched);
+    MAP2CF_V2(hipblasDotcStridedBatched, hipblasDoubleComplex, hipblasZdotcStridedBatched);
 
-template <typename T1, typename T2, bool FORTRAN = false>
-hipblasStatus_t hipblasNrm2StridedBatched(hipblasHandle_t handle,
-                                          int             n,
-                                          const T1*       x,
-                                          int             incx,
-                                          hipblasStride   stridex,
-                                          int             batch_count,
-                                          T2*             result);
+    // Asum
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsum)(
+        hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
 
-template <typename T1, typename T2, typename T3 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRot(
-    hipblasHandle_t handle, int n, T1* x, int incx, T1* y, int incy, const T2* c, const T3* s);
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsumBatched)(
+        hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
 
-template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRotBatched(hipblasHandle_t handle,
-                                  int             n,
-                                  T1* const       x[],
-                                  int             incx,
-                                  T1* const       y[],
-                                  int             incy,
-                                  const T2*       c,
-                                  const T3*       s,
-                                  int             batch_count);
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsumStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const T1*       x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 int             batch_count,
+                                                 T2*             result);
 
-template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRotStridedBatched(hipblasHandle_t handle,
+    MAP2CF(hipblasAsum, float, float, hipblasSasum);
+    MAP2CF(hipblasAsum, double, double, hipblasDasum);
+    MAP2CF_V2(hipblasAsum, hipblasComplex, float, hipblasScasum);
+    MAP2CF_V2(hipblasAsum, hipblasDoubleComplex, double, hipblasDzasum);
+
+    MAP2CF(hipblasAsumBatched, float, float, hipblasSasumBatched);
+    MAP2CF(hipblasAsumBatched, double, double, hipblasDasumBatched);
+    MAP2CF_V2(hipblasAsumBatched, hipblasComplex, float, hipblasScasumBatched);
+    MAP2CF_V2(hipblasAsumBatched, hipblasDoubleComplex, double, hipblasDzasumBatched);
+
+    MAP2CF(hipblasAsumStridedBatched, float, float, hipblasSasumStridedBatched);
+    MAP2CF(hipblasAsumStridedBatched, double, double, hipblasDasumStridedBatched);
+    MAP2CF_V2(hipblasAsumStridedBatched, hipblasComplex, float, hipblasScasumStridedBatched);
+    MAP2CF_V2(hipblasAsumStridedBatched, hipblasDoubleComplex, double, hipblasDzasumStridedBatched);
+
+    // nrm2
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasNrm2)(
+        hipblasHandle_t handle, int n, const T1* x, int incx, T2* result);
+
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasNrm2Batched)(
+        hipblasHandle_t handle, int n, const T1* const x[], int incx, int batch_count, T2* result);
+
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasNrm2StridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const T1*       x,
+                                                 int             incxasum,
+                                                 hipblasStride   stridex,
+                                                 int             batch_count,
+                                                 T2*             result);
+
+    MAP2CF(hipblasNrm2, float, float, hipblasSnrm2);
+    MAP2CF(hipblasNrm2, double, double, hipblasDnrm2);
+    MAP2CF_V2(hipblasNrm2, hipblasComplex, float, hipblasScnrm2);
+    MAP2CF_V2(hipblasNrm2, hipblasDoubleComplex, double, hipblasDznrm2);
+
+    MAP2CF(hipblasNrm2Batched, float, float, hipblasSnrm2Batched);
+    MAP2CF(hipblasNrm2Batched, double, double, hipblasDnrm2Batched);
+    MAP2CF_V2(hipblasNrm2Batched, hipblasComplex, float, hipblasScnrm2Batched);
+    MAP2CF_V2(hipblasNrm2Batched, hipblasDoubleComplex, double, hipblasDznrm2Batched);
+
+    MAP2CF(hipblasNrm2StridedBatched, float, float, hipblasSnrm2StridedBatched);
+    MAP2CF(hipblasNrm2StridedBatched, double, double, hipblasDnrm2StridedBatched);
+    MAP2CF_V2(hipblasNrm2StridedBatched, hipblasComplex, float, hipblasScnrm2StridedBatched);
+    MAP2CF_V2(hipblasNrm2StridedBatched, hipblasDoubleComplex, double, hipblasDznrm2StridedBatched);
+
+    // Rot
+    template <typename T1, typename T2, typename T3 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRot)(
+        hipblasHandle_t handle, int n, T1* x, int incx, T1* y, int incy, const T2* c, const T3* s);
+
+    template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotBatched)(hipblasHandle_t handle,
                                          int             n,
-                                         T1*             x,
+                                         T1* const       x[],
                                          int             incx,
-                                         hipblasStride   stridex,
-                                         T1*             y,
+                                         T1* const       y[],
                                          int             incy,
-                                         hipblasStride   stridey,
                                          const T2*       c,
                                          const T3*       s,
                                          int             batch_count);
 
-template <typename T1, typename T2 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRotg(hipblasHandle_t handle, T1* a, T1* b, T2* c, T1* s);
+    template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotStridedBatched)(hipblasHandle_t handle,
+                                                int             n,
+                                                T1*             x,
+                                                int             incx,
+                                                hipblasStride   stridex,
+                                                T1*             y,
+                                                int             incy,
+                                                hipblasStride   stridey,
+                                                const T2*       c,
+                                                const T3*       s,
+                                                int             batch_count);
 
-template <typename T1, typename T2 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRotgBatched(hipblasHandle_t handle,
-                                   T1* const       a[],
-                                   T1* const       b[],
-                                   T2* const       c[],
-                                   T1* const       s[],
-                                   int             batch_count);
+    MAP2CF(hipblasRot, float, float, float, hipblasSrot);
+    MAP2CF(hipblasRot, double, double, double, hipblasDrot);
+    MAP2CF_V2(hipblasRot, hipblasComplex, float, hipblasComplex, hipblasCrot);
+    MAP2CF_V2(hipblasRot, hipblasDoubleComplex, double, hipblasDoubleComplex, hipblasZrot);
+    MAP2CF_V2(hipblasRot, hipblasComplex, float, float, hipblasCsrot);
+    MAP2CF_V2(hipblasRot, hipblasDoubleComplex, double, double, hipblasZdrot);
 
-template <typename T1, typename T2 = T1, bool FORTRAN = false>
-hipblasStatus_t hipblasRotgStridedBatched(hipblasHandle_t handle,
-                                          T1*             a,
-                                          hipblasStride   stridea,
-                                          T1*             b,
-                                          hipblasStride   strideb,
-                                          T2*             c,
-                                          hipblasStride   stridec,
-                                          T1*             s,
-                                          hipblasStride   strides,
+    MAP2CF(hipblasRotBatched, float, float, float, hipblasSrotBatched);
+    MAP2CF(hipblasRotBatched, double, double, double, hipblasDrotBatched);
+    MAP2CF_V2(hipblasRotBatched, hipblasComplex, float, hipblasComplex, hipblasCrotBatched);
+    MAP2CF_V2(
+        hipblasRotBatched, hipblasDoubleComplex, double, hipblasDoubleComplex, hipblasZrotBatched);
+    MAP2CF_V2(hipblasRotBatched, hipblasComplex, float, float, hipblasCsrotBatched);
+    MAP2CF_V2(hipblasRotBatched, hipblasDoubleComplex, double, double, hipblasZdrotBatched);
+
+    MAP2CF(hipblasRotStridedBatched, float, float, float, hipblasSrotStridedBatched);
+    MAP2CF(hipblasRotStridedBatched, double, double, double, hipblasDrotStridedBatched);
+    MAP2CF_V2(
+        hipblasRotStridedBatched, hipblasComplex, float, hipblasComplex, hipblasCrotStridedBatched);
+    MAP2CF_V2(hipblasRotStridedBatched,
+              hipblasDoubleComplex,
+              double,
+              hipblasDoubleComplex,
+              hipblasZrotStridedBatched);
+    MAP2CF_V2(hipblasRotStridedBatched, hipblasComplex, float, float, hipblasCsrotStridedBatched);
+    MAP2CF_V2(
+        hipblasRotStridedBatched, hipblasDoubleComplex, double, double, hipblasZdrotStridedBatched);
+
+    // Rotg
+    template <typename T1, typename T2 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotg)(hipblasHandle_t handle, T1* a, T1* b, T2* c, T1* s);
+
+    template <typename T1, typename T2 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotgBatched)(hipblasHandle_t handle,
+                                          T1* const       a[],
+                                          T1* const       b[],
+                                          T2* const       c[],
+                                          T1* const       s[],
                                           int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t
-    hipblasRotm(hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy, const T* param);
+    template <typename T1, typename T2 = T1, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotgStridedBatched)(hipblasHandle_t handle,
+                                                 T1*             a,
+                                                 hipblasStride   stridea,
+                                                 T1*             b,
+                                                 hipblasStride   strideb,
+                                                 T2*             c,
+                                                 hipblasStride   stridec,
+                                                 T1*             s,
+                                                 hipblasStride   strides,
+                                                 int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasRotmBatched(hipblasHandle_t handle,
-                                   int             n,
-                                   T* const        x[],
-                                   int             incx,
-                                   T* const        y[],
-                                   int             incy,
-                                   const T* const  param[],
-                                   int             batch_count);
+    MAP2CF(hipblasRotg, float, float, hipblasSrotg);
+    MAP2CF(hipblasRotg, double, double, hipblasDrotg);
+    MAP2CF_V2(hipblasRotg, hipblasComplex, float, hipblasCrotg);
+    MAP2CF_V2(hipblasRotg, hipblasDoubleComplex, double, hipblasZrotg);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasRotmStridedBatched(hipblasHandle_t handle,
+    MAP2CF(hipblasRotgBatched, float, float, hipblasSrotgBatched);
+    MAP2CF(hipblasRotgBatched, double, double, hipblasDrotgBatched);
+    MAP2CF_V2(hipblasRotgBatched, hipblasComplex, float, hipblasCrotgBatched);
+    MAP2CF_V2(hipblasRotgBatched, hipblasDoubleComplex, double, hipblasZrotgBatched);
+
+    MAP2CF(hipblasRotgStridedBatched, float, float, hipblasSrotgStridedBatched);
+    MAP2CF(hipblasRotgStridedBatched, double, double, hipblasDrotgStridedBatched);
+    MAP2CF_V2(hipblasRotgStridedBatched, hipblasComplex, float, hipblasCrotgStridedBatched);
+    MAP2CF_V2(hipblasRotgStridedBatched, hipblasDoubleComplex, double, hipblasZrotgStridedBatched);
+
+    // rotm
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotm)(
+        hipblasHandle_t handle, int n, T* x, int incx, T* y, int incy, const T* param);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotmBatched)(hipblasHandle_t handle,
                                           int             n,
-                                          T*              x,
+                                          T* const        x[],
                                           int             incx,
-                                          hipblasStride   stridex,
-                                          T*              y,
+                                          T* const        y[],
                                           int             incy,
-                                          hipblasStride   stridey,
-                                          const T*        param,
-                                          hipblasStride   strideparam,
+                                          const T* const  param[],
                                           int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasRotmg(hipblasHandle_t handle, T* d1, T* d2, T* x1, const T* y1, T* param);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotmStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 T*              x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 T*              y,
+                                                 int             incy,
+                                                 hipblasStride   stridey,
+                                                 const T*        param,
+                                                 hipblasStride   strideparam,
+                                                 int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasRotmgBatched(hipblasHandle_t handle,
-                                    T* const        d1[],
-                                    T* const        d2[],
-                                    T* const        x1[],
-                                    const T* const  y1[],
-                                    T* const        param[],
-                                    int             batch_count);
+    MAP2CF(hipblasRotm, float, hipblasSrotm);
+    MAP2CF(hipblasRotm, double, hipblasDrotm);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasRotmgStridedBatched(hipblasHandle_t handle,
-                                           T*              d1,
-                                           hipblasStride   stride_d1,
-                                           T*              d2,
-                                           hipblasStride   stride_d2,
-                                           T*              x1,
-                                           hipblasStride   stride_x1,
-                                           const T*        y1,
-                                           hipblasStride   stride_y1,
-                                           T*              param,
-                                           hipblasStride   strideparam,
+    MAP2CF(hipblasRotmBatched, float, hipblasSrotmBatched);
+    MAP2CF(hipblasRotmBatched, double, hipblasDrotmBatched);
+
+    MAP2CF(hipblasRotmStridedBatched, float, hipblasSrotmStridedBatched);
+    MAP2CF(hipblasRotmStridedBatched, double, hipblasDrotmStridedBatched);
+
+    // rotmg
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotmg)(
+        hipblasHandle_t handle, T* d1, T* d2, T* x1, const T* y1, T* param);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotmgBatched)(hipblasHandle_t handle,
+                                           T* const        d1[],
+                                           T* const        d2[],
+                                           T* const        x1[],
+                                           const T* const  y1[],
+                                           T* const        param[],
                                            int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIamax(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasRotmgStridedBatched)(hipblasHandle_t handle,
+                                                  T*              d1,
+                                                  hipblasStride   stride_d1,
+                                                  T*              d2,
+                                                  hipblasStride   stride_d2,
+                                                  T*              x1,
+                                                  hipblasStride   stride_x1,
+                                                  const T*        y1,
+                                                  hipblasStride   stride_y1,
+                                                  T*              param,
+                                                  hipblasStride   strideparam,
+                                                  int             batch_count);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIamaxBatched(
-    hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
+    MAP2CF(hipblasRotmg, float, hipblasSrotmg);
+    MAP2CF(hipblasRotmg, double, hipblasDrotmg);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIamaxStridedBatched(hipblasHandle_t handle,
-                                           int             n,
-                                           const T*        x,
-                                           int             incx,
-                                           hipblasStride   stridex,
-                                           int             batch_count,
-                                           int*            result);
+    MAP2CF(hipblasRotmgBatched, float, hipblasSrotmgBatched);
+    MAP2CF(hipblasRotmgBatched, double, hipblasDrotmgBatched);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIamin(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+    MAP2CF(hipblasRotmgStridedBatched, float, hipblasSrotmgStridedBatched);
+    MAP2CF(hipblasRotmgStridedBatched, double, hipblasDrotmgStridedBatched);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIaminBatched(
-    hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
+    // amax
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIamax)(
+        hipblasHandle_t handle, int n, const T* x, int incx, int* result);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasIaminStridedBatched(hipblasHandle_t handle,
-                                           int             n,
-                                           const T*        x,
-                                           int             incx,
-                                           hipblasStride   stridex,
-                                           int             batch_count,
-                                           int*            result);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIamaxBatched)(
+        hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasAxpy(
-    hipblasHandle_t handle, int n, const T* alpha, const T* x, int incx, T* y, int incy);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIamaxStridedBatched)(hipblasHandle_t handle,
+                                                  int             n,
+                                                  const T*        x,
+                                                  int             incx,
+                                                  hipblasStride   stridex,
+                                                  int             batch_count,
+                                                  int*            result);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasAxpyBatched(hipblasHandle_t handle,
-                                   int             n,
-                                   const T*        alpha,
-                                   const T* const  x[],
-                                   int             incx,
-                                   T* const        y[],
-                                   int             incy,
-                                   int             batch_count);
+    MAP2CF(hipblasIamax, float, hipblasIsamax);
+    MAP2CF(hipblasIamax, double, hipblasIdamax);
+    MAP2CF_V2(hipblasIamax, hipblasComplex, hipblasIcamax);
+    MAP2CF_V2(hipblasIamax, hipblasDoubleComplex, hipblasIzamax);
 
-template <typename T, bool FORTRAN = false>
-hipblasStatus_t hipblasAxpyStridedBatched(hipblasHandle_t handle,
+    MAP2CF(hipblasIamaxBatched, float, hipblasIsamaxBatched);
+    MAP2CF(hipblasIamaxBatched, double, hipblasIdamaxBatched);
+    MAP2CF_V2(hipblasIamaxBatched, hipblasComplex, hipblasIcamaxBatched);
+    MAP2CF_V2(hipblasIamaxBatched, hipblasDoubleComplex, hipblasIzamaxBatched);
+
+    MAP2CF(hipblasIamaxStridedBatched, float, hipblasIsamaxStridedBatched);
+    MAP2CF(hipblasIamaxStridedBatched, double, hipblasIdamaxStridedBatched);
+    MAP2CF_V2(hipblasIamaxStridedBatched, hipblasComplex, hipblasIcamaxStridedBatched);
+    MAP2CF_V2(hipblasIamaxStridedBatched, hipblasDoubleComplex, hipblasIzamaxStridedBatched);
+
+    // amin
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIamin)(
+        hipblasHandle_t handle, int n, const T* x, int incx, int* result);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIaminBatched)(
+        hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasIaminStridedBatched)(hipblasHandle_t handle,
+                                                  int             n,
+                                                  const T*        x,
+                                                  int             incx,
+                                                  hipblasStride   stridex,
+                                                  int             batch_count,
+                                                  int*            result);
+
+    MAP2CF(hipblasIamin, float, hipblasIsamin);
+    MAP2CF(hipblasIamin, double, hipblasIdamin);
+    MAP2CF_V2(hipblasIamin, hipblasComplex, hipblasIcamin);
+    MAP2CF_V2(hipblasIamin, hipblasDoubleComplex, hipblasIzamin);
+
+    MAP2CF(hipblasIaminBatched, float, hipblasIsaminBatched);
+    MAP2CF(hipblasIaminBatched, double, hipblasIdaminBatched);
+    MAP2CF_V2(hipblasIaminBatched, hipblasComplex, hipblasIcaminBatched);
+    MAP2CF_V2(hipblasIaminBatched, hipblasDoubleComplex, hipblasIzaminBatched);
+
+    MAP2CF(hipblasIaminStridedBatched, float, hipblasIsaminStridedBatched);
+    MAP2CF(hipblasIaminStridedBatched, double, hipblasIdaminStridedBatched);
+    MAP2CF_V2(hipblasIaminStridedBatched, hipblasComplex, hipblasIcaminStridedBatched);
+    MAP2CF_V2(hipblasIaminStridedBatched, hipblasDoubleComplex, hipblasIzaminStridedBatched);
+
+    // axpy
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAxpy)(
+        hipblasHandle_t handle, int n, const T* alpha, const T* x, int incx, T* y, int incy);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAxpyBatched)(hipblasHandle_t handle,
                                           int             n,
                                           const T*        alpha,
-                                          const T*        x,
+                                          const T* const  x[],
                                           int             incx,
-                                          hipblasStride   stridex,
-                                          T*              y,
+                                          T* const        y[],
                                           int             incy,
-                                          hipblasStride   stridey,
                                           int             batch_count);
+
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAxpyStridedBatched)(hipblasHandle_t handle,
+                                                 int             n,
+                                                 const T*        alpha,
+                                                 const T*        x,
+                                                 int             incx,
+                                                 hipblasStride   stridex,
+                                                 T*              y,
+                                                 int             incy,
+                                                 hipblasStride   stridey,
+                                                 int             batch_count);
+
+    MAP2CF(hipblasAxpy, hipblasHalf, hipblasHaxpy);
+    MAP2CF(hipblasAxpy, float, hipblasSaxpy);
+    MAP2CF(hipblasAxpy, double, hipblasDaxpy);
+    MAP2CF_V2(hipblasAxpy, hipblasComplex, hipblasCaxpy);
+    MAP2CF_V2(hipblasAxpy, hipblasDoubleComplex, hipblasZaxpy);
+
+    MAP2CF(hipblasAxpyBatched, hipblasHalf, hipblasHaxpyBatched);
+    MAP2CF(hipblasAxpyBatched, float, hipblasSaxpyBatched);
+    MAP2CF(hipblasAxpyBatched, double, hipblasDaxpyBatched);
+    MAP2CF_V2(hipblasAxpyBatched, hipblasComplex, hipblasCaxpyBatched);
+    MAP2CF_V2(hipblasAxpyBatched, hipblasDoubleComplex, hipblasZaxpyBatched);
+
+    MAP2CF(hipblasAxpyStridedBatched, hipblasHalf, hipblasHaxpyStridedBatched);
+    MAP2CF(hipblasAxpyStridedBatched, float, hipblasSaxpyStridedBatched);
+    MAP2CF(hipblasAxpyStridedBatched, double, hipblasDaxpyStridedBatched);
+    MAP2CF_V2(hipblasAxpyStridedBatched, hipblasComplex, hipblasCaxpyStridedBatched);
+    MAP2CF_V2(hipblasAxpyStridedBatched, hipblasDoubleComplex, hipblasZaxpyStridedBatched);
+}
 
 // ger
 template <typename T, bool CONJ, bool FORTRAN = false>
