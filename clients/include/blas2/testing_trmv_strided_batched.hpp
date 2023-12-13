@@ -256,14 +256,14 @@ void testing_trmv_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmv<T>(uplo,
-                          transA,
-                          diag,
-                          N,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hx.data() + b * stride_x,
-                          incx);
+            ref_trmv<T>(uplo,
+                        transA,
+                        diag,
+                        N,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hx.data() + b * stride_x,
+                        incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

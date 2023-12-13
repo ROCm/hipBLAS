@@ -208,7 +208,7 @@ void testing_tpmv_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_tpmv<T>(
+            ref_tpmv<T>(
                 uplo, transA, diag, N, hA.data() + b * stride_A, hx.data() + b * stride_x, incx);
         }
 

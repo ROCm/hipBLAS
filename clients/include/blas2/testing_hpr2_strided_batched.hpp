@@ -355,14 +355,14 @@ void testing_hpr2_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hpr2<T>(uplo,
-                          N,
-                          h_alpha,
-                          hx.data() + b * stride_x,
-                          incx,
-                          hy.data() + b * stride_y,
-                          incy,
-                          hA_cpu.data() + b * stride_A);
+            ref_hpr2<T>(uplo,
+                        N,
+                        h_alpha,
+                        hx.data() + b * stride_x,
+                        incx,
+                        hy.data() + b * stride_y,
+                        incy,
+                        hA_cpu.data() + b * stride_A);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

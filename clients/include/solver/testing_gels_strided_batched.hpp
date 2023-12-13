@@ -434,16 +434,16 @@ void testing_gels_strided_batched(const Arguments& arg)
 
         for(int b = 0; b < batchCount; b++)
         {
-            info[b] = cblas_gels(transc,
-                                 M,
-                                 N,
-                                 nrhs,
-                                 hA.data() + b * strideA,
-                                 lda,
-                                 hB.data() + b * strideB,
-                                 ldb,
-                                 hW.data(),
-                                 sizeW);
+            info[b] = ref_gels(transc,
+                               M,
+                               N,
+                               nrhs,
+                               hA.data() + b * strideA,
+                               lda,
+                               hB.data() + b * strideB,
+                               ldb,
+                               hW.data(),
+                               sizeW);
         }
 
         hipblas_error = norm_check_general<T>(

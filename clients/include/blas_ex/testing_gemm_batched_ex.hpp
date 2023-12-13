@@ -522,19 +522,19 @@ void testing_gemm_batched_ex(const Arguments& arg)
         // CPU BLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_gemm<Ti, To, Tex>(transA,
-                                    transB,
-                                    M,
-                                    N,
-                                    K,
-                                    h_alpha_Tex,
-                                    hA[b],
-                                    lda,
-                                    hB[b],
-                                    ldb,
-                                    h_beta_Tex,
-                                    hC_gold[b],
-                                    ldc);
+            ref_gemm<Ti, To, Tex>(transA,
+                                  transB,
+                                  M,
+                                  N,
+                                  K,
+                                  h_alpha_Tex,
+                                  hA[b],
+                                  lda,
+                                  hB[b],
+                                  ldb,
+                                  h_beta_Tex,
+                                  hC_gold[b],
+                                  ldc);
         }
 
         if(unit_check)
