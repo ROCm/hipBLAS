@@ -86,6 +86,13 @@ def runPackageCommand(platform, project, jobName, label='')
     label = label != '' ? '-' + label.toLowerCase() : ''
     String ext = platform.jenkinsLabel.contains('ubuntu') ? "deb" : "rpm"
     String dir = jobName.contains('Debug') ? "debug" : "release"
+    if (env.BRANCH_NAME ==~ /PR-\d+/)
+    {
+        if (pullRequest.labels.contains("debug"))
+        {
+            dir = "debug"
+        }
+    }
 
     command = """
             set -x
