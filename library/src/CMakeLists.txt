@@ -139,7 +139,6 @@ target_include_directories( hipblas
 rocm_set_soversion( hipblas ${hipblas_SOVERSION} )
 set_target_properties( hipblas PROPERTIES CXX_EXTENSIONS NO )
 set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
-set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 
 if (WIN32)
   add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/$<TARGET_FILE_NAME:hipblas> ${PROJECT_BINARY_DIR}/clients/staging/$<TARGET_FILE_NAME:hipblas> )
