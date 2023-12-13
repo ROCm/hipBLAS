@@ -26,16 +26,13 @@
 #include <hipblas/hipblas.h>
 #include <stdbool.h>
 
+#include "type_utils.h"
 #ifdef __cplusplus
 #include "cblas_interface.h"
-#include "complex.hpp"
 #include "hipblas_datatype2string.hpp"
-#include <cmath>
 #include <cstdio>
-#include <immintrin.h>
 #include <iostream>
 #include <random>
-#include <type_traits>
 #include <vector>
 #endif
 
@@ -71,146 +68,6 @@
             std::cout << std::endl;                        \
         }                                                  \
     } while(0)
-
-// Return true if value is NaN
-template <typename T>
-inline bool hipblas_isnan(T)
-{
-    return false;
-}
-inline bool hipblas_isnan(double arg)
-{
-    return std::isnan(arg);
-}
-inline bool hipblas_isnan(float arg)
-{
-    return std::isnan(arg);
-}
-
-inline bool hipblas_isnan(hipblasHalf arg)
-{
-    auto half_data = static_cast<unsigned short>(arg);
-    return (~(half_data)&0x7c00) == 0 && (half_data & 0x3ff) != 0;
-}
-inline bool hipblas_isnan(hipblasComplex arg)
-{
-    return std::isnan(arg.real()) || std::isnan(arg.imag());
-}
-inline bool hipblas_isnan(hipblasDoubleComplex arg)
-{
-    return std::isnan(arg.real()) || std::isnan(arg.imag());
-}
-
-inline hipblasHalf float_to_half(float val)
-{
-#ifdef HIPBLAS_USE_HIP_HALF
-    return __float2half(val);
-#else
-    uint16_t a = _cvtss_sh(val, 0);
-    return a;
-#endif
-}
-
-inline float bfloat16_to_float(hipblasBfloat16 bf)
-{
-    union
-    {
-        uint32_t int32;
-        float    fp32;
-    } u = {uint32_t(bf.data) << 16};
-    return u.fp32;
-}
-
-inline hipblasBfloat16 float_to_bfloat16(float f)
-{
-    hipblasBfloat16 rv;
-    union
-    {
-        float    fp32;
-        uint32_t int32;
-    } u = {f};
-    if(~u.int32 & 0x7f800000)
-    {
-        u.int32 += 0x7fff + ((u.int32 >> 16) & 1); // Round to nearest, round to even
-    }
-    else if(u.int32 & 0xffff)
-    {
-        u.int32 |= 0x10000; // Preserve signaling NaN
-    }
-    rv.data = uint16_t(u.int32 >> 16);
-    return rv;
-}
-
-inline float half_to_float(hipblasHalf val)
-{
-#ifdef HIPBLAS_USE_HIP_HALF
-    return __half2float(val);
-#else
-    return _cvtsh_ss(val);
-#endif
-}
-
-/* =============================================================================================== */
-/* Absolute values                                                                                 */
-template <typename T>
-inline double hipblas_abs(const T& x)
-{
-    return x < 0 ? -x : x;
-}
-
-template <>
-inline double hipblas_abs(const hipblasHalf& x)
-{
-    return std::abs(half_to_float(x));
-}
-
-template <>
-inline double hipblas_abs(const hipblasBfloat16& x)
-{
-    return std::abs(bfloat16_to_float(x));
-}
-
-inline double hipblas_abs(const hipblasComplex& x)
-{
-    return abs(reinterpret_cast<const std::complex<float>&>(x));
-}
-
-inline double hipblas_abs(const hipblasDoubleComplex& x)
-{
-    return abs(reinterpret_cast<const std::complex<double>&>(x));
-}
-
-inline int hipblas_abs(const int& x)
-{
-    return x < 0 ? -x : x;
-}
-
-/* =============================================================================================== */
-/* Complex / real helpers.                                                                         */
-template <typename T>
-static constexpr bool is_complex = false;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipblasComplex> = true;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipblasDoubleComplex> = true;
-
-// Get base types from complex types.
-template <typename T, typename = void>
-struct real_t_impl
-{
-    using type = T;
-};
-
-template <typename T>
-struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
-{
-    using type = decltype(T{}.real());
-};
-
-template <typename T>
-using real_t = typename real_t_impl<T>::type;
 
 /* =============================================================================================== */
 /* Epsilon helpers for near checks.                                                                */
@@ -478,26 +335,31 @@ inline hipblasHalf random_hpl_generator()
 // for vector x (M=1, N=lengthX, lda=incx);
 // for complex number, the real/imag part would be initialized with the same value
 template <typename T>
+void hipblas_init(std::vector<T>& A,
+                  int64_t         M,
+                  int64_t         N,
+                  int64_t         lda,
+                  hipblasStride   stride      = 0,
+                  int64_t         batch_count = 1)
+{
+    for(int64_t b = 0; b < batch_count; b++)
+        for(int64_t i = 0; i < M; ++i)
+            for(int64_t j = 0; j < N; ++j)
+                A[i + j * lda + b * stride] = random_generator<T>();
+}
+
+template <typename T>
 void hipblas_init(
-    std::vector<T>& A, int M, int N, int lda, hipblasStride stride = 0, int batch_count = 1)
+    T* A, int64_t M, int64_t N, int64_t lda, hipblasStride stride = 0, int64_t batch_count = 1)
 {
-    for(int b = 0; b < batch_count; b++)
-        for(int i = 0; i < M; ++i)
-            for(int j = 0; j < N; ++j)
+    for(int64_t b = 0; b < batch_count; b++)
+        for(int64_t i = 0; i < M; ++i)
+            for(int64_t j = 0; j < N; ++j)
                 A[i + j * lda + b * stride] = random_generator<T>();
 }
 
 template <typename T>
-void hipblas_init(T* A, int M, int N, int lda, hipblasStride stride = 0, int batch_count = 1)
-{
-    for(int b = 0; b < batch_count; b++)
-        for(int i = 0; i < M; ++i)
-            for(int j = 0; j < N; ++j)
-                A[i + j * lda + b * stride] = random_generator<T>();
-}
-
-template <typename T>
-void hipblas_init_alternating_sign(std::vector<T>& A, int M, int N, int lda)
+void hipblas_init_alternating_sign(std::vector<T>& A, int64_t M, int64_t N, int64_t lda)
 {
     // Initialize matrix so adjacent entries have alternating sign.
     // In gemm if either A or B are initialized with alernating
@@ -506,8 +368,8 @@ void hipblas_init_alternating_sign(std::vector<T>& A, int M, int N, int lda)
     // This helps reduce floating point inaccuracies for 16bit
     // arithmetic where the exponent has only 5 bits, and the
     // mantissa 10 bits.
-    for(int i = 0; i < M; ++i)
-        for(int j = 0; j < N; ++j)
+    for(int64_t i = 0; i < M; ++i)
+        for(int64_t j = 0; j < N; ++j)
             if(j % 2 ^ i % 2)
                 A[i + j * lda] = random_generator<T>();
             else
@@ -516,7 +378,7 @@ void hipblas_init_alternating_sign(std::vector<T>& A, int M, int N, int lda)
 
 template <typename T>
 void hipblas_init_alternating_sign(
-    std::vector<T>& A, int M, int N, int lda, hipblasStride stride, int batch_count)
+    std::vector<T>& A, int64_t M, int64_t N, int64_t lda, hipblasStride stride, int64_t batch_count)
 {
     // Initialize matrix so adjacent entries have alternating sign.
     // In gemm if either A or B are initialized with alernating
@@ -525,9 +387,9 @@ void hipblas_init_alternating_sign(
     // This helps reduce floating point inaccuracies for 16bit
     // arithmetic where the exponent has only 5 bits, and the
     // mantissa 10 bits.
-    for(int i_batch = 0; i_batch < batch_count; i_batch++)
-        for(int i = 0; i < M; ++i)
-            for(int j = 0; j < N; ++j)
+    for(int64_t i_batch = 0; i_batch < batch_count; i_batch++)
+        for(int64_t i = 0; i < M; ++i)
+            for(int64_t j = 0; j < N; ++j)
                 if(j % 2 ^ i % 2)
                     A[i + j * lda + i_batch * stride] = random_generator<T>();
                 else
@@ -675,10 +537,10 @@ inline void hipblas_init_sin<hipblasBfloat16>(std::vector<hipblasBfloat16>& A,
 /*! \brief  symmetric matrix initialization: */
 // for real matrix only
 template <typename T>
-void hipblas_init_symmetric(std::vector<T>& A, int N, int lda)
+void hipblas_init_symmetric(std::vector<T>& A, int64_t N, int64_t lda)
 {
-    for(int i = 0; i < N; ++i)
-        for(int j = 0; j <= i; ++j)
+    for(int64_t i = 0; i < N; ++i)
+        for(int64_t j = 0; j <= i; ++j)
         {
             auto r         = random_generator<T>();
             A[j + i * lda] = r;
@@ -689,11 +551,11 @@ void hipblas_init_symmetric(std::vector<T>& A, int N, int lda)
 /*! \brief symmetric matrix initialization for strided_batched matricies: */
 template <typename T>
 void hipblas_init_symmetric(
-    std::vector<T>& A, int N, int lda, hipblasStride strideA, int batch_count)
+    std::vector<T>& A, int64_t N, int64_t lda, hipblasStride strideA, int64_t batch_count)
 {
-    for(int b = 0; b < batch_count; b++)
-        for(int off = b * strideA, i = 0; i < N; ++i)
-            for(int j = 0; j <= i; ++j)
+    for(int64_t b = 0; b < batch_count; b++)
+        for(int64_t off = b * strideA, i = 0; i < N; ++i)
+            for(int64_t j = 0; j <= i; ++j)
             {
                 auto r               = random_generator<T>();
                 A[i + j * lda + off] = r;
@@ -705,10 +567,10 @@ void hipblas_init_symmetric(
 // for complex matrix only, the real/imag part would be initialized with the same value
 // except the diagonal elment must be real
 template <typename T>
-void hipblas_init_hermitian(std::vector<T>& A, int N, int lda)
+void hipblas_init_hermitian(std::vector<T>& A, int64_t N, int64_t lda)
 {
-    for(int i = 0; i < N; ++i)
-        for(int j = 0; j <= i; ++j)
+    for(int64_t i = 0; i < N; ++i)
+        for(int64_t j = 0; j <= i; ++j)
             if(i == j)
                 A[j + i * lda] = random_generator<real_t<T>>();
             else
@@ -738,33 +600,34 @@ inline void hipblass_init_nan(
 /* ============================================================================================= */
 /*! \brief For testing purposes, to convert a regular matrix to a packed matrix.                  */
 template <typename T>
-inline void regular_to_packed(bool upper, const T* A, T* AP, int n)
+inline void regular_to_packed(bool upper, const T* A, T* AP, int64_t n)
 {
-    int index = 0;
+    int64_t index = 0;
     if(upper)
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j <= i; j++)
+        for(int64_t i = 0; i < n; i++)
+            for(int64_t j = 0; j <= i; j++)
                 AP[index++] = A[j + i * n];
     else
-        for(int i = 0; i < n; i++)
-            for(int j = i; j < n; j++)
+        for(int64_t i = 0; i < n; i++)
+            for(int64_t j = i; j < n; j++)
                 AP[index++] = A[j + i * n];
 }
 
 /* ============================================================================ */
 /* \brief For testing purposes, to convert a regular matrix to a banded matrix. */
 template <typename T>
-inline void regular_to_banded(bool upper, const T* A, int lda, T* AB, int ldab, int n, int k)
+inline void regular_to_banded(
+    bool upper, const T* A, int64_t lda, T* AB, int64_t ldab, int64_t n, int64_t k)
 {
     // convert regular hA matrix to banded hAB matrix.
-    for(int j = 0; j < n; j++)
+    for(int64_t j = 0; j < n; j++)
     {
-        int min1 = upper ? std::max(0, j - k) : j;
-        int max1 = upper ? j : std::min(n - 1, j + k);
-        int m    = upper ? k - j : -j;
+        int64_t min1 = upper ? std::max(int64_t(0), j - k) : j;
+        int64_t max1 = upper ? j : std::min(n - 1, j + k);
+        int64_t m    = upper ? k - j : -j;
 
         // Move bands of hA into new banded hAB format.
-        for(int i = min1; i <= max1; i++)
+        for(int64_t i = min1; i <= max1; i++)
             AB[j * ldab + (m + i)] = A[j * lda + i];
 
         min1 = upper ? k + 1 : std::min(k + 1, n - j);
@@ -772,14 +635,14 @@ inline void regular_to_banded(bool upper, const T* A, int lda, T* AB, int ldab, 
 
         // fill in bottom with random data to ensure we aren't using it.
         // for !upper, fill in bottom right triangle as well.
-        for(int i = min1; i <= max1; i++)
+        for(int64_t i = min1; i <= max1; i++)
             hipblas_init<T>(AB + j * ldab + i, 1, 1, 1);
 
         // for upper, fill in top left triangle with random data to ensure
         // we aren't using it.
         if(upper)
         {
-            for(int i = 0; i < m; i++)
+            for(int64_t i = 0; i < m; i++)
                 hipblas_init<T>(AB + j * ldab + i, 1, 1, 1);
         }
     }
@@ -788,12 +651,12 @@ inline void regular_to_banded(bool upper, const T* A, int lda, T* AB, int ldab, 
 /* ============================================================================== */
 /* \brief For testing purposes, zeros out elements not needed in a banded matrix. */
 template <typename T>
-inline void banded_matrix_setup(bool upper, T* A, int lda, int n, int k)
+inline void banded_matrix_setup(bool upper, T* A, int64_t lda, int64_t n, int64_t k)
 {
     // Make A a banded matrix with k sub/super diagonals.
-    for(int i = 0; i < n; i++)
+    for(int64_t i = 0; i < n; i++)
     {
-        for(int j = 0; j < n; j++)
+        for(int64_t j = 0; j < n; j++)
         {
             if(upper && (j > k + i || i > j))
                 A[j * n + i] = T(0.0);
@@ -807,29 +670,29 @@ inline void banded_matrix_setup(bool upper, T* A, int lda, int n, int k)
 /*! \brief For testing purposes, makes a matrix hA into a unit_diagonal matrix and               *
  *         randomly initialize the diagonal.                                                     */
 template <typename T>
-void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int lda, int N)
+void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
 {
     if(uplo == HIPBLAS_FILL_MODE_LOWER)
     {
-        for(int i = 0; i < N; i++)
+        for(int64_t i = 0; i < N; i++)
         {
             T diag = hA[i + i * N];
-            for(int j = 0; j <= i; j++)
+            for(int64_t j = 0; j <= i; j++)
                 hA[i + j * lda] = hA[i + j * lda] / diag;
         }
     }
     else // rocblas_fill_upper
     {
-        for(int j = 0; j < N; j++)
+        for(int64_t j = 0; j < N; j++)
         {
             T diag = hA[j + j * lda];
-            for(int i = 0; i <= j; i++)
+            for(int64_t i = 0; i <= j; i++)
                 hA[i + j * lda] = hA[i + j * lda] / diag;
         }
     }
 
     // randomly initalize diagonal to ensure we aren't using it's values for tests.
-    for(int i = 0; i < N; i++)
+    for(int64_t i = 0; i < N; i++)
     {
         hipblas_init<T>(hA + i * lda + i, 1, 1, 1);
     }
@@ -840,16 +703,16 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int lda, int N)
  *         Makes hA strictly diagonal dominant (SPD), then calculates Cholesky factorization     *
  *         of hA.                                                                                */
 template <typename T>
-void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
+void prepare_triangular_solve(T* hA, int64_t lda, T* AAT, int64_t N, char char_uplo)
 {
     //  calculate AAT = hA * hA ^ T
     ref_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_C, N, N, N, T(1.0), hA, lda, hA, lda, T(0.0), AAT, lda);
 
     //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-    for(int i = 0; i < N; i++)
+    for(int64_t i = 0; i < N; i++)
     {
         T t = 0.0;
-        for(int j = 0; j < N; j++)
+        for(int64_t j = 0; j < N; j++)
         {
             hA[i + j * lda] = AAT[i + j * lda];
             t += hipblas_abs(AAT[i + j * lda]);
@@ -875,11 +738,14 @@ int type2int(T val);
 /* ============================================================================================ */
 /*! \brief  Debugging purpose, print out CPU and GPU result matrix, not valid in complex number  */
 template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
-void print_matrix(
-    const std::vector<T>& CPU_result, const std::vector<T>& GPU_result, int m, int n, int lda)
+void print_matrix(const std::vector<T>& CPU_result,
+                  const std::vector<T>& GPU_result,
+                  int64_t               m,
+                  int64_t               n,
+                  int64_t               lda)
 {
-    for(int i = 0; i < m; i++)
-        for(int j = 0; j < n; j++)
+    for(int64_t i = 0; i < m; i++)
+        for(int64_t j = 0; j < n; j++)
             printf("matrix  col %d, row %d, CPU result=%.8g, GPU result=%.8g\n",
                    i,
                    j,
@@ -889,11 +755,14 @@ void print_matrix(
 
 /*! \brief  Debugging purpose, print out CPU and GPU result matrix, valid for complex number  */
 template <typename T, std::enable_if_t<+is_complex<T>, int> = 0>
-void print_matrix(
-    const std::vector<T>& CPU_result, const std::vector<T>& GPU_result, int m, int n, int lda)
+void print_matrix(const std::vector<T>& CPU_result,
+                  const std::vector<T>& GPU_result,
+                  int64_t               m,
+                  int64_t               n,
+                  int64_t               lda)
 {
-    for(int i = 0; i < m; i++)
-        for(int j = 0; j < n; j++)
+    for(int64_t i = 0; i < m; i++)
+        for(int64_t j = 0; j < n; j++)
             printf("matrix  col %d, row %d, CPU result=(%.8g,%.8g), GPU result=(%.8g,%.8g)\n",
                    i,
                    j,
@@ -906,37 +775,37 @@ void print_matrix(
 /* ============================================================================================= */
 /*! \brief For testing purposes, copy one matrix into another with different leading dimensions  */
 template <typename T, typename U>
-void copy_matrix_with_different_leading_dimensions(T&     hB,
-                                                   U&     hC,
-                                                   int    M,
-                                                   int    N,
-                                                   size_t ldb,
-                                                   size_t ldc,
-                                                   size_t strideb     = 0,
-                                                   size_t stridec     = 0,
-                                                   int    batch_count = 1)
+void copy_matrix_with_different_leading_dimensions(T&      hB,
+                                                   U&      hC,
+                                                   int64_t M,
+                                                   int64_t N,
+                                                   size_t  ldb,
+                                                   size_t  ldc,
+                                                   size_t  strideb     = 0,
+                                                   size_t  stridec     = 0,
+                                                   int64_t batch_count = 1)
 {
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
         auto* B = hB + b * strideb;
         auto* C = hC + b * stridec;
-        for(int i = 0; i < M; i++)
-            for(int j = 0; j < N; j++)
+        for(int64_t i = 0; i < M; i++)
+            for(int64_t j = 0; j < N; j++)
                 C[i + j * ldc] = B[i + j * ldb];
     }
 }
 
 template <typename T, typename U>
 void copy_matrix_with_different_leading_dimensions_batched(
-    T& hB, U& hC, int M, int N, size_t ldb, size_t ldc)
+    T& hB, U& hC, int64_t M, int64_t N, size_t ldb, size_t ldc)
 {
-    int batch_count = hB.batch_count();
-    for(int b = 0; b < batch_count; b++)
+    int64_t batch_count = hB.batch_count();
+    for(int64_t b = 0; b < batch_count; b++)
     {
         auto* B = hB[b];
         auto* C = hC[b];
-        for(int i = 0; i < M; i++)
-            for(int j = 0; j < N; j++)
+        for(int64_t i = 0; i < M; i++)
+            for(int64_t j = 0; j < N; j++)
                 C[i + j * ldc] = B[i + j * ldb];
     }
 }

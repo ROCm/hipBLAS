@@ -50,17 +50,17 @@ constexpr double sqrthalf = 0.7071067811865475244;
 
 /*! \brief Template: gtest near compare two matrices float/double/complex */
 template <typename T>
-void near_check_general(int M, int N, int lda, T* hCPU, T* hGPU, double abs_error);
+void near_check_general(int64_t M, int64_t N, int64_t lda, T* hCPU, T* hGPU, double abs_error);
 
 template <typename T>
 void near_check_general(
-    int M, int N, int lda, host_vector<T> hCPU, host_vector<T> hGPU, double abs_error);
+    int64_t M, int64_t N, int64_t lda, host_vector<T> hCPU, host_vector<T> hGPU, double abs_error);
 
 template <typename T>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride stride_A,
                         T*            hCPU,
                         T*            hGPU,
@@ -68,18 +68,18 @@ void near_check_general(int           M,
 
 template <typename T>
 void near_check_general(
-    int M, int N, int batch_count, int lda, T** hCPU, T** hGPU, double abs_error);
+    int64_t M, int64_t N, int64_t batch_count, int64_t lda, T** hCPU, T** hGPU, double abs_error);
 
 template <typename T>
-void near_check_general(int            M,
-                        int            N,
-                        int            batch_count,
-                        int            lda,
+void near_check_general(int64_t        M,
+                        int64_t        N,
+                        int64_t        batch_count,
+                        int64_t        lda,
                         host_vector<T> hCPU[],
                         host_vector<T> hGPU[],
                         double         abs_error);
 
-// currently only used for half-precision comparisons int dot_ex tests
+// currently only used for half-precision comparisons in dot_ex tests
 template <class T>
 HIPBLAS_CLANG_STATIC constexpr double error_tolerance = 0.0;
 

@@ -88,58 +88,69 @@
     } while(0)
 
 template <>
-void near_check_general(int M, int N, int lda, int32_t* hCPU, int32_t* hGPU, double abs_error)
-{
-    NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, ASSERT_NEAR);
-}
-
-template <>
-void near_check_general(int M, int N, int lda, float* hCPU, float* hGPU, double abs_error)
-{
-    NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, ASSERT_NEAR);
-}
-
-template <>
-void near_check_general(int M, int N, int lda, double* hCPU, double* hGPU, double abs_error)
+void near_check_general(
+    int64_t M, int64_t N, int64_t lda, int32_t* hCPU, int32_t* hGPU, double abs_error)
 {
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
 void near_check_general(
-    int M, int N, int lda, hipblasHalf* hCPU, hipblasHalf* hGPU, double abs_error)
+    int64_t M, int64_t N, int64_t lda, float* hCPU, float* hGPU, double abs_error)
+{
+    NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, ASSERT_NEAR);
+}
+
+template <>
+void near_check_general(
+    int64_t M, int64_t N, int64_t lda, double* hCPU, double* hGPU, double abs_error)
+{
+    NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, ASSERT_NEAR);
+}
+
+template <>
+void near_check_general(
+    int64_t M, int64_t N, int64_t lda, hipblasHalf* hCPU, hipblasHalf* hGPU, double abs_error)
 {
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_HALF);
 }
 
 template <>
-void near_check_general(
-    int M, int N, int lda, hipblasBfloat16* hCPU, hipblasBfloat16* hGPU, double abs_error)
+void near_check_general(int64_t          M,
+                        int64_t          N,
+                        int64_t          lda,
+                        hipblasBfloat16* hCPU,
+                        hipblasBfloat16* hGPU,
+                        double           abs_error)
 {
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_BF16);
 }
 
 template <>
 void near_check_general(
-    int M, int N, int lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
+    int64_t M, int64_t N, int64_t lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
 }
 
 template <>
-void near_check_general(
-    int M, int N, int lda, hipblasDoubleComplex* hCPU, hipblasDoubleComplex* hGPU, double abs_error)
+void near_check_general(int64_t               M,
+                        int64_t               N,
+                        int64_t               lda,
+                        hipblasDoubleComplex* hCPU,
+                        hipblasDoubleComplex* hGPU,
+                        double                abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
 }
 
 template <>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride strideA,
                         int32_t*      hCPU,
                         int32_t*      hGPU,
@@ -149,10 +160,10 @@ void near_check_general(int           M,
 }
 
 template <>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride strideA,
                         float*        hCPU,
                         float*        hGPU,
@@ -162,10 +173,10 @@ void near_check_general(int           M,
 }
 
 template <>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride strideA,
                         double*       hCPU,
                         double*       hGPU,
@@ -175,10 +186,10 @@ void near_check_general(int           M,
 }
 
 template <>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride strideA,
                         hipblasHalf*  hCPU,
                         hipblasHalf*  hGPU,
@@ -188,10 +199,10 @@ void near_check_general(int           M,
 }
 
 template <>
-void near_check_general(int              M,
-                        int              N,
-                        int              batch_count,
-                        int              lda,
+void near_check_general(int64_t          M,
+                        int64_t          N,
+                        int64_t          batch_count,
+                        int64_t          lda,
                         hipblasStride    strideA,
                         hipblasBfloat16* hCPU,
                         hipblasBfloat16* hGPU,
@@ -201,10 +212,10 @@ void near_check_general(int              M,
 }
 
 template <>
-void near_check_general(int             M,
-                        int             N,
-                        int             batch_count,
-                        int             lda,
+void near_check_general(int64_t         M,
+                        int64_t         N,
+                        int64_t         batch_count,
+                        int64_t         lda,
                         hipblasStride   strideA,
                         hipblasComplex* hCPU,
                         hipblasComplex* hGPU,
@@ -215,10 +226,10 @@ void near_check_general(int             M,
 }
 
 template <>
-void near_check_general(int                   M,
-                        int                   N,
-                        int                   batch_count,
-                        int                   lda,
+void near_check_general(int64_t               M,
+                        int64_t               N,
+                        int64_t               batch_count,
+                        int64_t               lda,
                         hipblasStride         strideA,
                         hipblasDoubleComplex* hCPU,
                         hipblasDoubleComplex* hGPU,
@@ -229,10 +240,10 @@ void near_check_general(int                   M,
 }
 
 template <>
-void near_check_general(int                      M,
-                        int                      N,
-                        int                      batch_count,
-                        int                      lda,
+void near_check_general(int64_t                  M,
+                        int64_t                  N,
+                        int64_t                  batch_count,
+                        int64_t                  lda,
                         host_vector<hipblasHalf> hCPU[],
                         host_vector<hipblasHalf> hGPU[],
                         double                   abs_error)
@@ -241,10 +252,10 @@ void near_check_general(int                      M,
 }
 
 template <>
-void near_check_general(int                          M,
-                        int                          N,
-                        int                          batch_count,
-                        int                          lda,
+void near_check_general(int64_t                      M,
+                        int64_t                      N,
+                        int64_t                      batch_count,
+                        int64_t                      lda,
                         host_vector<hipblasBfloat16> hCPU[],
                         host_vector<hipblasBfloat16> hGPU[],
                         double                       abs_error)
@@ -253,10 +264,10 @@ void near_check_general(int                          M,
 }
 
 template <>
-void near_check_general(int                  M,
-                        int                  N,
-                        int                  batch_count,
-                        int                  lda,
+void near_check_general(int64_t              M,
+                        int64_t              N,
+                        int64_t              batch_count,
+                        int64_t              lda,
                         host_vector<int32_t> hCPU[],
                         host_vector<int32_t> hGPU[],
                         double               abs_error)
@@ -264,11 +275,10 @@ void near_check_general(int                  M,
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
-template <>
-void near_check_general(int                M,
-                        int                N,
-                        int                batch_count,
-                        int                lda,
+void near_check_general(int64_t            M,
+                        int64_t            N,
+                        int64_t            batch_count,
+                        int64_t            lda,
                         host_vector<float> hCPU[],
                         host_vector<float> hGPU[],
                         double             abs_error)
@@ -277,10 +287,10 @@ void near_check_general(int                M,
 }
 
 template <>
-void near_check_general(int                 M,
-                        int                 N,
-                        int                 batch_count,
-                        int                 lda,
+void near_check_general(int64_t             M,
+                        int64_t             N,
+                        int64_t             batch_count,
+                        int64_t             lda,
                         host_vector<double> hCPU[],
                         host_vector<double> hGPU[],
                         double              abs_error)
@@ -289,10 +299,10 @@ void near_check_general(int                 M,
 }
 
 template <>
-void near_check_general(int                         M,
-                        int                         N,
-                        int                         batch_count,
-                        int                         lda,
+void near_check_general(int64_t                     M,
+                        int64_t                     N,
+                        int64_t                     batch_count,
+                        int64_t                     lda,
                         host_vector<hipblasComplex> hCPU[],
                         host_vector<hipblasComplex> hGPU[],
                         double                      abs_error)
@@ -302,10 +312,10 @@ void near_check_general(int                         M,
 }
 
 template <>
-void near_check_general(int                               M,
-                        int                               N,
-                        int                               batch_count,
-                        int                               lda,
+void near_check_general(int64_t                           M,
+                        int64_t                           N,
+                        int64_t                           batch_count,
+                        int64_t                           lda,
                         host_vector<hipblasDoubleComplex> hCPU[],
                         host_vector<hipblasDoubleComplex> hGPU[],
                         double                            abs_error)
@@ -315,10 +325,10 @@ void near_check_general(int                               M,
 }
 
 template <>
-void near_check_general(int          M,
-                        int          N,
-                        int          batch_count,
-                        int          lda,
+void near_check_general(int64_t      M,
+                        int64_t      N,
+                        int64_t      batch_count,
+                        int64_t      lda,
                         hipblasHalf* hCPU[],
                         hipblasHalf* hGPU[],
                         double       abs_error)
@@ -327,10 +337,10 @@ void near_check_general(int          M,
 }
 
 template <>
-void near_check_general(int              M,
-                        int              N,
-                        int              batch_count,
-                        int              lda,
+void near_check_general(int64_t          M,
+                        int64_t          N,
+                        int64_t          batch_count,
+                        int64_t          lda,
                         hipblasBfloat16* hCPU[],
                         hipblasBfloat16* hGPU[],
                         double           abs_error)
@@ -339,31 +349,46 @@ void near_check_general(int              M,
 }
 
 template <>
-void near_check_general(
-    int M, int N, int batch_count, int lda, int32_t* hCPU[], int32_t* hGPU[], double abs_error)
+void near_check_general(int64_t  M,
+                        int64_t  N,
+                        int64_t  batch_count,
+                        int64_t  lda,
+                        int32_t* hCPU[],
+                        int32_t* hGPU[],
+                        double   abs_error)
 {
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
-void near_check_general(
-    int M, int N, int batch_count, int lda, float* hCPU[], float* hGPU[], double abs_error)
+void near_check_general(int64_t M,
+                        int64_t N,
+                        int64_t batch_count,
+                        int64_t lda,
+                        float*  hCPU[],
+                        float*  hGPU[],
+                        double  abs_error)
 {
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
-void near_check_general(
-    int M, int N, int batch_count, int lda, double* hCPU[], double* hGPU[], double abs_error)
+void near_check_general(int64_t M,
+                        int64_t N,
+                        int64_t batch_count,
+                        int64_t lda,
+                        double* hCPU[],
+                        double* hGPU[],
+                        double  abs_error)
 {
     NEAR_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, abs_error, ASSERT_NEAR);
 }
 
 template <>
-void near_check_general(int             M,
-                        int             N,
-                        int             batch_count,
-                        int             lda,
+void near_check_general(int64_t         M,
+                        int64_t         N,
+                        int64_t         batch_count,
+                        int64_t         lda,
                         hipblasComplex* hCPU[],
                         hipblasComplex* hGPU[],
                         double          abs_error)
@@ -373,10 +398,10 @@ void near_check_general(int             M,
 }
 
 template <>
-void near_check_general(int                   M,
-                        int                   N,
-                        int                   batch_count,
-                        int                   lda,
+void near_check_general(int64_t               M,
+                        int64_t               N,
+                        int64_t               batch_count,
+                        int64_t               lda,
                         hipblasDoubleComplex* hCPU[],
                         hipblasDoubleComplex* hGPU[],
                         double                abs_error)

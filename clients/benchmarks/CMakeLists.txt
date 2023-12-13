@@ -88,12 +88,12 @@ target_include_directories( hipblas_v2-bench
 )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
-    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack stdc++fs )
+    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client lapack stdc++fs )
 endif()
 
-target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
-target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
+target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
@@ -137,6 +137,9 @@ else( )
   target_link_libraries( hipblas-bench PRIVATE ${CUDA_LIBRARIES} )
   target_link_libraries( hipblas_v2-bench PRIVATE ${CUDA_LIBRARIES} )
 endif( )
+
+target_link_libraries( hipblas-bench PRIVATE ${COMMON_LINK_LIBS} )
+target_link_libraries( hipblas_v2-bench PRIVATE ${COMMON_LINK_LIBS} )
 
 set_target_properties( hipblas-bench PROPERTIES
   CXX_EXTENSIONS OFF

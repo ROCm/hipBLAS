@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ public:
     //! @param inc         The increment.
     //! @param batch_count The batch count.
     //!
-    explicit device_batch_vector(int n, int inc, int batch_count)
+    explicit device_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
         : m_n(n)
         , m_inc(inc ? inc : 1)
         , m_batch_count(batch_count)
@@ -78,7 +78,7 @@ public:
     //! @param stride      (UNUSED) The stride.
     //! @param batch_count The batch count.
     //!
-    explicit device_batch_vector(int n, int inc, hipblasStride stride, int batch_count)
+    explicit device_batch_vector(int64_t n, int64_t inc, hipblasStride stride, int64_t batch_count)
         : device_batch_vector(n, inc, batch_count)
     {
     }
@@ -88,7 +88,7 @@ public:
     //! @param batch_count The number of vectors.
     //! @param size_vector The size of each vectors.
     //!
-    explicit device_batch_vector(int batch_count, size_t size_vector)
+    explicit device_batch_vector(int64_t batch_count, size_t size_vector)
         : device_batch_vector(size_vector, 1, batch_count)
     {
     }
@@ -104,7 +104,7 @@ public:
     //!
     //! @brief Returns the length of the vector.
     //!
-    int n() const
+    int64_t n() const
     {
         return this->m_n;
     }
@@ -112,7 +112,7 @@ public:
     //!
     //! @brief Returns the increment of the vector.
     //!
-    int inc() const
+    int64_t inc() const
     {
         return this->m_inc;
     }
@@ -120,7 +120,7 @@ public:
     //!
     //! @brief Returns the value of batch_count.
     //!
-    int batch_count() const
+    int64_t batch_count() const
     {
         return this->m_batch_count;
     }
@@ -165,7 +165,7 @@ public:
     //! @param batch_index The batch index.
     //! @return Pointer to the array on device.
     //!
-    T* operator[](int batch_index)
+    T* operator[](int64_t batch_index)
     {
 
         return this->m_data[batch_index];
@@ -176,7 +176,7 @@ public:
     //! @param batch_index The batch index.
     //! @return Constant pointer to the array on device.
     //!
-    const T* operator[](int batch_index) const
+    const T* operator[](int64_t batch_index) const
     {
 
         return this->m_data[batch_index];
@@ -218,7 +218,7 @@ public:
         //
         // Copy each vector.
         //
-        for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+        for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
         {
             if(hipSuccess
                != (hip_err = hipMemcpy((*this)[batch_index],
@@ -246,11 +246,11 @@ public:
     }
 
 private:
-    int m_n{};
-    int m_inc{};
-    int m_batch_count{};
-    T** m_data{};
-    T** m_device_data{};
+    int64_t m_n{};
+    int64_t m_inc{};
+    int64_t m_batch_count{};
+    T**     m_data{};
+    T**     m_device_data{};
 
     //!
     //! @brief Try to allocate the ressources.
@@ -267,7 +267,7 @@ private:
             success = (nullptr != (this->m_data = (T**)calloc(this->m_batch_count, sizeof(T*))));
             if(success)
             {
-                for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+                for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
                 {
                     success
                         = (nullptr != (this->m_data[batch_index] = this->device_vector_setup()));
@@ -297,7 +297,7 @@ private:
     {
         if(nullptr != this->m_data)
         {
-            for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
                 if(nullptr != this->m_data[batch_index])
                 {

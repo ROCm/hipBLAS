@@ -74,14 +74,54 @@ if( BUILD_CLIENTS_SAMPLES )
 endif( )
 
 if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
+
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+
+  # if it fails to find OpenMP compile and link flags in strange configurations it can just use non-parallel reference computation
+  # if there is no omp.h to find the client compilation will fail and this should be obvious, used to be REQUIRED
+  find_package(OpenMP)
+
+  if (TARGET OpenMP::OpenMP_CXX)
+    set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
+    list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
+    if (NOT WIN32)
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
+    endif()
+  endif()
+
+  if (TARGET Threads::Threads)
+    list( APPEND COMMON_LINK_LIBS "Threads::Threads")
+  endif()
+
+  message(STATUS "CLIENT COMMON CXX_OPTIONS: ${COMMON_CXX_OPTIONS}")
+  message(STATUS "CLIENT COMMON LINK: ${COMMON_LINK_LIBS}")
+
   if( NOT WIN32 )
     # Linking lapack library requires fortran flags
-    find_package( cblas REQUIRED CONFIG )
     if (LINK_BLIS)
-      set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-      set( BLIS_CPP ../common/blis_interface.cpp )
-      set( BLAS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
+      if(EXISTS          "${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a") # 4.0 and 4.1.0
+        set( BLAS_LIBRARY ${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a )
+        set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/amd-blis/include/ILP64 )
+      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a" )
+        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a )
+        set( BLIS_INCLUDE_DIR /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/include_ILP64/ )
+      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a" )
+        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a )
+        set( BLIS_INCLUDE_DIR /opt/AMD/aocl/aocl-linux-aocc-4.0/include_ILP64/ )
+      elseif(EXISTS      "${BUILD_DIR}/deps/blis/lib/libblis.a")
+        set( BLAS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.a )
+        set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
+      elseif(EXISTS      "/usr/local/lib/libblis.a")
+        set( BLAS_LIBRARY /usr/local/lib/libblis.a )
+        set( BLIS_INCLUDE_DIR /usr/local/include/blis )
+      endif()
+      if ( DEFINED BLIS_INCLUDE_DIR )
+        set( BLIS_CPP ../common/blis_interface.cpp )
+        message(STATUS "Linking BLIS LIB: ${BLAS_LIBRARY}")
+      endif()
     else()
+      find_package( cblas REQUIRED CONFIG )
       set( BLAS_LIBRARY "blas" )
     endif()
   else() # WIN32

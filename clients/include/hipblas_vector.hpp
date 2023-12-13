@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -105,7 +105,7 @@ struct host_vector : std::vector<T>
     //!
     //! @brief Constructor.
     //!
-    host_vector(size_t n, ptrdiff_t inc)
+    host_vector(size_t n, int64_t inc)
         : std::vector<T>(n * std::abs(inc))
         , m_n(n)
         , m_inc(inc)
@@ -142,6 +142,19 @@ struct host_vector : std::vector<T>
     }
 
     //!
+    //! @brief Allow signed indices
+    //!
+    inline T& operator[](int64_t idx)
+    {
+        return std::vector<T>::operator[]((size_t)idx);
+    }
+
+    inline const T& operator[](int64_t idx) const
+    {
+        return std::vector<T>::operator[]((size_t)idx);
+    }
+
+    //!
     //! @brief Transfer from a device vector.
     //! @param  that That device vector.
     //! @return the hip error.
@@ -170,7 +183,7 @@ struct host_vector : std::vector<T>
     //!
     //! @brief Returns the increment of the vector.
     //!
-    ptrdiff_t inc() const
+    int64_t inc() const
     {
         return m_inc;
     }
@@ -178,7 +191,7 @@ struct host_vector : std::vector<T>
     //!
     //! @brief Returns the batch count (always 1).
     //!
-    static constexpr int batch_count()
+    static constexpr int64_t batch_count()
     {
         return 1;
     }
@@ -200,8 +213,8 @@ struct host_vector : std::vector<T>
     }
 
 private:
-    size_t    m_n   = 0;
-    ptrdiff_t m_inc = 0;
+    size_t  m_n   = 0;
+    int64_t m_inc = 0;
 };
 
 //!
@@ -218,15 +231,15 @@ void hipblas_init_template(U& that, T rand_gen(), bool seedReset, bool alternati
 
     for(int batch_index = 0; batch_index < that.batch_count(); ++batch_index)
     {
-        auto*     batched_data = that[batch_index];
-        ptrdiff_t inc          = that.inc();
-        auto      n            = that.n();
+        auto*   batched_data = that[batch_index];
+        int64_t inc          = that.inc();
+        auto    n            = that.n();
         if(inc < 0)
             batched_data -= (n - 1) * inc;
 
         if(alternating_sign)
         {
-            for(int i = 0; i < n; i++)
+            for(size_t i = 0; i < n; i++)
             {
                 auto value            = rand_gen();
                 batched_data[i * inc] = (i ^ 0) & 1 ? value : hipblas_negate(value);
@@ -234,7 +247,7 @@ void hipblas_init_template(U& that, T rand_gen(), bool seedReset, bool alternati
         }
         else
         {
-            for(int i = 0; i < n; ++i)
+            for(size_t i = 0; i < n; ++i)
                 batched_data[i * inc] = rand_gen();
         }
     }
@@ -263,8 +276,12 @@ inline void hipblas_init_nan(host_batch_vector<T>& that, bool seedReset = false)
 // }
 
 template <typename T>
-inline void hipblas_init_nan(
-    host_vector<T>& A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
+inline void hipblas_init_nan(host_vector<T>& A,
+                             size_t          M,
+                             size_t          N,
+                             size_t          lda,
+                             hipblasStride   stride      = 0,
+                             int64_t         batch_count = 1)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
         for(size_t i = 0; i < M; ++i)
@@ -364,9 +381,9 @@ template <typename T>
 inline void hipblas_init_vector(host_vector<T>&        hx,
                                 const Arguments&       arg,
                                 size_t                 N,
-                                size_t                 incx,
+                                int64_t                incx,
                                 hipblasStride          stride_x,
-                                int                    batch_count,
+                                int64_t                batch_count,
                                 hipblas_check_nan_init nan_init,
                                 bool                   seedReset        = false,
                                 bool                   alternating_sign = false)
@@ -516,13 +533,13 @@ void hipblas_init_alternating_template(U& that, T rand_gen(), T rand_gen_alt(), 
 
     for(int b = 0; b < that.batch_count(); ++b)
     {
-        auto*     batched_data = that[b];
-        ptrdiff_t inc          = that.inc();
-        auto      n            = that.n();
+        auto*   batched_data = that[b];
+        int64_t inc          = that.inc();
+        auto    n            = that.n();
         if(inc < 0)
             batched_data -= (n - 1) * inc;
 
-        for(int i = 0; i < n; ++i)
+        for(int64_t i = 0; i < n; ++i)
         {
             if(i % 2)
                 batched_data[i * inc] = rand_gen();

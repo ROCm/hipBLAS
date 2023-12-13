@@ -83,7 +83,7 @@ void testing_iamin_bad_arg(const Arguments& arg)
     testing_iamax_iamin_bad_arg<T>(arg, hipblasIaminFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
+template <typename T, void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*)>
 void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
 {
     int N    = arg.N;
@@ -151,9 +151,10 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        REFBLAS_FUNC(N, hx.data(), incx, &cpu_result);
+        int64_t result_i64;
+        REFBLAS_FUNC(N, hx.data(), incx, &result_i64);
         // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-        cpu_result += 1;
+        cpu_result = result_i64 + 1;
 
         if(arg.unit_check)
         {

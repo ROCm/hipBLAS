@@ -80,7 +80,7 @@ void testing_iamin_batched_bad_arg(const Arguments& arg)
     testing_iamax_iamin_batched_bad_arg<T>(arg, hipblasIaminBatchedFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
+template <typename T, void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*)>
 void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batched_t<T> func)
 {
     int N           = arg.N;
@@ -119,6 +119,7 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
 
     host_batch_vector<T> hx(N, incx, batch_count);
     host_vector<int>     cpu_result(batch_count);
+    host_vector<int64_t> cpu_result_64(batch_count);
     host_vector<int>     hipblas_result_host(batch_count);
     host_vector<int>     hipblas_result_device(batch_count);
 
@@ -157,9 +158,9 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            REFBLAS_FUNC(N, hx[b], incx, cpu_result + b);
+            REFBLAS_FUNC(N, hx[b], incx, cpu_result_64 + b);
             // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-            cpu_result[b] += 1;
+            cpu_result[b] = cpu_result_64[b] + 1;
         }
 
         if(arg.unit_check)
