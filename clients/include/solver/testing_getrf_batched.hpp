@@ -36,10 +36,60 @@ inline void testname_getrf_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_getrf_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGetrfBatchedFn
+        = FORTRAN ? hipblasGetrfBatched<T, true> : hipblasGetrfBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N           = 101;
+    int64_t            M           = N;
+    int64_t            lda         = 102;
+    int64_t            batch_count = 2;
+    int64_t            A_size      = N * lda;
+    int64_t            Ipiv_size   = std::min(M, N) * batch_count;
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_vector<int>     dIpiv(Ipiv_size);
+    device_vector<int>     dInfo(batch_count);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfBatchedFn(nullptr, N, dA.ptr_on_device(), lda, dIpiv, dInfo, batch_count),
+        HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfBatchedFn(handle, -1, dA.ptr_on_device(), lda, dIpiv, dInfo, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfBatchedFn(handle, N, dA.ptr_on_device(), N - 1, dIpiv, dInfo, batch_count),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfBatchedFn(handle, N, dA.ptr_on_device(), lda, dIpiv, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    // If N == 0, A and ipiv can be nullptr. rocSolver doesn't allow nullptr with batch_count == 0
+    CHECK_HIPBLAS_ERROR(
+        hipblasGetrfBatchedFn(handle, 0, nullptr, lda, nullptr, dInfo, batch_count));
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetrfBatchedFn(handle, N, nullptr, lda, dIpiv, dInfo, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetrfBatchedFn(handle, N, dA.ptr_on_device(), lda, dIpiv, nullptr, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getrf_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfBatchedFn
         = FORTRAN ? hipblasGetrfBatched<T, true> : hipblasGetrfBatched<T, false>;
 
@@ -77,7 +127,7 @@ void testing_getrf_batched(const Arguments& arg)
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
-    // Initial hA on CPU
+    // Initialize hA on CPU
     hipblas_init(hA, true);
     for(int b = 0; b < batch_count; b++)
     {

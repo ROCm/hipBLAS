@@ -42,7 +42,7 @@ template <typename T>
 void testing_herkx_bad_arg(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxFn = FORTRAN ? hipblasHerkx<T, U, true> : hipblasHerkx<T, U, false>;
 
     hipblasLocalHandle handle(arg);
@@ -105,8 +105,20 @@ void testing_herkx_bad_arg(const Arguments& arg)
                                              dC,
                                              ldc),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkxFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkxFn(handle,
+                                             (hipblasFillMode_t)HIPBLAS_OP_N,
+                                             transA,
+                                             N,
+                                             K,
+                                             alpha,
+                                             dA,
+                                             lda,
+                                             dB,
+                                             ldb,
+                                             beta,
+                                             dC,
+                                             ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         // EXPECT_HIPBLAS_STATUS(
         //     hipblasHerkxFn(
         //         handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),
@@ -183,7 +195,7 @@ template <typename T>
 void testing_herkx(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxFn = FORTRAN ? hipblasHerkx<T, U, true> : hipblasHerkx<T, U, false>;
 
     int N   = arg.N;

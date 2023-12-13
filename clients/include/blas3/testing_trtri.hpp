@@ -40,7 +40,7 @@ inline void testname_trtri(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trtri_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -81,7 +81,7 @@ void testing_trtri_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trtri(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrtriFn = FORTRAN ? hipblasTrtri<T, true> : hipblasTrtri<T, false>;
 
     const double rel_error = get_epsilon<T>() * 1000;

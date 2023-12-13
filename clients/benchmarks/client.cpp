@@ -144,6 +144,8 @@ try
     std::string initialization;
     int         device_id;
     int         parallel_devices;
+    int32_t     api     = 0;
+    bool        fortran = false;
 
     bool datafile            = hipblas_parse_data(argc, argv);
     bool atomics_not_allowed = false;
@@ -360,8 +362,12 @@ try
          "Include datatypes used in output.")
 
         ("fortran",
-         bool_switch(&arg.fortran)->default_value(false),
+         bool_switch(&fortran)->default_value(false),
          "Run using Fortran interface")
+
+        ("api",
+         value<int32_t>(&api)->default_value(0),
+         "Use API, supercedes fortran flag (0==C, 1==C_64, ...)")
 
         ("help,h", "produces this help message");
 
@@ -390,6 +396,11 @@ try
     // transfer local variable state
 
     arg.atomics_mode = atomics_not_allowed ? HIPBLAS_ATOMICS_NOT_ALLOWED : HIPBLAS_ATOMICS_ALLOWED;
+
+    if(api)
+        arg.api = hipblas_client_api(api);
+    else if(fortran)
+        arg.api = FORTRAN;
 
     ArgumentModel_set_log_function_name(log_function_name);
 

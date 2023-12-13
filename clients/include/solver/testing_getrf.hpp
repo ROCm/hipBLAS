@@ -36,10 +36,48 @@ inline void testname_getrf(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_getrf_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N         = 101;
+    int64_t            M         = N;
+    int64_t            lda       = 102;
+    int64_t            A_size    = N * lda;
+    int64_t            Ipiv_size = std::min(M, N);
+
+    device_vector<T>   dA(A_size);
+    device_vector<int> dIpiv(Ipiv_size);
+    device_vector<int> dInfo(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(nullptr, N, dA, lda, dIpiv, dInfo),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, -1, dA, lda, dIpiv, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, dA, N - 1, dIpiv, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    // If N == 0, A and ipiv can be nullptr
+    CHECK_HIPBLAS_ERROR(hipblasGetrfFn(handle, 0, nullptr, lda, nullptr, dInfo));
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, nullptr, lda, dIpiv, dInfo),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, dA, lda, dIpiv, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getrf(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     int M   = arg.N;

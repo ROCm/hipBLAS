@@ -65,9 +65,11 @@ namespace
             switch(GETRI_TYPE)
             {
             case GETRI_BATCHED:
-                return !strcmp(arg.function, "getri_batched");
+                return !strcmp(arg.function, "getri_batched")
+                       || !strcmp(arg.function, "getri_batched_bad_arg");
             case GETRI_NPVT_BATCHED:
-                return !strcmp(arg.function, "getri_npvt_batched");
+                return !strcmp(arg.function, "getri_npvt_batched")
+                       || !strcmp(arg.function, "getri_npvt_batched_bad_arg");
             }
             return false;
         }
@@ -106,8 +108,12 @@ namespace
         {
             if(!strcmp(arg.function, "getri_batched"))
                 testing_getri_batched<T>(arg);
+            else if(!strcmp(arg.function, "getri_batched_bad_arg"))
+                testing_getri_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getri_npvt_batched"))
                 testing_getri_npvt_batched<T>(arg);
+            else if(!strcmp(arg.function, "getri_npvt_batched_bad_arg"))
+                testing_getri_npvt_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

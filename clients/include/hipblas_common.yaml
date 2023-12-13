@@ -490,7 +490,6 @@ Arguments:
   - diag: c_char
   - call_count: int
   - batch_count: int
-  - fortran: c_bool
   - inplace: c_bool
   - with_flags: c_bool
   - norm_check: int
@@ -576,7 +575,6 @@ Defaults:
   diag: '*'
   call_count: 1
   batch_count: -1
-  fortran: false
   inplace: false
   with_flags: false
   norm_check: 0
