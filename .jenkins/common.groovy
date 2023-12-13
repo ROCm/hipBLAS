@@ -41,9 +41,19 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
 def runTestCommand (platform, project)
 {
     String sudo = auxiliary.sudo(platform.jenkinsLabel)
+    String stagingDir = "${project.paths.project_build_prefix}/build/release/clients/staging"
+
+    if (env.BRANCH_NAME ==~ /PR-\d+/)
+    {
+        if (pullRequest.labels.contains("debug"))
+        {
+            stagingDir = "${project.paths.project_build_prefix}/build/debug/clients/staging"
+        }
+    }
+
     def command = """#!/usr/bin/env bash
                     set -x
-                    cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
                 """
 
@@ -54,7 +64,7 @@ def runTestCommand (platform, project)
     // using hipblasDatatype_t, and hipblas_v2-test will be testing the upcoming interfaces.
     def v2TestCommand = """#!/usr/bin/env bash
                     set -x
-                    cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_output=xml --gtest_color=yes
                 """
 
@@ -62,11 +72,11 @@ def runTestCommand (platform, project)
 
     def yamlTestCommand = """#!/usr/bin/env bash
                     set -x
-                    cd ${project.paths.project_build_prefix}/build/release/clients/staging
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --yaml hipblas_smoke.yaml
                 """
     platform.runCommand(this, yamlTestCommand)
-    junit "${project.paths.project_build_prefix}/build/release/clients/staging/*.xml"
+    junit "${stagingDir}/*.xml"
 }
 
 def runPackageCommand(platform, project, jobName, label='')
