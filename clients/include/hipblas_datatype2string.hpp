@@ -25,7 +25,6 @@
 #define hipblas_DATATYPE2STRING_H_
 
 #include "hipblas.h"
-#include "hipblas.hpp"
 #include <ostream>
 #include <string>
 
