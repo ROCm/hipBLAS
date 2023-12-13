@@ -19,6 +19,11 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
         {
             project.paths.build_command = project.paths.build_command.replaceAll(' -c', ' -cn')
         }
+
+        if (pullRequest.labels.contains("debug"))
+        {
+            project.paths.build_command = project.paths.build_command.replaceAll(' -c', ' -cg')
+        }
     }
 
     String centos = platform.jenkinsLabel.contains('centos7') ? 'source scl_source enable devtoolset-7' : ':'
