@@ -118,7 +118,6 @@ foreach( exe IN LISTS hipblas-example-executables)
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
-    DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
   rocm_install(TARGETS ${exe} COMPONENT samples)
