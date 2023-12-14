@@ -147,11 +147,11 @@ void testing_copy_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            cblas_copy<T>((int)N,
-                          hx_cpu.data() + b * stridex,
-                          (int)incx,
-                          hy_cpu.data() + b * stridey,
-                          (int)incy);
+            ref_copy<T>((int)N,
+                        hx_cpu.data() + b * stridex,
+                        (int)incx,
+                        hy_cpu.data() + b * stridey,
+                        (int)incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

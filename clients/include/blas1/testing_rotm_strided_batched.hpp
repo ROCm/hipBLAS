@@ -189,11 +189,11 @@ void testing_rotm_strided_batched(const Arguments& arg)
     hipblas_init_vector(hdata, arg, 4, 1, 4, batch_count, hipblas_client_alpha_sets_nan, false);
 
     for(int b = 0; b < batch_count; b++)
-        cblas_rotmg<T>(hdata + b * 4,
-                       hdata + b * 4 + 1,
-                       hdata + b * 4 + 2,
-                       hdata + b * 4 + 3,
-                       hparam + b * stride_param);
+        ref_rotmg<T>(hdata + b * 4,
+                     hdata + b * 4 + 1,
+                     hdata + b * 4 + 2,
+                     hdata + b * 4 + 3,
+                     hparam + b * stride_param);
 
     constexpr int FLAG_COUNT        = 4;
     const T       FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};
@@ -234,7 +234,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
             // CPU BLAS reference data
             for(int b = 0; b < batch_count; b++)
             {
-                cblas_rotm<T>(
+                ref_rotm<T>(
                     N, cx + b * stride_x, incx, cy + b * stride_y, incy, hparam + b * stride_param);
             }
 

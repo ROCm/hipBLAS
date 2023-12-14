@@ -546,19 +546,19 @@ void testing_gemm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int i = 0; i < batch_count; i++)
         {
-            cblas_gemm<T>(transA,
-                          transB,
-                          M,
-                          N,
-                          K,
-                          h_alpha,
-                          hA.data() + stride_A * i,
-                          lda,
-                          hB.data() + stride_B * i,
-                          ldb,
-                          h_beta,
-                          hC_copy.data() + stride_C * i,
-                          ldc);
+            ref_gemm<T>(transA,
+                        transB,
+                        M,
+                        N,
+                        K,
+                        h_alpha,
+                        hA.data() + stride_A * i,
+                        lda,
+                        hB.data() + stride_B * i,
+                        ldb,
+                        h_beta,
+                        hC_copy.data() + stride_C * i,
+                        ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

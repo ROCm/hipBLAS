@@ -420,7 +420,7 @@ void testing_syr2k_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_syr2k<T>(
+            ref_syr2k<T>(
                 uplo, transA, N, K, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
         }
 

@@ -343,19 +343,19 @@ void testing_gbmv(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        cblas_gbmv<T>(transA,
-                      M,
-                      N,
-                      KL,
-                      KU,
-                      h_alpha,
-                      hA.data(),
-                      lda,
-                      hx.data(),
-                      incx,
-                      h_beta,
-                      hy_cpu.data(),
-                      incy);
+        ref_gbmv<T>(transA,
+                    M,
+                    N,
+                    KL,
+                    KU,
+                    h_alpha,
+                    hA.data(),
+                    lda,
+                    hx.data(),
+                    incx,
+                    h_beta,
+                    hy_cpu.data(),
+                    incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

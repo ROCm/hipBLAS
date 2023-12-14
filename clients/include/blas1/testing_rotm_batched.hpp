@@ -120,7 +120,7 @@ void testing_rotm_batched(const Arguments& arg)
 
     for(int b = 0; b < batch_count; b++)
     {
-        cblas_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
+        ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
     }
 
     constexpr int FLAG_COUNT        = 4;
@@ -160,7 +160,7 @@ void testing_rotm_batched(const Arguments& arg)
             for(int b = 0; b < batch_count; b++)
             {
                 // CPU BLAS reference data
-                cblas_rotm<T>(N, cx[b], incx, cy[b], incy, hparam[b]);
+                ref_rotm<T>(N, cx[b], incx, cy[b], incy, hparam[b]);
             }
 
             if(arg.unit_check)
