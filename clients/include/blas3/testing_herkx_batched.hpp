@@ -440,7 +440,7 @@ void testing_herkx_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_herkx<T>(
+            ref_herkx<T>(
                 uplo, transA, N, K, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
         }
 

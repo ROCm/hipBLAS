@@ -843,7 +843,7 @@ template <typename T>
 void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
 {
     //  calculate AAT = hA * hA ^ T
-    cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_C, N, N, N, T(1.0), hA, lda, hA, lda, T(0.0), AAT, lda);
+    ref_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_C, N, N, N, T(1.0), hA, lda, hA, lda, T(0.0), AAT, lda);
 
     //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
     for(int i = 0; i < N; i++)
@@ -857,7 +857,7 @@ void prepare_triangular_solve(T* hA, int lda, T* AAT, int N, char char_uplo)
         hA[i + i * lda] = t;
     }
     //  calculate Cholesky factorization of SPD matrix hA
-    cblas_potrf<T>(char_uplo, N, hA, lda);
+    ref_potrf<T>(char_uplo, N, hA, lda);
 }
 
 /* ============================================================================================ */

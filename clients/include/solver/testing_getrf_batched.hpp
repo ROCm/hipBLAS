@@ -168,7 +168,7 @@ void testing_getrf_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = cblas_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);

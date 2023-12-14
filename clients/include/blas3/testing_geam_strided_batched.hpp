@@ -545,18 +545,18 @@ void testing_geam_strided_batched(const Arguments& arg)
         // reference calculation
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geam(transA,
-                       transB,
-                       M,
-                       N,
-                       &h_alpha,
-                       (T*)hA + b * stride_A,
-                       lda,
-                       &h_beta,
-                       (T*)hB + b * stride_B,
-                       ldb,
-                       (T*)hC_copy + b * stride_C,
-                       ldc);
+            ref_geam(transA,
+                     transB,
+                     M,
+                     N,
+                     &h_alpha,
+                     (T*)hA + b * stride_A,
+                     lda,
+                     &h_beta,
+                     (T*)hB + b * stride_B,
+                     ldb,
+                     (T*)hC_copy + b * stride_C,
+                     ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

@@ -238,7 +238,7 @@ void testing_tbmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_tbmv<T>(uplo, transA, diag, M, K, hA[b], lda, hx_cpu[b], incx);
+            ref_tbmv<T>(uplo, transA, diag, M, K, hA[b], lda, hx_cpu[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

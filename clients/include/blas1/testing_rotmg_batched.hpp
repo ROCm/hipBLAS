@@ -162,7 +162,7 @@ void testing_rotmg_batched(const Arguments& arg)
         // CBLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rotmg<T>(cd1[b], cd2[b], cx1[b], cy1[b], cparams[b]);
+            ref_rotmg<T>(cd1[b], cd2[b], cx1[b], cy1[b], cparams[b]);
         }
 
         if(arg.unit_check)

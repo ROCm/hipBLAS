@@ -181,12 +181,12 @@ void testing_geqrf(const Arguments& arg)
 
         // Workspace query
         host_vector<T> work(1);
-        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
+        ref_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
         int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
-        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), lwork);
+        ref_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), lwork);
 
         double e1     = norm_check_general<T>('F', M, N, lda, hA, hA1);
         double e2     = norm_check_general<T>('F', K, 1, K, hIpiv, hIpiv1);

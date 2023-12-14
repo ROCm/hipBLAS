@@ -353,14 +353,14 @@ void testing_spr2_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_spr2<T>(uplo,
-                          N,
-                          h_alpha,
-                          hx.data() + b * stridex,
-                          incx,
-                          hy.data() + b * stridey,
-                          incy,
-                          hA_cpu.data() + b * strideA);
+            ref_spr2<T>(uplo,
+                        N,
+                        h_alpha,
+                        hx.data() + b * stridex,
+                        incx,
+                        hy.data() + b * stridey,
+                        incy,
+                        hA_cpu.data() + b * strideA);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

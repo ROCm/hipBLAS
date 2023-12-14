@@ -157,7 +157,7 @@ void testing_asum_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_asum<T, Tr>(N, hx.data() + b * stridex, incx, &cpu_result[b]);
+            ref_asum<T, Tr>(N, hx.data() + b * stridex, incx, &cpu_result[b]);
         }
 
         if(arg.unit_check)

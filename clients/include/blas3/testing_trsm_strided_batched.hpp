@@ -374,7 +374,7 @@ void testing_trsm_strided_batched(const Arguments& arg)
 
         // proprocess the matrix to avoid ill-conditioned matrix
         std::vector<int> ipiv(K);
-        cblas_getrf(K, K, hAb, lda, ipiv.data());
+        ref_getrf(K, K, hAb, lda, ipiv.data());
         for(int i = 0; i < K; i++)
         {
             for(int j = i; j < K; j++)
@@ -398,8 +398,7 @@ void testing_trsm_strided_batched(const Arguments& arg)
         }
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(
-            side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
+        ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
     }
     hB_gold   = hB_host; // original solutions hX
     hB_device = hB_host;
@@ -459,17 +458,17 @@ void testing_trsm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(side,
-                          uplo,
-                          transA,
-                          diag,
-                          M,
-                          N,
-                          h_alpha,
-                          (const T*)hA.data() + b * strideA,
-                          lda,
-                          hB_gold.data() + b * strideB,
-                          ldb);
+            ref_trsm<T>(side,
+                        uplo,
+                        transA,
+                        diag,
+                        M,
+                        N,
+                        h_alpha,
+                        (const T*)hA.data() + b * strideA,
+                        lda,
+                        hB_gold.data() + b * strideB,
+                        ldb);
         }
 
         // if enable norm check, norm check is invasive

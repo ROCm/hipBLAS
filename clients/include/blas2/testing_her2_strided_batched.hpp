@@ -376,15 +376,15 @@ void testing_her2_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_her2<T>(uplo,
-                          N,
-                          h_alpha,
-                          hx.data() + b * stride_x,
-                          incx,
-                          hy.data() + b * stride_y,
-                          incy,
-                          hA_cpu.data() + b * stride_A,
-                          lda);
+            ref_her2<T>(uplo,
+                        N,
+                        h_alpha,
+                        hx.data() + b * stride_x,
+                        incx,
+                        hy.data() + b * stride_y,
+                        incy,
+                        hA_cpu.data() + b * stride_A,
+                        lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

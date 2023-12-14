@@ -294,7 +294,7 @@ void testing_axpy_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy(N, h_alpha, hx[b], incx, hy_cpu[b], incy);
+            ref_axpy(N, h_alpha, hx[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

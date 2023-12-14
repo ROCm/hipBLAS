@@ -129,7 +129,7 @@ void testing_copy(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        ref_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

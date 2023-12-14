@@ -216,7 +216,7 @@ void testing_hpr_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hpr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
+            ref_hpr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

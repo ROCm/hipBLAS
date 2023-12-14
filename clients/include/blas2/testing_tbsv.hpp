@@ -169,7 +169,7 @@ void testing_tbsv(const Arguments& arg)
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
     CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
-    cblas_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
+    ref_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device

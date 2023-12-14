@@ -134,7 +134,7 @@ void testing_nrm2(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_nrm2<T, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_nrm2<T, Tr>(N, hx.data(), incx, &cpu_result);
 
         if(arg.unit_check)
         {
