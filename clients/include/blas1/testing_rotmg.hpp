@@ -103,7 +103,7 @@ void testing_rotmg(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(hparams_d, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
 
         // CPU BLAS
-        cblas_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
+        ref_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
 
         if(arg.unit_check)
         {

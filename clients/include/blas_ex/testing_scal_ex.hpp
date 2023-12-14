@@ -154,7 +154,7 @@ void testing_scal_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu, incx);
+        ref_scal<Tx, Ta>(N, h_alpha, hx_cpu, incx);
 
         for(size_t i = 0; i < sizeX; i++)
         {

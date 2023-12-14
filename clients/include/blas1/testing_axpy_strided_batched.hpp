@@ -197,7 +197,7 @@ void testing_axpy_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy<T>(
+            ref_axpy<T>(
                 N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy);
         }
 

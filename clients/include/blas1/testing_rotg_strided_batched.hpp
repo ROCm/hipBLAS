@@ -159,10 +159,10 @@ void testing_rotg_strided_batched(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rotg<T, U>(ca.data() + b * stride_a,
-                             cb.data() + b * stride_b,
-                             cc.data() + b * stride_c,
-                             cs.data() + b * stride_s);
+            ref_rotg<T, U>(ca.data() + b * stride_a,
+                           cb.data() + b * stride_b,
+                           cc.data() + b * stride_c,
+                           cs.data() + b * stride_s);
         }
 
         if(arg.unit_check)

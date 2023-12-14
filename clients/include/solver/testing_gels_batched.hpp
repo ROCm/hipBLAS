@@ -316,7 +316,7 @@ void testing_gels_batched(const Arguments& arg)
 
         for(int b = 0; b < batchCount; b++)
         {
-            info[b] = cblas_gels(transc, M, N, nrhs, hA[b], lda, hB[b], ldb, hW.data(), sizeW);
+            info[b] = ref_gels(transc, M, N, nrhs, hA[b], lda, hB[b], ldb, hW.data(), sizeW);
         }
 
         hipblas_error

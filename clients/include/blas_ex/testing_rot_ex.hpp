@@ -188,7 +188,7 @@ void testing_rot_ex(const Arguments& arg)
 
         // CBLAS
         // TODO: execution type in cblas_rot
-        cblas_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
+        ref_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
 
         if(arg.unit_check)
         {

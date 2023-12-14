@@ -209,7 +209,7 @@ void testing_trmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmv<T>(uplo, transA, diag, N, hA[b], lda, hx[b], incx);
+            ref_trmv<T>(uplo, transA, diag, N, hA[b], lda, hx[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

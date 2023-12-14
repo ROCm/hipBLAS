@@ -146,7 +146,7 @@ void testing_swap_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_swap<T>(N, hx.data() + b * stridex, incx, hy.data() + b * stridey, incy);
+            ref_swap<T>(N, hx.data() + b * stridex, incx, hy.data() + b * stridey, incy);
         }
 
         if(unit_check)

@@ -125,7 +125,7 @@ void testing_scal(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<T, U>(N, alpha, hz.data(), incx);
+        ref_scal<T, U>(N, alpha, hz.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

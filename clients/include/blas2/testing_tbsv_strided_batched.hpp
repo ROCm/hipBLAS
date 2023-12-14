@@ -278,7 +278,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, N, hABbat, lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, N, K, hABbat, lda, hbbat, incx);
+        ref_tbmv<T>(uplo, transA, diag, N, K, hABbat, lda, hbbat, incx);
     }
 
     hx_or_b_1 = hb;

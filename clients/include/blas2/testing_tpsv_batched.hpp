@@ -188,19 +188,19 @@ void testing_tpsv_batched(const Arguments& arg)
     for(int b = 0; b < batch_count; b++)
     {
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N,
-                      HIPBLAS_OP_T,
-                      N,
-                      N,
-                      N,
-                      (T)1.0,
-                      (T*)hA[b],
-                      N,
-                      (T*)hA[b],
-                      N,
-                      (T)0.0,
-                      (T*)AAT[b],
-                      N);
+        ref_gemm<T>(HIPBLAS_OP_N,
+                    HIPBLAS_OP_T,
+                    N,
+                    N,
+                    N,
+                    (T)1.0,
+                    (T*)hA[b],
+                    N,
+                    (T*)hA[b],
+                    N,
+                    (T)0.0,
+                    (T*)AAT[b],
+                    N);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
         for(int i = 0; i < N; i++)
@@ -215,7 +215,7 @@ void testing_tpsv_batched(const Arguments& arg)
         }
 
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(arg.uplo, N, hA[b], N);
+        ref_potrf<T>(arg.uplo, N, hA[b], N);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
         if(arg.diag == 'U' || arg.diag == 'u')
@@ -237,7 +237,7 @@ void testing_tpsv_batched(const Arguments& arg)
         }
 
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, N, hA[b], N, hb[b], incx);
+        ref_trmv<T>(uplo, transA, diag, N, hA[b], N, hb[b], incx);
 
         regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], (T*)hAP[b], N);
     }

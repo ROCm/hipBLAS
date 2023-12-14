@@ -235,7 +235,7 @@ void testing_her_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_her<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b], lda);
+            ref_her<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b], lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

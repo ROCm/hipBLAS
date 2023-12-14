@@ -172,7 +172,7 @@ void testing_axpy(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy<T>(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        ref_axpy<T>(N, alpha, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         if(arg.unit_check)
         {

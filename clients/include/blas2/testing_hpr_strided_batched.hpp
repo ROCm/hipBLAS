@@ -220,7 +220,7 @@ void testing_hpr_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hpr<T>(
+            ref_hpr<T>(
                 uplo, N, h_alpha, hx.data() + b * stride_x, incx, hA_cpu.data() + b * stride_A);
         }
 

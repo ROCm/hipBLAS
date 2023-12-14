@@ -408,7 +408,7 @@ void testing_trsm_batched_ex(const Arguments& arg)
 
         // proprocess the matrix to avoid ill-conditioned matrix
         host_vector<int> ipiv(K);
-        cblas_getrf(K, K, hA[b], lda, ipiv);
+        ref_getrf(K, K, hA[b], lda, ipiv);
         for(int i = 0; i < K; i++)
         {
             for(int j = i; j < K; j++)
@@ -432,17 +432,17 @@ void testing_trsm_batched_ex(const Arguments& arg)
         }
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(side,
-                      uplo,
-                      transA,
-                      diag,
-                      M,
-                      N,
-                      T(1.0) / h_alpha,
-                      (const T*)hA[b],
-                      lda,
-                      hB_host[b],
-                      ldb);
+        ref_trmm<T>(side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    T(1.0) / h_alpha,
+                    (const T*)hA[b],
+                    lda,
+                    hB_host[b],
+                    ldb);
     }
 
     hB_device.copy_from(hB_host);
@@ -541,7 +541,7 @@ void testing_trsm_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(
+            ref_trsm<T>(
                 side, uplo, transA, diag, M, N, h_alpha, (const T*)hA[b], lda, hB_cpu[b], ldb);
         }
 

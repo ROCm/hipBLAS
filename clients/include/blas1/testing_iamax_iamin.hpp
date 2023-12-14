@@ -204,7 +204,7 @@ void testing_iamax(const Arguments& arg)
     bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
 
-    testing_iamax_iamin<T, cblas_iamax<T>>(arg, hipblasIamaxFn);
+    testing_iamax_iamin<T, ref_iamax<T>>(arg, hipblasIamaxFn);
 }
 
 inline void testname_iamin(const Arguments& arg, std::string& name)
@@ -218,5 +218,5 @@ void testing_iamin(const Arguments& arg)
     bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
 
-    testing_iamax_iamin<T, cblas_iamin<T>>(arg, hipblasIamin<T>);
+    testing_iamax_iamin<T, ref_iamin<T>>(arg, hipblasIamin<T>);
 }

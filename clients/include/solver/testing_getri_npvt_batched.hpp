@@ -187,7 +187,7 @@ void testing_getri_npvt_batched(const Arguments& arg)
 
         // perform LU factorization on A
         int* hIpivb = hIpiv.data() + b * strideP;
-        hInfo[b]    = cblas_getrf(M, N, hA[b], lda, hIpivb);
+        hInfo[b]    = ref_getrf(M, N, hA[b], lda, hIpivb);
     }
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
@@ -221,12 +221,12 @@ void testing_getri_npvt_batched(const Arguments& arg)
         {
             // Workspace query
             host_vector<T> work(1);
-            cblas_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), -1);
+            ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), -1);
             int lwork = type2int(work[0]);
 
             // Perform inversion
             work     = host_vector<T>(lwork);
-            hInfo[b] = cblas_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), lwork);
+            hInfo[b] = ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), lwork);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);

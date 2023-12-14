@@ -494,19 +494,19 @@ void testing_gemm_ex(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(To) * size_C, hipMemcpyDeviceToHost));
 
         // reference BLAS
-        cblas_gemm<Ti, To, Tex>(transA,
-                                transB,
-                                M,
-                                N,
-                                K,
-                                h_alpha_Tex,
-                                hA.data(),
-                                lda,
-                                hB.data(),
-                                ldb,
-                                h_beta_Tex,
-                                hC_gold.data(),
-                                ldc);
+        ref_gemm<Ti, To, Tex>(transA,
+                              transB,
+                              M,
+                              N,
+                              K,
+                              h_alpha_Tex,
+                              hA.data(),
+                              lda,
+                              hB.data(),
+                              ldb,
+                              h_beta_Tex,
+                              hC_gold.data(),
+                              ldc);
 
         if(unit_check)
         {

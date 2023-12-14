@@ -152,7 +152,7 @@ void testing_rotg_batched(const Arguments& arg)
         // CBLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rotg<T, U>(ca[b], cb[b], cc[b], cs[b]);
+            ref_rotg<T, U>(ca[b], cb[b], cc[b], cs[b]);
         }
 
         if(arg.unit_check)

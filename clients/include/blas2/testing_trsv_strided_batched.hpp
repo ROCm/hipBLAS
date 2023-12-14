@@ -244,7 +244,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
         T* AATb = AAT.data() + b * strideA;
         T* hbb  = hb.data() + b * stridex;
         //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(
+        ref_gemm<T>(
             HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, (T)1.0, hAb, lda, hAb, lda, (T)0.0, AATb, lda);
 
         //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
@@ -259,7 +259,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
             hAb[i + i * lda] = t;
         }
         //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(arg.uplo, N, hAb, lda);
+        ref_potrf<T>(arg.uplo, N, hAb, lda);
 
         //  make hA unit diagonal if diag == rocblas_diagonal_unit
         if(arg.diag == 'U' || arg.diag == 'u')
@@ -281,7 +281,7 @@ void testing_trsv_strided_batched(const Arguments& arg)
         }
 
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, N, hAb, lda, hbb, incx);
+        ref_trmv<T>(uplo, transA, diag, N, hAb, lda, hbb, incx);
     }
 
     hx_or_b_1 = hb;

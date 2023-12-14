@@ -146,7 +146,7 @@ void testing_nrm2_ex(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
 
         // tolerance taken from rocBLAS, could use some improvement
         double abs_result = cpu_result > 0 ? cpu_result : -cpu_result;

@@ -162,12 +162,12 @@ void testing_rot_strided_batched(const Arguments& arg)
     // CPU BLAS reference data
     host_vector<T> cx = hx;
     host_vector<T> cy = hy;
-    // cblas_rotg<T, U>(cx, cy, hc, hs);
+    // ref_rotg<T, U>(cx, cy, hc, hs);
     // cx[0] = hx[0];
     // cy[0] = hy[0];
     for(int b = 0; b < batch_count; b++)
     {
-        cblas_rot<T, U, V>(
+        ref_rot<T, U, V>(
             N, cx.data() + b * stride_x, incx, cy.data() + b * stride_y, incy, *hc, *hs);
     }
 

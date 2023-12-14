@@ -232,7 +232,7 @@ void testing_sbmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_sbmv<T>(
+        ref_sbmv<T>(
             uplo, N, K, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

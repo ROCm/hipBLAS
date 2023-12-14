@@ -331,7 +331,7 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_axpy(N, h_alpha, hx + b * stridex, incx, hy_cpu + b * stridey, incy);
+            ref_axpy(N, h_alpha, hx + b * stridex, incx, hy_cpu + b * stridey, incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

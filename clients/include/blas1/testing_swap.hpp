@@ -133,7 +133,7 @@ void testing_swap(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_swap<T>(N, hx.data(), incx, hy.data(), incy);
+        ref_swap<T>(N, hx.data(), incx, hy.data(), incy);
 
         if(unit_check)
         {

@@ -234,7 +234,7 @@ void testing_iamax_strided_batched(const Arguments& arg)
     auto hipblasIamaxStridedBatchedFn
         = FORTRAN ? hipblasIamaxStridedBatched<T, true> : hipblasIamaxStridedBatched<T, false>;
 
-    testing_iamax_iamin_strided_batched<T, cblas_iamax<T>>(arg, hipblasIamaxStridedBatchedFn);
+    testing_iamax_iamin_strided_batched<T, ref_iamax<T>>(arg, hipblasIamaxStridedBatchedFn);
 }
 
 inline void testname_iamin_strided_batched(const Arguments& arg, std::string& name)
@@ -249,5 +249,5 @@ void testing_iamin_strided_batched(const Arguments& arg)
     auto hipblasIaminStridedBatchedFn
         = FORTRAN ? hipblasIaminStridedBatched<T, true> : hipblasIaminStridedBatched<T, false>;
 
-    testing_iamax_iamin_strided_batched<T, cblas_iamin<T>>(arg, hipblasIaminStridedBatchedFn);
+    testing_iamax_iamin_strided_batched<T, ref_iamin<T>>(arg, hipblasIaminStridedBatchedFn);
 }

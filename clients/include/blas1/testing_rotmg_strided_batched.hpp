@@ -254,11 +254,11 @@ void testing_rotmg_strided_batched(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rotmg<T>(cd1 + b * stride_d1,
-                           cd2 + b * stride_d2,
-                           cx1 + b * stride_x1,
-                           cy1 + b * stride_y1,
-                           cparams + b * stride_param);
+            ref_rotmg<T>(cd1 + b * stride_d1,
+                         cd2 + b * stride_d2,
+                         cx1 + b * stride_x1,
+                         cy1 + b * stride_y1,
+                         cparams + b * stride_param);
         }
 
         if(arg.unit_check)

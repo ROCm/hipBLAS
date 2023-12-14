@@ -488,7 +488,7 @@ void testing_trmm_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA[b], lda, hB[b], ldb);
+            ref_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA[b], lda, hB[b], ldb);
         }
 
         copy_matrix_with_different_leading_dimensions_batched(hB, hOut_gold, M, N, ldb, ldOut);

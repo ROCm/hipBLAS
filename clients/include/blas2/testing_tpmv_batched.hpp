@@ -205,7 +205,7 @@ void testing_tpmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_tpmv<T>(uplo, transA, diag, N, hA[b], hx[b], incx);
+            ref_tpmv<T>(uplo, transA, diag, N, hA[b], hx[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

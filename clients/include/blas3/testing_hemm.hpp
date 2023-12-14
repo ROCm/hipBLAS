@@ -249,7 +249,7 @@ void testing_hemm(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hemm<T>(
+        ref_hemm<T>(
             side, uplo, M, N, h_alpha, hA.data(), lda, hB.data(), ldb, h_beta, hC_gold.data(), ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

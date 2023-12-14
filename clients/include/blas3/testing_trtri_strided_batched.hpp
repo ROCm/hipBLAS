@@ -214,7 +214,7 @@ void testing_trtri_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trtri<T>(arg.uplo, arg.diag, N, hB.data() + b * strideA, lda);
+            ref_trtri<T>(arg.uplo, arg.diag, N, hB.data() + b * strideA, lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

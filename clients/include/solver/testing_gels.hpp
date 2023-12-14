@@ -229,7 +229,7 @@ void testing_gels(const Arguments& arg)
         int            sizeW = std::max(1, std::min(M, N) + std::max(std::min(M, N), nrhs));
         host_vector<T> hW(sizeW);
 
-        info = cblas_gels(transc, M, N, nrhs, hA.data(), lda, hB.data(), ldb, hW.data(), sizeW);
+        info = ref_gels(transc, M, N, nrhs, hA.data(), lda, hB.data(), ldb, hW.data(), sizeW);
 
         hipblas_error
             = norm_check_general<T>('F', std::max(M, N), nrhs, ldb, hB.data(), hB_res.data());

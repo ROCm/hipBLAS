@@ -180,7 +180,7 @@ void testing_her(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_her<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data(), lda);
+        ref_her<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data(), lda);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

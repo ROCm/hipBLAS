@@ -130,7 +130,7 @@ void testing_rotm(const Arguments& arg)
     hipblas_init_vector(hdata, arg, 4, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
 
     // CPU BLAS reference data
-    cblas_rotmg<T>(&hdata[0], &hdata[1], &hdata[2], &hdata[3], hparam);
+    ref_rotmg<T>(&hdata[0], &hdata[1], &hdata[2], &hdata[3], hparam);
     const int FLAG_COUNT        = 4;
     const T   FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};
     for(int i = 0; i < FLAG_COUNT; ++i)
@@ -140,7 +140,7 @@ void testing_rotm(const Arguments& arg)
             hparam[0]         = FLAGS[i];
             host_vector<T> cx = hx;
             host_vector<T> cy = hy;
-            cblas_rotm<T>(N, cx, incx, cy, incy, hparam);
+            ref_rotm<T>(N, cx, incx, cy, incy, hparam);
 
             // Test host
             {

@@ -206,7 +206,7 @@ void testing_scal_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu + b * stridex, incx);
+            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu + b * stridex, incx);
         }
 
         for(size_t b = 0; b < batch_count; b++)

@@ -174,7 +174,7 @@ void testing_tbmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_tbmv<T>(uplo, transA, diag, M, K, hA.data(), lda, hx_cpu.data(), incx);
+        ref_tbmv<T>(uplo, transA, diag, M, K, hA.data(), lda, hx_cpu.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

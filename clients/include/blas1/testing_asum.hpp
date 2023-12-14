@@ -136,7 +136,7 @@ void testing_asum(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_asum<T, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_asum<T, Tr>(N, hx.data(), incx, &cpu_result);
 
         if(arg.unit_check)
         {

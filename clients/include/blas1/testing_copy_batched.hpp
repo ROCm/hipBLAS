@@ -125,7 +125,7 @@ void testing_copy_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_copy<T>(N, hx_cpu[b], incx, hy_cpu[b], incy);
+            ref_copy<T>(N, hx_cpu[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

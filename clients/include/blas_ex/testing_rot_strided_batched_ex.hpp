@@ -289,7 +289,7 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rot<Tx, Tcs, Tcs>(
+            ref_rot<Tx, Tcs, Tcs>(
                 N, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy, *hc, *hs);
         }
 

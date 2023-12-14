@@ -169,7 +169,7 @@ void testing_trmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hx.data(), incx);
+        ref_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hx.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

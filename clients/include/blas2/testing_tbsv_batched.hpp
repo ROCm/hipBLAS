@@ -225,7 +225,7 @@ void testing_tbsv_batched(const Arguments& arg)
         regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, (T*)hAB[b], lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
+        ref_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
     }
 
     hx_or_b.copy_from(hb);

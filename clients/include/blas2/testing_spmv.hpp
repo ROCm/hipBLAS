@@ -214,7 +214,7 @@ void testing_spmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_spmv<T>(uplo, N, h_alpha, hA.data(), hx.data(), incx, h_beta, hy_cpu.data(), incy);
+        ref_spmv<T>(uplo, N, h_alpha, hA.data(), hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

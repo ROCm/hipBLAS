@@ -544,19 +544,19 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
         // CPU BLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_gemm<Ti, To, Tex>(transA,
-                                    transB,
-                                    M,
-                                    N,
-                                    K,
-                                    h_alpha_Tex,
-                                    hA.data() + b * stride_A,
-                                    lda,
-                                    hB.data() + b * stride_B,
-                                    ldb,
-                                    h_beta_Tex,
-                                    hC_gold.data() + b * stride_C,
-                                    ldc);
+            ref_gemm<Ti, To, Tex>(transA,
+                                  transB,
+                                  M,
+                                  N,
+                                  K,
+                                  h_alpha_Tex,
+                                  hA.data() + b * stride_A,
+                                  lda,
+                                  hB.data() + b * stride_B,
+                                  ldb,
+                                  h_beta_Tex,
+                                  hC_gold.data() + b * stride_C,
+                                  ldc);
         }
 
         if(unit_check)

@@ -176,7 +176,7 @@ void testing_hpr(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hpr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
+        ref_hpr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

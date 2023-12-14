@@ -144,7 +144,7 @@ void testing_getrf(const Arguments& arg)
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-        hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
+        hInfo[0] = ref_getrf(M, N, hA.data(), lda, hIpiv.data());
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1);
         if(arg.unit_check)

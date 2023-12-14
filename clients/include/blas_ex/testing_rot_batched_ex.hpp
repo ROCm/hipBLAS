@@ -259,7 +259,7 @@ void testing_rot_batched_ex(const Arguments& arg)
         // CBLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rot<Tx, Tcs, Tcs>(N, hx_cpu[b], incx, hy_cpu[b], incy, *hc, *hs);
+            ref_rot<Tx, Tcs, Tcs>(N, hx_cpu[b], incx, hy_cpu[b], incy, *hc, *hs);
         }
 
         if(arg.unit_check)

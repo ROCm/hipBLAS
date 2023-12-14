@@ -212,14 +212,14 @@ void testing_geqrf_batched(const Arguments& arg)
 
         // Workspace query
         host_vector<T> work(1);
-        cblas_geqrf(M, N, hA[0], lda, hIpiv[0], work.data(), -1);
+        ref_geqrf(M, N, hA[0], lda, hIpiv[0], work.data(), -1);
         int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geqrf(M, N, hA[b], lda, hIpiv[b], work.data(), N);
+            ref_geqrf(M, N, hA[b], lda, hIpiv[b], work.data(), N);
         }
 
         double e1 = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);

@@ -129,12 +129,12 @@ void testing_rot_batched(const Arguments& arg)
     cx.copy_from(hx);
     cy.copy_from(hy);
 
-    // cblas_rotg<T, U>(cx, cy, hc, hs);
+    // ref_rotg<T, U>(cx, cy, hc, hs);
     // cx[0] = hx[0];
     // cy[0] = hy[0];
     for(int b = 0; b < batch_count; b++)
     {
-        cblas_rot<T, U, V>(N, cx[b], incx, cy[b], incy, *hc, *hs);
+        ref_rot<T, U, V>(N, cx[b], incx, cy[b], incy, *hc, *hs);
     }
 
     if(arg.unit_check || arg.norm_check)

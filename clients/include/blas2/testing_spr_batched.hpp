@@ -207,7 +207,7 @@ void testing_spr_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_spr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
+            ref_spr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

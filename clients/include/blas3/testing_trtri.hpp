@@ -156,7 +156,7 @@ void testing_trtri(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trtri<T>(arg.uplo, arg.diag, N, hB, lda);
+        ref_trtri<T>(arg.uplo, arg.diag, N, hB, lda);
 
         if(arg.unit_check)
         {

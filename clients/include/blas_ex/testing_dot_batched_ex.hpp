@@ -265,8 +265,7 @@ void testing_dot_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<Tx>
-                  : cblas_dot<Tx>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
+            (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

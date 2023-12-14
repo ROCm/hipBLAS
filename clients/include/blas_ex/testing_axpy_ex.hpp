@@ -225,7 +225,7 @@ void testing_axpy_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy(N, h_alpha, hx.data(), incx, hy_cpu.data(), incy);
+        ref_axpy(N, h_alpha, hx.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

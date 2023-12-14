@@ -157,7 +157,7 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_nrm2<T, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
+            ref_nrm2<T, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

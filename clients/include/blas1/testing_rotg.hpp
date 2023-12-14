@@ -124,7 +124,7 @@ void testing_rotg(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(rc, dc, sizeof(U), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(rs, ds, sizeof(T), hipMemcpyDeviceToHost));
 
-        cblas_rotg<T, U>(ca, cb, cc, cs);
+        ref_rotg<T, U>(ca, cb, cc, cs);
 
         if(arg.unit_check)
         {

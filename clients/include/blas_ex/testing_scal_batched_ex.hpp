@@ -175,7 +175,7 @@ void testing_scal_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
+            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
         }
 
         for(size_t b = 0; b < batch_count; b++)

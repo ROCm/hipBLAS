@@ -326,7 +326,7 @@ void testing_syrk_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_syrk<T>(uplo, transA, N, K, h_alpha, hA[b], lda, h_beta, hC_gold[b], ldc);
+            ref_syrk<T>(uplo, transA, N, K, h_alpha, hA[b], lda, h_beta, hC_gold[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

@@ -219,7 +219,7 @@ void testing_syr_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_syr<T>(
+            ref_syr<T>(
                 uplo, N, h_alpha, hx.data() + b * stridex, incx, hA_cpu.data() + b * strideA, lda);
         }
 

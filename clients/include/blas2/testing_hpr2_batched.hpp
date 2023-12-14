@@ -271,7 +271,7 @@ void testing_hpr2_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hpr2<T>(uplo, N, h_alpha, hx[b], incx, hy[b], incy, hA_cpu[b]);
+            ref_hpr2<T>(uplo, N, h_alpha, hx[b], incx, hy[b], incy, hA_cpu[b]);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

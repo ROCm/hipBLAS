@@ -447,7 +447,7 @@ void testing_gbmv_batched(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_gbmv<T>(
+            ref_gbmv<T>(
                 transA, M, N, KL, KU, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
         }
 
