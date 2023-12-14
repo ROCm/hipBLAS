@@ -59,6 +59,7 @@ Tests:
     category: pre_checkin
     function:
       - gemv_bad_arg
+      - gemv_batched_bad_arg
       - gemv_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]

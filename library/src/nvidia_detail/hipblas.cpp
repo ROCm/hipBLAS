@@ -4571,20 +4571,25 @@ hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
                                                          hipOperationToCudaOperation(trans),
                                                          m,
                                                          n,
-                                                         alpha,
-                                                         A,
+                                                         (const cuComplex*)alpha,
+                                                         (const cuComplex**)A,
                                                          lda,
-                                                         x,
+                                                         (const cuComplex**)x,
                                                          incx,
-                                                         beta,
-                                                         y,
+                                                         (const cuComplex*)beta,
+                                                         (cuComplex**)y,
                                                          incy,
                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
@@ -4600,20 +4605,25 @@ hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
                                                          hipOperationToCudaOperation(trans),
                                                          m,
                                                          n,
-                                                         alpha,
-                                                         A,
+                                                         (const cuDoubleComplex*)alpha,
+                                                         (const cuDoubleComplex**)A,
                                                          lda,
-                                                         x,
+                                                         (const cuDoubleComplex**)x,
                                                          incx,
-                                                         beta,
-                                                         y,
+                                                         (const cuDoubleComplex*)beta,
+                                                         (cuDoubleComplex**)y,
                                                          incy,
                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
@@ -4629,6 +4639,7 @@ hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
                                        hipComplex* const       y[],
                                        int                     incy,
                                        int                     batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
                                                          hipOperationToCudaOperation(trans),
@@ -4639,10 +4650,14 @@ hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
                                                          lda,
                                                          (const cuComplex**)x,
                                                          incx,
-                                                         beta,
+                                                         (const cuComplex*)beta,
                                                          (cuComplex**)y,
                                                          incy,
                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
@@ -4658,20 +4673,25 @@ hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
                                        hipDoubleComplex* const       y[],
                                        int                           incy,
                                        int                           batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
                                                          hipOperationToCudaOperation(trans),
                                                          m,
                                                          n,
-                                                         (const cuComplex*)alpha,
-                                                         (const cuComplex**)A,
+                                                         (const cuDoubleComplex*)alpha,
+                                                         (const cuDoubleComplex**)A,
                                                          lda,
-                                                         (const cuComplex**)x,
+                                                         (const cuDoubleComplex**)x,
                                                          incx,
-                                                         beta,
-                                                         (cuComplex**)y,
+                                                         (const cuDoubleComplex*)beta,
+                                                         (cuDoubleComplex**)y,
                                                          incy,
                                                          batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 // gemv_strided_batched
