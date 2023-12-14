@@ -1842,15 +1842,15 @@ hipblasStatus_t hipblasZcopyStridedBatched_v2(hipblasHandle_t         handle,
 }
 
 // 64-bit interface
-ipblasStatus_t hipblasScopyStridedBatched_64(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             const float*    x,
-                                             int64_t         incx,
-                                             hipblasStride   stridex,
-                                             float*          y,
-                                             int64_t         incy,
-                                             hipblasStride   stridey,
-                                             int64_t         batchCount)
+hipblasStatus_t hipblasScopyStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const float*    x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              float*          y,
+                                              int64_t         incy,
+                                              hipblasStride   stridey,
+                                              int64_t         batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -1868,15 +1868,15 @@ hipblasStatus_t hipblasDcopyStridedBatched_64(hipblasHandle_t handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCcopyStridedBatched(_64hipblasHandle_t    handle,
-                                           int64_t               n,
-                                           const hipblasComplex* x,
-                                           int64_t               incx,
-                                           hipblasStride         stridex,
-                                           hipblasComplex*       y,
-                                           int64_t               incy,
-                                           hipblasStride         stridey,
-                                           int64_t               batchCount)
+hipblasStatus_t hipblasCcopyStridedBatched_64(hipblasHandle_t       handle,
+                                              int64_t               n,
+                                              const hipblasComplex* x,
+                                              int64_t               incx,
+                                              hipblasStride         stridex,
+                                              hipblasComplex*       y,
+                                              int64_t               incy,
+                                              hipblasStride         stridey,
+                                              int64_t               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -1907,7 +1907,7 @@ hipblasStatus_t hipblasCcopyStridedBatched_64_v2(hipblasHandle_t   handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZcopyStridedBatched__64v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZcopyStridedBatched_64_v2(hipblasHandle_t         handle,
                                                  int64_t                 n,
                                                  const hipDoubleComplex* x,
                                                  int64_t                 incx,
