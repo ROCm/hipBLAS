@@ -149,7 +149,7 @@ void testing_asum_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_asum<T, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
+            ref_asum<T, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

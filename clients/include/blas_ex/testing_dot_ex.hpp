@@ -235,7 +235,7 @@ void testing_dot_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        (CONJ ? cblas_dotc<Tx> : cblas_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
+        (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
         if(arg.unit_check)
         {

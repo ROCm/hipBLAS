@@ -375,19 +375,19 @@ void testing_gemm(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_gemm<T>(transA,
-                      transB,
-                      M,
-                      N,
-                      K,
-                      h_alpha,
-                      hA.data(),
-                      lda,
-                      hB.data(),
-                      ldb,
-                      h_beta,
-                      hC_copy.data(),
-                      ldc);
+        ref_gemm<T>(transA,
+                    transB,
+                    M,
+                    N,
+                    K,
+                    h_alpha,
+                    hA.data(),
+                    lda,
+                    hB.data(),
+                    ldb,
+                    h_beta,
+                    hC_copy.data(),
+                    ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

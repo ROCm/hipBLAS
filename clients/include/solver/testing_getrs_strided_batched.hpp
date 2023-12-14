@@ -82,10 +82,10 @@ void setup_getrs_strided_batched_testing(host_vector<T>&     hA,
         }
 
         // Calculate hB = hA*hX;
-        cblas_gemm<T>(op, op, N, 1, N, (T)1, hAb, lda, hXb, ldb, (T)0, hBb, ldb);
+        ref_gemm<T>(op, op, N, 1, N, (T)1, hAb, lda, hXb, ldb, (T)0, hBb, ldb);
 
         // LU factorize hA on the CPU
-        int info = cblas_getrf<T>(N, N, hAb, lda, hIpivb);
+        int info = ref_getrf<T>(N, N, hAb, lda, hIpivb);
         if(info != 0)
         {
             std::cerr << "LU decomposition failed" << std::endl;
@@ -410,14 +410,14 @@ void testing_getrs_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_getrs('N',
-                        N,
-                        1,
-                        hA.data() + b * strideA,
-                        lda,
-                        hIpiv.data() + b * strideP,
-                        hB.data() + b * strideB,
-                        ldb);
+            ref_getrs('N',
+                      N,
+                      1,
+                      hA.data() + b * strideA,
+                      lda,
+                      hIpiv.data() + b * strideP,
+                      hB.data() + b * strideB,
+                      ldb);
         }
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, strideB, hB, hB1, batch_count);

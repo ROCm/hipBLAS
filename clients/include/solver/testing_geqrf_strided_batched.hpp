@@ -243,14 +243,14 @@ void testing_geqrf_strided_batched(const Arguments& arg)
 
         // Workspace query
         host_vector<T> work(1);
-        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
+        ref_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
         int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geqrf(
+            ref_geqrf(
                 M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP, work.data(), N);
         }
 

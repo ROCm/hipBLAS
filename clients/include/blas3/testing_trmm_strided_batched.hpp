@@ -535,17 +535,17 @@ void testing_trmm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmm<T>(side,
-                          uplo,
-                          transA,
-                          diag,
-                          M,
-                          N,
-                          h_alpha,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hB.data() + b * stride_B,
-                          ldb);
+            ref_trmm<T>(side,
+                        uplo,
+                        transA,
+                        diag,
+                        M,
+                        N,
+                        h_alpha,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hB.data() + b * stride_B,
+                        ldb);
         }
 
         copy_matrix_with_different_leading_dimensions(

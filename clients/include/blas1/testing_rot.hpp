@@ -128,7 +128,7 @@ void testing_rot(const Arguments& arg)
     host_vector<T> cx = hx;
     host_vector<T> cy = hy;
 
-    cblas_rot<T, U, V>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
+    ref_rot<T, U, V>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
 
     if(arg.unit_check || arg.norm_check)
     {

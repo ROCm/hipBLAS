@@ -304,7 +304,7 @@ void testing_geam(const Arguments& arg)
         /* =====================================================================
                 CPU BLAS
         =================================================================== */
-        cblas_geam(
+        ref_geam(
             transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

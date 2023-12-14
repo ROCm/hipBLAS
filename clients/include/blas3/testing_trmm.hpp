@@ -402,7 +402,7 @@ void testing_trmm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
         // use hB matrix for cblas, copy into C matrix for !inplace version to compare with hipblas
-        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB, ldb);
+        ref_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB, ldb);
         copy_matrix_with_different_leading_dimensions(hB, hOut_gold, M, N, ldb, ldOut);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
