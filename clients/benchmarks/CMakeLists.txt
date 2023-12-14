@@ -139,12 +139,10 @@ else( )
 endif( )
 
 set_target_properties( hipblas-bench PROPERTIES
-  DEBUG_POSTFIX "-d"
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )
 set_target_properties( hipblas_v2-bench PROPERTIES
-  DEBUG_POSTFIX "-d"
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )
