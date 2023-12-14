@@ -320,7 +320,7 @@ template <>
 void ref_axpy<float, float>(
     int64_t n, const float alpha, const float* x, int64_t incx, float* y, int64_t incy)
 {
-    ref_saxpy(n, alpha, x, incx, y, incy);
+    cblas_saxpy(n, alpha, x, incx, y, incy);
 }
 
 template <>
@@ -571,7 +571,7 @@ void ref_dot<hipblasHalf>(int64_t            n,
         x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
         y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
     }
-    *result = float_to_half(ref_sdot(n, x_float.data(), incx, y_float.data(), incy));
+    *result = float_to_half(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
 }
 
 template <>
@@ -592,21 +592,21 @@ void ref_dot<hipblasBfloat16>(int64_t                n,
         x_float[i * abs_incx] = bfloat16_to_float(x[i * abs_incx]);
         y_float[i * abs_incy] = bfloat16_to_float(y[i * abs_incy]);
     }
-    *result = float_to_bfloat16(ref_sdot(n, x_float.data(), incx, y_float.data(), incy));
+    *result = float_to_bfloat16(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
 }
 
 template <>
 void ref_dot<float>(
     int64_t n, const float* x, int64_t incx, const float* y, int64_t incy, float* result)
 {
-    *result = ref_sdot(n, x, incx, y, incy);
+    *result = cblas_sdot(n, x, incx, y, incy);
 }
 
 template <>
 void ref_dot<double>(
     int64_t n, const double* x, int64_t incx, const double* y, int64_t incy, double* result)
 {
-    *result = ref_ddot(n, x, incx, y, incy);
+    *result = cblas_ddot(n, x, incx, y, incy);
 }
 
 template <>
@@ -679,7 +679,7 @@ void ref_dotc<hipblasComplex>(int64_t               n,
                               int64_t               incy,
                               hipblasComplex*       result)
 {
-    ref_cdotc_sub(n, x, incx, y, incy, result);
+    cblas_cdotc_sub(n, x, incx, y, incy, result);
 }
 
 template <>
@@ -690,7 +690,7 @@ void ref_dotc<hipblasDoubleComplex>(int64_t                     n,
                                     int64_t                     incy,
                                     hipblasDoubleComplex*       result)
 {
-    ref_zdotc_sub(n, x, incx, y, incy, result);
+    cblas_zdotc_sub(n, x, incx, y, incy, result);
 }
 
 // nrm2
@@ -708,7 +708,7 @@ void ref_nrm2<hipblasHalf, hipblasHalf>(int64_t            n,
     for(size_t i = 0; i < n; i++)
         x_float[i * incx] = half_to_float(x[i * incx]);
 
-    *result = float_to_half(ref_snrm2(n, x_float.data(), incx));
+    *result = float_to_half(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>
@@ -725,7 +725,7 @@ void ref_nrm2<hipblasBfloat16, hipblasBfloat16>(int64_t                n,
     for(size_t i = 0; i < n; i++)
         x_float[i * incx] = bfloat16_to_float(x[i * incx]);
 
-    *result = float_to_bfloat16(ref_snrm2(n, x_float.data(), incx));
+    *result = float_to_bfloat16(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>
@@ -1023,7 +1023,7 @@ void ref_asum<hipblasDoubleComplex, double>(int64_t                     n,
 template <>
 void ref_iamax<float>(int64_t n, const float* x, int64_t incx, int64_t* result)
 {
-    *result = (int64_t)ref_isamax(n, x, incx);
+    *result = (int64_t)cblas_isamax(n, x, incx);
 }
 
 template <>
@@ -1138,19 +1138,19 @@ void ref_gbmv<float>(hipblasOperation_t transA,
                      int64_t            incy)
 {
     cblas_sgbmv(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              m,
-              n,
-              kl,
-              ku,
-              alpha,
-              A,
-              lda,
-              x,
-              incx,
-              beta,
-              y,
-              incy);
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                alpha,
+                A,
+                lda,
+                x,
+                incx,
+                beta,
+                y,
+                incy);
 }
 
 template <>
@@ -1168,20 +1168,20 @@ void ref_gbmv<double>(hipblasOperation_t transA,
                       double*            y,
                       int64_t            incy)
 {
-     cblas_dgbmv(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              m,
-              n,
-              kl,
-              ku,
-              alpha,
-              A,
-              lda,
-              x,
-              incx,
-              beta,
-              y,
-              incy);
+    cblas_dgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                alpha,
+                A,
+                lda,
+                x,
+                incx,
+                beta,
+                y,
+                incy);
 }
 
 template <>
@@ -1199,20 +1199,20 @@ void ref_gbmv<hipblasComplex>(hipblasOperation_t transA,
                               hipblasComplex*    y,
                               int64_t            incy)
 {
-     cblas_cgbmv(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              m,
-              n,
-              kl,
-              ku,
-              &alpha,
-              A,
-              lda,
-              x,
-              incx,
-              &beta,
-              y,
-              incy);
+    cblas_cgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                &alpha,
+                A,
+                lda,
+                x,
+                incx,
+                &beta,
+                y,
+                incy);
 }
 
 template <>
@@ -1230,20 +1230,20 @@ void ref_gbmv<hipblasDoubleComplex>(hipblasOperation_t    transA,
                                     hipblasDoubleComplex* y,
                                     int64_t               incy)
 {
-     cblas_zgbmv(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              m,
-              n,
-              kl,
-              ku,
-              &alpha,
-              A,
-              lda,
-              x,
-              incx,
-              &beta,
-              y,
-              incy);
+    cblas_zgbmv(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                m,
+                n,
+                kl,
+                ku,
+                &alpha,
+                A,
+                lda,
+                x,
+                incx,
+                &beta,
+                y,
+                incy);
 }
 
 // gemv
@@ -1260,7 +1260,8 @@ void ref_gemv<float>(hipblasOperation_t transA,
                      float*             y,
                      int64_t            incy)
 {
-     cblas_sgemv(CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+    cblas_sgemv(
+        CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
@@ -1276,7 +1277,8 @@ void ref_gemv<double>(hipblasOperation_t transA,
                       double*            y,
                       int64_t            incy)
 {
-     cblas_dgemv(CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+    cblas_dgemv(
+        CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
 }
 
 template <>
@@ -1472,7 +1474,7 @@ void ref_her<hipblasComplex, float>(hipblasFillMode_t uplo,
                                     hipblasComplex*   A,
                                     int64_t           lda)
 {
-    cblasf_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
+    cblas_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
 template <>
@@ -1554,7 +1556,7 @@ void ref_hpr(hipblasFillMode_t uplo,
              int64_t           incx,
              hipblasComplex*   AP)
 {
-   cblas_chpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
+    cblas_chpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
 }
 
 template <>
@@ -1579,7 +1581,7 @@ void ref_hpr2(hipblasFillMode_t uplo,
               int64_t           incy,
               hipblasComplex*   AP)
 {
-   cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
+    cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
 }
 
 template <>
@@ -1895,15 +1897,15 @@ void ref_tbmv<float>(hipblasFillMode_t  uplo,
                      int64_t            incx)
 {
     cblas_stbmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -1918,15 +1920,15 @@ void ref_tbmv<double>(hipblasFillMode_t  uplo,
                       int64_t            incx)
 {
     cblas_dtbmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -1941,15 +1943,15 @@ void ref_tbmv<hipblasComplex>(hipblasFillMode_t     uplo,
                               int64_t               incx)
 {
     cblas_ctbmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -1964,15 +1966,15 @@ void ref_tbmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
                                     int64_t                     incx)
 {
     cblas_ztbmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 // tbsv
@@ -1988,15 +1990,15 @@ void ref_tbsv<float>(hipblasFillMode_t  uplo,
                      int64_t            incx)
 {
     cblas_stbsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2011,15 +2013,15 @@ void ref_tbsv<double>(hipblasFillMode_t  uplo,
                       int64_t            incx)
 {
     cblas_dtbsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2034,15 +2036,15 @@ void ref_tbsv<hipblasComplex>(hipblasFillMode_t     uplo,
                               int64_t               incx)
 {
     cblas_ctbsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2057,15 +2059,15 @@ void ref_tbsv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
                                     int64_t                     incx)
 {
     cblas_ztbsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              k,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                k,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 // tpmv
@@ -2186,14 +2188,14 @@ void ref_trmv<float>(hipblasFillMode_t  uplo,
                      int64_t            incx)
 {
     cblas_strmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2207,14 +2209,14 @@ void ref_trmv<double>(hipblasFillMode_t  uplo,
                       int64_t            incx)
 {
     cblas_dtrmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2228,14 +2230,14 @@ void ref_trmv<hipblasComplex>(hipblasFillMode_t     uplo,
                               int64_t               incx)
 {
     cblas_ctrmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2249,14 +2251,14 @@ void ref_trmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
                                     int64_t                     incx)
 {
     cblas_ztrmv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 // trsv
@@ -2272,14 +2274,14 @@ void ref_trsv<float>(hipblasHandle_t    handle,
                      int64_t            incx)
 {
     cblas_strsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2294,14 +2296,14 @@ void ref_trsv<double>(hipblasHandle_t    handle,
                       int64_t            incx)
 {
     cblas_dtrsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2316,14 +2318,14 @@ void ref_trsv<hipblasComplex>(hipblasHandle_t       handle,
                               int64_t               incx)
 {
     cblas_ctrsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 template <>
@@ -2338,14 +2340,14 @@ void ref_trsv<hipblasDoubleComplex>(hipblasHandle_t             handle,
                                     int64_t                     incx)
 {
     cblas_ztrsv(CblasColMajor,
-              CBLAS_UPLO(uplo),
-              CBLAS_TRANSPOSE(transA),
-              CBLAS_DIAG(diag),
-              m,
-              A,
-              lda,
-              x,
-              incx);
+                CBLAS_UPLO(uplo),
+                CBLAS_TRANSPOSE(transA),
+                CBLAS_DIAG(diag),
+                m,
+                A,
+                lda,
+                x,
+                incx);
 }
 
 /*
@@ -2501,20 +2503,20 @@ void ref_gemm<hipblasHalf>(hipblasOperation_t transA,
 
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha_float,
-              const_cast<const float*>(A_float.get()),
-              lda,
-              const_cast<const float*>(B_float.get()),
-              ldb,
-              beta_float,
-              static_cast<float*>(C_float.get()),
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha_float,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta_float,
+                static_cast<float*>(C_float.get()),
+                ldc);
 
     for(size_t i = 0; i < sizeC; i++)
     {
@@ -2563,20 +2565,20 @@ void ref_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
 
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              const_cast<const float*>(A_float.get()),
-              lda,
-              const_cast<const float*>(B_float.get()),
-              ldb,
-              beta,
-              static_cast<float*>(C_float.get()),
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                static_cast<float*>(C_float.get()),
+                ldc);
 
     for(size_t i = 0; i < sizeC; i++)
     {
@@ -2619,20 +2621,20 @@ void ref_gemm<hipblasHalf, float, float>(hipblasOperation_t transA,
 
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              const_cast<const float*>(A_float.get()),
-              lda,
-              const_cast<const float*>(B_float.get()),
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2676,20 +2678,20 @@ void ref_gemm<hipblasBfloat16, hipblasBfloat16, float>(hipblasOperation_t transA
 
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              const_cast<const float*>(A_float.get()),
-              lda,
-              const_cast<const float*>(B_float.get()),
-              ldb,
-              beta,
-              static_cast<float*>(C_float.get()),
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                static_cast<float*>(C_float.get()),
+                ldc);
 
     for(size_t i = 0; i < sizeC; i++)
     {
@@ -2732,20 +2734,20 @@ void ref_gemm<hipblasBfloat16, float, float>(hipblasOperation_t transA,
 
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: rocblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              const_cast<const float*>(A_float.get()),
-              lda,
-              const_cast<const float*>(B_float.get()),
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                const_cast<const float*>(A_float.get()),
+                lda,
+                const_cast<const float*>(B_float.get()),
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2765,20 +2767,20 @@ void ref_gemm<float>(hipblasOperation_t transA,
 {
     // just directly cast, since transA, transB are integers in the enum
     // printf("transA: hipblas =%d, cblas=%d\n", transA, (CBLAS_TRANSPOSE)transA );
-    ref_sgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_sgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2796,20 +2798,20 @@ void ref_gemm<double>(hipblasOperation_t transA,
                       double*            C,
                       int64_t            ldc)
 {
-    ref_dgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_dgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2828,20 +2830,20 @@ void ref_gemm<hipblasComplex>(hipblasOperation_t transA,
                               int64_t            ldc)
 {
     //just directly cast, since transA, transB are integers in the enum
-    ref_cgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_cgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2859,20 +2861,20 @@ void ref_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
                                     hipblasDoubleComplex* C,
                                     int64_t               ldc)
 {
-    ref_zgemm(CblasColMajor,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_TRANSPOSE)transB,
-              m,
-              n,
-              k,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_zgemm(CblasColMajor,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_TRANSPOSE)transB,
+                m,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2914,20 +2916,20 @@ void ref_gemm<int8_t, int32_t, int32_t>(hipblasOperation_t transA,
         C_double[i] = static_cast<double>(C[i]);
     }
 
-    ref_dgemm(CblasColMajor,
-              static_cast<CBLAS_TRANSPOSE>(transA),
-              static_cast<CBLAS_TRANSPOSE>(transB),
-              m,
-              n,
-              k,
-              alpha_double,
-              const_cast<const double*>(A_double.get()),
-              lda,
-              const_cast<const double*>(B_double.get()),
-              ldb,
-              beta_double,
-              static_cast<double*>(C_double.get()),
-              ldc);
+    cblas_dgemm(CblasColMajor,
+                static_cast<CBLAS_TRANSPOSE>(transA),
+                static_cast<CBLAS_TRANSPOSE>(transB),
+                m,
+                n,
+                k,
+                alpha_double,
+                const_cast<const double*>(A_double.get()),
+                lda,
+                const_cast<const double*>(B_double.get()),
+                ldb,
+                beta_double,
+                static_cast<double*>(C_double.get()),
+                ldc);
 
     for(size_t i = 0; i < sizeC; i++)
         C[i] = static_cast<int32_t>(C_double[i]);
@@ -2948,19 +2950,19 @@ void ref_hemm(hipblasSideMode_t side,
               hipblasComplex*   C,
               int64_t           ldc)
 {
-    ref_chemm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_chemm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -2977,19 +2979,19 @@ void ref_hemm(hipblasSideMode_t     side,
               hipblasDoubleComplex* C,
               int64_t               ldc)
 {
-    ref_zhemm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_zhemm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 // herk
@@ -3005,17 +3007,17 @@ void ref_herk(hipblasFillMode_t  uplo,
               hipblasComplex*    C,
               int64_t            ldc)
 {
-    ref_cherk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              beta,
-              C,
-              ldc);
+    cblas_cherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3030,17 +3032,17 @@ void ref_herk(hipblasFillMode_t     uplo,
               hipblasDoubleComplex* C,
               int64_t               ldc)
 {
-    ref_zherk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              beta,
-              C,
-              ldc);
+    cblas_zherk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
 }
 
 // herkx
@@ -3176,19 +3178,19 @@ void ref_her2k(hipblasFillMode_t  uplo,
                hipblasComplex*    C,
                int64_t            ldc)
 {
-    ref_cher2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               &alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               beta,
-               C,
-               ldc);
+    cblas_cher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
 }
 
 template <>
@@ -3205,19 +3207,19 @@ void ref_her2k(hipblasFillMode_t     uplo,
                hipblasDoubleComplex* C,
                int64_t               ldc)
 {
-    ref_zher2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               &alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               beta,
-               C,
-               ldc);
+    cblas_zher2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
 }
 
 // symm
@@ -3235,19 +3237,19 @@ void ref_symm(hipblasSideMode_t side,
               float*            C,
               int64_t           ldc)
 {
-    ref_ssymm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_ssymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3264,19 +3266,19 @@ void ref_symm(hipblasSideMode_t side,
               double*           C,
               int64_t           ldc)
 {
-    ref_dsymm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              beta,
-              C,
-              ldc);
+    cblas_dsymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3293,19 +3295,19 @@ void ref_symm(hipblasSideMode_t side,
               hipblasComplex*   C,
               int64_t           ldc)
 {
-    ref_csymm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_csymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3322,19 +3324,19 @@ void ref_symm(hipblasSideMode_t     side,
               hipblasDoubleComplex* C,
               int64_t               ldc)
 {
-    ref_zsymm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb,
-              &beta,
-              C,
-              ldc);
+    cblas_zsymm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb,
+                &beta,
+                C,
+                ldc);
 }
 
 // syrk
@@ -3350,17 +3352,17 @@ void ref_syrk(hipblasFillMode_t  uplo,
               float*             C,
               int64_t            ldc)
 {
-    ref_ssyrk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              beta,
-              C,
-              ldc);
+    cblas_ssyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3375,17 +3377,17 @@ void ref_syrk(hipblasFillMode_t  uplo,
               double*            C,
               int64_t            ldc)
 {
-    ref_dsyrk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              alpha,
-              A,
-              lda,
-              beta,
-              C,
-              ldc);
+    cblas_dsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                alpha,
+                A,
+                lda,
+                beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3400,17 +3402,17 @@ void ref_syrk(hipblasFillMode_t  uplo,
               hipblasComplex*    C,
               int64_t            ldc)
 {
-    ref_csyrk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              &alpha,
-              A,
-              lda,
-              &beta,
-              C,
-              ldc);
+    cblas_csyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
 }
 
 template <>
@@ -3425,17 +3427,17 @@ void ref_syrk(hipblasFillMode_t     uplo,
               hipblasDoubleComplex* C,
               int64_t               ldc)
 {
-    ref_zsyrk(CblasColMajor,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              n,
-              k,
-              &alpha,
-              A,
-              lda,
-              &beta,
-              C,
-              ldc);
+    cblas_zsyrk(CblasColMajor,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                n,
+                k,
+                &alpha,
+                A,
+                lda,
+                &beta,
+                C,
+                ldc);
 }
 
 // syr2k
@@ -3453,19 +3455,19 @@ void ref_syr2k(hipblasFillMode_t  uplo,
                float*             C,
                int64_t            ldc)
 {
-    ref_ssyr2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               beta,
-               C,
-               ldc);
+    cblas_ssyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
 }
 
 template <>
@@ -3482,19 +3484,19 @@ void ref_syr2k(hipblasFillMode_t  uplo,
                double*            C,
                int64_t            ldc)
 {
-    ref_dsyr2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               beta,
-               C,
-               ldc);
+    cblas_dsyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 beta,
+                 C,
+                 ldc);
 }
 
 template <>
@@ -3511,19 +3513,19 @@ void ref_syr2k(hipblasFillMode_t  uplo,
                hipblasComplex*    C,
                int64_t            ldc)
 {
-    ref_csyr2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               &alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               &beta,
-               C,
-               ldc);
+    cblas_csyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 &beta,
+                 C,
+                 ldc);
 }
 
 template <>
@@ -3540,19 +3542,19 @@ void ref_syr2k(hipblasFillMode_t     uplo,
                hipblasDoubleComplex* C,
                int64_t               ldc)
 {
-    ref_zsyr2k(CblasColMajor,
-               (CBLAS_UPLO)uplo,
-               (CBLAS_TRANSPOSE)transA,
-               n,
-               k,
-               &alpha,
-               A,
-               lda,
-               B,
-               ldb,
-               &beta,
-               C,
-               ldc);
+    cblas_zsyr2k(CblasColMajor,
+                 (CBLAS_UPLO)uplo,
+                 (CBLAS_TRANSPOSE)transA,
+                 n,
+                 k,
+                 &alpha,
+                 A,
+                 lda,
+                 B,
+                 ldb,
+                 &beta,
+                 C,
+                 ldc);
 }
 
 // syrkx
@@ -3573,18 +3575,18 @@ void ref_trsm<float>(hipblasSideMode_t  side,
                      int64_t            ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
-    ref_strsm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_strsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3601,18 +3603,18 @@ void ref_trsm<double>(hipblasSideMode_t  side,
                       int64_t            ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
-    ref_dtrsm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_dtrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3628,18 +3630,18 @@ void ref_trsm<hipblasComplex>(hipblasSideMode_t     side,
                               hipblasComplex*       B,
                               int64_t               ldb)
 {
-    ref_ctrsm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_ctrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3655,18 +3657,18 @@ void ref_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
                                     hipblasDoubleComplex*       B,
                                     int64_t                     ldb)
 {
-    ref_ztrsm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_ztrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 // trtri
@@ -3710,18 +3712,18 @@ void ref_trmm<float>(hipblasSideMode_t  side,
                      int64_t            ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
-    ref_strmm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_strmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3738,18 +3740,18 @@ void ref_trmm<double>(hipblasSideMode_t  side,
                       int64_t            ldb)
 {
     // just directly cast, since transA, transB are integers in the enum
-    ref_dtrmm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_dtrmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3765,18 +3767,18 @@ void ref_trmm<hipblasComplex>(hipblasSideMode_t     side,
                               hipblasComplex*       B,
                               int64_t               ldb)
 {
-    ref_ctrmm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_ctrmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 template <>
@@ -3792,18 +3794,18 @@ void ref_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
                                     hipblasDoubleComplex*       B,
                                     int64_t                     ldb)
 {
-    ref_ztrmm(CblasColMajor,
-              (CBLAS_SIDE)side,
-              (CBLAS_UPLO)uplo,
-              (CBLAS_TRANSPOSE)transA,
-              (CBLAS_DIAG)diag,
-              m,
-              n,
-              &alpha,
-              A,
-              lda,
-              B,
-              ldb);
+    cblas_ztrmm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
 }
 
 /*

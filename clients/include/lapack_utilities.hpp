@@ -559,9 +559,6 @@ inline void lapack_xsyr2(hipblasFillMode_t uplo,
     }
 }
 
-template <typename T, typename U>
-void cblas_scal(int64_t n, T alpha, U x, int64_t incx);
-
 // cblas doesn't have trti2 implementation for now so using the lapack trti2 implementation below
 template <typename T>
 void lapack_xtrti2(char uplo, char diag, int64_t n, T* A, int64_t lda)
@@ -585,15 +582,15 @@ void lapack_xtrti2(char uplo, char diag, int64_t n, T* A, int64_t lda)
                 AJJ = T(-1.0);
             }
             //Compute elements 0:j-1 of j-th column.
-            cblas_trmv(HIPBLAS_FILL_MODE_UPPER,
-                       HIPBLAS_OP_N,
-                       char2hipblas_diagonal(diag),
-                       j,
-                       A,
-                       lda,
-                       A + (j * lda),
-                       1);
-            cblas_scal(j, AJJ, A + (j * lda), 1);
+            ref_trmv(HIPBLAS_FILL_MODE_UPPER,
+                     HIPBLAS_OP_N,
+                     char2hipblas_diagonal(diag),
+                     j,
+                     A,
+                     lda,
+                     A + (j * lda),
+                     1);
+            ref_scal(j, AJJ, A + (j * lda), 1);
         }
     }
     else
@@ -612,15 +609,15 @@ void lapack_xtrti2(char uplo, char diag, int64_t n, T* A, int64_t lda)
             if(j < n - 1)
             {
                 //Compute elements 0:j-1 of j-th column.
-                cblas_trmv(HIPBLAS_FILL_MODE_LOWER,
-                           HIPBLAS_OP_N,
-                           char2hipblas_diagonal(diag),
-                           n - j - 1,
-                           A + ((j + 1) + (j + 1) * lda),
-                           lda,
-                           A + ((j + 1) + j * lda),
-                           1);
-                cblas_scal(n - j - 1, AJJ, A + ((j + 1) + j * lda), 1);
+                ref_trmv(HIPBLAS_FILL_MODE_LOWER,
+                         HIPBLAS_OP_N,
+                         char2hipblas_diagonal(diag),
+                         n - j - 1,
+                         A + ((j + 1) + (j + 1) * lda),
+                         lda,
+                         A + ((j + 1) + j * lda),
+                         1);
+                ref_scal(n - j - 1, AJJ, A + ((j + 1) + j * lda), 1);
             }
         }
     }
@@ -649,28 +646,28 @@ void lapack_xtrtri(char uplo, char diag, int64_t n, T* A, int64_t lda)
                 JB = std::min(NB, n - j);
 
                 // Compute rows 0:j-1 of current block column
-                cblas_trmm(HIPBLAS_SIDE_LEFT,
-                           HIPBLAS_FILL_MODE_UPPER,
-                           HIPBLAS_OP_N,
-                           char2hipblas_diagonal(diag),
-                           j,
-                           JB,
-                           T(1.0),
-                           A,
-                           lda,
-                           A + (j * lda),
-                           lda);
-                cblas_trsm(HIPBLAS_SIDE_RIGHT,
-                           HIPBLAS_FILL_MODE_UPPER,
-                           HIPBLAS_OP_N,
-                           char2hipblas_diagonal(diag),
-                           j,
-                           JB,
-                           T(-1.0),
-                           A + (j + j * lda),
-                           lda,
-                           A + j * lda,
-                           lda);
+                ref_trmm(HIPBLAS_SIDE_LEFT,
+                         HIPBLAS_FILL_MODE_UPPER,
+                         HIPBLAS_OP_N,
+                         char2hipblas_diagonal(diag),
+                         j,
+                         JB,
+                         T(1.0),
+                         A,
+                         lda,
+                         A + (j * lda),
+                         lda);
+                ref_trsm(HIPBLAS_SIDE_RIGHT,
+                         HIPBLAS_FILL_MODE_UPPER,
+                         HIPBLAS_OP_N,
+                         char2hipblas_diagonal(diag),
+                         j,
+                         JB,
+                         T(-1.0),
+                         A + (j + j * lda),
+                         lda,
+                         A + j * lda,
+                         lda);
                 lapack_xtrti2(uplo, diag, JB, A + (j + j * lda), lda);
             }
         }
@@ -682,28 +679,28 @@ void lapack_xtrtri(char uplo, char diag, int64_t n, T* A, int64_t lda)
                 JB = std::min(NB, n - j);
                 if(j + JB <= n)
                 {
-                    cblas_trmm(HIPBLAS_SIDE_LEFT,
-                               HIPBLAS_FILL_MODE_LOWER,
-                               HIPBLAS_OP_N,
-                               char2hipblas_diagonal(diag),
-                               n - j - JB,
-                               JB,
-                               T(1.0),
-                               A + ((j + JB) + (j + JB) * lda),
-                               lda,
-                               A + ((j + JB) + j * lda),
-                               lda);
-                    cblas_trsm(HIPBLAS_SIDE_RIGHT,
-                               HIPBLAS_FILL_MODE_LOWER,
-                               HIPBLAS_OP_N,
-                               char2hipblas_diagonal(diag),
-                               n - j - JB,
-                               JB,
-                               T(-1.0),
-                               A + (j + j * lda),
-                               lda,
-                               A + ((j + JB) + j * lda),
-                               lda);
+                    ref_trmm(HIPBLAS_SIDE_LEFT,
+                             HIPBLAS_FILL_MODE_LOWER,
+                             HIPBLAS_OP_N,
+                             char2hipblas_diagonal(diag),
+                             n - j - JB,
+                             JB,
+                             T(1.0),
+                             A + ((j + JB) + (j + JB) * lda),
+                             lda,
+                             A + ((j + JB) + j * lda),
+                             lda);
+                    ref_trsm(HIPBLAS_SIDE_RIGHT,
+                             HIPBLAS_FILL_MODE_LOWER,
+                             HIPBLAS_OP_N,
+                             char2hipblas_diagonal(diag),
+                             n - j - JB,
+                             JB,
+                             T(-1.0),
+                             A + (j + j * lda),
+                             lda,
+                             A + ((j + JB) + j * lda),
+                             lda);
                 }
                 lapack_xtrti2(uplo, diag, JB, A + (j + j * lda), lda);
             }

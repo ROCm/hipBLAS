@@ -38,114 +38,37 @@
  */
 
 template <typename Ta, typename Tx = Ta>
-void ref_axpy(int n, const Ta alpha, const Tx* x, int incx, Tx* y, int incy);
+void ref_axpy(int64_t n, const Ta alpha, const Tx* x, int64_t incx, Tx* y, int64_t incy);
+
 template <typename T, typename U = T>
-void ref_scal(int n, const U alpha, T* x, int incx);
-template <typename T>
-void ref_copy(int n, T* x, int incx, T* y, int incy);
-template <typename T>
-void ref_swap(int n, T* x, int incx, T* y, int incy);
+void ref_scal(int64_t n, const U alpha, T* x, int64_t incx);
 
 template <typename T>
-void ref_dot(int n, const T* x, int incx, const T* y, int incy, T* result);
+void ref_copy(int64_t n, T* x, int64_t incx, T* y, int64_t incy);
 
 template <typename T>
-void ref_dotc(int n, const T* x, int incx, const T* y, int incy, T* result);
+void ref_swap(int64_t n, T* x, int64_t incx, T* y, int64_t incy);
+
+template <typename T>
+void ref_dot(int64_t n, const T* x, int64_t incx, const T* y, int64_t incy, T* result);
+
+template <typename T>
+void ref_dotc(int64_t n, const T* x, int64_t incx, const T* y, int64_t incy, T* result);
 
 template <typename T1, typename T2>
-void ref_nrm2(int n, const T1* x, int incx, T2* result);
-
-template <typename T1, typename T2 = T1, typename T3 = T1>
-void ref_rot(int n, T1* x, int incx, T1* y, int incy, T2 c, T3 s);
-
-template <typename T1, typename T2 = T1>
-void ref_rotg(T1* a, T1* b, T2* c, T1* s);
-
-template <typename T1>
-void ref_rotm(int n, T1* x, int incx, T1* y, int incy, T1* param);
-
-template <typename T1>
-void ref_rotmg(T1* d1, T1* d2, T1* x1, T1* y1, T1* param);
-
-template <typename T1, typename T2>
-void ref_asum(int n, const T1* x, int incx, T2* result);
-
-template <typename T>
-void ref_iamax(int n, const T* x, int incx, int* result);
-
-template <typename T>
-void ref_iamin(int n, const T* x, int incx, int* result);
-
-template <typename T>
-void ref_gbmv(hipblasOperation_t transA,
-              int                m,
-              int                n,
-              int                kl,
-              int                ku,
-              T                  alpha,
-              T*                 A,
-              int                lda,
-              T*                 x,
-              int                incx,
-              T                  beta,
-              T*                 y,
-              int                incy);
-
-template <typename T>
-void ref_gemv(hipblasOperation_t transA,
-              int                m,
-              int                n,
-              T                  alpha,
-              T*                 A,
-              int                lda,
-              T*                 x,
-              int                incx,
-              T                  beta,
-              T*                 y,
-              int                incy);
-
-template <typename T>
-void ref_symv(
-    hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
-
-// ger (ger, geru, gerc)
-template <typename T, bool CONJ>
-void ref_ger(int m, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
-// rotm
-template <>
-inline void ref_rotm<float>(int64_t n, float* x, int64_t incx, float* y, int64_t incy, float* param)
-{
-    ref_srotm(n, x, incx, y, incy, param);
-}
-
-template <>
-inline void
-    ref_rotm<double>(int64_t n, double* x, int64_t incx, double* y, int64_t incy, double* param)
-{
-    ref_drotm(n, x, incx, y, incy, param);
-}
-
-// rotmg
-template <>
-inline void ref_rotmg<float>(float* d1, float* d2, float* x1, float* y1, float* param)
-{
-    ref_srotmg(d1, d2, x1, *y1, param);
-}
-
-template <>
-inline void ref_rotmg<double>(double* d1, double* d2, double* x1, double* y1, double* param)
-{
-    ref_drotmg(d1, d2, x1, *y1, param);
-}
-
-//template <typename T1, typename T2>
-//void ref_asum(int64_t n, const T1* x, int64_t incx, T2* result);
+void ref_nrm2(int64_t n, const T1* x, int64_t incx, T2* result);
 
 template <typename T>
 void ref_iamax(int64_t n, const T* x, int64_t incx, int64_t* result);
 
 template <typename T>
 void ref_iamin(int64_t n, const T* x, int64_t incx, int64_t* result);
+
+template <typename T1, typename T2 = T1, typename T3 = T1>
+void ref_rot(int64_t n, T1* x, int64_t incx, T1* y, int64_t incy, T2 c, T3 s);
+
+template <typename T1, typename T2 = T1>
+void ref_rotg(T1* a, T1* b, T2* c, T1* s);
 
 // asum
 template <typename T>
@@ -154,19 +77,52 @@ void ref_asum(int64_t n, const T* x, int64_t incx, real_t<T>* result);
 template <>
 inline void ref_asum(int64_t n, const double* x, int64_t incx, double* result)
 {
-    *result = ref_dasum(n, x, incx);
+    *result = cblas_dasum(n, x, incx);
 }
 
 template <>
 inline void ref_asum(int64_t n, const hipblasComplex* x, int64_t incx, float* result)
 {
-    *result = ref_scasum(n, x, incx);
+    *result = cblas_scasum(n, x, incx);
 }
 
 template <>
 inline void ref_asum(int64_t n, const hipblasDoubleComplex* x, int64_t incx, double* result)
 {
-    *result = ref_dzasum(n, x, incx);
+    *result = cblas_dzasum(n, x, incx);
+}
+
+// rotm
+template <typename T1>
+void ref_rotm(int64_t n, T1* x, int64_t incx, T1* y, int64_t incy, T1* param);
+
+template <>
+inline void ref_rotm<float>(int64_t n, float* x, int64_t incx, float* y, int64_t incy, float* param)
+{
+    cblas_srotm(n, x, incx, y, incy, param);
+}
+
+template <>
+inline void
+    ref_rotm<double>(int64_t n, double* x, int64_t incx, double* y, int64_t incy, double* param)
+{
+    cblas_drotm(n, x, incx, y, incy, param);
+}
+
+// rotmg
+template <typename T1>
+void ref_rotmg(T1* d1, T1* d2, T1* x1, T1* y1, T1* param);
+
+template <>
+inline void ref_rotmg<float>(float* d1, float* d2, float* x1, float* y1, float* param)
+{
+    cblas_srotmg(d1, d2, x1, *y1, param);
+}
+
+template <>
+inline void ref_rotmg<double>(double* d1, double* d2, double* x1, double* y1, double* param)
+{
+    cblas_drotmg(d1, d2, x1, *y1, param);
 }
 
 /*
@@ -223,60 +179,6 @@ void ref_ger(
 // hbmv
 template <typename T>
 void ref_hbmv(hipblasFillMode_t uplo,
-              int               n,
-              int               k,
-              T                 alpha,
-              T*                A,
-              int               lda,
-              T*                x,
-              int               incx,
-              T                 beta,
-              T*                y,
-              int               incy);
-
-// hemv
-template <typename T, typename U>
-void ref_hemv(
-    hipblasFillMode_t uplo, int n, U alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
-
-// spr
-template <typename T>
-void ref_spr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* AP);
-
-// spr2
-template <typename T>
-void ref_spr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
-
-// syr
-template <typename T>
-void ref_syr(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* A, int lda);
-
-// syr2
-template <typename T>
-void ref_syr2(
-    hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
-
-// her
-template <typename T, typename U>
-void ref_her(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* A, int lda);
-
-// her2
-template <typename T>
-void ref_her2(
-    hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* A, int lda);
-
-// hpmv
-template <typename T>
-void ref_hpmv(
-    hipblasFillMode_t uplo, int n, T alpha, T* AP, T* x, int incx, T beta, T* y, int incy);
-
-// hpr
-template <typename T, typename U>
-void ref_hpr(hipblasFillMode_t uplo, int n, U alpha, T* x, int incx, T* AP);
-
-// hpr2
-template <typename T>
-void ref_hpr2(hipblasFillMode_t uplo, int n, T alpha, T* x, int incx, T* y, int incy, T* AP);
               int64_t           n,
               int64_t           k,
               T                 alpha,
@@ -363,35 +265,124 @@ template <typename T>
 void ref_hpr2(
     hipblasFillMode_t uplo, int64_t n, T alpha, T* x, int64_t incx, T* y, int64_t incy, T* AP);
 
+// hemv
+template <typename T, typename U>
+void ref_hemv(hipblasFillMode_t uplo,
+              int64_t           n,
+              U                 alpha,
+              T*                A,
+              int64_t           lda,
+              T*                x,
+              int64_t           incx,
+              T                 beta,
+              T*                y,
+              int64_t           incy);
+
+// spr
+template <typename T>
+void ref_spr(hipblasFillMode_t uplo, int64_t n, T alpha, T* x, int64_t incx, T* AP);
+
+// spr2
+template <typename T>
+void ref_spr2(
+    hipblasFillMode_t uplo, int64_t n, T alpha, T* x, int64_t incx, T* y, int64_t incy, T* AP);
+
+// syr
+template <typename T>
+void ref_syr(hipblasFillMode_t uplo, int64_t n, T alpha, T* x, int64_t incx, T* A, int64_t lda);
+
+// syr2
+template <typename T>
+void ref_syr2(hipblasFillMode_t uplo,
+              int64_t           n,
+              T                 alpha,
+              T*                x,
+              int64_t           incx,
+              T*                y,
+              int64_t           incy,
+              T*                A,
+              int64_t           lda);
+
+// her
+template <typename T, typename U>
+void ref_her(hipblasFillMode_t uplo, int64_t n, U alpha, T* x, int64_t incx, T* A, int64_t lda);
+
+// her2
+template <typename T>
+void ref_her2(hipblasFillMode_t uplo,
+              int64_t           n,
+              T                 alpha,
+              T*                x,
+              int64_t           incx,
+              T*                y,
+              int64_t           incy,
+              T*                A,
+              int64_t           lda);
+
+// hemv
+template <typename T>
+void ref_hemv(hipblasFillMode_t uplo,
+              int64_t           n,
+              T                 alpha,
+              T*                A,
+              int64_t           lda,
+              T*                x,
+              int64_t           incx,
+              T                 beta,
+              T*                y,
+              int64_t           incy);
+
+// hpmv
+template <typename T>
+void ref_hpmv(hipblasFillMode_t uplo,
+              int64_t           n,
+              T                 alpha,
+              T*                AP,
+              T*                x,
+              int64_t           incx,
+              T                 beta,
+              T*                y,
+              int64_t           incy);
+
+// hpr
+template <typename T, typename U>
+void ref_hpr(hipblasFillMode_t uplo, int64_t n, U alpha, T* x, int64_t incx, T* AP);
+
+// hpr2
+template <typename T>
+void ref_hpr2(
+    hipblasFillMode_t uplo, int64_t n, T alpha, T* x, int64_t incx, T* y, int64_t incy, T* AP);
+
 // sbmv
 template <typename T>
 void ref_sbmv(hipblasFillMode_t uplo,
-              int               n,
-              int               k,
+              int64_t           n,
+              int64_t           k,
               T                 alpha,
               T*                A,
-              int               lda,
+              int64_t           lda,
               T*                x,
-              int               incx,
+              int64_t           incx,
               T                 beta,
               T*                y,
-              int               incy);
+              int64_t           incy);
 
 // spmv
 template <typename T>
-void ref_spmv(
-    hipblasFillMode_t uplo, int n, T alpha, T* AP, T* x, int incx, T beta, T* y, int incy);
+void ref_spmv(hipblasFillMode_t uplo,
+              int64_t           n,
+              T                 alpha,
+              T*                AP,
+              T*                x,
+              int64_t           incx,
+              T                 beta,
+              T*                y,
+              int64_t           incy);
 
 // symv
 template <typename T>
-void ref_symv(
-    hipblasFillMode_t uplo, int n, T alpha, T* A, int lda, T* x, int incx, T beta, T* y, int incy);
-
-// potrf
-template <typename T>
-int ref_potrf(char uplo, int m, T* A, int lda);
+void ref_symv(hipblasFillMode_t uplo,
               int64_t           n,
-              int64_t           k,
               T                 alpha,
               T*                A,
               int64_t           lda,
@@ -493,19 +484,6 @@ void ref_trsv(hipblasHandle_t    handle,
               T*                 x,
               int64_t            incx);
 
-// hemv
-template <typename T>
-void ref_hemv(hipblasFillMode_t uplo,
-              int64_t           n,
-              T                 alpha,
-              T*                A,
-              int64_t           lda,
-              T*                x,
-              int64_t           incx,
-              T                 beta,
-              T*                y,
-              int64_t           incy);
-
 /*
  * ===========================================================================
  *    BLAS 3
@@ -529,16 +507,16 @@ void ref_herk(hipblasFillMode_t  uplo,
 template <typename T, typename U>
 void ref_herkx(hipblasFillMode_t  uplo,
                hipblasOperation_t transA,
-               int                n,
-               int                k,
+               int64_t            n,
+               int64_t            k,
                T                  alpha,
                T*                 A,
-               int                lda,
+               int64_t            lda,
                T*                 B,
-               int                ldb,
+               int64_t            ldb,
                U                  beta,
                T*                 C,
-               int                ldc);
+               int64_t            ldc);
 
 // her2k
 template <typename T, typename U>
@@ -590,17 +568,19 @@ void ref_gemm(hipblasOperation_t transA,
 template <typename T>
 void ref_hemm(hipblasSideMode_t side,
               hipblasFillMode_t uplo,
-              int               m,
-              int               n,
+              int64_t           m,
+              int64_t           n,
               T                 alpha,
               T*                A,
-              int               lda,
+              int64_t           lda,
               T*                B,
-              int               ldb,
+              int64_t           ldb,
               T                 beta,
               T*                C,
-              int               ldc);
+              int64_t           ldc);
 
+// symm
+template <typename T>
 void ref_symm(hipblasSideMode_t side,
               hipblasFillMode_t uplo,
               int64_t           m,
@@ -631,16 +611,16 @@ void ref_syrk(hipblasFillMode_t  uplo,
 template <typename T>
 void ref_syr2k(hipblasFillMode_t  uplo,
                hipblasOperation_t transA,
-               int                n,
-               int                k,
+               int64_t            n,
+               int64_t            k,
                T                  alpha,
                T*                 A,
-               int                lda,
+               int64_t            lda,
                T*                 B,
-               int                ldb,
+               int64_t            ldb,
                T                  beta,
                T*                 C,
-               int                ldc);
+               int64_t            ldc);
 
 // syrkx
 template <typename T>
@@ -663,18 +643,17 @@ void ref_trsm(hipblasSideMode_t  side,
               hipblasFillMode_t  uplo,
               hipblasOperation_t transA,
               hipblasDiagType_t  diag,
-              int                m,
-              int                n,
+              int64_t            m,
+              int64_t            n,
               T                  alpha,
               const T*           A,
-              int                lda,
+              int64_t            lda,
               T*                 B,
-              int                ldb);
+              int64_t            ldb);
 
 // trtri
 template <typename T>
-int ref_trtri(char uplo, char diag, int n, T* A, int lda);
-
+void ref_trtri(char uplo, char diag, int64_t n, T* A, int64_t lda);
 
 // trmm
 template <typename T>
