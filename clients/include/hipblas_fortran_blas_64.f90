@@ -63,7 +63,7 @@ function hipblasScopy_64Fortran(handle, n, x, incx, y, incy) &
     type(c_ptr), value :: y
     integer(c_int64_t), value :: incy
             hipblasScopy_64Fortran = &
-        hipblasScopy(handle, n, x, incx, y, incy)
+        hipblasScopy_64(handle, n, x, incx, y, incy)
     return
 end function hipblasScopy_64Fortran
 
@@ -80,7 +80,7 @@ function hipblasDcopy_64Fortran(handle, n, x, incx, y, incy) &
     type(c_ptr), value :: y
     integer(c_int64_t), value :: incy
             hipblasDcopy_64Fortran = &
-        hipblasDcopy(handle, n, x, incx, y, incy)
+        hipblasDcopy_64(handle, n, x, incx, y, incy)
     return
 end function hipblasDcopy_64Fortran
 
@@ -97,7 +97,7 @@ function hipblasCcopy_64Fortran(handle, n, x, incx, y, incy) &
     type(c_ptr), value :: y
     integer(c_int64_t), value :: incy
             hipblasCcopy_64Fortran = &
-        hipblasCcopy(handle, n, x, incx, y, incy)
+        hipblasCcopy_64(handle, n, x, incx, y, incy)
     return
 end function hipblasCcopy_64Fortran
 
@@ -114,7 +114,7 @@ function hipblasZcopy_64Fortran(handle, n, x, incx, y, incy) &
     type(c_ptr), value :: y
     integer(c_int64_t), value :: incy
             hipblasZcopy_64Fortran = &
-        hipblasZcopy(handle, n, x, incx, y, incy)
+        hipblasZcopy_64(handle, n, x, incx, y, incy)
     return
 end function hipblasZcopy_64Fortran
 
@@ -133,7 +133,7 @@ function hipblasScopyBatched_64Fortran(handle, n, x, incx, y, incy, batch_count)
     integer(c_int64_t), value :: incy
     integer(c_int64_t), value :: batch_count
             hipblasScopyBatched_64Fortran = &
-        hipblasScopyBatched(handle, n, x, incx, y, incy, batch_count)
+        hipblasScopyBatched_64(handle, n, x, incx, y, incy, batch_count)
     return
 end function hipblasScopyBatched_64Fortran
 
@@ -151,7 +151,7 @@ function hipblasDcopyBatched_64Fortran(handle, n, x, incx, y, incy, batch_count)
     integer(c_int64_t), value :: incy
     integer(c_int64_t), value :: batch_count
             hipblasDcopyBatched_64Fortran = &
-        hipblasDcopyBatched(handle, n, x, incx, y, incy, batch_count)
+        hipblasDcopyBatched_64(handle, n, x, incx, y, incy, batch_count)
     return
 end function hipblasDcopyBatched_64Fortran
 
@@ -169,7 +169,7 @@ function hipblasCcopyBatched_64Fortran(handle, n, x, incx, y, incy, batch_count)
     integer(c_int64_t), value :: incy
     integer(c_int64_t), value :: batch_count
             hipblasCcopyBatched_64Fortran = &
-        hipblasCcopyBatched(handle, n, x, incx, y, incy, batch_count)
+        hipblasCcopyBatched_64(handle, n, x, incx, y, incy, batch_count)
     return
 end function hipblasCcopyBatched_64Fortran
 
@@ -187,7 +187,7 @@ function hipblasZcopyBatched_64Fortran(handle, n, x, incx, y, incy, batch_count)
     integer(c_int64_t), value :: incy
     integer(c_int64_t), value :: batch_count
             hipblasZcopyBatched_64Fortran = &
-        hipblasZcopyBatched(handle, n, x, incx, y, incy, batch_count)
+        hipblasZcopyBatched_64(handle, n, x, incx, y, incy, batch_count)
     return
 end function hipblasZcopyBatched_64Fortran
 
@@ -208,7 +208,7 @@ function hipblasScopyStridedBatched_64Fortran(handle, n, x, incx, stride_x, y, i
     integer(c_int64_t), value :: stride_y
     integer(c_int64_t), value :: batch_count
             hipblasScopyStridedBatched_64Fortran = &
-        hipblasScopyStridedBatched(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
+        hipblasScopyStridedBatched_64(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
     return
 end function hipblasScopyStridedBatched_64Fortran
 
@@ -228,7 +228,7 @@ function hipblasDcopyStridedBatched_64Fortran(handle, n, x, incx, stride_x, y, i
     integer(c_int64_t), value :: stride_y
     integer(c_int64_t), value :: batch_count
             hipblasDcopyStridedBatched_64Fortran = &
-        hipblasDcopyStridedBatched(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
+        hipblasDcopyStridedBatched_64(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
     return
 end function hipblasDcopyStridedBatched_64Fortran
 
@@ -248,7 +248,7 @@ function hipblasCcopyStridedBatched_64Fortran(handle, n, x, incx, stride_x, y, i
     integer(c_int64_t), value :: stride_y
     integer(c_int64_t), value :: batch_count
             hipblasCcopyStridedBatched_64Fortran = &
-        hipblasCcopyStridedBatched(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
+        hipblasCcopyStridedBatched_64(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
     return
 end function hipblasCcopyStridedBatched_64Fortran
 
@@ -268,7 +268,7 @@ function hipblasZcopyStridedBatched_64Fortran(handle, n, x, incx, stride_x, y, i
     integer(c_int64_t), value :: stride_y
     integer(c_int64_t), value :: batch_count
             hipblasZcopyStridedBatched_64Fortran = &
-        hipblasZcopyStridedBatched(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
+        hipblasZcopyStridedBatched_64(handle, n, x, incx, stride_x, y, incy, stride_y, batch_count)
     return
 end function hipblasZcopyStridedBatched_64Fortran
 

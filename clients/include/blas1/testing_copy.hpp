@@ -41,6 +41,8 @@ void testing_copy_bad_arg(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
+    auto hipblasCopyFn_64
+        = arg.api == FORTRAN_64 ? hipblasCopy_64<T, true> : hipblasCopy_64<T, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -51,15 +53,14 @@ void testing_copy_bad_arg(const Arguments& arg)
     device_vector<T> dx(N * incx);
     device_vector<T> dy(N * incy);
 
-    EXPECT_HIPBLAS_STATUS(hipblasCopyFn(nullptr, N, dx, incx, dy, incy),
-                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasCopyFn, (nullptr, N, dx, incx, dy, incy));
 
     if(arg.bad_arg_all)
     {
-        EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, nullptr, incx, dy, incy),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasCopyFn(handle, N, dx, incx, nullptr, incy),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE, hipblasCopyFn, (handle, N, nullptr, incx, dy, incy));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE, hipblasCopyFn, (handle, N, dx, incx, nullptr, incy));
     }
 }
 
@@ -68,6 +69,8 @@ void testing_copy(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyFn = FORTRAN ? hipblasCopy<T, true> : hipblasCopy<T, false>;
+    auto hipblasCopyFn_64
+        = arg.api == FORTRAN_64 ? hipblasCopy_64<T, true> : hipblasCopy_64<T, false>;
 
     int64_t N    = arg.N;
     int64_t incx = arg.incx;
@@ -79,7 +82,7 @@ void testing_copy(const Arguments& arg)
     // memory
     if(N <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, nullptr, incx, nullptr, incy));
+        DAPI_CHECK(hipblasCopyFn, (handle, N, nullptr, incx, nullptr, incy));
         return;
     }
 
@@ -120,7 +123,7 @@ void testing_copy(const Arguments& arg)
         /* =====================================================================
                     HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
+        DAPI_CHECK(hipblasCopyFn, (handle, N, dx, incx, dy, incy));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -129,7 +132,8 @@ void testing_copy(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
+        // TODO: remove casts
+        cblas_copy<T>((int)N, hx_cpu.data(), (int)incx, hy_cpu.data(), (int)incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -141,7 +145,6 @@ void testing_copy(const Arguments& arg)
         {
             hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy);
         }
-
     } // end of if unit check
 
     if(arg.timing)
@@ -155,7 +158,7 @@ void testing_copy(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasCopyFn(handle, N, dx, incx, dy, incy));
+            DAPI_CHECK(hipblasCopyFn, (handle, N, dx, incx, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

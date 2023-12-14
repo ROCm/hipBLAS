@@ -206,7 +206,10 @@ public:
         std::replace(params.begin(), params.end(), '-', 'n');
         std::replace(params.begin(), params.end(), '.', 'p');
         name += params;
-        name += (arg.api == hipblas_client_api::FORTRAN ? "_F" : "_C");
+        name += (arg.api == hipblas_client_api::FORTRAN      ? "_F"
+                 : arg.api == hipblas_client_api::C          ? "_C"
+                 : arg.api == hipblas_client_api::FORTRAN_64 ? "_F64"
+                                                             : "_C64");
     }
 };
 
