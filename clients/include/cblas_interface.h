@@ -639,17 +639,128 @@ void ref_syrkx(hipblasFillMode_t  uplo,
 
 // trsm
 template <typename T>
-void ref_trsm(hipblasSideMode_t  side,
-              hipblasFillMode_t  uplo,
-              hipblasOperation_t transA,
-              hipblasDiagType_t  diag,
-              int64_t            m,
-              int64_t            n,
-              T                  alpha,
-              const T*           A,
-              int64_t            lda,
-              T*                 B,
-              int64_t            ldb);
+inline void ref_trsm(hipblasSideMode_t  side,
+                     hipblasFillMode_t  uplo,
+                     hipblasOperation_t transA,
+                     hipblasDiagType_t  diag,
+                     int64_t            m,
+                     int64_t            n,
+                     T                  alpha,
+                     const T*           A,
+                     int64_t            lda,
+                     T*                 B,
+                     int64_t            ldb);
+
+// trsm
+template <>
+inline void ref_trsm<float>(hipblasSideMode_t  side,
+                            hipblasFillMode_t  uplo,
+                            hipblasOperation_t transA,
+                            hipblasDiagType_t  diag,
+                            int64_t            m,
+                            int64_t            n,
+                            float              alpha,
+                            const float*       A,
+                            int64_t            lda,
+                            float*             B,
+                            int64_t            ldb)
+{
+    // just directly cast, since transA, transB are integers in the enum
+    cblas_strsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
+
+template <>
+inline void ref_trsm<double>(hipblasSideMode_t  side,
+                             hipblasFillMode_t  uplo,
+                             hipblasOperation_t transA,
+                             hipblasDiagType_t  diag,
+                             int64_t            m,
+                             int64_t            n,
+                             double             alpha,
+                             const double*      A,
+                             int64_t            lda,
+                             double*            B,
+                             int64_t            ldb)
+{
+    // just directly cast, since transA, transB are integers in the enum
+    cblas_dtrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
+
+template <>
+inline void ref_trsm<hipblasComplex>(hipblasSideMode_t     side,
+                                     hipblasFillMode_t     uplo,
+                                     hipblasOperation_t    transA,
+                                     hipblasDiagType_t     diag,
+                                     int64_t               m,
+                                     int64_t               n,
+                                     hipblasComplex        alpha,
+                                     const hipblasComplex* A,
+                                     int64_t               lda,
+                                     hipblasComplex*       B,
+                                     int64_t               ldb)
+{
+    cblas_ctrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
+
+template <>
+inline void ref_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int64_t                     m,
+                                           int64_t                     n,
+                                           hipblasDoubleComplex        alpha,
+                                           const hipblasDoubleComplex* A,
+                                           int64_t                     lda,
+                                           hipblasDoubleComplex*       B,
+                                           int64_t                     ldb)
+{
+    cblas_ztrsm(CblasColMajor,
+                (CBLAS_SIDE)side,
+                (CBLAS_UPLO)uplo,
+                (CBLAS_TRANSPOSE)transA,
+                (CBLAS_DIAG)diag,
+                m,
+                n,
+                &alpha,
+                A,
+                lda,
+                B,
+                ldb);
+}
 
 // trtri
 template <typename T>
@@ -675,23 +786,39 @@ void ref_trmm(hipblasSideMode_t  side,
  * ===========================================================================
  */
 
+#ifdef LAPACK_ILP64
+#define ref_int int64_t
+#else
+#define ref_int int
+#endif
+
 // potrf
 template <typename T>
-int ref_potrf(char uplo, int m, T* A, int lda);
+int64_t ref_potrf(char uplo, int64_t m, T* A, int64_t lda);
 
 template <typename T>
-int ref_getrf(int m, int n, T* A, int lda, int* ipiv);
+int64_t ref_getrf(int64_t m, int64_t n, T* A, int64_t lda, int64_t* ipiv);
 
 template <typename T>
-int ref_getrs(char trans, int n, int nrhs, T* A, int lda, int* ipiv, T* B, int ldb);
+int64_t ref_getrs(
+    char trans, int64_t n, int64_t nrhs, T* A, int64_t lda, int64_t* ipiv, T* B, int64_t ldb);
 
 template <typename T>
-int ref_getri(int n, T* A, int lda, int* ipiv, T* work, int lwork);
+int64_t ref_getri(int64_t n, T* A, int64_t lda, int64_t* ipiv, T* work, int64_t lwork);
 
 template <typename T>
-int ref_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
+int64_t ref_geqrf(int64_t m, int64_t n, T* A, int64_t lda, T* tau, T* work, int64_t lwork);
 
 template <typename T>
-int ref_gels(char trans, int m, int n, int nrhs, T* A, int lda, T* B, int ldb, T* work, int lwork);
+int64_t ref_gels(char    trans,
+                 int64_t m,
+                 int64_t n,
+                 int64_t nrhs,
+                 T*      A,
+                 int64_t lda,
+                 T*      B,
+                 int64_t ldb,
+                 T*      work,
+                 int64_t lwork);
 
 /* ============================================================================================ */

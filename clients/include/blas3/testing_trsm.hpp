@@ -204,7 +204,7 @@ void testing_trsm(const Arguments& arg)
         }
     }
     // proprocess the matrix to avoid ill-conditioned matrix
-    std::vector<int> ipiv(K);
+    std::vector<ref_int> ipiv(K);
     ref_getrf(K, K, hA.data(), lda, ipiv.data());
     for(int i = 0; i < K; i++)
     {

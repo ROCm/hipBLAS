@@ -531,7 +531,7 @@ void hipblas_init_alternating_template(U& that, T rand_gen(), T rand_gen_alt(), 
     if(seedReset)
         hipblas_seedrand();
 
-    for(int b = 0; b < that.batch_count(); ++b)
+    for(int64_t b = 0; b < that.batch_count(); ++b)
     {
         auto*   batched_data = that[b];
         int64_t inc          = that.inc();

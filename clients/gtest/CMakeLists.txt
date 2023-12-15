@@ -169,8 +169,8 @@ endif()
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
-target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
-target_compile_definitions( hipblas_v2-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2 )
+target_compile_definitions( hipblas-test PRIVATE ${COMMON_DEFINES} )
+target_compile_definitions( hipblas_v2-test PRIVATE ${COMMON_DEFINES} HIPBLAS_V2 )
 
 if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-test PRIVATE hip::host )
@@ -215,8 +215,10 @@ target_link_libraries( hipblas-test PRIVATE ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-test PRIVATE ${COMMON_LINK_LIBS} )
 
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE cblas lapack stdc++fs )
-    target_link_libraries( hipblas_v2-test PRIVATE cblas lapack stdc++fs )
+    target_link_libraries( hipblas-test PRIVATE stdc++fs )
+    target_link_libraries( hipblas_v2-test PRIVATE stdc++fs )
+    # target_link_libraries( hipblas-test PRIVATE cblas lapack stdc++fs )
+    # target_link_libraries( hipblas_v2-test PRIVATE cblas lapack stdc++fs )
 endif()
 
 if (WIN32)
