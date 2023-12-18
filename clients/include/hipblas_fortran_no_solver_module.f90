@@ -27,5 +27,6 @@ module hipblas_interface
 
 contains
     include 'hipblas_fortran_blas.f90'
+    include 'hipblas_fortran_blas_64.f90'
 
 end module hipblas_interface
