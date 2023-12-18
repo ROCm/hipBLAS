@@ -40,6 +40,11 @@
 // Predeclare enumerator
 enum hipblas_argument : int;
 
+// bit mask hipblas_client_api_
+const uint32_t c_API_64       = 1;
+const uint32_t c_API_FORTRAN  = 2;
+const uint32_t c_API_INTERNAL = 4;
+
 // bitmask
 typedef enum hipblas_client_os_
 {
@@ -58,8 +63,10 @@ typedef enum hipblas_backend_
 
 typedef enum hipblas_client_api_
 {
-    C,
-    FORTRAN,
+    C          = 0,
+    C_64       = 1,
+    FORTRAN    = 2,
+    FORTRAN_64 = 3
 } hipblas_client_api;
 
 // conversion helpers
@@ -99,19 +106,19 @@ struct Arguments
 {
     // if you add or reorder members you must update FOR_EACH_ARGUMENT macro
 
-    int M  = 128;
-    int N  = 128;
-    int K  = 128;
-    int KL = 128;
-    int KU = 128;
+    int64_t M  = 128;
+    int64_t N  = 128;
+    int64_t K  = 128;
+    int64_t KL = 128;
+    int64_t KU = 128;
 
-    int rows = 128;
-    int cols = 128;
+    int64_t rows = 128;
+    int64_t cols = 128;
 
-    int lda = 128;
-    int ldb = 128;
-    int ldc = 128;
-    int ldd = 128;
+    int64_t lda = 128;
+    int64_t ldb = 128;
+    int64_t ldc = 128;
+    int64_t ldd = 128;
 
     hipblasDatatype_t a_type = HIPBLAS_R_32F;
     hipblasDatatype_t b_type = HIPBLAS_R_32F;
@@ -125,10 +132,10 @@ struct Arguments
     // used for gemmEx with HIPBLAS_V2 define
     hipblasComputeType_t compute_type_gemm = HIPBLAS_COMPUTE_32F;
 
-    int incx = 1;
-    int incy = 1;
-    int incd = 1;
-    int incb = 1;
+    int64_t incx = 1;
+    int64_t incy = 1;
+    int64_t incd = 1;
+    int64_t incb = 1;
 
     double        stride_scale = 1.0;
     hipblasStride stride_a; //  stride_a > transA == 'N' ? lda * K : lda * M
@@ -153,8 +160,8 @@ struct Arguments
     char uplo   = 'L';
     char diag   = 'N';
 
-    int apiCallCount = 1;
-    int batch_count  = 10;
+    int     apiCallCount = 1;
+    int64_t batch_count  = 10;
 
     bool inplace    = false; // only for trmm
     bool with_flags = false;

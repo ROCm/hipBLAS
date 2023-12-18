@@ -42,6 +42,8 @@ void testing_copy_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyBatchedFn
         = FORTRAN ? hipblasCopyBatched<T, true> : hipblasCopyBatched<T, false>;
+    auto hipblasCopyBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasCopyBatched_64<T, true> : hipblasCopyBatched_64<T, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -53,12 +55,15 @@ void testing_copy_batched_bad_arg(const Arguments& arg)
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
 
-    EXPECT_HIPBLAS_STATUS(hipblasCopyBatchedFn(nullptr, N, dx, incx, dy, incy, batch_count),
-                          HIPBLAS_STATUS_NOT_INITIALIZED);
-    EXPECT_HIPBLAS_STATUS(hipblasCopyBatchedFn(handle, N, nullptr, incx, dy, incy, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(hipblasCopyBatchedFn(handle, N, dx, incx, nullptr, incy, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasCopyBatchedFn,
+                (nullptr, N, dx, incx, dy, incy, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasCopyBatchedFn,
+                (handle, N, nullptr, incx, dy, incy, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasCopyBatchedFn,
+                (handle, N, dx, incx, nullptr, incy, batch_count));
 }
 
 template <typename T>
@@ -67,11 +72,13 @@ void testing_copy_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasCopyBatchedFn
         = FORTRAN ? hipblasCopyBatched<T, true> : hipblasCopyBatched<T, false>;
+    auto hipblasCopyBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasCopyBatched_64<T, true> : hipblasCopyBatched_64<T, false>;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
 
     hipblasLocalHandle handle(arg);
 
@@ -79,12 +86,11 @@ void testing_copy_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasCopyBatchedFn(handle, N, nullptr, incx, nullptr, incy, batch_count));
+        DAPI_CHECK(hipblasCopyBatchedFn, (handle, N, nullptr, incx, nullptr, incy, batch_count));
         return;
     }
 
-    int abs_incy = incy >= 0 ? incy : -incy;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
 
     double hipblas_error = 0.0;
     double gpu_time_used = 0.0;
@@ -113,8 +119,8 @@ void testing_copy_batched(const Arguments& arg)
         /* =====================================================================
                     HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
-            handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+        DAPI_CHECK(hipblasCopyBatchedFn,
+                   (handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx.transfer_from(dx));
@@ -123,9 +129,10 @@ void testing_copy_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_copy<T>(N, hx_cpu[b], incx, hy_cpu[b], incy);
+            int b2 = b;
+            ref_copy<T>((int)N, hx_cpu[b2], (int)incx, hy_cpu[b2], (int)incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -138,7 +145,6 @@ void testing_copy_batched(const Arguments& arg)
         {
             hipblas_error = norm_check_general<T>('F', 1, N, abs_incy, hy_cpu, hy, batch_count);
         }
-
     } // end of if unit check
 
     if(arg.timing)
@@ -152,8 +158,9 @@ void testing_copy_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasCopyBatchedFn(
-                handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+            DAPI_CHECK(
+                hipblasCopyBatchedFn,
+                (handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

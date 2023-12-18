@@ -40,6 +40,7 @@
 #include "hipblas_vector.hpp"
 #include "near.h"
 #include "norm.h"
+#include "testing_macros.hpp"
 #include "unit.h"
 #include "utility.h"
 

@@ -1773,6 +1773,41 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_v2(hipblasHandle_t         handle,
                                                int                     incx,
                                                hipDoubleComplex*       y,
                                                int                     incy);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScopy_64(
+    hipblasHandle_t handle, int64_t n, const float* x, int64_t incx, float* y, int64_t incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDcopy_64(
+    hipblasHandle_t handle, int64_t n, const double* x, int64_t incx, double* y, int64_t incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_64(hipblasHandle_t       handle,
+                                               int64_t               n,
+                                               const hipblasComplex* x,
+                                               int64_t               incx,
+                                               hipblasComplex*       y,
+                                               int64_t               incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_64(hipblasHandle_t             handle,
+                                               int64_t                     n,
+                                               const hipblasDoubleComplex* x,
+                                               int64_t                     incx,
+                                               hipblasDoubleComplex*       y,
+                                               int64_t                     incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_64_v2(hipblasHandle_t   handle,
+                                                  int64_t           n,
+                                                  const hipComplex* x,
+                                                  int64_t           incx,
+                                                  hipComplex*       y,
+                                                  int64_t           incy);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_64_v2(hipblasHandle_t         handle,
+                                                  int64_t                 n,
+                                                  const hipDoubleComplex* x,
+                                                  int64_t                 incx,
+                                                  hipDoubleComplex*       y,
+                                                  int64_t                 incy);
 //! @}
 
 /*! @{
@@ -1858,6 +1893,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched_v2(hipblasHandle_t           
                                                       hipDoubleComplex* const       y[],
                                                       int                           incy,
                                                       int                           batchCount);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched_64(hipblasHandle_t    handle,
+                                                      int64_t            n,
+                                                      const float* const x[],
+                                                      int64_t            incx,
+                                                      float* const       y[],
+                                                      int64_t            incy,
+                                                      int64_t            batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDcopyBatched_64(hipblasHandle_t     handle,
+                                                      int64_t             n,
+                                                      const double* const x[],
+                                                      int64_t             incx,
+                                                      double* const       y[],
+                                                      int64_t             incy,
+                                                      int64_t             batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyBatched_64(hipblasHandle_t             handle,
+                                                      int64_t                     n,
+                                                      const hipblasComplex* const x[],
+                                                      int64_t                     incx,
+                                                      hipblasComplex* const       y[],
+                                                      int64_t                     incy,
+                                                      int64_t                     batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched_64(hipblasHandle_t                   handle,
+                                                      int64_t                           n,
+                                                      const hipblasDoubleComplex* const x[],
+                                                      int64_t                           incx,
+                                                      hipblasDoubleComplex* const       y[],
+                                                      int64_t                           incy,
+                                                      int64_t                           batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyBatched_64_v2(hipblasHandle_t         handle,
+                                                         int64_t                 n,
+                                                         const hipComplex* const x[],
+                                                         int64_t                 incx,
+                                                         hipComplex* const       y[],
+                                                         int64_t                 incy,
+                                                         int64_t                 batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched_64_v2(hipblasHandle_t               handle,
+                                                         int64_t                       n,
+                                                         const hipDoubleComplex* const x[],
+                                                         int64_t                       incx,
+                                                         hipDoubleComplex* const       y[],
+                                                         int64_t                       incy,
+                                                         int64_t                       batchCount);
 //! @}
 
 /*! @{
@@ -1967,6 +2051,67 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched_v2(hipblasHandle_t    
                                                              int                     incy,
                                                              hipblasStride           stridey,
                                                              int                     batchCount);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScopyStridedBatched_64(hipblasHandle_t handle,
+                                                             int64_t         n,
+                                                             const float*    x,
+                                                             int64_t         incx,
+                                                             hipblasStride   stridex,
+                                                             float*          y,
+                                                             int64_t         incy,
+                                                             hipblasStride   stridey,
+                                                             int64_t         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDcopyStridedBatched_64(hipblasHandle_t handle,
+                                                             int64_t         n,
+                                                             const double*   x,
+                                                             int64_t         incx,
+                                                             hipblasStride   stridex,
+                                                             double*         y,
+                                                             int64_t         incy,
+                                                             hipblasStride   stridey,
+                                                             int64_t         batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched_64(hipblasHandle_t       handle,
+                                                             int64_t               n,
+                                                             const hipblasComplex* x,
+                                                             int64_t               incx,
+                                                             hipblasStride         stridex,
+                                                             hipblasComplex*       y,
+                                                             int64_t               incy,
+                                                             hipblasStride         stridey,
+                                                             int64_t               batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched_64(hipblasHandle_t             handle,
+                                                             int64_t                     n,
+                                                             const hipblasDoubleComplex* x,
+                                                             int64_t                     incx,
+                                                             hipblasStride               stridex,
+                                                             hipblasDoubleComplex*       y,
+                                                             int64_t                     incy,
+                                                             hipblasStride               stridey,
+                                                             int64_t batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopyStridedBatched_64_v2(hipblasHandle_t   handle,
+                                                                int64_t           n,
+                                                                const hipComplex* x,
+                                                                int64_t           incx,
+                                                                hipblasStride     stridex,
+                                                                hipComplex*       y,
+                                                                int64_t           incy,
+                                                                hipblasStride     stridey,
+                                                                int64_t           batchCount);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched_64_v2(hipblasHandle_t         handle,
+                                                                int64_t                 n,
+                                                                const hipDoubleComplex* x,
+                                                                int64_t                 incx,
+                                                                hipblasStride           stridex,
+                                                                hipDoubleComplex*       y,
+                                                                int64_t                 incy,
+                                                                hipblasStride           stridey,
+                                                                int64_t                 batchCount);
 //! @}
 
 /*! @{
@@ -24740,12 +24885,18 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 
 #define hipblasCcopy hipblasCcopy_v2
 #define hipblasZcopy hipblasZcopy_v2
+#define hipblasCcopy_64 hipblasCcopy_64_v2
+#define hipblasZcopy_64 hipblasZcopy_64_v2
 
 #define hipblasCcopyBatched hipblasCcopyBatched_v2
 #define hipblasZcopyBatched hipblasZcopyBatched_v2
+#define hipblasCcopyBatched_64 hipblasCcopyBatched_64_v2
+#define hipblasZcopyBatched_64 hipblasZcopyBatched_64_v2
 
 #define hipblasCcopyStridedBatched hipblasCcopyStridedBatched_v2
 #define hipblasZcopyStridedBatched hipblasZcopyStridedBatched_v2
+#define hipblasCcopyStridedBatched_64 hipblasCcopyStridedBatched_64_v2
+#define hipblasZcopyStridedBatched_64 hipblasZcopyStridedBatched_64_v2
 
 #define hipblasCdotu hipblasCdotu_v2
 #define hipblasCdotc hipblasCdotc_v2

@@ -71,6 +71,7 @@
 #define hipblasZscalStridedBatchedFortran hipblasZscalStridedBatched
 #define hipblasCsscalStridedBatchedFortran hipblasCsscalStridedBatched
 #define hipblasZdscalStridedBatchedFortran hipblasZdscalStridedBatched
+
 #define hipblasScopyFortran hipblasScopy
 #define hipblasDcopyFortran hipblasDcopy
 #define hipblasCcopyFortran hipblasCcopy
@@ -83,6 +84,20 @@
 #define hipblasDcopyStridedBatchedFortran hipblasDcopyStridedBatched
 #define hipblasCcopyStridedBatchedFortran hipblasCcopyStridedBatched
 #define hipblasZcopyStridedBatchedFortran hipblasZcopyStridedBatched
+
+#define hipblasScopy_64Fortran hipblasScopy_64
+#define hipblasDcopy_64Fortran hipblasDcopy_64
+#define hipblasCcopy_64Fortran hipblasCcopy_64
+#define hipblasZcopy_64Fortran hipblasZcopy_64
+#define hipblasScopyBatched_64Fortran hipblasScopyBatched_64
+#define hipblasDcopyBatched_64Fortran hipblasDcopyBatched_64
+#define hipblasCcopyBatched_64Fortran hipblasCcopyBatched_64
+#define hipblasZcopyBatched_64Fortran hipblasZcopyBatched_64
+#define hipblasScopyStridedBatched_64Fortran hipblasScopyStridedBatched_64
+#define hipblasDcopyStridedBatched_64Fortran hipblasDcopyStridedBatched_64
+#define hipblasCcopyStridedBatched_64Fortran hipblasCcopyStridedBatched_64
+#define hipblasZcopyStridedBatched_64Fortran hipblasZcopyStridedBatched_64
+
 #define hipblasSdotFortran hipblasSdot
 #define hipblasDdotFortran hipblasDdot
 #define hipblasHdotFortran hipblasHdot
@@ -107,6 +122,7 @@
 #define hipblasCdotcStridedBatchedFortran hipblasCdotcStridedBatched
 #define hipblasZdotuStridedBatchedFortran hipblasZdotuStridedBatched
 #define hipblasZdotcStridedBatchedFortran hipblasZdotcStridedBatched
+
 #define hipblasSswapFortran hipblasSswap
 #define hipblasDswapFortran hipblasDswap
 #define hipblasCswapFortran hipblasCswap
@@ -119,6 +135,7 @@
 #define hipblasDswapStridedBatchedFortran hipblasDswapStridedBatched
 #define hipblasCswapStridedBatchedFortran hipblasCswapStridedBatched
 #define hipblasZswapStridedBatchedFortran hipblasZswapStridedBatched
+
 #define hipblasHaxpyFortran hipblasHaxpy
 #define hipblasSaxpyFortran hipblasSaxpy
 #define hipblasDaxpyFortran hipblasDaxpy
@@ -134,6 +151,7 @@
 #define hipblasDaxpyStridedBatchedFortran hipblasDaxpyStridedBatched
 #define hipblasCaxpyStridedBatchedFortran hipblasCaxpyStridedBatched
 #define hipblasZaxpyStridedBatchedFortran hipblasZaxpyStridedBatched
+
 #define hipblasSasumFortran hipblasSasum
 #define hipblasDasumFortran hipblasDasum
 #define hipblasScasumFortran hipblasScasum
@@ -146,6 +164,7 @@
 #define hipblasDasumStridedBatchedFortran hipblasDasumStridedBatched
 #define hipblasScasumStridedBatchedFortran hipblasScasumStridedBatched
 #define hipblasDzasumStridedBatchedFortran hipblasDzasumStridedBatched
+
 #define hipblasSnrm2Fortran hipblasSnrm2
 #define hipblasDnrm2Fortran hipblasDnrm2
 #define hipblasScnrm2Fortran hipblasScnrm2
@@ -158,6 +177,7 @@
 #define hipblasDnrm2StridedBatchedFortran hipblasDnrm2StridedBatched
 #define hipblasScnrm2StridedBatchedFortran hipblasScnrm2StridedBatched
 #define hipblasDznrm2StridedBatchedFortran hipblasDznrm2StridedBatched
+
 #define hipblasIsamaxFortran hipblasIsamax
 #define hipblasIdamaxFortran hipblasIdamax
 #define hipblasIcamaxFortran hipblasIcamax
@@ -170,6 +190,7 @@
 #define hipblasIdamaxStridedBatchedFortran hipblasIdamaxStridedBatched
 #define hipblasIcamaxStridedBatchedFortran hipblasIcamaxStridedBatched
 #define hipblasIzamaxStridedBatchedFortran hipblasIzamaxStridedBatched
+
 #define hipblasIsaminFortran hipblasIsamin
 #define hipblasIdaminFortran hipblasIdamin
 #define hipblasIcaminFortran hipblasIcamin
@@ -182,6 +203,7 @@
 #define hipblasIdaminStridedBatchedFortran hipblasIdaminStridedBatched
 #define hipblasIcaminStridedBatchedFortran hipblasIcaminStridedBatched
 #define hipblasIzaminStridedBatchedFortran hipblasIzaminStridedBatched
+
 #define hipblasSrotFortran hipblasSrot
 #define hipblasDrotFortran hipblasDrot
 #define hipblasCsrotFortran hipblasCsrot
@@ -200,6 +222,7 @@
 #define hipblasZdrotStridedBatchedFortran hipblasZdrotStridedBatched
 #define hipblasCrotStridedBatchedFortran hipblasCrotStridedBatched
 #define hipblasZrotStridedBatchedFortran hipblasZrotStridedBatched
+
 #define hipblasSrotgFortran hipblasSrotg
 #define hipblasDrotgFortran hipblasDrotg
 #define hipblasCrotgFortran hipblasCrotg
@@ -212,6 +235,7 @@
 #define hipblasDrotgStridedBatchedFortran hipblasDrotgStridedBatched
 #define hipblasCrotgStridedBatchedFortran hipblasCrotgStridedBatched
 #define hipblasZrotgStridedBatchedFortran hipblasZrotgStridedBatched
+
 #define hipblasSrotmFortran hipblasSrotm
 #define hipblasDrotmFortran hipblasDrotm
 #define hipblasSrotmBatchedFortran hipblasSrotmBatched
