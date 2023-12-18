@@ -4970,20 +4970,22 @@ hipblasStatus_t hipblasSgemvStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasSgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+    return hipCUBLASStatusToHIPStatus(cublasSgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
 }
 catch(...)
 {
@@ -5008,20 +5010,22 @@ hipblasStatus_t hipblasDgemvStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasDgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+    return hipCUBLASStatusToHIPStatus(cublasDgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
 }
 catch(...)
 {
@@ -5045,7 +5049,22 @@ hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
                                            hipblasStride         stridey,
                                            int                   batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
 }
 
 hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
@@ -5065,7 +5084,22 @@ hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
                                            hipblasStride               stridey,
                                            int                         batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
 }
 
 hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
@@ -5085,7 +5119,22 @@ hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
                                               hipblasStride      stridey,
                                               int                batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuComplex*)alpha,
+                                                                (const cuComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuComplex*)beta,
+                                                                (cuComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
 }
 
 hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
@@ -5105,7 +5154,23 @@ hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
                                               hipblasStride           stridey,
                                               int                     batchCount)
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
+    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuDoubleComplex*)alpha,
+                                                                (const cuDoubleComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuDoubleComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuDoubleComplex*)beta,
+                                                                (cuDoubleComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+}
 }
 
 // ger

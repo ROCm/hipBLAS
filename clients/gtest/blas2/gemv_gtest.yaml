@@ -53,7 +53,6 @@ Tests:
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
-    backend_flags: AMD
 
   - name: gemv_bad_arg
     category: pre_checkin
@@ -70,6 +69,7 @@ Tests:
     function:
       - gemv_bad_arg
       - gemv_batched_bad_arg
+      - gemv_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
     bad_arg_all: false
