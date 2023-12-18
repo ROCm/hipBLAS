@@ -64,6 +64,9 @@ void testing_tpmv_bad_arg(const Arguments& arg)
             hipblasTpmvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, dx, incx),
             HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(
+            hipblasTpmvFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dA, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(
             hipblasTpmvFn(
                 handle, uplo, (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL, diag, N, dA, dx, incx),
             HIPBLAS_STATUS_INVALID_ENUM);
@@ -149,7 +152,7 @@ void testing_tpmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_tpmv<T>(uplo, transA, diag, N, hA.data(), hx.data(), incx);
+        ref_tpmv<T>(uplo, transA, diag, N, hA.data(), hx.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

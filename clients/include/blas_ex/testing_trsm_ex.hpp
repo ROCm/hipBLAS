@@ -43,7 +43,7 @@ inline void testname_trsm_ex(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmExFn = FORTRAN ? hipblasTrsmExFortran : hipblasTrsmEx;
 
     hipblasLocalHandle handle(arg);
@@ -307,7 +307,7 @@ void testing_trsm_ex_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmExFn = FORTRAN ? hipblasTrsmExFortran : hipblasTrsmEx;
 
     hipblasSideMode_t  side   = char2hipblas_side(arg.side);
@@ -358,7 +358,7 @@ void testing_trsm_ex(const Arguments& arg)
     }
     // proprocess the matrix to avoid ill-conditioned matrix
     host_vector<int> ipiv(K);
-    cblas_getrf(K, K, hA.data(), lda, ipiv.data());
+    ref_getrf(K, K, hA.data(), lda, ipiv.data());
     for(int i = 0; i < K; i++)
     {
         for(int j = i; j < K; j++)
@@ -382,17 +382,17 @@ void testing_trsm_ex(const Arguments& arg)
     }
 
     // Calculate hB = hA*hX;
-    cblas_trmm<T>(side,
-                  uplo,
-                  transA,
-                  diag,
-                  M,
-                  N,
-                  T(1.0) / h_alpha,
-                  (const T*)hA.data(),
-                  lda,
-                  hB_host.data(),
-                  ldb);
+    ref_trmm<T>(side,
+                uplo,
+                transA,
+                diag,
+                M,
+                N,
+                T(1.0) / h_alpha,
+                (const T*)hA.data(),
+                lda,
+                hB_host.data(),
+                ldb);
 
     hB_cpu = hB_device = hB_host;
 
@@ -484,7 +484,7 @@ void testing_trsm_ex(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trsm<T>(
+        ref_trsm<T>(
             side, uplo, transA, diag, M, N, h_alpha, (const T*)hA.data(), lda, hB_cpu.data(), ldb);
 
         // if enable norm check, norm check is invasive

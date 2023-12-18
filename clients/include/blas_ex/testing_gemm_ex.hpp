@@ -59,7 +59,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 {
     // Note: hipblasGemmEx and hipblasGemmExWithFlags are essentially the exact same.
     //       Only testing WithFlags version as it has slightly more functionality.
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
 
     hipblasLocalHandle handle(arg);
@@ -295,7 +295,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 template <typename Ti, typename To = Ti, typename Tex = To>
 void testing_gemm_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmExFn = FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
     auto hipblasGemmExWithFlagsFn
         = FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;
@@ -494,19 +494,19 @@ void testing_gemm_ex(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(To) * size_C, hipMemcpyDeviceToHost));
 
         // reference BLAS
-        cblas_gemm<Ti, To, Tex>(transA,
-                                transB,
-                                M,
-                                N,
-                                K,
-                                h_alpha_Tex,
-                                hA.data(),
-                                lda,
-                                hB.data(),
-                                ldb,
-                                h_beta_Tex,
-                                hC_gold.data(),
-                                ldc);
+        ref_gemm<Ti, To, Tex>(transA,
+                              transB,
+                              M,
+                              N,
+                              K,
+                              h_alpha_Tex,
+                              hA.data(),
+                              lda,
+                              hB.data(),
+                              ldb,
+                              h_beta_Tex,
+                              hC_gold.data(),
+                              ldc);
 
         if(unit_check)
         {

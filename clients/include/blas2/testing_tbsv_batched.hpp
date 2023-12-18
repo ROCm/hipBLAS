@@ -87,6 +87,18 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(hipblasTbsvBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   K,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTbsvBatchedFn(handle,
                                                    uplo,
                                                    (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                                                    diag,
@@ -213,7 +225,7 @@ void testing_tbsv_batched(const Arguments& arg)
         regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, (T*)hAB[b], lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
+        ref_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
     }
 
     hx_or_b.copy_from(hb);

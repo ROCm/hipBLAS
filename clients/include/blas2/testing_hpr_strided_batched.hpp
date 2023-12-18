@@ -91,6 +91,17 @@ void testing_hpr_strided_batched_bad_arg(const Arguments& arg)
                                                          strideA,
                                                          batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHprStridedBatchedFn(handle,
+                                                         (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                         N,
+                                                         alpha,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dA,
+                                                         strideA,
+                                                         batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(
             hipblasHprStridedBatchedFn(
@@ -209,7 +220,7 @@ void testing_hpr_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hpr<T>(
+            ref_hpr<T>(
                 uplo, N, h_alpha, hx.data() + b * stride_x, incx, hA_cpu.data() + b * stride_A);
         }
 

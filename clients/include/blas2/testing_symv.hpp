@@ -86,6 +86,18 @@ void testing_symv_bad_arg(const Arguments& arg)
             hipblasSymvFn(
                 handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dA, lda, dx, incx, beta, dy, incy),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSymvFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx,
+                                            beta,
+                                            dy,
+                                            incy),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {
@@ -215,8 +227,7 @@ void testing_symv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_symv<T>(
-            uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
+        ref_symv<T>(uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

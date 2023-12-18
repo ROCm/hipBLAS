@@ -44,7 +44,7 @@ inline void testname_geam(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_geam_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -198,7 +198,7 @@ void testing_geam_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_geam(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamFn = FORTRAN ? hipblasGeam<T, true> : hipblasGeam<T, false>;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
@@ -304,7 +304,7 @@ void testing_geam(const Arguments& arg)
         /* =====================================================================
                 CPU BLAS
         =================================================================== */
-        cblas_geam(
+        ref_geam(
             transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

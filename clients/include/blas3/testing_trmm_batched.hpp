@@ -50,9 +50,10 @@ inline void testname_trmm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasTrmmBatchedFn
-        = arg.fortran ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
-    bool inplace = arg.inplace;
+    auto hipblasTrmmBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                    ? hipblasTrmmBatched<T, true>
+                                    : hipblasTrmmBatched<T, false>;
+    bool inplace              = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
     {
@@ -360,7 +361,7 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrmmBatchedFn
         = FORTRAN ? hipblasTrmmBatched<T, true> : hipblasTrmmBatched<T, false>;
     bool inplace = arg.inplace;
@@ -487,7 +488,7 @@ void testing_trmm_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA[b], lda, hB[b], ldb);
+            ref_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA[b], lda, hB[b], ldb);
         }
 
         copy_matrix_with_different_leading_dimensions_batched(hB, hOut_gold, M, N, ldb, ldOut);

@@ -64,6 +64,10 @@ void testing_tbsv_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasTbsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, K, dA, lda, dx, incx),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTbsvFn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, K, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasTbsvFn(handle,
                                             uplo,
                                             (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
@@ -165,7 +169,7 @@ void testing_tbsv(const Arguments& arg)
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
     CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
-    cblas_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
+    ref_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device

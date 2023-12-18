@@ -50,7 +50,7 @@ inline void testname_hemm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hemm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmBatchedFn
         = FORTRAN ? hipblasHemmBatched<T, true> : hipblasHemmBatched<T, false>;
 
@@ -320,7 +320,7 @@ void testing_hemm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hemm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmBatchedFn
         = FORTRAN ? hipblasHemmBatched<T, true> : hipblasHemmBatched<T, false>;
 
@@ -437,8 +437,7 @@ void testing_hemm_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hemm<T>(
-                side, uplo, M, N, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
+            ref_hemm<T>(side, uplo, M, N, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

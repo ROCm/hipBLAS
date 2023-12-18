@@ -71,8 +71,9 @@ void setup_geqrf_batched_testing(host_batch_vector<T>&   hA,
 template <typename T>
 void testing_geqrf_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasGeqrfBatchedFn
-        = arg.fortran ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
+    auto hipblasGeqrfBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                     ? hipblasGeqrfBatched<T, true>
+                                     : hipblasGeqrfBatched<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
@@ -157,7 +158,7 @@ template <typename T>
 void testing_geqrf_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeqrfBatchedFn
         = FORTRAN ? hipblasGeqrfBatched<T, true> : hipblasGeqrfBatched<T, false>;
 
@@ -211,14 +212,14 @@ void testing_geqrf_batched(const Arguments& arg)
 
         // Workspace query
         host_vector<T> work(1);
-        cblas_geqrf(M, N, hA[0], lda, hIpiv[0], work.data(), -1);
+        ref_geqrf(M, N, hA[0], lda, hIpiv[0], work.data(), -1);
         int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geqrf(M, N, hA[b], lda, hIpiv[b], work.data(), N);
+            ref_geqrf(M, N, hA[b], lda, hIpiv[b], work.data(), N);
         }
 
         double e1 = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);

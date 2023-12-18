@@ -52,7 +52,7 @@ template <typename T>
 void testing_herkx_strided_batched_bad_arg(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.fortran;
+    bool FORTRAN                      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxStridedBatchedFn = FORTRAN ? hipblasHerkxStridedBatched<T, U, true>
                                                 : hipblasHerkxStridedBatched<T, U, false>;
 
@@ -140,8 +140,24 @@ void testing_herkx_strided_batched_bad_arg(const Arguments& arg)
                                                            strideC,
                                                            batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkxStridedBatchedFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, strideA, dB, ldb, strideB, beta, dC, ldc, strideC, batch_count),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkxStridedBatchedFn(handle,
+                                                           (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                           transA,
+                                                           N,
+                                                           K,
+                                                           alpha,
+                                                           dA,
+                                                           lda,
+                                                           strideA,
+                                                           dB,
+                                                           ldb,
+                                                           strideB,
+                                                           beta,
+                                                           dC,
+                                                           ldc,
+                                                           strideC,
+                                                           batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasHerkxStridedBatchedFn(handle,
                                                            uplo,
                                                            HIPBLAS_OP_T,
@@ -358,7 +374,7 @@ template <typename T>
 void testing_herkx_strided_batched(const Arguments& arg)
 {
     using U                           = real_t<T>;
-    bool FORTRAN                      = arg.fortran;
+    bool FORTRAN                      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkxStridedBatchedFn = FORTRAN ? hipblasHerkxStridedBatched<T, U, true>
                                                 : hipblasHerkxStridedBatched<T, U, false>;
 
@@ -480,18 +496,18 @@ void testing_herkx_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_herkx<T>(uplo,
-                           transA,
-                           N,
-                           K,
-                           h_alpha,
-                           hA.data() + b * stride_A,
-                           lda,
-                           hB.data() + b * stride_B,
-                           ldb,
-                           h_beta,
-                           hC_gold.data() + b * stride_C,
-                           ldc);
+            ref_herkx<T>(uplo,
+                         transA,
+                         N,
+                         K,
+                         h_alpha,
+                         hA.data() + b * stride_A,
+                         lda,
+                         hB.data() + b * stride_B,
+                         ldb,
+                         h_beta,
+                         hC_gold.data() + b * stride_C,
+                         ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

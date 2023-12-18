@@ -50,7 +50,7 @@ inline void testname_trsm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
@@ -265,7 +265,7 @@ void testing_trsm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
@@ -328,7 +328,7 @@ void testing_trsm_batched(const Arguments& arg)
 
         // proprocess the matrix to avoid ill-conditioned matrix
         std::vector<int> ipiv(K);
-        cblas_getrf(K, K, hA[b], lda, ipiv.data());
+        ref_getrf(K, K, hA[b], lda, ipiv.data());
         for(int i = 0; i < K; i++)
         {
             for(int j = i; j < K; j++)
@@ -353,17 +353,17 @@ void testing_trsm_batched(const Arguments& arg)
         // hB_gold[b] = hB_host[b]; // original solution hX
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(side,
-                      uplo,
-                      transA,
-                      diag,
-                      M,
-                      N,
-                      T(1.0) / h_alpha,
-                      (const T*)hA[b],
-                      lda,
-                      hB_host[b],
-                      ldb);
+        ref_trmm<T>(side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    T(1.0) / h_alpha,
+                    (const T*)hA[b],
+                    lda,
+                    hB_host[b],
+                    ldb);
     }
     hB_gold.copy_from(hB_host);
     hB_device.copy_from(hB_host);
@@ -417,7 +417,7 @@ void testing_trsm_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(
+            ref_trsm<T>(
                 side, uplo, transA, diag, M, N, h_alpha, (const T*)hA[b], lda, hB_gold[b], ldb);
         }
 

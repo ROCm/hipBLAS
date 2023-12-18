@@ -63,6 +63,10 @@ void testing_trsv_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, lda, dx, incx),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsvFn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasTrsvFn(handle,
                                             uplo,
                                             (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
@@ -149,19 +153,19 @@ void testing_trsv(const Arguments& arg)
     hb = hx;
 
     //  calculate AAT = hA * hA ^ T
-    cblas_gemm<T>(HIPBLAS_OP_N,
-                  HIPBLAS_OP_T,
-                  N,
-                  N,
-                  N,
-                  (T)1.0,
-                  hA.data(),
-                  lda,
-                  hA.data(),
-                  lda,
-                  (T)0.0,
-                  AAT.data(),
-                  lda);
+    ref_gemm<T>(HIPBLAS_OP_N,
+                HIPBLAS_OP_T,
+                N,
+                N,
+                N,
+                (T)1.0,
+                hA.data(),
+                lda,
+                hA.data(),
+                lda,
+                (T)0.0,
+                AAT.data(),
+                lda);
 
     //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
     for(int i = 0; i < N; i++)
@@ -175,7 +179,7 @@ void testing_trsv(const Arguments& arg)
         hA[i + i * lda] = t;
     }
     //  calculate Cholesky factorization of SPD matrix hA
-    cblas_potrf<T>(arg.uplo, N, hA.data(), lda);
+    ref_potrf<T>(arg.uplo, N, hA.data(), lda);
 
     //  make hA unit diagonal if diag == rocblas_diagonal_unit
     if(arg.diag == 'U' || arg.diag == 'u')
@@ -197,7 +201,7 @@ void testing_trsv(const Arguments& arg)
     }
 
     // Calculate hb = hA*hx;
-    cblas_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hb.data(), incx);
+    ref_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hb.data(), incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device

@@ -118,6 +118,20 @@ void testing_sbmv_batched_bad_arg(const Arguments& arg)
                                                    incy,
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSbmvBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   N,
+                                                   K,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   beta,
+                                                   dy.ptr_on_device(),
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasSbmvBatchedFn(handle,
                                                    uplo,
@@ -372,7 +386,7 @@ void testing_sbmv_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_sbmv<T>(uplo, N, K, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
+            ref_sbmv<T>(uplo, N, K, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

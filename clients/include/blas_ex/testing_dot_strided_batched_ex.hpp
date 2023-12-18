@@ -52,7 +52,7 @@ inline void testname_dotc_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotStridedBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcStridedBatchedExFortran : hipblasDotStridedBatchedExFortran)
                   : (CONJ ? hipblasDotcStridedBatchedEx : hipblasDotStridedBatchedEx);
@@ -156,7 +156,7 @@ void testing_dotc_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotStridedBatchedExFn
         = FORTRAN ? (CONJ ? hipblasDotcStridedBatchedExFortran : hipblasDotStridedBatchedExFortran)
                   : (CONJ ? hipblasDotcStridedBatchedEx : hipblasDotStridedBatchedEx);
@@ -294,12 +294,12 @@ void testing_dot_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<Tx> : cblas_dot<Tx>)(N,
-                                                    hx.data() + b * stridex,
-                                                    incx,
-                                                    hy.data() + b * stridey,
-                                                    incy,
-                                                    &h_cpu_result[b]);
+            (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N,
+                                                hx.data() + b * stridex,
+                                                incx,
+                                                hy.data() + b * stridey,
+                                                incy,
+                                                &h_cpu_result[b]);
         }
 
         if(arg.unit_check)

@@ -53,7 +53,7 @@ inline void testname_trsm_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename T>
 void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmStridedBatchedExFn
         = FORTRAN ? hipblasTrsmStridedBatchedEx : hipblasTrsmStridedBatchedEx;
 
@@ -395,7 +395,7 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmStridedBatchedExFn
         = FORTRAN ? hipblasTrsmStridedBatchedEx : hipblasTrsmStridedBatchedEx;
 
@@ -467,7 +467,7 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
 
         // proprocess the matrix to avoid ill-conditioned matrix
         host_vector<int> ipiv(K);
-        cblas_getrf(K, K, hAb, lda, ipiv.data());
+        ref_getrf(K, K, hAb, lda, ipiv.data());
         for(int i = 0; i < K; i++)
         {
             for(int j = i; j < K; j++)
@@ -491,8 +491,7 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
         }
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(
-            side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
+        ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
     }
 
     hB_device = hB_cpu = hB_host;
@@ -599,17 +598,17 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(side,
-                          uplo,
-                          transA,
-                          diag,
-                          M,
-                          N,
-                          h_alpha,
-                          (const T*)hA.data() + b * strideA,
-                          lda,
-                          hB_cpu.data() + b * strideB,
-                          ldb);
+            ref_trsm<T>(side,
+                        uplo,
+                        transA,
+                        diag,
+                        M,
+                        N,
+                        h_alpha,
+                        (const T*)hA.data() + b * strideA,
+                        lda,
+                        hB_cpu.data() + b * strideB,
+                        ldb);
         }
 
         // if enable norm check, norm check is invasive

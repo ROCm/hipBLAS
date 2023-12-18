@@ -75,6 +75,9 @@ void testing_hpr_bad_arg(const Arguments& arg)
                               HIPBLAS_STATUS_NOT_INITIALIZED);
         EXPECT_HIPBLAS_STATUS(hipblasHprFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHprFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dA),
+            HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {
@@ -173,7 +176,7 @@ void testing_hpr(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hpr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
+        ref_hpr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

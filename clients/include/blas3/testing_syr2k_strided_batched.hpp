@@ -51,7 +51,7 @@ inline void testname_syr2k_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyrk2StridedBatchedFn
         = FORTRAN ? hipblasSyr2kStridedBatched<T, true> : hipblasSyr2kStridedBatched<T, false>;
 
@@ -352,7 +352,7 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2k_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyrk2StridedBatchedFn
         = FORTRAN ? hipblasSyr2kStridedBatched<T, true> : hipblasSyr2kStridedBatched<T, false>;
 
@@ -477,18 +477,18 @@ void testing_syr2k_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_syr2k<T>(uplo,
-                           transA,
-                           N,
-                           K,
-                           h_alpha,
-                           hA.data() + b * stride_A,
-                           lda,
-                           hB.data() + b * stride_B,
-                           ldb,
-                           h_beta,
-                           hC_gold.data() + b * stride_C,
-                           ldc);
+            ref_syr2k<T>(uplo,
+                         transA,
+                         N,
+                         K,
+                         h_alpha,
+                         hA.data() + b * stride_A,
+                         lda,
+                         hB.data() + b * stride_B,
+                         ldb,
+                         h_beta,
+                         hC_gold.data() + b * stride_C,
+                         ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

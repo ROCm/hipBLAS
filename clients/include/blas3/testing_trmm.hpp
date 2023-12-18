@@ -41,8 +41,9 @@ inline void testname_trmm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trmm_bad_arg(const Arguments& arg)
 {
-    auto hipblasTrmmFn = arg.fortran ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
-    bool inplace       = arg.inplace;
+    auto hipblasTrmmFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
+    bool inplace = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
     {
@@ -308,7 +309,7 @@ void testing_trmm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrmmFn = FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
     bool inplace       = arg.inplace;
 
@@ -401,7 +402,7 @@ void testing_trmm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
         // use hB matrix for cblas, copy into C matrix for !inplace version to compare with hipblas
-        cblas_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB, ldb);
+        ref_trmm<T>(side, uplo, transA, diag, M, N, h_alpha, hA, lda, hB, ldb);
         copy_matrix_with_different_leading_dimensions(hB, hOut_gold, M, N, ldb, ldOut);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

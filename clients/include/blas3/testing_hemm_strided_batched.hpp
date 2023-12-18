@@ -51,7 +51,7 @@ inline void testname_hemm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmStridedBatchedFn
         = FORTRAN ? hipblasHemmStridedBatched<T, true> : hipblasHemmStridedBatched<T, false>;
 
@@ -367,7 +367,7 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hemm_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmStridedBatchedFn
         = FORTRAN ? hipblasHemmStridedBatched<T, true> : hipblasHemmStridedBatched<T, false>;
 
@@ -489,18 +489,18 @@ void testing_hemm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hemm<T>(side,
-                          uplo,
-                          M,
-                          N,
-                          h_alpha,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hB.data() + b * stride_B,
-                          ldb,
-                          h_beta,
-                          hC_gold.data() + b * stride_C,
-                          ldc);
+            ref_hemm<T>(side,
+                        uplo,
+                        M,
+                        N,
+                        h_alpha,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hB.data() + b * stride_B,
+                        ldb,
+                        h_beta,
+                        hC_gold.data() + b * stride_C,
+                        ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

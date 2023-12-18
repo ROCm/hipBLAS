@@ -94,6 +94,16 @@ void testing_her_batched_bad_arg(const Arguments& arg)
                                                   lda,
                                                   batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHerBatchedFn(handle,
+                                                  (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                  N,
+                                                  alpha,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  lda,
+                                                  batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasHerBatchedFn(handle,
                                                   uplo,
@@ -225,7 +235,7 @@ void testing_her_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_her<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b], lda);
+            ref_her<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b], lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

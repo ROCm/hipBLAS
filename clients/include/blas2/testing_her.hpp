@@ -76,6 +76,9 @@ void testing_her_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasHerFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA, lda),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHerFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dA, lda),
+            HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {
@@ -177,7 +180,7 @@ void testing_her(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_her<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data(), lda);
+        ref_her<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data(), lda);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

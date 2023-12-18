@@ -51,7 +51,7 @@ inline void testname_symm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_symm_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSymmStridedBatchedFn
         = FORTRAN ? hipblasSymmStridedBatched<T, true> : hipblasSymmStridedBatched<T, false>;
 
@@ -367,7 +367,7 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symm_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSymmStridedBatchedFn
         = FORTRAN ? hipblasSymmStridedBatched<T, true> : hipblasSymmStridedBatched<T, false>;
 
@@ -491,18 +491,18 @@ void testing_symm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_symm<T>(side,
-                          uplo,
-                          M,
-                          N,
-                          h_alpha,
-                          hA + b * stride_A,
-                          lda,
-                          hB + b * stride_B,
-                          ldb,
-                          h_beta,
-                          hC_gold + b * stride_C,
-                          ldc);
+            ref_symm<T>(side,
+                        uplo,
+                        M,
+                        N,
+                        h_alpha,
+                        hA + b * stride_A,
+                        lda,
+                        hB + b * stride_B,
+                        ldb,
+                        h_beta,
+                        hC_gold + b * stride_C,
+                        ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

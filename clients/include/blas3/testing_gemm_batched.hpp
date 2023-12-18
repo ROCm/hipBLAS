@@ -53,7 +53,7 @@ inline void testname_gemm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gemm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmBatchedFn
         = FORTRAN ? hipblasGemmBatched<T, true> : hipblasGemmBatched<T, false>;
 
@@ -348,7 +348,7 @@ void testing_gemm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_gemm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmBatchedFn
         = FORTRAN ? hipblasGemmBatched<T, true> : hipblasGemmBatched<T, false>;
 
@@ -469,19 +469,19 @@ void testing_gemm_batched(const Arguments& arg)
         // calculate "golden" result on CPU
         for(int i = 0; i < batch_count; i++)
         {
-            cblas_gemm<T>(transA,
-                          transB,
-                          M,
-                          N,
-                          K,
-                          h_alpha,
-                          (T*)hA[i],
-                          lda,
-                          (T*)hB[i],
-                          ldb,
-                          h_beta,
-                          (T*)hC_copy[i],
-                          ldc);
+            ref_gemm<T>(transA,
+                        transB,
+                        M,
+                        N,
+                        K,
+                        h_alpha,
+                        (T*)hA[i],
+                        lda,
+                        (T*)hB[i],
+                        ldb,
+                        h_beta,
+                        (T*)hC_copy[i],
+                        ldc);
         }
 
         // test hipBLAS batched gemm with alpha and beta pointers on device

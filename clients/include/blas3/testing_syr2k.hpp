@@ -41,7 +41,7 @@ inline void testname_syr2k(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_syr2k_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyr2kFn = FORTRAN ? hipblasSyr2k<T, true> : hipblasSyr2k<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -187,7 +187,7 @@ void testing_syr2k_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2k(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSyr2kFn = FORTRAN ? hipblasSyr2k<T, true> : hipblasSyr2k<T, false>;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
@@ -269,7 +269,7 @@ void testing_syr2k(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_syr2k<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
+        ref_syr2k<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

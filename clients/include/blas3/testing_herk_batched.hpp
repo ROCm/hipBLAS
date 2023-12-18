@@ -50,7 +50,7 @@ template <typename T>
 void testing_herk_batched_bad_arg(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkBatchedFn
         = FORTRAN ? hipblasHerkBatched<T, U, true> : hipblasHerkBatched<T, U, false>;
 
@@ -120,8 +120,19 @@ void testing_herk_batched_bad_arg(const Arguments& arg)
                                                    ldc,
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA.ptr_on_device(), lda, beta, dC.ptr_on_device(), ldc, batch_count),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   transA,
+                                                   N,
+                                                   K,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   beta,
+                                                   dC.ptr_on_device(),
+                                                   ldc,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(hipblasHerkBatchedFn(handle,
                                                    uplo,
                                                    HIPBLAS_OP_T,
@@ -229,7 +240,7 @@ template <typename T>
 void testing_herk_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkBatchedFn
         = FORTRAN ? hipblasHerkBatched<T, U, true> : hipblasHerkBatched<T, U, false>;
 
@@ -332,7 +343,7 @@ void testing_herk_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_herk<T>(uplo, transA, N, K, h_alpha, hA[b], lda, h_beta, hC_gold[b], ldc);
+            ref_herk<T>(uplo, transA, N, K, h_alpha, hA[b], lda, h_beta, hC_gold[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

@@ -40,7 +40,7 @@ inline void testname_nrm2_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2StridedBatchedExFn
         = FORTRAN ? hipblasNrm2StridedBatchedExFortran : hipblasNrm2StridedBatchedEx;
 
@@ -107,7 +107,7 @@ void testing_nrm2_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2StridedBatchedExFn
         = FORTRAN ? hipblasNrm2StridedBatchedExFortran : hipblasNrm2StridedBatchedEx;
 
@@ -216,7 +216,7 @@ void testing_nrm2_strided_batched_ex(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_nrm2<Tx, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
+            ref_nrm2<Tx, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
         }
 
         double abs_result = h_cpu_result[0] > 0 ? h_cpu_result[0] : -h_cpu_result[0];

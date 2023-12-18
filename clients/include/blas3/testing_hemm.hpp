@@ -41,7 +41,7 @@ inline void testname_hemm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hemm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmFn = FORTRAN ? hipblasHemm<T, true> : hipblasHemm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -170,7 +170,7 @@ void testing_hemm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hemm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHemmFn = FORTRAN ? hipblasHemm<T, true> : hipblasHemm<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(arg.side);
@@ -249,7 +249,7 @@ void testing_hemm(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hemm<T>(
+        ref_hemm<T>(
             side, uplo, M, N, h_alpha, hA.data(), lda, hB.data(), ldb, h_beta, hC_gold.data(), ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,

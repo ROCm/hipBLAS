@@ -64,6 +64,9 @@ void testing_tpsv_bad_arg(const Arguments& arg)
             hipblasTpsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, dx, incx),
             HIPBLAS_STATUS_INVALID_VALUE);
         EXPECT_HIPBLAS_STATUS(
+            hipblasTpsvFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dA, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(
             hipblasTpsvFn(
                 handle, uplo, (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL, diag, N, dA, dx, incx),
             HIPBLAS_STATUS_INVALID_ENUM);
@@ -141,19 +144,19 @@ void testing_tpsv(const Arguments& arg)
     hb = hx;
 
     //  calculate AAT = hA * hA ^ T
-    cblas_gemm<T>(HIPBLAS_OP_N,
-                  HIPBLAS_OP_T,
-                  N,
-                  N,
-                  N,
-                  (T)1.0,
-                  hA.data(),
-                  N,
-                  hA.data(),
-                  N,
-                  (T)0.0,
-                  AAT.data(),
-                  N);
+    ref_gemm<T>(HIPBLAS_OP_N,
+                HIPBLAS_OP_T,
+                N,
+                N,
+                N,
+                (T)1.0,
+                hA.data(),
+                N,
+                hA.data(),
+                N,
+                (T)0.0,
+                AAT.data(),
+                N);
 
     //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
     for(int i = 0; i < N; i++)
@@ -167,7 +170,7 @@ void testing_tpsv(const Arguments& arg)
         hA[i + i * N] = t;
     }
     //  calculate Cholesky factorization of SPD matrix hA
-    cblas_potrf<T>(arg.uplo, N, hA.data(), N);
+    ref_potrf<T>(arg.uplo, N, hA.data(), N);
 
     //  make hA unit diagonal if diag == rocblas_diagonal_unit
     if(arg.diag == 'U' || arg.diag == 'u')
@@ -189,7 +192,7 @@ void testing_tpsv(const Arguments& arg)
     }
 
     // Calculate hb = hA*hx;
-    cblas_trmv<T>(uplo, transA, diag, N, hA.data(), N, hb.data(), incx);
+    ref_trmv<T>(uplo, transA, diag, N, hA.data(), N, hb.data(), incx);
     cpu_x_or_b = hb; // cpuXorB <- B
     hx_or_b_1  = hb;
     hx_or_b_2  = hb;

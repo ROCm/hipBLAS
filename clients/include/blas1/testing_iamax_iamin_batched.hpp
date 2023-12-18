@@ -218,7 +218,7 @@ void testing_iamax_batched(const Arguments& arg)
     auto hipblasIamaxBatchedFn
         = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
 
-    testing_iamax_iamin_batched<T, cblas_iamax<T>>(arg, hipblasIamaxBatchedFn);
+    testing_iamax_iamin_batched<T, ref_iamax<T>>(arg, hipblasIamaxBatchedFn);
 }
 
 inline void testname_iamin_batched(const Arguments& arg, std::string& name)
@@ -233,5 +233,5 @@ void testing_iamin_batched(const Arguments& arg)
     auto hipblasIaminBatchedFn
         = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
 
-    testing_iamax_iamin_batched<T, cblas_iamin<T>>(arg, hipblasIaminBatchedFn);
+    testing_iamax_iamin_batched<T, ref_iamin<T>>(arg, hipblasIaminBatchedFn);
 }

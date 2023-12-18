@@ -42,6 +42,11 @@
 
 extern "C" {
 
+#include "hipblas_fortran.h.in"
+#define HIPBLAS_INTERNAL_ILP64 1
+#include "hipblas_fortran.h.in"
+#undef HIPBLAS_INTERNAL_ILP64
+
 /* ==========
  *    Aux
  * ========== */
@@ -188,97 +193,6 @@ hipblasStatus_t hipblasZdscalStridedBatchedFortran(hipblasHandle_t       handle,
                                                    int                   incx,
                                                    hipblasStride         stride_x,
                                                    int                   batch_count);
-
-// copy
-hipblasStatus_t hipblasScopyFortran(
-    hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy);
-
-hipblasStatus_t hipblasDcopyFortran(
-    hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy);
-
-hipblasStatus_t hipblasCcopyFortran(
-    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy);
-
-hipblasStatus_t hipblasZcopyFortran(hipblasHandle_t             handle,
-                                    int                         n,
-                                    const hipblasDoubleComplex* x,
-                                    int                         incx,
-                                    hipblasDoubleComplex*       y,
-                                    int                         incy);
-
-// copyBatched
-hipblasStatus_t hipblasScopyBatchedFortran(hipblasHandle_t    handle,
-                                           int                n,
-                                           const float* const x[],
-                                           int                incx,
-                                           float* const       y[],
-                                           int                incy,
-                                           int                batch_count);
-
-hipblasStatus_t hipblasDcopyBatchedFortran(hipblasHandle_t     handle,
-                                           int                 n,
-                                           const double* const x[],
-                                           int                 incx,
-                                           double* const       y[],
-                                           int                 incy,
-                                           int                 batch_count);
-
-hipblasStatus_t hipblasCcopyBatchedFortran(hipblasHandle_t             handle,
-                                           int                         n,
-                                           const hipblasComplex* const x[],
-                                           int                         incx,
-                                           hipblasComplex* const       y[],
-                                           int                         incy,
-                                           int                         batch_count);
-
-hipblasStatus_t hipblasZcopyBatchedFortran(hipblasHandle_t                   handle,
-                                           int                               n,
-                                           const hipblasDoubleComplex* const x[],
-                                           int                               incx,
-                                           hipblasDoubleComplex* const       y[],
-                                           int                               incy,
-                                           int                               batch_count);
-
-// copyStridedBatched
-hipblasStatus_t hipblasScopyStridedBatchedFortran(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const float*    x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  float*          y,
-                                                  int             incy,
-                                                  hipblasStride   stridey,
-                                                  int             batch_count);
-
-hipblasStatus_t hipblasDcopyStridedBatchedFortran(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const double*   x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  double*         y,
-                                                  int             incy,
-                                                  hipblasStride   stridey,
-                                                  int             batch_count);
-
-hipblasStatus_t hipblasCcopyStridedBatchedFortran(hipblasHandle_t       handle,
-                                                  int                   n,
-                                                  const hipblasComplex* x,
-                                                  int                   incx,
-                                                  hipblasStride         stridex,
-                                                  hipblasComplex*       y,
-                                                  int                   incy,
-                                                  hipblasStride         stridey,
-                                                  int                   batch_count);
-
-hipblasStatus_t hipblasZcopyStridedBatchedFortran(hipblasHandle_t             handle,
-                                                  int                         n,
-                                                  const hipblasDoubleComplex* x,
-                                                  int                         incx,
-                                                  hipblasStride               stridex,
-                                                  hipblasDoubleComplex*       y,
-                                                  int                         incy,
-                                                  hipblasStride               stridey,
-                                                  int                         batch_count);
 
 // dot
 hipblasStatus_t hipblasSdotFortran(hipblasHandle_t handle,
@@ -2229,7 +2143,7 @@ hipblasStatus_t hipblasSsbmvBatchedFortran(hipblasHandle_t    handle,
                                            const float* const x[],
                                            int                incx,
                                            const float*       beta,
-                                           float*             y[],
+                                           float* const       y[],
                                            int                incy,
                                            int                batchCount);
 
@@ -2243,7 +2157,7 @@ hipblasStatus_t hipblasDsbmvBatchedFortran(hipblasHandle_t     handle,
                                            const double* const x[],
                                            int                 incx,
                                            const double*       beta,
-                                           double*             y[],
+                                           double* const       y[],
                                            int                 incy,
                                            int                 batchCount);
 
@@ -2314,7 +2228,7 @@ hipblasStatus_t hipblasSspmvBatchedFortran(hipblasHandle_t    handle,
                                            const float* const x[],
                                            int                incx,
                                            const float*       beta,
-                                           float*             y[],
+                                           float* const       y[],
                                            int                incy,
                                            int                batchCount);
 
@@ -2326,7 +2240,7 @@ hipblasStatus_t hipblasDspmvBatchedFortran(hipblasHandle_t     handle,
                                            const double* const x[],
                                            int                 incx,
                                            const double*       beta,
-                                           double*             y[],
+                                           double* const       y[],
                                            int                 incy,
                                            int                 batchCount);
 

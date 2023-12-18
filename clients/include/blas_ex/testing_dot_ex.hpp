@@ -45,7 +45,7 @@ inline void testname_dotc_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
                                   : (CONJ ? hipblasDotcEx : hipblasDotEx);
 
@@ -124,7 +124,7 @@ void testing_dotc_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
                                   : (CONJ ? hipblasDotcEx : hipblasDotEx);
 
@@ -235,7 +235,7 @@ void testing_dot_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        (CONJ ? cblas_dotc<Tx> : cblas_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
+        (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
         if(arg.unit_check)
         {

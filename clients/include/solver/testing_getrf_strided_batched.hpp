@@ -37,10 +37,62 @@ inline void testname_getrf_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
+void testing_getrf_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGetrfStridedBatchedFn
+        = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N           = 101;
+    int64_t            M           = N;
+    int64_t            lda         = 102;
+    int64_t            batch_count = 2;
+    hipblasStride      strideA     = N * lda;
+    hipblasStride      strideP     = std::min(M, N);
+
+    device_vector<T>   dA(strideA * batch_count);
+    device_vector<int> dIpiv(strideP * batch_count);
+    device_vector<int> dInfo(batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
+                              nullptr, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
+                              handle, -1, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
+                              handle, N, dA, N - 1, strideA, dIpiv, strideP, dInfo, batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetrfStridedBatchedFn(handle, N, dA, lda, strideA, dIpiv, strideP, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    // If N == 0 || batch_count == 0, A and ipiv can be nullptr. rocSolver doesn't allow nullptr with batch_count == 0
+    CHECK_HIPBLAS_ERROR(hipblasGetrfStridedBatchedFn(
+        handle, 0, nullptr, lda, strideA, nullptr, strideP, dInfo, batch_count));
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetrfStridedBatchedFn(
+                handle, N, nullptr, lda, strideA, dIpiv, strideP, dInfo, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetrfStridedBatchedFn(
+                handle, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getrf_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfStridedBatchedFn
         = FORTRAN ? hipblasGetrfStridedBatched<T, true> : hipblasGetrfStridedBatched<T, false>;
 
@@ -126,7 +178,7 @@ void testing_getrf_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = cblas_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);

@@ -86,6 +86,18 @@ void testing_hemv_bad_arg(const Arguments& arg)
             hipblasHemvFn(
                 handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dA, lda, dx, incx, beta, dy, incy),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHemvFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx,
+                                            beta,
+                                            dy,
+                                            incy),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {
@@ -213,8 +225,7 @@ void testing_hemv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hemv<T>(
-            uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
+        ref_hemv<T>(uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

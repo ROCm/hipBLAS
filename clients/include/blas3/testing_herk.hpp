@@ -42,7 +42,7 @@ template <typename T>
 void testing_herk_bad_arg(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
     hipblasLocalHandle handle(arg);
@@ -92,9 +92,18 @@ void testing_herk_bad_arg(const Arguments& arg)
                 handle, HIPBLAS_FILL_MODE_FULL, transA, N, K, alpha, dA, lda, beta, dC, ldc),
             HIPBLAS_STATUS_INVALID_VALUE);
 
-        // TODO: we are just using a simple cast for rocBLAS backend, should give invalid_enum for this test
-        // EXPECT_HIPBLAS_STATUS(hipblasHerkFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, N, K, alpha, dA, lda, beta, dC, ldc),
-        //                     HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasHerkFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            transA,
+                                            N,
+                                            K,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            beta,
+                                            dC,
+                                            ldc),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         // TODO: Supported in cuBLAS but not in rocBLAS? Need to investigate.
         // EXPECT_HIPBLAS_STATUS(
@@ -152,7 +161,7 @@ template <typename T>
 void testing_herk(const Arguments& arg)
 {
     using U            = real_t<T>;
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHerkFn = FORTRAN ? hipblasHerk<T, U, true> : hipblasHerk<T, U, false>;
 
     int N   = arg.N;
@@ -227,7 +236,7 @@ void testing_herk(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_herk<T>(uplo, transA, N, K, h_alpha, hA, lda, h_beta, hC_gold, ldc);
+        ref_herk<T>(uplo, transA, N, K, h_alpha, hA, lda, h_beta, hC_gold, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

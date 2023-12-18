@@ -40,7 +40,7 @@ inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.fortran;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
 
     hipblasDatatype_t alphaType     = arg.a_type;
@@ -85,7 +85,7 @@ void testing_scal_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.fortran;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
 
     int N           = arg.N;
@@ -175,7 +175,7 @@ void testing_scal_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
+            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
         }
 
         for(size_t b = 0; b < batch_count; b++)

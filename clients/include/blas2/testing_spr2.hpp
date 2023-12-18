@@ -77,6 +77,10 @@ void testing_spr2_bad_arg(const Arguments& arg)
         EXPECT_HIPBLAS_STATUS(
             hipblasSpr2Fn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dy, incy, dA),
             HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasSpr2Fn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dy, incy, dA),
+            HIPBLAS_STATUS_INVALID_ENUM);
 
         if(arg.bad_arg_all)
         {
@@ -187,7 +191,7 @@ void testing_spr2(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_spr2<T>(uplo, N, h_alpha, hx.data(), incx, hy.data(), incy, hA_cpu.data());
+        ref_spr2<T>(uplo, N, h_alpha, hx.data(), incx, hy.data(), incy, hA_cpu.data());
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

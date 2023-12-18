@@ -84,6 +84,15 @@ void testing_spr_batched_bad_arg(const Arguments& arg)
                                                   dA.ptr_on_device(),
                                                   batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasSprBatchedFn(handle,
+                                                  (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                  N,
+                                                  alpha,
+                                                  dx.ptr_on_device(),
+                                                  incx,
+                                                  dA.ptr_on_device(),
+                                                  batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasSprBatchedFn(handle,
                                                   uplo,
@@ -198,7 +207,7 @@ void testing_spr_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_spr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
+            ref_spr<T>(uplo, N, h_alpha, hx[b], incx, hA_cpu[b]);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

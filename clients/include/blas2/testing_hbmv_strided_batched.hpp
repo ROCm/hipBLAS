@@ -128,6 +128,23 @@ void testing_hbmv_strided_batched_bad_arg(const Arguments& arg)
                                                           stridey,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHbmvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          N,
+                                                          K,
+                                                          alpha,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          beta,
+                                                          dy,
+                                                          incy,
+                                                          stridey,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
 
         EXPECT_HIPBLAS_STATUS(hipblasHbmvStridedBatchedFn(handle,
                                                           uplo,
@@ -435,17 +452,17 @@ void testing_hbmv_strided_batched(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_hbmv<T>(uplo,
-                          N,
-                          K,
-                          h_alpha,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hx.data() + b * stride_x,
-                          incx,
-                          h_beta,
-                          hy_cpu.data() + b * stride_y,
-                          incy);
+            ref_hbmv<T>(uplo,
+                        N,
+                        K,
+                        h_alpha,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hx.data() + b * stride_x,
+                        incx,
+                        h_beta,
+                        hy_cpu.data() + b * stride_y,
+                        incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

@@ -39,7 +39,7 @@ inline void testname_nrm2_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
 
     int64_t N    = 100;
@@ -78,7 +78,7 @@ void testing_nrm2_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
 
     int N    = arg.N;
@@ -146,7 +146,7 @@ void testing_nrm2_ex(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
 
         // tolerance taken from rocBLAS, could use some improvement
         double abs_result = cpu_result > 0 ? cpu_result : -cpu_result;

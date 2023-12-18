@@ -100,6 +100,20 @@ void testing_tbsv_strided_batched_bad_arg(const Arguments& arg)
                                                           stridex,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTbsvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          K,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(
             hipblasTbsvStridedBatchedFn(handle,
                                         uplo,
@@ -264,7 +278,7 @@ void testing_tbsv_strided_batched(const Arguments& arg)
         regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, hAbat, N, hABbat, lda, N, K);
 
         // Calculate hb = hA*hx;
-        cblas_tbmv<T>(uplo, transA, diag, N, K, hABbat, lda, hbbat, incx);
+        ref_tbmv<T>(uplo, transA, diag, N, K, hABbat, lda, hbbat, incx);
     }
 
     hx_or_b_1 = hb;

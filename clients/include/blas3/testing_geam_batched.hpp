@@ -53,7 +53,7 @@ inline void testname_geam_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_geam_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamBatchedFn
         = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
 
@@ -340,7 +340,7 @@ void testing_geam_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_geam_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeamBatchedFn
         = FORTRAN ? hipblasGeamBatched<T, true> : hipblasGeamBatched<T, false>;
 
@@ -480,18 +480,18 @@ void testing_geam_batched(const Arguments& arg)
         // reference calculation
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geam(transA,
-                       transB,
-                       M,
-                       N,
-                       &h_alpha,
-                       (T*)hA[b],
-                       lda,
-                       &h_beta,
-                       (T*)hB[b],
-                       ldb,
-                       (T*)hC_copy[b],
-                       ldc);
+            ref_geam(transA,
+                     transB,
+                     M,
+                     N,
+                     &h_alpha,
+                     (T*)hA[b],
+                     lda,
+                     &h_beta,
+                     (T*)hB[b],
+                     ldb,
+                     (T*)hC_copy[b],
+                     ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

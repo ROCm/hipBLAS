@@ -41,7 +41,7 @@ inline void testname_trsm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -155,7 +155,7 @@ void testing_trsm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmFn = FORTRAN ? hipblasTrsm<T, true> : hipblasTrsm<T, false>;
 
     hipblasSideMode_t  side   = char2hipblas_side(arg.side);
@@ -205,7 +205,7 @@ void testing_trsm(const Arguments& arg)
     }
     // proprocess the matrix to avoid ill-conditioned matrix
     std::vector<int> ipiv(K);
-    cblas_getrf(K, K, hA.data(), lda, ipiv.data());
+    ref_getrf(K, K, hA.data(), lda, ipiv.data());
     for(int i = 0; i < K; i++)
     {
         for(int j = i; j < K; j++)
@@ -230,8 +230,7 @@ void testing_trsm(const Arguments& arg)
     hB_gold = hB_host; // original solution hX
 
     // Calculate hB = hA*hX;
-    cblas_trmm<T>(
-        side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hA, lda, hB_host, ldb);
+    ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hA, lda, hB_host, ldb);
 
     hB_device = hB_host;
 
@@ -262,7 +261,7 @@ void testing_trsm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        // cblas_trsm<T>(
+        // ref_trsm<T>(
         //     side, uplo, transA, diag, M, N, h_alpha, (const T*)hA, lda, hB_gold, ldb);
 
         // if enable norm check, norm check is invasive

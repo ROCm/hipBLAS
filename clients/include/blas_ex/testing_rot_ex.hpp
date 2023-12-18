@@ -40,7 +40,7 @@ inline void testname_rot_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
 
     hipblasDatatype_t xType         = arg.a_type;
@@ -87,7 +87,7 @@ void testing_rot_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
 
     int N    = arg.N;
@@ -188,7 +188,7 @@ void testing_rot_ex(const Arguments& arg)
 
         // CBLAS
         // TODO: execution type in cblas_rot
-        cblas_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
+        ref_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
 
         if(arg.unit_check)
         {

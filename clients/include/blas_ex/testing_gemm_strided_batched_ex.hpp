@@ -62,7 +62,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
 {
     // Note: hipblasGemmEx and hipblasGemmExWithFlags are essentially the exact same.
     //       Only testing WithFlags version as it has slightly more functionality.
-    bool FORTRAN                       = arg.fortran;
+    bool FORTRAN                       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmStridedBatchedExFn = FORTRAN ? hipblasGemmStridedBatchedExWithFlagsFortran
                                                  : hipblasGemmStridedBatchedExWithFlags;
 
@@ -314,7 +314,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ti, typename To = Ti, typename Tex = To>
 void testing_gemm_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmStridedBatchedExFn
         = FORTRAN ? hipblasGemmStridedBatchedExFortran : hipblasGemmStridedBatchedExFortran;
     auto hipblasGemmStridedBatchedExWithFlagsFn = FORTRAN
@@ -544,19 +544,19 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
         // CPU BLAS
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_gemm<Ti, To, Tex>(transA,
-                                    transB,
-                                    M,
-                                    N,
-                                    K,
-                                    h_alpha_Tex,
-                                    hA.data() + b * stride_A,
-                                    lda,
-                                    hB.data() + b * stride_B,
-                                    ldb,
-                                    h_beta_Tex,
-                                    hC_gold.data() + b * stride_C,
-                                    ldc);
+            ref_gemm<Ti, To, Tex>(transA,
+                                  transB,
+                                  M,
+                                  N,
+                                  K,
+                                  h_alpha_Tex,
+                                  hA.data() + b * stride_A,
+                                  lda,
+                                  hB.data() + b * stride_B,
+                                  ldb,
+                                  h_beta_Tex,
+                                  hC_gold.data() + b * stride_C,
+                                  ldc);
         }
 
         if(unit_check)

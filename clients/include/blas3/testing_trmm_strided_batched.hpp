@@ -51,9 +51,10 @@ inline void testname_trmm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasTrmmStridedBatchedFn
-        = arg.fortran ? hipblasTrmmStridedBatched<T, true> : hipblasTrmmStridedBatched<T, false>;
-    bool inplace = arg.inplace;
+    auto hipblasTrmmStridedBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                           ? hipblasTrmmStridedBatched<T, true>
+                                           : hipblasTrmmStridedBatched<T, false>;
+    bool inplace                     = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
     {
@@ -399,9 +400,10 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm_strided_batched(const Arguments& arg)
 {
-    auto hipblasTrmmStridedBatchedFn
-        = arg.fortran ? hipblasTrmmStridedBatched<T, true> : hipblasTrmmStridedBatched<T, false>;
-    bool inplace = arg.inplace;
+    auto hipblasTrmmStridedBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                           ? hipblasTrmmStridedBatched<T, true>
+                                           : hipblasTrmmStridedBatched<T, false>;
+    bool inplace                     = arg.inplace;
 
     hipblasSideMode_t  side         = char2hipblas_side(arg.side);
     hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
@@ -533,17 +535,17 @@ void testing_trmm_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trmm<T>(side,
-                          uplo,
-                          transA,
-                          diag,
-                          M,
-                          N,
-                          h_alpha,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hB.data() + b * stride_B,
-                          ldb);
+            ref_trmm<T>(side,
+                        uplo,
+                        transA,
+                        diag,
+                        M,
+                        N,
+                        h_alpha,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hB.data() + b * stride_B,
+                        ldb);
         }
 
         copy_matrix_with_different_leading_dimensions(

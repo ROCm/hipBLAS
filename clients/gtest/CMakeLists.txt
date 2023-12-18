@@ -243,7 +243,6 @@ set_target_properties( hipblas-test PROPERTIES
     IMPORT_PREFIX ""
     IMPORT_SUFFIX ".lib"
     LINKER_LANGUAGE CXX
-    DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
   set_target_properties( hipblas_v2-test PROPERTIES
     CXX_STANDARD 17
@@ -252,7 +251,6 @@ set_target_properties( hipblas-test PROPERTIES
     IMPORT_PREFIX ""
     IMPORT_SUFFIX ".lib"
     LINKER_LANGUAGE CXX
-    DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")

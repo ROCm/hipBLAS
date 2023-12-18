@@ -51,7 +51,7 @@ inline void testname_gemm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gemm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
 
     hipblasLocalHandle handle(arg);
@@ -270,7 +270,7 @@ void testing_gemm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_gemm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.fortran;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemmFn = FORTRAN ? hipblasGemm<T, true> : hipblasGemm<T, false>;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
@@ -375,19 +375,19 @@ void testing_gemm(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_gemm<T>(transA,
-                      transB,
-                      M,
-                      N,
-                      K,
-                      h_alpha,
-                      hA.data(),
-                      lda,
-                      hB.data(),
-                      ldb,
-                      h_beta,
-                      hC_copy.data(),
-                      ldc);
+        ref_gemm<T>(transA,
+                    transB,
+                    M,
+                    N,
+                    K,
+                    h_alpha,
+                    hA.data(),
+                    lda,
+                    hB.data(),
+                    ldb,
+                    h_beta,
+                    hC_copy.data(),
+                    ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

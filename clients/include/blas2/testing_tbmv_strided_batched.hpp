@@ -100,6 +100,20 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                                                           stridex,
                                                           batch_count),
                               HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTbmvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          K,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
         EXPECT_HIPBLAS_STATUS(
             hipblasTbmvStridedBatchedFn(handle,
                                         uplo,
@@ -265,15 +279,15 @@ void testing_tbmv_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_tbmv<T>(uplo,
-                          transA,
-                          diag,
-                          M,
-                          K,
-                          hA.data() + b * stride_A,
-                          lda,
-                          hx_cpu.data() + b * stride_x,
-                          incx);
+            ref_tbmv<T>(uplo,
+                        transA,
+                        diag,
+                        M,
+                        K,
+                        hA.data() + b * stride_A,
+                        lda,
+                        hx_cpu.data() + b * stride_x,
+                        incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
