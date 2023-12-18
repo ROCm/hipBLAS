@@ -50,6 +50,15 @@ namespace
                 if(!hipblas_client_global_filters(args))
                     return false;
 
+#if CUBLAS_VERSION < 110700
+                // avoid gemvBatched/gemvStridedBatched tests with cuBLAS older than 11.7.0
+                if(!strcmp(args.function, "gemv_batched")
+                   || !strcmp(args.function, "gemv_batched_bad_arg")
+                   || !strcmp(args.function, "gemv_strided_batched")
+                   || !strcmp(args.function, "gemv_strided_batched_bad_arg"))
+                    return false;
+#endif
+
                 // type filters
                 return static_cast<bool>(FILTER<T...>{});
             }
@@ -102,12 +111,10 @@ namespace
     // When the condition in the second argument is satisfied, the type combination
     // is valid. When the condition is false, this specialization does not apply.
     template <typename T>
-    struct gemv_testing<
-        T,
-        std::enable_if_t<
-            std::is_same_v<
-                T,
-                float> || std::is_same_v<T, double> || std::is_same_v<T, hipblasComplex> || std::is_same_v<T, hipblasDoubleComplex>>>
+    struct gemv_testing<T,
+                        std::enable_if_t<std::is_same_v<T, float> || std::is_same_v<T, double>
+                                         || std::is_same_v<T, hipblasComplex>
+                                         || std::is_same_v<T, hipblasDoubleComplex>>>
         : hipblas_test_valid
     {
         void operator()(const Arguments& arg)
