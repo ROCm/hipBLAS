@@ -5048,76 +5048,7 @@ hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
-{
-    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
-                                                                hipOperationToCudaOperation(trans),
-                                                                m,
-                                                                n,
-                                                                alpha,
-                                                                A,
-                                                                lda,
-                                                                strideA,
-                                                                x,
-                                                                incx,
-                                                                stridex,
-                                                                beta,
-                                                                y,
-                                                                incy,
-                                                                stridey,
-                                                                batchCount));
-}
-
-hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
-                                           hipblasOperation_t          trans,
-                                           int                         m,
-                                           int                         n,
-                                           const hipblasDoubleComplex* alpha,
-                                           const hipblasDoubleComplex* A,
-                                           int                         lda,
-                                           hipblasStride               strideA,
-                                           const hipblasDoubleComplex* x,
-                                           int                         incx,
-                                           hipblasStride               stridex,
-                                           const hipblasDoubleComplex* beta,
-                                           hipblasDoubleComplex*       y,
-                                           int                         incy,
-                                           hipblasStride               stridey,
-                                           int                         batchCount)
-{
-    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
-                                                                hipOperationToCudaOperation(trans),
-                                                                m,
-                                                                n,
-                                                                alpha,
-                                                                A,
-                                                                lda,
-                                                                strideA,
-                                                                x,
-                                                                incx,
-                                                                stridex,
-                                                                beta,
-                                                                y,
-                                                                incy,
-                                                                stridey,
-                                                                batchCount));
-}
-
-hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
-                                              hipblasOperation_t trans,
-                                              int                m,
-                                              int                n,
-                                              const hipComplex*  alpha,
-                                              const hipComplex*  A,
-                                              int                lda,
-                                              hipblasStride      strideA,
-                                              const hipComplex*  x,
-                                              int                incx,
-                                              hipblasStride      stridex,
-                                              const hipComplex*  beta,
-                                              hipComplex*        y,
-                                              int                incy,
-                                              hipblasStride      stridey,
-                                              int                batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
                                                                 hipOperationToCudaOperation(trans),
@@ -5136,23 +5067,28 @@ hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
                                                                 stridey,
                                                                 batchCount));
 }
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
 
-hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
-                                              hipblasOperation_t      trans,
-                                              int                     m,
-                                              int                     n,
-                                              const hipDoubleComplex* alpha,
-                                              const hipDoubleComplex* A,
-                                              int                     lda,
-                                              hipblasStride           strideA,
-                                              const hipDoubleComplex* x,
-                                              int                     incx,
-                                              hipblasStride           stridex,
-                                              const hipDoubleComplex* beta,
-                                              hipDoubleComplex*       y,
-                                              int                     incy,
-                                              hipblasStride           stridey,
-                                              int                     batchCount)
+hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
+                                           hipblasOperation_t          trans,
+                                           int                         m,
+                                           int                         n,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* A,
+                                           int                         lda,
+                                           hipblasStride               strideA,
+                                           const hipblasDoubleComplex* x,
+                                           int                         incx,
+                                           hipblasStride               stridex,
+                                           const hipblasDoubleComplex* beta,
+                                           hipblasDoubleComplex*       y,
+                                           int                         incy,
+                                           hipblasStride               stridey,
+                                           int                         batchCount)
+try
 {
     return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
                                                                 hipOperationToCudaOperation(trans),
@@ -5171,6 +5107,89 @@ hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
                                                                 stridey,
                                                                 batchCount));
 }
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
+                                              hipblasOperation_t trans,
+                                              int                m,
+                                              int                n,
+                                              const hipComplex*  alpha,
+                                              const hipComplex*  A,
+                                              int                lda,
+                                              hipblasStride      strideA,
+                                              const hipComplex*  x,
+                                              int                incx,
+                                              hipblasStride      stridex,
+                                              const hipComplex*  beta,
+                                              hipComplex*        y,
+                                              int                incy,
+                                              hipblasStride      stridey,
+                                              int                batchCount)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuComplex*)alpha,
+                                                                (const cuComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuComplex*)beta,
+                                                                (cuComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
+                                              hipblasOperation_t      trans,
+                                              int                     m,
+                                              int                     n,
+                                              const hipDoubleComplex* alpha,
+                                              const hipDoubleComplex* A,
+                                              int                     lda,
+                                              hipblasStride           strideA,
+                                              const hipDoubleComplex* x,
+                                              int                     incx,
+                                              hipblasStride           stridex,
+                                              const hipDoubleComplex* beta,
+                                              hipDoubleComplex*       y,
+                                              int                     incy,
+                                              hipblasStride           stridey,
+                                              int                     batchCount)
+try
+{
+    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuDoubleComplex*)alpha,
+                                                                (const cuDoubleComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuDoubleComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuDoubleComplex*)beta,
+                                                                (cuDoubleComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 // ger
