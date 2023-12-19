@@ -228,7 +228,7 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                                                      incy,
                                                      batch_count));
         }
-/*
+
         // With M == 0 || N == 0, can have all nullptrs
         CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
                                                  transA,
@@ -258,7 +258,7 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                                                  batch_count));
         CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(
             handle, transA, M, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy, 0));
-  */  }
+    }
 }
 
 template <typename T>
@@ -300,23 +300,26 @@ void testing_gemv_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        /* should be covered in bad_args, not supported by cuBLAS backend.
-        hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
-                                                      transA,
-                                                      M,
-                                                      N,
-                                                      nullptr,
-                                                      nullptr,
-                                                      lda,
-                                                      nullptr,
-                                                      incx,
-                                                      nullptr,
-                                                      nullptr,
-                                                      incy,
-                                                      batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
-	*/
+        if(!invalid_size || arg.bad_arg_all)
+        {
+            // cublas backend doesn't support nullptrs with bad input sizes
+            hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
+                                                          transA,
+                                                          M,
+                                                          N,
+                                                          nullptr,
+                                                          nullptr,
+                                                          lda,
+                                                          nullptr,
+                                                          incx,
+                                                          nullptr,
+                                                          nullptr,
+                                                          incy,
+                                                          batch_count);
+            EXPECT_HIPBLAS_STATUS(
+                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        }
+
         return;
     }
 

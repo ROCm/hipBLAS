@@ -295,6 +295,22 @@ void testing_gemv_strided_batched_bad_arg(const Arguments& arg)
                                                         incy,
                                                         stridey,
                                                         batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
+                                                        transA,
+                                                        M,
+                                                        N,
+                                                        nullptr,
+                                                        nullptr,
+                                                        lda,
+                                                        strideA,
+                                                        nullptr,
+                                                        incx,
+                                                        stridex,
+                                                        nullptr,
+                                                        nullptr,
+                                                        incy,
+                                                        stridey,
+                                                        0));
     }
 }
 
@@ -349,26 +365,28 @@ void testing_gemv_strided_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        /* should be covered in bad_args, not supported by cuBLAS backend.
-        hipblasStatus_t actual = hipblasGemvStridedBatchedFn(handle,
-                                                             transA,
-                                                             M,
-                                                             N,
-                                                             nullptr,
-                                                             nullptr,
-                                                             lda,
-                                                             stride_A,
-                                                             nullptr,
-                                                             incx,
-                                                             stride_x,
-                                                             nullptr,
-                                                             nullptr,
-                                                             incy,
-                                                             stride_y,
-                                                             batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
-        */
+        if(!invalid_size || arg.bad_arg_all)
+        {
+            // cublas backend doesn't support nullptrs with bad input sizes
+            hipblasStatus_t actual = hipblasGemvStridedBatchedFn(handle,
+                                                                 transA,
+                                                                 M,
+                                                                 N,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 lda,
+                                                                 stride_A,
+                                                                 nullptr,
+                                                                 incx,
+                                                                 stride_x,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 incy,
+                                                                 stride_y,
+                                                                 batch_count);
+            EXPECT_HIPBLAS_STATUS(
+                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        }
         return;
     }
 
