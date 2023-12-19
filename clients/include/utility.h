@@ -251,7 +251,6 @@ inline hipblasBfloat16 random_generator<hipblasBfloat16>()
 template <>
 inline hipblasComplex random_generator<hipblasComplex>()
 {
-    return hipblasComplex(rand() % 10 + 1, rand() % 10 + 1);
     return {float(rand() % 10 + 1), float(rand() % 10 + 1)};
 }
 
@@ -260,7 +259,6 @@ inline hipblasComplex random_generator<hipblasComplex>()
 template <>
 inline hipblasDoubleComplex random_generator<hipblasDoubleComplex>()
 {
-    return hipblasDoubleComplex(rand() % 10 + 1, rand() % 10 + 1);
     return {double(rand() % 10 + 1), double(rand() % 10 + 1)};
 }
 
@@ -702,6 +700,7 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
 /*! \brief For testing purposes, prepares matrix hA for a triangular solve.                      *
  *         Makes hA strictly diagonal dominant (SPD), then calculates Cholesky factorization     *
  *         of hA.                                                                                */
+/*
 template <typename T>
 void prepare_triangular_solve(T* hA, int64_t lda, T* AAT, int64_t N, char char_uplo)
 {
@@ -722,6 +721,7 @@ void prepare_triangular_solve(T* hA, int64_t lda, T* AAT, int64_t N, char char_u
     //  calculate Cholesky factorization of SPD matrix hA
     ref_potrf<T>(char_uplo, N, hA, lda);
 }
+*/
 
 /* ============================================================================================ */
 /*! \brief  turn float -> 's', double -> 'd', hipblas_float_complex -> 'c', hipblas_double_complex
@@ -746,7 +746,7 @@ void print_matrix(const std::vector<T>& CPU_result,
 {
     for(int64_t i = 0; i < m; i++)
         for(int64_t j = 0; j < n; j++)
-            printf("matrix  col %d, row %d, CPU result=%.8g, GPU result=%.8g\n",
+            printf("matrix  col %ld, row %ld, CPU result=%.8g, GPU result=%.8g\n",
                    i,
                    j,
                    double(CPU_result[j + i * lda]),
@@ -763,7 +763,7 @@ void print_matrix(const std::vector<T>& CPU_result,
 {
     for(int64_t i = 0; i < m; i++)
         for(int64_t j = 0; j < n; j++)
-            printf("matrix  col %d, row %d, CPU result=(%.8g,%.8g), GPU result=(%.8g,%.8g)\n",
+            printf("matrix  col %ld, row %ld, CPU result=(%.8g,%.8g), GPU result=(%.8g,%.8g)\n",
                    i,
                    j,
                    double(CPU_result[j + i * lda].real()),

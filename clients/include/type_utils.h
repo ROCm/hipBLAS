@@ -122,32 +122,60 @@ inline float half_to_float(hipblasHalf val)
 
 /* =============================================================================================== */
 /* Absolute values                                                                                 */
-template <typename T>
-inline double hipblas_abs(const T& x)
+// template <typename T>
+// inline T hipblas_abs(const T& x)
+// {
+//     return x < 0 ? -x : x;
+// }
+
+// template <>
+// inline double hipblas_abs(const hipblasHalf& x)
+// {
+//     return std::abs(half_to_float(x));
+// }
+
+// template <>
+// inline double hipblas_abs(const hipblasBfloat16& x)
+// {
+//     return std::abs(bfloat16_to_float(x));
+// }
+
+// rocblas_bfloat16 is handled specially
+inline hipblasBfloat16 hipblas_abs(hipblasBfloat16 x)
+{
+    x.data &= 0x7fff;
+    return x;
+}
+
+// rocblas_half
+inline hipblasHalf hipblas_abs(hipblasHalf x)
+{
+    union
+    {
+        hipblasHalf x;
+        uint16_t    data;
+    } t = {x};
+    t.data &= 0x7fff;
+    return t.x;
+}
+
+inline double hipblas_abs(const double& x)
+{
+    return x < 0 ? -x : x;
+}
+inline float hipblas_abs(const float& x)
 {
     return x < 0 ? -x : x;
 }
 
-template <>
-inline double hipblas_abs(const hipblasHalf& x)
-{
-    return std::abs(half_to_float(x));
-}
-
-template <>
-inline double hipblas_abs(const hipblasBfloat16& x)
-{
-    return std::abs(bfloat16_to_float(x));
-}
-
 inline double hipblas_abs(const hipblasComplex& x)
 {
-    return abs(reinterpret_cast<const std::complex<float>&>(x));
+    return std::abs(reinterpret_cast<const std::complex<float>&>(x));
 }
 
 inline double hipblas_abs(const hipblasDoubleComplex& x)
 {
-    return abs(reinterpret_cast<const std::complex<double>&>(x));
+    return std::abs(reinterpret_cast<const std::complex<double>&>(x));
 }
 
 inline int hipblas_abs(const int& x)
@@ -205,6 +233,19 @@ template <typename T, std::enable_if_t<is_complex<T>, int> = 0>
 __device__ __host__ inline T hipblas_conjugate(const T& z)
 {
     return std::conj(z);
+}
+
+// hipblasComplex and hipblasDoubleComplex, return real
+template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
+__device__ __host__ inline T hipblas_real(const T& z)
+{
+    return z;
+}
+
+template <typename T, std::enable_if_t<is_complex<T>, int> = 0>
+__device__ __host__ inline T hipblas_real(const T& z)
+{
+    return std::real(z);
 }
 
 #endif // __cplusplus

@@ -122,7 +122,7 @@ void testing_tpsv(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAP(size_AP);
-    host_vector<T> AAT(size_A);
+    //host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -138,11 +138,22 @@ void testing_tpsv(const Arguments& arg)
     // srand(1);
     // hipblas_init<T>(hA, N, N, 1);
     // hipblas_init<T>(hx, 1, N, abs_incx);
-    hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    //hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             N,
+                             0,
+                             1,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(
         hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, false); //true);
     hb = hx;
 
+    /*
     //  calculate AAT = hA * hA ^ T
     ref_gemm<T>(HIPBLAS_OP_N,
                 HIPBLAS_OP_T,
@@ -189,6 +200,12 @@ void testing_tpsv(const Arguments& arg)
                 for(int i = 0; i <= j; i++)
                     hA[i + j * N] = hA[i + j * N] / diag;
             }
+    }
+*/
+
+    if(diag == HIPBLAS_DIAG_UNIT)
+    {
+        make_unit_diagonal(uplo, (T*)hA, N, N);
     }
 
     // Calculate hb = hA*hx;

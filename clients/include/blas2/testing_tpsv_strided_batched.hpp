@@ -175,7 +175,7 @@ void testing_tpsv_strided_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAP(size_AP);
-    host_vector<T> AAT(size_A);
+    //host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -187,7 +187,17 @@ void testing_tpsv_strided_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
+    //hipblas_init_matrix(hA, arg, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             N,
+                             strideA,
+                             batch_count,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(
         hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
@@ -196,8 +206,9 @@ void testing_tpsv_strided_batched(const Arguments& arg)
     {
         T* hAb  = hA.data() + b * strideA;
         T* hAPb = hAP.data() + b * strideAP;
-        T* AATb = AAT.data() + b * strideA;
-        T* hbb  = hb.data() + b * stridex;
+        //T* AATb = AAT.data() + b * strideA;
+        T* hbb = hb.data() + b * stridex;
+        /*
         //  calculate AAT = hA * hA ^ T
         ref_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, (T)1.0, hAb, N, hAb, N, (T)0.0, AATb, N);
 
@@ -232,6 +243,12 @@ void testing_tpsv_strided_batched(const Arguments& arg)
                     for(int i = 0; i <= j; i++)
                         hAb[i + j * N] = hAb[i + j * N] / diag;
                 }
+        }
+*/
+
+        if(diag == HIPBLAS_DIAG_UNIT)
+        {
+            make_unit_diagonal(uplo, hAb, N, N);
         }
 
         // Calculate hb = hA*hx;

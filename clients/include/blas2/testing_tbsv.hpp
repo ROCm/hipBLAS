@@ -143,7 +143,7 @@ void testing_tbsv(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAB(size_AB);
-    host_vector<T> AAT(size_A);
+    //host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -154,19 +154,31 @@ void testing_tbsv(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             N,
+                             0,
+                             1,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, N, K);
 
-    prepare_triangular_solve((T*)hA, N, (T*)AAT, N, arg.uplo);
+    //prepare_triangular_solve((T*)hA, N, (T*)AAT, N, arg.uplo);
+    //print_matrix(hA, AAT, N, N, N);
+
     if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, (T*)hA, N, N);
     }
 
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
+
     CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
     ref_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);

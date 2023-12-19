@@ -407,7 +407,7 @@ void testing_trsm_batched_ex(const Arguments& arg)
         }
 
         // proprocess the matrix to avoid ill-conditioned matrix
-        host_vector<ref_int> ipiv(K);
+        host_vector<int> ipiv(K);
         ref_getrf(K, K, hA[b], lda, ipiv);
         for(int i = 0; i < K; i++)
         {

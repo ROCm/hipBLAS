@@ -36,6 +36,7 @@
 #else
 #include "hipblas_no_fortran.hpp"
 #endif
+#include "hipblas_init.hpp"
 #include "hipblas_test.hpp"
 #include "hipblas_vector.hpp"
 #include "near.h"

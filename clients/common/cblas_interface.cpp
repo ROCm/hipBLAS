@@ -23,7 +23,7 @@
  * ************************************************************************/
 
 #include <cblas.h>
-#include <lapacke.h>
+//#include <lapacke.h>
 
 #include "cblas_interface.h"
 #include "hipblas.h"
@@ -41,11 +41,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
-void strtri_(char* uplo, char* diag, int* n, float* A, int* lda, int* info);
-void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
-void ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A, int* lda, int* info);
-void ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int* info);
+
+// void strtri_(char* uplo, char* diag, int* n, float* A, int* lda, int* info);
+// void dtrtri_(char* uplo, char* diag, int* n, double* A, int* lda, int* info);
+// void ctrtri_(char* uplo, char* diag, int* n, hipblasComplex* A, int* lda, int* info);
+// void ztrtri_(char* uplo, char* diag, int* n, hipblasDoubleComplex* A, int* lda, int* info);
 
 void sgetrf_(int* m, int* n, float* A, int* lda, int* ipiv, int* info);
 void dgetrf_(int* m, int* n, double* A, int* lda, int* ipiv, int* info);
@@ -74,7 +74,6 @@ void zgetrs_(char*                 trans,
              hipblasDoubleComplex* B,
              int*                  ldb,
              int*                  info);
-
 
 void sgetri_(int* n, float* A, int* lda, int* ipiv, float* work, int* lwork, int* info);
 void dgetri_(int* n, double* A, int* lda, int* ipiv, double* work, int* lwork, int* info);
@@ -151,13 +150,11 @@ void zgels_(char*                 trans,
             hipblasDoubleComplex* work,
             int*                  lwork,
             int*                  info);
-*/
-/*
+
 void spotrf_(char* uplo, int* m, float* A, int* lda, int* info);
 void dpotrf_(char* uplo, int* m, double* A, int* lda, int* info);
 void cpotrf_(char* uplo, int* m, hipblasComplex* A, int* lda, int* info);
 void zpotrf_(char* uplo, int* m, hipblasDoubleComplex* A, int* lda, int* info);
-*/
 
 /*
 void cspr_(
@@ -3825,361 +3822,317 @@ void ref_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
 
 // potrf
 template <>
-int64_t ref_potrf(char uplo, int64_t m, float* A, int64_t lda)
+int ref_potrf(char uplo, int m, float* A, int lda)
 {
-    int64_t info;
-    //spotrf_(&uplo, &m, A, &lda, &info);
-    info = LAPACKE_spotrf(LAPACK_COL_MAJOR, uplo, m, A, lda);
+    int info;
+    spotrf_(&uplo, &m, A, &lda, &info);
+    //info = LAPACKE_spotrf(LAPACK_COL_MAJOR, uplo, m, A, lda);
     return info;
 }
 
 template <>
-int64_t ref_potrf(char uplo, int64_t m, double* A, int64_t lda)
+int ref_potrf(char uplo, int m, double* A, int lda)
 {
-    int64_t info;
-    //dpotrf_(&uplo, &m, A, &lda, &info);
-    info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, uplo, m, A, lda);
+    int info;
+    dpotrf_(&uplo, &m, A, &lda, &info);
+    //info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, uplo, m, A, lda);
     return info;
 }
 
 template <>
-int64_t ref_potrf(char uplo, int64_t m, hipblasComplex* A, int64_t lda)
+int ref_potrf(char uplo, int m, hipblasComplex* A, int lda)
 {
-    int64_t info;
-    //cpotrf_(&uplo, &m, A, &lda, &info);
-    info = LAPACKE_cpotrf(LAPACK_COL_MAJOR, uplo, m, (lapack_complex_float*)A, lda);
+    int info;
+    cpotrf_(&uplo, &m, A, &lda, &info);
+    //info = LAPACKE_cpotrf(LAPACK_COL_MAJOR, uplo, m, (lapack_complex_float*)A, lda);
     return info;
 }
 
 template <>
-int64_t ref_potrf(char uplo, int64_t m, hipblasDoubleComplex* A, int64_t lda)
+int ref_potrf(char uplo, int m, hipblasDoubleComplex* A, int lda)
 {
-    int64_t info;
-    //zpotrf_(&uplo, &m, A, &lda, &info);
-    info = LAPACKE_zpotrf(LAPACK_COL_MAJOR, uplo, m, (lapack_complex_double*)A, lda);
+    int info;
+    zpotrf_(&uplo, &m, A, &lda, &info);
+    //info = LAPACKE_zpotrf(LAPACK_COL_MAJOR, uplo, m, (lapack_complex_double*)A, lda);
     return info;
 }
 
 // getrf
 template <>
-int64_t ref_getrf<float>(int64_t m, int64_t n, float* A, int64_t lda, int64_t* ipiv)
+int ref_getrf<float>(int m, int n, float* A, int lda, int* ipiv)
 {
-    int64_t info;
-    //sgetrf_(&m, &n, A, &lda, ipiv, &info);
-    info = LAPACKE_sgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
+    int info;
+    sgetrf_(&m, &n, A, &lda, ipiv, &info);
+    //info = LAPACKE_sgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t ref_getrf<double>(int64_t m, int64_t n, double* A, int64_t lda, int64_t* ipiv)
+int ref_getrf<double>(int m, int n, double* A, int lda, int* ipiv)
 {
-    int64_t info;
-    //dgetrf_(&m, &n, A, &lda, ipiv, &info);
-    LAPACKE_dgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
+    int info;
+    dgetrf_(&m, &n, A, &lda, ipiv, &info);
+    //LAPACKE_dgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t
-    ref_getrf<hipblasComplex>(int64_t m, int64_t n, hipblasComplex* A, int64_t lda, int64_t* ipiv)
+int ref_getrf<hipblasComplex>(int m, int n, hipblasComplex* A, int lda, int* ipiv)
 {
-    int64_t info;
-    //cgetrf_(&m, &n,  (lapack_complex_float*)A, &lda, ipiv, &info);
-    LAPACKE_cgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_float*)A, lda, ipiv);
+    int info;
+    cgetrf_(&m, &n, (hipblasComplex*)A, &lda, ipiv, &info);
+    //LAPACKE_cgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_float*)A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t ref_getrf<hipblasDoubleComplex>(
-    int64_t m, int64_t n, hipblasDoubleComplex* A, int64_t lda, int64_t* ipiv)
+int ref_getrf<hipblasDoubleComplex>(int m, int n, hipblasDoubleComplex* A, int lda, int* ipiv)
 {
-    int64_t info;
-    //zgetrf_(&m, &n,  (lapack_complex_double*)A, &lda, ipiv, &info);
-    LAPACKE_zgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_double*)A, lda, ipiv);
+    int info;
+    zgetrf_(&m, &n, (hipblasDoubleComplex*)A, &lda, ipiv, &info);
+    //LAPACKE_zgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_double*)A, lda, ipiv);
     return info;
 }
 
 // getrs
 template <>
-int64_t ref_getrs<float>(char     trans,
-                         int64_t  n,
-                         int64_t  nrhs,
-                         float*   A,
-                         int64_t  lda,
-                         int64_t* ipiv,
-                         float*   B,
-                         int64_t  ldb)
+int ref_getrs<float>(char trans, int n, int nrhs, float* A, int lda, int* ipiv, float* B, int ldb)
 {
-    int64_t info;
-    //sgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info, 1);
-    info = LAPACKE_sgetrs(LAPACK_COL_MAJOR, trans, n, nrhs, A, lda, ipiv, B, ldb);
+    int info;
+    sgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    //info = LAPACKE_sgetrs(LAPACK_COL_MAJOR, trans, n, nrhs, A, lda, ipiv, B, ldb);
     return info;
 }
 
 template <>
-int64_t ref_getrs<double>(char     trans,
-                          int64_t  n,
-                          int64_t  nrhs,
-                          double*  A,
-                          int64_t  lda,
-                          int64_t* ipiv,
-                          double*  B,
-                          int64_t  ldb)
+int ref_getrs<double>(
+    char trans, int n, int nrhs, double* A, int lda, int* ipiv, double* B, int ldb)
 {
-    int64_t info;
-    //dgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info, 1);
-    info = LAPACKE_dgetrs(LAPACK_COL_MAJOR, trans, n, nrhs, A, lda, ipiv, B, ldb);
+    int info;
+    dgetrs_(&trans, &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+    //info = LAPACKE_dgetrs(LAPACK_COL_MAJOR, trans, n, nrhs, A, lda, ipiv, B, ldb);
     return info;
 }
 
 template <>
-int64_t ref_getrs<hipblasComplex>(char            trans,
-                                  int64_t         n,
-                                  int64_t         nrhs,
-                                  hipblasComplex* A,
-                                  int64_t         lda,
-                                  int64_t*        ipiv,
-                                  hipblasComplex* B,
-                                  int64_t         ldb)
+int ref_getrs<hipblasComplex>(
+    char trans, int n, int nrhs, hipblasComplex* A, int lda, int* ipiv, hipblasComplex* B, int ldb)
 {
-    int64_t info;
-    // cgetrs_(&trans,
-    //         &n,
-    //         &nrhs,
-    //         (lapack_complex_float*)A,
-    //         &lda,
-    //         ipiv,
-    //         (lapack_complex_float*)B,
-    //         &ldb,
-    //         &info,
-    //         1);
-    info = LAPACKE_cgetrs(LAPACK_COL_MAJOR,
-                          trans,
-                          n,
-                          nrhs,
-                          (lapack_complex_float*)A,
-                          lda,
-                          ipiv,
-                          (lapack_complex_float*)B,
-                          ldb);
+    int info;
+    cgetrs_(&trans, &n, &nrhs, (hipblasComplex*)A, &lda, ipiv, (hipblasComplex*)B, &ldb, &info);
+    // info = LAPACKE_cgetrs(LAPACK_COL_MAJOR,
+    //                       trans,
+    //                       n,
+    //                       nrhs,
+    //                       (lapack_complex_float*)A,
+    //                       lda,
+    //                       ipiv,
+    //                       (lapack_complex_float*)B,
+    //                       ldb);
     return info;
 }
 
 template <>
-int64_t ref_getrs<hipblasDoubleComplex>(char                  trans,
-                                        int64_t               n,
-                                        int64_t               nrhs,
-                                        hipblasDoubleComplex* A,
-                                        int64_t               lda,
-                                        int64_t*              ipiv,
-                                        hipblasDoubleComplex* B,
-                                        int64_t               ldb)
+int ref_getrs<hipblasDoubleComplex>(char                  trans,
+                                    int                   n,
+                                    int                   nrhs,
+                                    hipblasDoubleComplex* A,
+                                    int                   lda,
+                                    int*                  ipiv,
+                                    hipblasDoubleComplex* B,
+                                    int                   ldb)
 {
-    int64_t info;
-    // zgetrs_(&trans,
-    //         &n,
-    //         &nrhs,
-    //         (lapack_complex_double*)A,
-    //         &lda,
-    //         ipiv,
-    //         (lapack_complex_double*)B,
-    //         &ldb,
-    //         &info,
-    //         1);
-    info = LAPACKE_zgetrs(LAPACK_COL_MAJOR,
-                          trans,
-                          n,
-                          nrhs,
-                          (lapack_complex_double*)A,
-                          lda,
-                          ipiv,
-                          (lapack_complex_double*)B,
-                          ldb);
+    int info;
+    zgetrs_(&trans,
+            &n,
+            &nrhs,
+            (hipblasDoubleComplex*)A,
+            &lda,
+            ipiv,
+            (hipblasDoubleComplex*)B,
+            &ldb,
+            &info);
+    // info = LAPACKE_zgetrs(LAPACK_COL_MAJOR,
+    //                       trans,
+    //                       n,
+    //                       nrhs,
+    //                       (lapack_complex_double*)A,
+    //                       lda,
+    //                       ipiv,
+    //                       (lapack_complex_double*)B,
+    //                       ldb);
     return info;
 }
 
 // getri
 template <>
-int64_t
-    ref_getri<float>(int64_t n, float* A, int64_t lda, int64_t* ipiv, float* work, int64_t lwork)
+int ref_getri<float>(int n, float* A, int lda, int* ipiv, float* work, int lwork)
 {
-    int64_t info;
-    //sgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
-    info = LAPACKE_sgetri(LAPACK_COL_MAJOR, n, A, lda, ipiv);
+    int info;
+    sgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    //info = LAPACKE_sgetri(LAPACK_COL_MAJOR, n, A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t
-    ref_getri<double>(int64_t n, double* A, int64_t lda, int64_t* ipiv, double* work, int64_t lwork)
+int ref_getri<double>(int n, double* A, int lda, int* ipiv, double* work, int lwork)
 {
-    int64_t info;
-    //dgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
-    info = LAPACKE_dgetri(LAPACK_COL_MAJOR, n, A, lda, ipiv);
+    int info;
+    dgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    //info = LAPACKE_dgetri(LAPACK_COL_MAJOR, n, A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t ref_getri<hipblasComplex>(
-    int64_t n, hipblasComplex* A, int64_t lda, int64_t* ipiv, hipblasComplex* work, int64_t lwork)
+int ref_getri<hipblasComplex>(
+    int n, hipblasComplex* A, int lda, int* ipiv, hipblasComplex* work, int lwork)
 {
-    int64_t info;
-    //cgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
-    info = LAPACKE_cgetri(LAPACK_COL_MAJOR, n, (lapack_complex_float*)A, lda, ipiv);
+    int info;
+    cgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    //info = LAPACKE_cgetri(LAPACK_COL_MAJOR, n, (lapack_complex_float*)A, lda, ipiv);
     return info;
 }
 
 template <>
-int64_t ref_getri<hipblasDoubleComplex>(int64_t               n,
-                                        hipblasDoubleComplex* A,
-                                        int64_t               lda,
-                                        int64_t*              ipiv,
-                                        hipblasDoubleComplex* work,
-                                        int64_t               lwork)
+int ref_getri<hipblasDoubleComplex>(
+    int n, hipblasDoubleComplex* A, int lda, int* ipiv, hipblasDoubleComplex* work, int lwork)
 {
-    int64_t info;
-    //zgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
-    info = LAPACKE_zgetri(LAPACK_COL_MAJOR, n, (lapack_complex_double*)A, lda, ipiv);
+    int info;
+    zgetri_(&n, A, &lda, ipiv, work, &lwork, &info);
+    //info = LAPACKE_zgetri(LAPACK_COL_MAJOR, n, (lapack_complex_double*)A, lda, ipiv);
     return info;
 }
 
 // geqrf
 template <>
-int64_t ref_geqrf<float>(
-    int64_t m, int64_t n, float* A, int64_t lda, float* tau, float* work, int64_t lwork)
+int ref_geqrf<float>(int m, int n, float* A, int lda, float* tau, float* work, int lwork)
 {
-    int64_t info;
-    //sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-    info = LAPACKE_sgeqrf(LAPACK_COL_MAJOR, m, n, A, lda, tau);
+    int info;
+    sgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    //info = LAPACKE_sgeqrf(LAPACK_COL_MAJOR, m, n, A, lda, tau);
     return info;
 }
 
 template <>
-int64_t ref_geqrf<double>(
-    int64_t m, int64_t n, double* A, int64_t lda, double* tau, double* work, int64_t lwork)
+int ref_geqrf<double>(int m, int n, double* A, int lda, double* tau, double* work, int lwork)
 {
-    int64_t info;
-    //dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-    info = LAPACKE_dgeqrf(LAPACK_COL_MAJOR, m, n, A, lda, tau);
+    int info;
+    dgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    //info = LAPACKE_dgeqrf(LAPACK_COL_MAJOR, m, n, A, lda, tau);
     return info;
 }
 template <>
-int64_t ref_geqrf<hipblasComplex>(int64_t         m,
-                                  int64_t         n,
-                                  hipblasComplex* A,
-                                  int64_t         lda,
-                                  hipblasComplex* tau,
-                                  hipblasComplex* work,
-                                  int64_t         lwork)
+int ref_geqrf<hipblasComplex>(
+    int m, int n, hipblasComplex* A, int lda, hipblasComplex* tau, hipblasComplex* work, int lwork)
 {
-    int64_t info;
-    //cgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-    info = LAPACKE_cgeqrf(
-        LAPACK_COL_MAJOR, m, n, (lapack_complex_float*)A, lda, (lapack_complex_float*)tau);
+    int info;
+    cgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    //info = LAPACKE_cgeqrf(
+    //    LAPACK_COL_MAJOR, m, n, (lapack_complex_float*)A, lda, (lapack_complex_float*)tau);
     return info;
 }
 
 template <>
-int64_t ref_geqrf<hipblasDoubleComplex>(int64_t               m,
-                                        int64_t               n,
-                                        hipblasDoubleComplex* A,
-                                        int64_t               lda,
-                                        hipblasDoubleComplex* tau,
-                                        hipblasDoubleComplex* work,
-                                        int64_t               lwork)
+int ref_geqrf<hipblasDoubleComplex>(int                   m,
+                                    int                   n,
+                                    hipblasDoubleComplex* A,
+                                    int                   lda,
+                                    hipblasDoubleComplex* tau,
+                                    hipblasDoubleComplex* work,
+                                    int                   lwork)
 {
-    int64_t info;
-    //zgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
-    info = LAPACKE_zgeqrf(
-        LAPACK_COL_MAJOR, m, n, (lapack_complex_double*)A, lda, (lapack_complex_double*)tau);
+    int info;
+    zgeqrf_(&m, &n, A, &lda, tau, work, &lwork, &info);
+    // info = LAPACKE_zgeqrf(
+    //     LAPACK_COL_MAJOR, m, n, (lapack_complex_double*)A, lda, (lapack_complex_double*)tau);
     return info;
 }
 
 // gels
 template <>
-int64_t ref_gels<float>(char    trans,
-                        int64_t m,
-                        int64_t n,
-                        int64_t nrhs,
-                        float*  A,
-                        int64_t lda,
-                        float*  B,
-                        int64_t ldb,
-                        float*  work,
-                        int64_t lwork)
+int ref_gels<float>(char   trans,
+                    int    m,
+                    int    n,
+                    int    nrhs,
+                    float* A,
+                    int    lda,
+                    float* B,
+                    int    ldb,
+                    float* work,
+                    int    lwork)
 {
-    int64_t info;
-    //sgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
-    info = LAPACKE_sgels(LAPACK_COL_MAJOR, trans, m, n, nrhs, A, lda, B, ldb);
+    int info;
+    sgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    //info = LAPACKE_sgels(LAPACK_COL_MAJOR, trans, m, n, nrhs, A, lda, B, ldb);
     return info;
 }
 
 template <>
-int64_t ref_gels<double>(char    trans,
-                         int64_t m,
-                         int64_t n,
-                         int64_t nrhs,
-                         double* A,
-                         int64_t lda,
-                         double* B,
-                         int64_t ldb,
-                         double* work,
-                         int64_t lwork)
+int ref_gels<double>(char    trans,
+                     int     m,
+                     int     n,
+                     int     nrhs,
+                     double* A,
+                     int     lda,
+                     double* B,
+                     int     ldb,
+                     double* work,
+                     int     lwork)
 {
-    int64_t info;
-    //dgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
-    info = LAPACKE_dgels(LAPACK_COL_MAJOR, trans, m, n, nrhs, A, lda, B, ldb);
+    int info;
+    dgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    //info = LAPACKE_dgels(LAPACK_COL_MAJOR, trans, m, n, nrhs, A, lda, B, ldb);
     return info;
 }
 
 template <>
-int64_t ref_gels<hipblasComplex>(char            trans,
-                                 int64_t         m,
-                                 int64_t         n,
-                                 int64_t         nrhs,
-                                 hipblasComplex* A,
-                                 int64_t         lda,
-                                 hipblasComplex* B,
-                                 int64_t         ldb,
-                                 hipblasComplex* work,
-                                 int64_t         lwork)
+int ref_gels<hipblasComplex>(char            trans,
+                             int             m,
+                             int             n,
+                             int             nrhs,
+                             hipblasComplex* A,
+                             int             lda,
+                             hipblasComplex* B,
+                             int             ldb,
+                             hipblasComplex* work,
+                             int             lwork)
 {
-    int64_t info;
-    //cgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
-    info = LAPACKE_cgels(LAPACK_COL_MAJOR,
-                         trans,
-                         m,
-                         n,
-                         nrhs,
-                         (lapack_complex_float*)A,
-                         lda,
-                         (lapack_complex_float*)B,
-                         ldb);
+    int info;
+    cgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    // info = LAPACKE_cgels(LAPACK_COL_MAJOR,
+    //                      trans,
+    //                      m,
+    //                      n,
+    //                      nrhs,
+    //                      (lapack_complex_float*)A,
+    //                      lda,
+    //                      (lapack_complex_float*)B,
+    //                      ldb);
     return info;
 }
 
 template <>
-int64_t ref_gels<hipblasDoubleComplex>(char                  trans,
-                                       int64_t               m,
-                                       int64_t               n,
-                                       int64_t               nrhs,
-                                       hipblasDoubleComplex* A,
-                                       int64_t               lda,
-                                       hipblasDoubleComplex* B,
-                                       int64_t               ldb,
-                                       hipblasDoubleComplex* work,
-                                       int64_t               lwork)
+int ref_gels<hipblasDoubleComplex>(char                  trans,
+                                   int                   m,
+                                   int                   n,
+                                   int                   nrhs,
+                                   hipblasDoubleComplex* A,
+                                   int                   lda,
+                                   hipblasDoubleComplex* B,
+                                   int                   ldb,
+                                   hipblasDoubleComplex* work,
+                                   int                   lwork)
 {
-    int64_t info;
-    //zgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
-    info = LAPACKE_zgels(LAPACK_COL_MAJOR,
-                         trans,
-                         m,
-                         n,
-                         nrhs,
-                         (lapack_complex_double*)A,
-                         lda,
-                         (lapack_complex_double*)B,
-                         ldb);
+    int info;
+    zgels_(&trans, &m, &n, &nrhs, A, &lda, B, &ldb, work, &lwork, &info);
+    // info = LAPACKE_zgels(LAPACK_COL_MAJOR,
+    //                      trans,
+    //                      m,
+    //                      n,
+    //                      nrhs,
+    //                      (lapack_complex_double*)A,
+    //                      lda,
+    //                      (lapack_complex_double*)B,
+    //                      ldb);
     return info;
 }

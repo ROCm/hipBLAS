@@ -24,8 +24,9 @@
 //
 #pragma once
 
-// #include "d_vector.hpp"
-// #include "hipblas_vector.hpp"
+#include "d_vector.hpp"
+#include "hipblas_vector.hpp"
+
 #include <cmath>
 
 //

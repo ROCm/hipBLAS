@@ -165,7 +165,7 @@ void testing_tpsv_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(size_A, 1, batch_count);
     host_batch_vector<T> hAP(size_AP, 1, batch_count);
-    host_batch_vector<T> AAT(size_A, 1, batch_count);
+    //host_batch_vector<T> AAT(size_A, 1, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hx_or_b_1(N, incx, batch_count);
@@ -181,12 +181,23 @@ void testing_tpsv_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+    //hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, true, true);
     hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
     {
+        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                                 (T*)hA[b],
+                                 arg,
+                                 N,
+                                 N,
+                                 N,
+                                 0,
+                                 1,
+                                 hipblas_client_never_set_nan,
+                                 false);
+        /*
         //  calculate AAT = hA * hA ^ T
         ref_gemm<T>(HIPBLAS_OP_N,
                     HIPBLAS_OP_T,
@@ -234,6 +245,11 @@ void testing_tpsv_batched(const Arguments& arg)
                     for(int i = 0; i <= j; i++)
                         hA[b][i + j * N] = hA[b][i + j * N] / diag;
                 }
+        }
+*/
+        if(diag == HIPBLAS_DIAG_UNIT)
+        {
+            make_unit_diagonal(uplo, (T*)hA[b], N, N);
         }
 
         // Calculate hb = hA*hx;
