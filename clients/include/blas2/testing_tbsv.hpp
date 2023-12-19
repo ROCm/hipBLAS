@@ -143,7 +143,6 @@ void testing_tbsv(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAB(size_AB);
-    //host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -168,9 +167,6 @@ void testing_tbsv(const Arguments& arg)
     hb = hx;
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, N, K);
-
-    //prepare_triangular_solve((T*)hA, N, (T*)AAT, N, arg.uplo);
-    //print_matrix(hA, AAT, N, N, N);
 
     if(diag == HIPBLAS_DIAG_UNIT)
     {

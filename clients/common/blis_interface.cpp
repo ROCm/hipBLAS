@@ -22,9 +22,6 @@
  * ************************************************************************ */
 
 #include <blis.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 void setup_blis()
 {

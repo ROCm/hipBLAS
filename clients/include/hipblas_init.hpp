@@ -23,6 +23,9 @@
 
 #pragma once
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include <assert.h>
 
 #include "hipblas.h"
@@ -1007,38 +1010,6 @@ inline void hipblas_init_matrix_type(hipblas_matrix_type     matrix_type,
         hipblas_init_matrix_trig<T>(
             matrix_type, arg.uplo, hA, seedReset, M, N, lda, stride_A, batch_count);
     }
-
-    /*
-    if(nan_init == hipblas_client_alpha_sets_nan && hipblas_isnan(arg.alpha))
-    {
-        hipblas_init_nan(hA, M, N, lda, stride_A, batch_count);
-    }
-    else if(nan_init == hipblas_client_beta_sets_nan && hipblas_isnan(arg.beta))
-    {
-        hipblas_init_nan(hA, M, N, lda, stride_A, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::hpl)
-    {
-        if(alternating_sign)
-            hipblas_init_hpl_alternating_sign(hA, M, N, lda, stride_A, batch_count);
-        else
-            hipblas_init_hpl(hA, M, N, lda, stride_A, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::rand_int)
-    {
-        if(alternating_sign)
-            hipblas_init_alternating_sign(hA, M, N, lda, stride_A, batch_count);
-        else
-            hipblas_init(hA, M, N, lda, stride_A, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::trig_float)
-    {
-        if(seedReset)
-            hipblas_init_cos(hA, M, N, lda, stride_A, batch_count);
-        else
-            hipblas_init_sin(hA, M, N, lda, stride_A, batch_count);
-    }
-    */
 }
 
 template <typename T>

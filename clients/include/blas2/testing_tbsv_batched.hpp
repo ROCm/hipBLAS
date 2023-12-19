@@ -194,7 +194,6 @@ void testing_tbsv_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(size_A, 1, batch_count);
     host_batch_vector<T> hAB(size_AB, 1, batch_count);
-    //host_batch_vector<T> AAT(size_A, 1, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hx_or_b(N, incx, batch_count);
@@ -208,7 +207,6 @@ void testing_tbsv_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    //hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
     hb.copy_from(hx);
 
@@ -227,7 +225,6 @@ void testing_tbsv_batched(const Arguments& arg)
 
         banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, N, K);
 
-        //prepare_triangular_solve((T*)hA[b], N, (T*)AAT[b], N, arg.uplo);
         if(diag == HIPBLAS_DIAG_UNIT)
         {
             make_unit_diagonal(uplo, (T*)hA[b], N, N);

@@ -157,8 +157,8 @@ target_include_directories( hipblas_v2-test
     ${ROCM_PATH}/include
 )
 
-target_link_libraries( hipblas-test PRIVATE roc::hipblas ${BLAS_LIBRARY} GTest::GTest )
-target_link_libraries( hipblas_v2-test PRIVATE roc::hipblas ${BLAS_LIBRARY} GTest::GTest )
+target_link_libraries( hipblas-test PRIVATE roc::hipblas GTest::GTest )
+target_link_libraries( hipblas_v2-test PRIVATE roc::hipblas GTest::GTest )
 
 if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client )
@@ -169,8 +169,18 @@ endif()
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
+target_compile_options(hipblas-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+target_compile_options(hipblas_v2-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+
 target_compile_definitions( hipblas-test PRIVATE ${COMMON_DEFINES} )
 target_compile_definitions( hipblas_v2-test PRIVATE ${COMMON_DEFINES} HIPBLAS_V2 )
+
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+if (NOT WIN32)
+    target_link_libraries( hipblas-test PRIVATE lapack stdc++fs )
+    target_link_libraries( hipblas_v2-test PRIVATE lapack stdc++fs )
+endif()
 
 if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-test PRIVATE hip::host )
@@ -207,19 +217,6 @@ else( )
   target_link_libraries( hipblas-test PRIVATE ${CUDA_LIBRARIES} )
   target_link_libraries( hipblas_v2-test PRIVATE ${CUDA_LIBRARIES} )
 endif( )
-
-target_compile_options(hipblas-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
-target_compile_options(hipblas_v2-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
-
-target_link_libraries( hipblas-test PRIVATE ${COMMON_LINK_LIBS} )
-target_link_libraries( hipblas_v2-test PRIVATE ${COMMON_LINK_LIBS} )
-
-if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE stdc++fs )
-    target_link_libraries( hipblas_v2-test PRIVATE stdc++fs )
-    # target_link_libraries( hipblas-test PRIVATE cblas lapack stdc++fs )
-    # target_link_libraries( hipblas_v2-test PRIVATE cblas lapack stdc++fs )
-endif()
 
 if (WIN32)
 # for now adding in all .dll as dependency chain is not cmake based on win32

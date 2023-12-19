@@ -23,6 +23,9 @@
 
 #pragma once
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include <hipblas/hipblas.h>
 #include <stdbool.h>
 
@@ -400,7 +403,9 @@ void hipblas_init_hpl_alternating_sign(
     T* A, size_t M, size_t N, size_t lda, size_t stride = 0, size_t batch_count = 1)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
         for(size_t j = 0; j < N; ++j)
         {
             size_t offset = j * lda + i_batch * stride;
@@ -445,7 +450,9 @@ inline void
     hipblas_init_cos(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
         for(size_t j = 0; j < N; ++j)
         {
             size_t offset = j * lda + i_batch * stride;
@@ -466,7 +473,9 @@ inline void
     hipblas_init_sin(T* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
         for(size_t j = 0; j < N; ++j)
         {
             size_t offset = j * lda + i_batch * stride;
@@ -487,7 +496,9 @@ inline void hipblas_init_cos<hipblasBfloat16>(
     hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
         for(size_t j = 0; j < N; ++j)
         {
             size_t offset = j * lda + i_batch * stride;
@@ -512,7 +523,9 @@ inline void hipblas_init_sin<hipblasBfloat16>(
     hipblasBfloat16* A, size_t M, size_t N, size_t lda, size_t stride, size_t batch_count)
 {
     for(size_t i_batch = 0; i_batch < batch_count; i_batch++)
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
         for(size_t j = 0; j < N; ++j)
         {
             size_t offset = j * lda + i_batch * stride;

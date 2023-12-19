@@ -87,20 +87,30 @@ target_include_directories( hipblas_v2-bench
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
-if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack stdc++fs )
-    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client lapack stdc++fs )
-endif()
+target_link_libraries( hipblas-bench PRIVATE roc::hipblas )
+target_link_libraries( hipblas_v2-bench PRIVATE roc::hipblas )
 
-target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
-target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas )
+if (NOT WIN32)
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client )
+    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client )
+endif()
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
+target_compile_options(hipblas-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+target_compile_options(hipblas_v2-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES})
 target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} HIPBLAS_V2)
+
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+if (NOT WIN32)
+    target_link_libraries( hipblas-bench PRIVATE lapack stdc++fs )
+    target_link_libraries( hipblas_v2-bench PRIVATE lapack stdc++fs )
+endif()
 
 if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-bench PRIVATE hip::host )
@@ -138,8 +148,6 @@ else( )
   target_link_libraries( hipblas_v2-bench PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
-target_link_libraries( hipblas-bench PRIVATE ${COMMON_LINK_LIBS} )
-target_link_libraries( hipblas_v2-bench PRIVATE ${COMMON_LINK_LIBS} )
 
 set_target_properties( hipblas-bench PROPERTIES
   CXX_EXTENSIONS OFF
