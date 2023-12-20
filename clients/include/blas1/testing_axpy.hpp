@@ -41,6 +41,8 @@ void testing_axpy_bad_arg(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyFn = FORTRAN ? hipblasAxpy<T, true> : hipblasAxpy<T, false>;
+    auto hipblasAxpyFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpy_64<T, true> : hipblasAxpy_64<T, false>;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -67,25 +69,28 @@ void testing_axpy_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(nullptr, N, alpha, dx, incx, dy, incy),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED, hipblasAxpyFn, (nullptr, N, alpha, dx, incx, dy, incy));
 
-        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, 0, nullptr, nullptr, incx, nullptr, incy));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, zero, nullptr, incx, nullptr, incy));
+        DAPI_CHECK(hipblasAxpyFn, (handle, 0, nullptr, nullptr, incx, nullptr, incy));
+        DAPI_CHECK(hipblasAxpyFn, (handle, N, zero, nullptr, incx, nullptr, incy));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, nullptr, dx, incx, dy, incy),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasAxpyFn,
+                        (handle, N, nullptr, dx, incx, dy, incy));
 
             // Can only check for nullptr for dx/dy with host mode because
             //device mode may not check as it could be quick-return success
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, nullptr, incx, dy, incy),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyFn(handle, N, alpha, dx, incx, nullptr, incy),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyFn,
+                            (handle, N, alpha, nullptr, incx, dy, incy));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyFn,
+                            (handle, N, alpha, dx, incx, nullptr, incy));
             }
         }
     }
@@ -96,13 +101,15 @@ void testing_axpy(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyFn = FORTRAN ? hipblasAxpy<T, true> : hipblasAxpy<T, false>;
+    auto hipblasAxpyFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpy_64<T, true> : hipblasAxpy_64<T, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -110,7 +117,7 @@ void testing_axpy(const Arguments& arg)
     // memory
     if(N <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, nullptr, nullptr, incx, nullptr, incy));
+        DAPI_CHECK(hipblasAxpyFn, (handle, N, nullptr, nullptr, incx, nullptr, incy));
         return;
     }
 
@@ -158,10 +165,10 @@ void testing_axpy(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
+        DAPI_CHECK(hipblasAxpyFn, (handle, N, d_alpha, dx, incx, dy_device, incy));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, &alpha, dx, incx, dy_host, incy));
+        DAPI_CHECK(hipblasAxpyFn, (handle, N, &alpha, dx, incx, dy_host, incy));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(
@@ -201,7 +208,7 @@ void testing_axpy(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyFn(handle, N, d_alpha, dx, incx, dy_device, incy));
+            DAPI_CHECK(hipblasAxpyFn, (handle, N, d_alpha, dx, incx, dy_device, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
