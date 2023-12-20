@@ -108,8 +108,8 @@ target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFI
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE lapack stdc++fs )
-    target_link_libraries( hipblas_v2-bench PRIVATE lapack stdc++fs )
+    target_link_libraries( hipblas-bench PRIVATE lapack cblas stdc++fs )
+    target_link_libraries( hipblas_v2-bench PRIVATE lapack cblas stdc++fs )
 endif()
 
 if(HIP_PLATFORM STREQUAL amd)

@@ -1023,6 +1023,10 @@ void ref_asum<hipblasDoubleComplex, double>(int64_t                     n,
 */
 
 // amax
+
+/* local versions of amax and amin for minimum index in case of ties.
+See hipblas_iamax_imin_fef.hpp
+
 template <>
 void ref_iamax<float>(int64_t n, const float* x, int64_t incx, int64_t* result)
 {
@@ -1052,6 +1056,7 @@ void ref_iamax<hipblasDoubleComplex>(int64_t                     n,
 
 // amin
 // amin is not implemented in cblas, make local version
+
 template <typename T>
 double hipblas_magnitude(T val)
 {
@@ -1117,6 +1122,7 @@ void ref_iamin<hipblasDoubleComplex>(int64_t                     n,
 {
     *result = (int64_t)ref_iamin_helper(n, x, incx);
 }
+*/
 
 /*
  * ===========================================================================

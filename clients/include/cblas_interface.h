@@ -58,11 +58,11 @@ void ref_dotc(int64_t n, const T* x, int64_t incx, const T* y, int64_t incy, T* 
 template <typename T1, typename T2>
 void ref_nrm2(int64_t n, const T1* x, int64_t incx, T2* result);
 
-template <typename T>
-void ref_iamax(int64_t n, const T* x, int64_t incx, int64_t* result);
+// template <typename T>
+// void ref_iamax(int64_t n, const T* x, int64_t incx, int64_t* result);
 
-template <typename T>
-void ref_iamin(int64_t n, const T* x, int64_t incx, int64_t* result);
+// template <typename T>
+// void ref_iamin(int64_t n, const T* x, int64_t incx, int64_t* result);
 
 template <typename T1, typename T2 = T1, typename T3 = T1>
 void ref_rot(int64_t n, T1* x, int64_t incx, T1* y, int64_t incy, T2 c, T3 s);

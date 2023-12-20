@@ -100,6 +100,7 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
   message(STATUS "CLIENT COMMON LINK: ${COMMON_LINK_LIBS}")
 
   if( NOT WIN32 )
+    find_package( cblas REQUIRED CONFIG )
     # Linking lapack library requires fortran flags
     if (LINK_BLIS)
       if(EXISTS          "${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a") # 4.0 and 4.1.0
@@ -125,7 +126,6 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
         message(STATUS "Linking BLIS LIB: ${BLAS_LIBRARY}")
       endif()
     else()
-      find_package( cblas REQUIRED CONFIG )
       set( BLAS_LIBRARY "blas" )
     endif()
   else() # WIN32

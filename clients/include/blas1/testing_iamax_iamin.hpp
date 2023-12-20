@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "hipblas_iamax_iamin_ref.hpp"
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx>;
@@ -153,8 +154,7 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
         =================================================================== */
         int64_t result_i64;
         REFBLAS_FUNC(N, hx.data(), incx, &result_i64);
-        // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-        cpu_result = result_i64 + 1;
+        cpu_result = result_i64;
 
         if(arg.unit_check)
         {
@@ -205,7 +205,7 @@ void testing_iamax(const Arguments& arg)
     bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
 
-    testing_iamax_iamin<T, ref_iamax<T>>(arg, hipblasIamaxFn);
+    testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>>(arg, hipblasIamaxFn);
 }
 
 inline void testname_iamin(const Arguments& arg, std::string& name)
@@ -219,5 +219,5 @@ void testing_iamin(const Arguments& arg)
     bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
 
-    testing_iamax_iamin<T, ref_iamin<T>>(arg, hipblasIamin<T>);
+    testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>>(arg, hipblasIamin<T>);
 }

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "hipblas_iamax_iamin_ref.hpp"
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count>;
@@ -159,8 +160,7 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
         for(int b = 0; b < batch_count; b++)
         {
             REFBLAS_FUNC(N, hx[b], incx, cpu_result_64 + b);
-            // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-            cpu_result[b] = cpu_result_64[b] + 1;
+            cpu_result[b] = cpu_result_64[b];
         }
 
         if(arg.unit_check)
@@ -219,7 +219,7 @@ void testing_iamax_batched(const Arguments& arg)
     auto hipblasIamaxBatchedFn
         = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
 
-    testing_iamax_iamin_batched<T, ref_iamax<T>>(arg, hipblasIamaxBatchedFn);
+    testing_iamax_iamin_batched<T, hipblas_iamax_iamin_ref::iamax<T>>(arg, hipblasIamaxBatchedFn);
 }
 
 inline void testname_iamin_batched(const Arguments& arg, std::string& name)
@@ -234,5 +234,5 @@ void testing_iamin_batched(const Arguments& arg)
     auto hipblasIaminBatchedFn
         = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
 
-    testing_iamax_iamin_batched<T, ref_iamin<T>>(arg, hipblasIaminBatchedFn);
+    testing_iamax_iamin_batched<T, hipblas_iamax_iamin_ref::iamin<T>>(arg, hipblasIaminBatchedFn);
 }
