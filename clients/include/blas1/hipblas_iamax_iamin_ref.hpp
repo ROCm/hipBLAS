@@ -27,19 +27,19 @@
 namespace hipblas_iamax_iamin_ref
 {
     template <typename T>
-    inline real_t<T> magnitude(const T& x)
+    inline real_t<T> iamax_iamin_abs(const T& x)
     {
         return hipblas_abs(x);
     }
 
     template <>
-    inline float magnitude(const hipblasComplex& c)
+    inline float iamax_iamin_abs(const hipblasComplex& c)
     {
         return hipblas_abs(c.real()) + hipblas_abs(c.imag());
     }
 
     template <>
-    inline double magnitude(const hipblasDoubleComplex& c)
+    inline double iamax_iamin_abs(const hipblasDoubleComplex& c)
     {
         return hipblas_abs(c.real()) + hipblas_abs(c.imag());
     }
@@ -50,11 +50,11 @@ namespace hipblas_iamax_iamin_ref
         int64_t minpos = -1;
         if(N > 0 && incx > 0)
         {
-            auto min = magnitude(X[0]);
+            auto min = iamax_iamin_abs(X[0]);
             minpos   = 0;
             for(size_t i = 1; i < N; ++i)
             {
-                auto a = magnitude(X[i * incx]);
+                auto a = iamax_iamin_abs(X[i * incx]);
                 if(a < min)
                 {
                     min    = a;
@@ -71,11 +71,11 @@ namespace hipblas_iamax_iamin_ref
         int64_t maxpos = -1;
         if(N > 0 && incx > 0)
         {
-            auto max = magnitude(X[0]);
+            auto max = iamax_iamin_abs(X[0]);
             maxpos   = 0;
             for(size_t i = 1; i < N; ++i)
             {
-                auto a = magnitude(X[i * incx]);
+                auto a = iamax_iamin_abs(X[i * incx]);
                 if(a > max)
                 {
                     max    = a;
