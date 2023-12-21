@@ -44,6 +44,145 @@
 // asum
 
 // axpy
+hipblasStatus_t HIPBLAS_FAPI(hipblasHaxpy)(hipblasHandle_t    handle,
+                                           hipblas_int        N,
+                                           const hipblasHalf* alpha,
+                                           const hipblasHalf* x,
+                                           hipblas_int        incx,
+                                           hipblasHalf*       y,
+                                           hipblas_int        incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasSaxpy)(hipblasHandle_t handle,
+                                           hipblas_int     N,
+                                           const float*    alpha,
+                                           const float*    x,
+                                           hipblas_int     incx,
+                                           float*          y,
+                                           hipblas_int     incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDaxpy)(hipblasHandle_t handle,
+                                           hipblas_int     N,
+                                           const double*   alpha,
+                                           const double*   x,
+                                           hipblas_int     incx,
+                                           double*         y,
+                                           hipblas_int     incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCaxpy)(hipblasHandle_t       handle,
+                                           hipblas_int           N,
+                                           const hipblasComplex* alpha,
+                                           const hipblasComplex* x,
+                                           hipblas_int           incx,
+                                           hipblasComplex*       y,
+                                           hipblas_int           incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZaxpy)(hipblasHandle_t             handle,
+                                           hipblas_int                 N,
+                                           const hipblasDoubleComplex* alpha,
+                                           const hipblasDoubleComplex* x,
+                                           hipblas_int                 incx,
+                                           hipblasDoubleComplex*       y,
+                                           hipblas_int                 incy);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasHaxpyBatched)(hipblasHandle_t          handle,
+                                                  hipblas_int              N,
+                                                  const hipblasHalf*       alpha,
+                                                  const hipblasHalf* const x[],
+                                                  hipblas_int              incx,
+                                                  hipblasHalf* const       y[],
+                                                  hipblas_int              incy,
+                                                  hipblas_int              batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasSaxpyBatched)(hipblasHandle_t    handle,
+                                                  hipblas_int        N,
+                                                  const float*       alpha,
+                                                  const float* const x[],
+                                                  hipblas_int        incx,
+                                                  float* const       y[],
+                                                  hipblas_int        incy,
+                                                  hipblas_int        batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDaxpyBatched)(hipblasHandle_t     handle,
+                                                  hipblas_int         N,
+                                                  const double*       alpha,
+                                                  const double* const x[],
+                                                  hipblas_int         incx,
+                                                  double* const       y[],
+                                                  hipblas_int         incy,
+                                                  hipblas_int         batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCaxpyBatched)(hipblasHandle_t             handle,
+                                                  hipblas_int                 N,
+                                                  const hipblasComplex*       alpha,
+                                                  const hipblasComplex* const x[],
+                                                  hipblas_int                 incx,
+                                                  hipblasComplex* const       y[],
+                                                  hipblas_int                 incy,
+                                                  hipblas_int                 batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZaxpyBatched)(hipblasHandle_t                   handle,
+                                                  hipblas_int                       N,
+                                                  const hipblasDoubleComplex*       alpha,
+                                                  const hipblasDoubleComplex* const x[],
+                                                  hipblas_int                       incx,
+                                                  hipblasDoubleComplex* const       y[],
+                                                  hipblas_int                       incy,
+                                                  hipblas_int                       batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasHaxpyStridedBatched)(hipblasHandle_t     handle,
+                                                         hipblas_int         N,
+                                                         const hipblasHalf*  alpha,
+                                                         const hipblasHalf*  x,
+                                                         hipblas_int         incx,
+                                                         const hipblasStride stride_x,
+                                                         hipblasHalf*        y,
+                                                         hipblas_int         incy,
+                                                         const hipblasStride stride_y,
+                                                         hipblas_int         batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasSaxpyStridedBatched)(hipblasHandle_t     handle,
+                                                         hipblas_int         N,
+                                                         const float*        alpha,
+                                                         const float*        x,
+                                                         hipblas_int         incx,
+                                                         const hipblasStride stride_x,
+                                                         float*              y,
+                                                         hipblas_int         incy,
+                                                         const hipblasStride stride_y,
+                                                         hipblas_int         batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDaxpyStridedBatched)(hipblasHandle_t     handle,
+                                                         hipblas_int         N,
+                                                         const double*       alpha,
+                                                         const double*       x,
+                                                         hipblas_int         incx,
+                                                         const hipblasStride stride_x,
+                                                         double*             y,
+                                                         hipblas_int         incy,
+                                                         const hipblasStride stride_y,
+                                                         hipblas_int         batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCaxpyStridedBatched)(hipblasHandle_t       handle,
+                                                         hipblas_int           N,
+                                                         const hipblasComplex* alpha,
+                                                         const hipblasComplex* x,
+                                                         hipblas_int           incx,
+                                                         const hipblasStride   stride_x,
+                                                         hipblasComplex*       y,
+                                                         hipblas_int           incy,
+                                                         const hipblasStride   stride_y,
+                                                         hipblas_int           batch_count);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZaxpyStridedBatched)(hipblasHandle_t             handle,
+                                                         hipblas_int                 N,
+                                                         const hipblasDoubleComplex* alpha,
+                                                         const hipblasDoubleComplex* x,
+                                                         hipblas_int                 incx,
+                                                         const hipblasStride         stride_x,
+                                                         hipblasDoubleComplex*       y,
+                                                         hipblas_int                 incy,
+                                                         const hipblasStride         stride_y,
+                                                         hipblas_int                 batch_count);
 
 // copy
 hipblasStatus_t HIPBLAS_FAPI(hipblasScopy)(hipblasHandle_t handle,

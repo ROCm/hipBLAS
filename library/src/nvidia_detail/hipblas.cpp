@@ -1270,6 +1270,154 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+// 64-bit interface
+hipblasStatus_t hipblasHaxpy_64(hipblasHandle_t    handle,
+                                int64_t            n,
+                                const hipblasHalf* alpha,
+                                const hipblasHalf* x,
+                                int64_t            incx,
+                                hipblasHalf*       y,
+                                int64_t            incy)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasSaxpy_64(hipblasHandle_t handle,
+                                int64_t         n,
+                                const float*    alpha,
+                                const float*    x,
+                                int64_t         incx,
+                                float*          y,
+                                int64_t         incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasSaxpy_64((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDaxpy_64(hipblasHandle_t handle,
+                                int64_t         n,
+                                const double*   alpha,
+                                const double*   x,
+                                int64_t         incx,
+                                double*         y,
+                                int64_t         incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasDaxpy_64((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpy_64(hipblasHandle_t       handle,
+                                int64_t               n,
+                                const hipblasComplex* alpha,
+                                const hipblasComplex* x,
+                                int64_t               incx,
+                                hipblasComplex*       y,
+                                int64_t               incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasCaxpy_64(
+        (cublasHandle_t)handle, n, (cuComplex*)alpha, (cuComplex*)x, incx, (cuComplex*)y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpy_64(hipblasHandle_t             handle,
+                                int64_t                     n,
+                                const hipblasDoubleComplex* alpha,
+                                const hipblasDoubleComplex* x,
+                                int64_t                     incx,
+                                hipblasDoubleComplex*       y,
+                                int64_t                     incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasZaxpy_64((cublasHandle_t)handle,
+                                                     n,
+                                                     (cuDoubleComplex*)alpha,
+                                                     (cuDoubleComplex*)x,
+                                                     incx,
+                                                     (cuDoubleComplex*)y,
+                                                     incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpy_64_v2(hipblasHandle_t   handle,
+                                   int64_t           n,
+                                   const hipComplex* alpha,
+                                   const hipComplex* x,
+                                   int64_t           incx,
+                                   hipComplex*       y,
+                                   int64_t           incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasCaxpy_64(
+        (cublasHandle_t)handle, n, (cuComplex*)alpha, (cuComplex*)x, incx, (cuComplex*)y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpy_64_v2(hipblasHandle_t         handle,
+                                   int64_t                 n,
+                                   const hipDoubleComplex* alpha,
+                                   const hipDoubleComplex* x,
+                                   int64_t                 incx,
+                                   hipDoubleComplex*       y,
+                                   int64_t                 incy)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasZaxpy_64((cublasHandle_t)handle,
+                                                     n,
+                                                     (cuDoubleComplex*)alpha,
+                                                     (cuDoubleComplex*)x,
+                                                     incx,
+                                                     (cuDoubleComplex*)y,
+                                                     incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // axpy_batched
 hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                     int                      n,
@@ -1294,9 +1442,6 @@ hipblasStatus_t hipblasSaxpyBatched(hipblasHandle_t    handle,
 try
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // TODO warn user that function was demoted to ignore batch
-    // return hipCUBLASStatusToHIPStatus(
-    //     cublasSaxpy((cublasHandle_t)handle, n, alpha, x, incx, y, incy));
 }
 catch(...)
 {
@@ -1359,6 +1504,96 @@ hipblasStatus_t hipblasZaxpyBatched_v2(hipblasHandle_t               handle,
                                        hipDoubleComplex* const       y[],
                                        int                           incy,
                                        int                           batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// 64-bit interface
+hipblasStatus_t hipblasHaxpyBatched_64(hipblasHandle_t          handle,
+                                       int64_t                  n,
+                                       const hipblasHalf*       alpha,
+                                       const hipblasHalf* const x[],
+                                       int64_t                  incx,
+                                       hipblasHalf* const       y[],
+                                       int64_t                  incy,
+                                       int64_t                  batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasSaxpyBatched_64(hipblasHandle_t    handle,
+                                       int64_t            n,
+                                       const float*       alpha,
+                                       const float* const x[],
+                                       int64_t            incx,
+                                       float* const       y[],
+                                       int64_t            incy,
+                                       int64_t            batchCount)
+try
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDaxpyBatched_64(hipblasHandle_t     handle,
+                                       int64_t             n,
+                                       const double*       alpha,
+                                       const double* const x[],
+                                       int64_t             incx,
+                                       double* const       y[],
+                                       int64_t             incy,
+                                       int64_t             batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyBatched_64(hipblasHandle_t             handle,
+                                       int64_t                     n,
+                                       const hipblasComplex*       alpha,
+                                       const hipblasComplex* const x[],
+                                       int64_t                     incx,
+                                       hipblasComplex* const       y[],
+                                       int64_t                     incy,
+                                       int64_t                     batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyBatched_64(hipblasHandle_t                   handle,
+                                       int64_t                           n,
+                                       const hipblasDoubleComplex*       alpha,
+                                       const hipblasDoubleComplex* const x[],
+                                       int64_t                           incx,
+                                       hipblasDoubleComplex* const       y[],
+                                       int64_t                           incy,
+                                       int64_t                           batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyBatched_64_v2(hipblasHandle_t         handle,
+                                          int64_t                 n,
+                                          const hipComplex*       alpha,
+                                          const hipComplex* const x[],
+                                          int64_t                 incx,
+                                          hipComplex* const       y[],
+                                          int64_t                 incy,
+                                          int64_t                 batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyBatched_64_v2(hipblasHandle_t               handle,
+                                          int64_t                       n,
+                                          const hipDoubleComplex*       alpha,
+                                          const hipDoubleComplex* const x[],
+                                          int64_t                       incx,
+                                          hipDoubleComplex* const       y[],
+                                          int64_t                       incy,
+                                          int64_t                       batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -1458,6 +1693,105 @@ hipblasStatus_t hipblasZaxpyStridedBatched_v2(hipblasHandle_t         handle,
                                               int                     incy,
                                               hipblasStride           stridey,
                                               int                     batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// 64-bit interface
+hipblasStatus_t hipblasHaxpyStridedBatched_64(hipblasHandle_t    handle,
+                                              int64_t            n,
+                                              const hipblasHalf* alpha,
+                                              const hipblasHalf* x,
+                                              int64_t            incx,
+                                              hipblasStride      stridex,
+                                              hipblasHalf*       y,
+                                              int64_t            incy,
+                                              hipblasStride      stridey,
+                                              int64_t            batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasSaxpyStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const float*    alpha,
+                                              const float*    x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              float*          y,
+                                              int64_t         incy,
+                                              hipblasStride   stridey,
+                                              int64_t         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDaxpyStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const double*   alpha,
+                                              const double*   x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              double*         y,
+                                              int64_t         incy,
+                                              hipblasStride   stridey,
+                                              int64_t         batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatched_64(hipblasHandle_t       handle,
+                                              int64_t               n,
+                                              const hipblasComplex* alpha,
+                                              const hipblasComplex* x,
+                                              int64_t               incx,
+                                              hipblasStride         stridex,
+                                              hipblasComplex*       y,
+                                              int64_t               incy,
+                                              hipblasStride         stridey,
+                                              int64_t               batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatched_64(hipblasHandle_t             handle,
+                                              int64_t                     n,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* x,
+                                              int64_t                     incx,
+                                              hipblasStride               stridex,
+                                              hipblasDoubleComplex*       y,
+                                              int64_t                     incy,
+                                              hipblasStride               stridey,
+                                              int64_t                     batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatched_64_v2(hipblasHandle_t   handle,
+                                                 int64_t           n,
+                                                 const hipComplex* alpha,
+                                                 const hipComplex* x,
+                                                 int64_t           incx,
+                                                 hipblasStride     stridex,
+                                                 hipComplex*       y,
+                                                 int64_t           incy,
+                                                 hipblasStride     stridey,
+                                                 int64_t           batchCount)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatched_64_v2(hipblasHandle_t         handle,
+                                                 int64_t                 n,
+                                                 const hipDoubleComplex* alpha,
+                                                 const hipDoubleComplex* x,
+                                                 int64_t                 incx,
+                                                 hipblasStride           stridex,
+                                                 hipDoubleComplex*       y,
+                                                 int64_t                 incy,
+                                                 hipblasStride           stridey,
+                                                 int64_t                 batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }

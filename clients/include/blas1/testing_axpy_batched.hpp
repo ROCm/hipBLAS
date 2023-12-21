@@ -43,6 +43,8 @@ void testing_axpy_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyBatchedFn
         = FORTRAN ? hipblasAxpyBatched<T, true> : hipblasAxpyBatched<T, false>;
+    auto hipblasAxpyBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpyBatched_64<T, true> : hipblasAxpyBatched_64<T, false>;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -70,32 +72,31 @@ void testing_axpy_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasAxpyBatchedFn(nullptr, N, alpha, dx, incx, dy, incy, batch_count),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasAxpyBatchedFn,
+                    (nullptr, N, alpha, dx, incx, dy, incy, batch_count));
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasAxpyBatchedFn(handle, N, nullptr, dx, incx, dy, incy, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasAxpyBatchedFn,
+                    (handle, N, nullptr, dx, incx, dy, incy, batch_count));
 
         // Can only check for nullptr for dx/dy with host mode because
         //device mode may not check as it could be quick-return success
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasAxpyBatchedFn(handle, N, alpha, nullptr, incx, dy, incy, batch_count),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasAxpyBatchedFn(handle, N, alpha, dx, incx, nullptr, incy, batch_count),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasAxpyBatchedFn,
+                        (handle, N, alpha, nullptr, incx, dy, incy, batch_count));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasAxpyBatchedFn,
+                        (handle, N, alpha, dx, incx, nullptr, incy, batch_count));
         }
 
-        CHECK_HIPBLAS_ERROR(
-            hipblasAxpyBatchedFn(handle, 0, nullptr, nullptr, incx, nullptr, incy, batch_count));
-        CHECK_HIPBLAS_ERROR(
-            hipblasAxpyBatchedFn(handle, N, zero, nullptr, incx, nullptr, incy, batch_count));
-        CHECK_HIPBLAS_ERROR(
-            hipblasAxpyBatchedFn(handle, N, nullptr, nullptr, incx, nullptr, incy, 0));
+        DAPI_CHECK(hipblasAxpyBatchedFn,
+                   (handle, 0, nullptr, nullptr, incx, nullptr, incy, batch_count));
+        DAPI_CHECK(hipblasAxpyBatchedFn,
+                   (handle, N, zero, nullptr, incx, nullptr, incy, batch_count));
+        DAPI_CHECK(hipblasAxpyBatchedFn, (handle, N, nullptr, nullptr, incx, nullptr, incy, 0));
     }
 }
 
@@ -105,12 +106,14 @@ void testing_axpy_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyBatchedFn
         = FORTRAN ? hipblasAxpyBatched<T, true> : hipblasAxpyBatched<T, false>;
+    auto hipblasAxpyBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpyBatched_64<T, true> : hipblasAxpyBatched_64<T, false>;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
-    int abs_incy    = incy < 0 ? -incy : incy;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
+    int64_t abs_incy    = incy < 0 ? -incy : incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -118,8 +121,8 @@ void testing_axpy_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasAxpyBatchedFn(handle, N, nullptr, nullptr, incx, nullptr, incy, batch_count));
+        DAPI_CHECK(hipblasAxpyBatchedFn,
+                   (handle, N, nullptr, nullptr, incx, nullptr, incy, batch_count));
         return;
     }
 
@@ -159,24 +162,26 @@ void testing_axpy_batched(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
-                                                 N,
-                                                 d_alpha,
-                                                 dx.ptr_on_device(),
-                                                 incx,
-                                                 dy_device.ptr_on_device(),
-                                                 incy,
-                                                 batch_count));
+        DAPI_CHECK(hipblasAxpyBatchedFn,
+                   (handle,
+                    N,
+                    d_alpha,
+                    dx.ptr_on_device(),
+                    incx,
+                    dy_device.ptr_on_device(),
+                    incy,
+                    batch_count));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
-                                                 N,
-                                                 &alpha,
-                                                 dx.ptr_on_device(),
-                                                 incx,
-                                                 dy_host.ptr_on_device(),
-                                                 incy,
-                                                 batch_count));
+        DAPI_CHECK(hipblasAxpyBatchedFn,
+                   (handle,
+                    N,
+                    &alpha,
+                    dx.ptr_on_device(),
+                    incx,
+                    dy_host.ptr_on_device(),
+                    incy,
+                    batch_count));
 
         CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
         CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
@@ -184,9 +189,10 @@ void testing_axpy_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_axpy<T>(N, alpha, hx_cpu[b], incx, hy_cpu[b], incy);
+            int b2 = b;
+            ref_axpy<T>((int)N, alpha, hx_cpu[b2], (int)incx, hy_cpu[b2], (int)incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -218,14 +224,15 @@ void testing_axpy_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedFn(handle,
-                                                     N,
-                                                     d_alpha,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy_device.ptr_on_device(),
-                                                     incy,
-                                                     batch_count));
+            DAPI_CHECK(hipblasAxpyBatchedFn,
+                       (handle,
+                        N,
+                        d_alpha,
+                        dx.ptr_on_device(),
+                        incx,
+                        dy_device.ptr_on_device(),
+                        incy,
+                        batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
