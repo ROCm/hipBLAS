@@ -24,7 +24,9 @@
 
 #include "hipblas.h"
 #include "type_utils.h"
+#ifndef WIN32
 #include <cblas.h>
+#endif
 
 /*!\file
  * \brief provide template functions interfaces to CBLAS C89 interfaces, it is only used for testing

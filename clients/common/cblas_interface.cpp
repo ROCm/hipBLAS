@@ -21,9 +21,9 @@
  *
  *
  * ************************************************************************/
-
-#include <cblas.h>
+//#ifndef WIN32
 //#include <lapacke.h>
+//#endif
 
 #include "cblas_interface.h"
 #include "hipblas.h"
