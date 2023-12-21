@@ -73,6 +73,35 @@ hipblasStatus_t hipblasZaxpyCast(hipblasHandle_t             handle,
                         incy);
 }
 
+hipblasStatus_t hipblasCaxpyCast_64(hipblasHandle_t       handle,
+                                    int64_t               n,
+                                    const hipblasComplex* alpha,
+                                    const hipblasComplex* x,
+                                    int64_t               incx,
+                                    hipblasComplex*       y,
+                                    int64_t               incy)
+{
+    return hipblasCaxpy_64(
+        handle, n, (const hipComplex*)alpha, (const hipComplex*)x, incx, (hipComplex*)y, incy);
+}
+
+hipblasStatus_t hipblasZaxpyCast_64(hipblasHandle_t             handle,
+                                    int64_t                     n,
+                                    const hipblasDoubleComplex* alpha,
+                                    const hipblasDoubleComplex* x,
+                                    int64_t                     incx,
+                                    hipblasDoubleComplex*       y,
+                                    int64_t                     incy)
+{
+    return hipblasZaxpy_64(handle,
+                           n,
+                           (const hipDoubleComplex*)alpha,
+                           (const hipDoubleComplex*)x,
+                           incx,
+                           (hipDoubleComplex*)y,
+                           incy);
+}
+
 // axpy_batched
 hipblasStatus_t hipblasCaxpyBatchedCast(hipblasHandle_t             handle,
                                         int                         n,
@@ -110,6 +139,44 @@ hipblasStatus_t hipblasZaxpyBatchedCast(hipblasHandle_t                   handle
                                (hipDoubleComplex* const*)y,
                                incy,
                                batch_count);
+}
+
+hipblasStatus_t hipblasCaxpyBatchedCast_64(hipblasHandle_t             handle,
+                                           int64_t                     n,
+                                           const hipblasComplex*       alpha,
+                                           const hipblasComplex* const x[],
+                                           int64_t                     incx,
+                                           hipblasComplex* const       y[],
+                                           int64_t                     incy,
+                                           int64_t                     batch_count)
+{
+    return hipblasCaxpyBatched_64(handle,
+                                  n,
+                                  (const hipComplex*)alpha,
+                                  (const hipComplex* const*)x,
+                                  incx,
+                                  (hipComplex* const*)y,
+                                  incy,
+                                  batch_count);
+}
+
+hipblasStatus_t hipblasZaxpyBatchedCast_64(hipblasHandle_t                   handle,
+                                           int64_t                           n,
+                                           const hipblasDoubleComplex*       alpha,
+                                           const hipblasDoubleComplex* const x[],
+                                           int64_t                           incx,
+                                           hipblasDoubleComplex* const       y[],
+                                           int64_t                           incy,
+                                           int64_t                           batch_count)
+{
+    return hipblasZaxpyBatched_64(handle,
+                                  n,
+                                  (const hipDoubleComplex*)alpha,
+                                  (const hipDoubleComplex* const*)x,
+                                  incx,
+                                  (hipDoubleComplex* const*)y,
+                                  incy,
+                                  batch_count);
 }
 
 // axpy_strided_batched
@@ -157,6 +224,52 @@ hipblasStatus_t hipblasZaxpyStridedBatchedCast(hipblasHandle_t             handl
                                       incy,
                                       stridey,
                                       batch_count);
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                  int64_t               n,
+                                                  const hipblasComplex* alpha,
+                                                  const hipblasComplex* x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stridex,
+                                                  hipblasComplex*       y,
+                                                  int64_t               incy,
+                                                  hipblasStride         stridey,
+                                                  int64_t               batch_count)
+{
+    return hipblasCaxpyStridedBatched_64(handle,
+                                         n,
+                                         (const hipComplex*)alpha,
+                                         (const hipComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (hipComplex*)y,
+                                         incy,
+                                         stridey,
+                                         batch_count);
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                  int64_t                     n,
+                                                  const hipblasDoubleComplex* alpha,
+                                                  const hipblasDoubleComplex* x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stridex,
+                                                  hipblasDoubleComplex*       y,
+                                                  int64_t                     incy,
+                                                  hipblasStride               stridey,
+                                                  int64_t                     batch_count)
+{
+    return hipblasZaxpyStridedBatched_64(handle,
+                                         n,
+                                         (const hipDoubleComplex*)alpha,
+                                         (const hipDoubleComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (hipDoubleComplex*)y,
+                                         incy,
+                                         stridey,
+                                         batch_count);
 }
 
 // swap

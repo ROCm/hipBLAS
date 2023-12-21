@@ -44,10 +44,297 @@
 ! asumStridedBatched
 
 ! axpy
+function hipblasHaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &
+    bind(c, name='hipblasHaxpy_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasHaxpy_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasHaxpy_64Fortran = &
+        hipblasHaxpy_64(handle, n, alpha, x, incx, y, incy)
+    return
+end function hipblasHaxpy_64Fortran
+
+function hipblasSaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &
+    bind(c, name='hipblasSaxpy_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSaxpy_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasSaxpy_64Fortran = &
+        hipblasSaxpy_64(handle, n, alpha, x, incx, y, incy)
+    return
+end function hipblasSaxpy_64Fortran
+
+function hipblasDaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &
+    bind(c, name='hipblasDaxpy_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDaxpy_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasDaxpy_64Fortran = &
+        hipblasDaxpy_64(handle, n, alpha, x, incx, y, incy)
+    return
+end function hipblasDaxpy_64Fortran
+
+function hipblasCaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &
+    bind(c, name='hipblasCaxpy_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCaxpy_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasCaxpy_64Fortran = &
+        hipblasCaxpy_64(handle, n, alpha, x, incx, y, incy)
+    return
+end function hipblasCaxpy_64Fortran
+
+function hipblasZaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &
+    bind(c, name='hipblasZaxpy_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZaxpy_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasZaxpy_64Fortran = &
+        hipblasZaxpy_64(handle, n, alpha, x, incx, y, incy)
+    return
+end function hipblasZaxpy_64Fortran
 
 ! axpyBatched
+function hipblasHaxpyBatched_64Fortran(handle, n, alpha, x, incx, y, incy, batch_count) &
+    bind(c, name='hipblasHaxpyBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasHaxpyBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasHaxpyBatched_64Fortran = &
+        hipblasHaxpyBatched_64(handle, n, alpha, x, incx, y, incy, batch_count)
+    return
+end function hipblasHaxpyBatched_64Fortran
+
+function hipblasSaxpyBatched_64Fortran(handle, n, alpha, x, incx, y, incy, batch_count) &
+    bind(c, name='hipblasSaxpyBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSaxpyBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasSaxpyBatched_64Fortran = &
+        hipblasSaxpyBatched_64(handle, n, alpha, x, incx, y, incy, batch_count)
+    return
+end function hipblasSaxpyBatched_64Fortran
+
+function hipblasDaxpyBatched_64Fortran(handle, n, alpha, x, incx, y, incy, batch_count) &
+    bind(c, name='hipblasDaxpyBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDaxpyBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasDaxpyBatched_64Fortran = &
+        hipblasDaxpyBatched_64(handle, n, alpha, x, incx, y, incy, batch_count)
+    return
+end function hipblasDaxpyBatched_64Fortran
+
+function hipblasCaxpyBatched_64Fortran(handle, n, alpha, x, incx, y, incy, batch_count) &
+    bind(c, name='hipblasCaxpyBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCaxpyBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasCaxpyBatched_64Fortran = &
+        hipblasCaxpyBatched_64(handle, n, alpha, x, incx, y, incy, batch_count)
+    return
+end function hipblasCaxpyBatched_64Fortran
+
+function hipblasZaxpyBatched_64Fortran(handle, n, alpha, x, incx, y, incy, batch_count) &
+    bind(c, name='hipblasZaxpyBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZaxpyBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasZaxpyBatched_64Fortran = &
+        hipblasZaxpyBatched_64(handle, n, alpha, x, incx, y, incy, batch_count)
+    return
+end function hipblasZaxpyBatched_64Fortran
 
 ! axpyStridedBatched
+function hipblasHaxpyStridedBatched_64Fortran(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasHaxpyStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasHaxpyStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasHaxpyStridedBatched_64Fortran = &
+        hipblasHaxpyStridedBatched_64(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count)
+    return
+end function hipblasHaxpyStridedBatched_64Fortran
+
+function hipblasSaxpyStridedBatched_64Fortran(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasSaxpyStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSaxpyStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasSaxpyStridedBatched_64Fortran = &
+        hipblasSaxpyStridedBatched_64(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count)
+    return
+end function hipblasSaxpyStridedBatched_64Fortran
+
+function hipblasDaxpyStridedBatched_64Fortran(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasDaxpyStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDaxpyStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasDaxpyStridedBatched_64Fortran = &
+        hipblasDaxpyStridedBatched_64(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count)
+    return
+end function hipblasDaxpyStridedBatched_64Fortran
+
+function hipblasCaxpyStridedBatched_64Fortran(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasCaxpyStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCaxpyStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasCaxpyStridedBatched_64Fortran = &
+        hipblasCaxpyStridedBatched_64(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count)
+    return
+end function hipblasCaxpyStridedBatched_64Fortran
+
+function hipblasZaxpyStridedBatched_64Fortran(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasZaxpyStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZaxpyStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasZaxpyStridedBatched_64Fortran = &
+        hipblasZaxpyStridedBatched_64(handle, n, alpha, x, incx, stride_x, y, incy, stride_y, batch_count)
+    return
+end function hipblasZaxpyStridedBatched_64Fortran
 
 ! copy
 function hipblasScopy_64Fortran(handle, n, x, incx, y, incy) &

@@ -1594,6 +1594,151 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
+// 64-bit interface
+hipblasStatus_t hipblasHaxpy_64(hipblasHandle_t    handle,
+                                int64_t            n,
+                                const hipblasHalf* alpha,
+                                const hipblasHalf* x,
+                                int64_t            incx,
+                                hipblasHalf*       y,
+                                int64_t            incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_haxpy_64((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_half*)alpha,
+                                                     (rocblas_half*)x,
+                                                     incx,
+                                                     (rocblas_half*)y,
+                                                     incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSaxpy_64(hipblasHandle_t handle,
+                                int64_t         n,
+                                const float*    alpha,
+                                const float*    x,
+                                int64_t         incx,
+                                float*          y,
+                                int64_t         incy)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_saxpy_64((rocblas_handle)handle, n, alpha, x, incx, y, incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDaxpy_64(hipblasHandle_t handle,
+                                int64_t         n,
+                                const double*   alpha,
+                                const double*   x,
+                                int64_t         incx,
+                                double*         y,
+                                int64_t         incy)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_daxpy_64((rocblas_handle)handle, n, alpha, x, incx, y, incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpy_64(hipblasHandle_t       handle,
+                                int64_t               n,
+                                const hipblasComplex* alpha,
+                                const hipblasComplex* x,
+                                int64_t               incx,
+                                hipblasComplex*       y,
+                                int64_t               incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_64((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_float_complex*)alpha,
+                                                     (rocblas_float_complex*)x,
+                                                     incx,
+                                                     (rocblas_float_complex*)y,
+                                                     incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpy_64(hipblasHandle_t             handle,
+                                int64_t                     n,
+                                const hipblasDoubleComplex* alpha,
+                                const hipblasDoubleComplex* x,
+                                int64_t                     incx,
+                                hipblasDoubleComplex*       y,
+                                int64_t                     incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_64((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_double_complex*)alpha,
+                                                     (rocblas_double_complex*)x,
+                                                     incx,
+                                                     (rocblas_double_complex*)y,
+                                                     incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpy_64_v2(hipblasHandle_t   handle,
+                                   int64_t           n,
+                                   const hipComplex* alpha,
+                                   const hipComplex* x,
+                                   int64_t           incx,
+                                   hipComplex*       y,
+                                   int64_t           incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_64((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_float_complex*)alpha,
+                                                     (rocblas_float_complex*)x,
+                                                     incx,
+                                                     (rocblas_float_complex*)y,
+                                                     incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpy_64_v2(hipblasHandle_t         handle,
+                                   int64_t                 n,
+                                   const hipDoubleComplex* alpha,
+                                   const hipDoubleComplex* x,
+                                   int64_t                 incx,
+                                   hipDoubleComplex*       y,
+                                   int64_t                 incy)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_64((rocblas_handle)handle,
+                                                     n,
+                                                     (rocblas_double_complex*)alpha,
+                                                     (rocblas_double_complex*)x,
+                                                     incx,
+                                                     (rocblas_double_complex*)y,
+                                                     incy));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
 // axpy_batched
 hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                     int                      n,
@@ -1745,6 +1890,163 @@ try
                                                           (rocblas_double_complex* const*)y,
                                                           incy,
                                                           batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// 64-bit interface
+hipblasStatus_t hipblasHaxpyBatched_64(hipblasHandle_t          handle,
+                                       int64_t                  n,
+                                       const hipblasHalf*       alpha,
+                                       const hipblasHalf* const x[],
+                                       int64_t                  incx,
+                                       hipblasHalf* const       y[],
+                                       int64_t                  incy,
+                                       int64_t                  batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_haxpy_batched_64((rocblas_handle)handle,
+                                                             n,
+                                                             (rocblas_half*)alpha,
+                                                             (rocblas_half* const*)x,
+                                                             incx,
+                                                             (rocblas_half* const*)y,
+                                                             incy,
+                                                             batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSaxpyBatched_64(hipblasHandle_t    handle,
+                                       int64_t            n,
+                                       const float*       alpha,
+                                       const float* const x[],
+                                       int64_t            incx,
+                                       float* const       y[],
+                                       int64_t            incy,
+                                       int64_t            batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_saxpy_batched_64((rocblas_handle)handle, n, alpha, x, incx, y, incy, batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDaxpyBatched_64(hipblasHandle_t     handle,
+                                       int64_t             n,
+                                       const double*       alpha,
+                                       const double* const x[],
+                                       int64_t             incx,
+                                       double* const       y[],
+                                       int64_t             incy,
+                                       int64_t             batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_daxpy_batched_64((rocblas_handle)handle, n, alpha, x, incx, y, incy, batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpyBatched_64(hipblasHandle_t             handle,
+                                       int64_t                     n,
+                                       const hipblasComplex*       alpha,
+                                       const hipblasComplex* const x[],
+                                       int64_t                     incx,
+                                       hipblasComplex* const       y[],
+                                       int64_t                     incy,
+                                       int64_t                     batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_batched_64((rocblas_handle)handle,
+                                                             n,
+                                                             (rocblas_float_complex*)alpha,
+                                                             (rocblas_float_complex* const*)x,
+                                                             incx,
+                                                             (rocblas_float_complex* const*)y,
+                                                             incy,
+                                                             batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpyBatched_64(hipblasHandle_t                   handle,
+                                       int64_t                           n,
+                                       const hipblasDoubleComplex*       alpha,
+                                       const hipblasDoubleComplex* const x[],
+                                       int64_t                           incx,
+                                       hipblasDoubleComplex* const       y[],
+                                       int64_t                           incy,
+                                       int64_t                           batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_batched_64((rocblas_handle)handle,
+                                                             n,
+                                                             (rocblas_double_complex*)alpha,
+                                                             (rocblas_double_complex* const*)x,
+                                                             incx,
+                                                             (rocblas_double_complex* const*)y,
+                                                             incy,
+                                                             batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpyBatched_64_v2(hipblasHandle_t         handle,
+                                          int64_t                 n,
+                                          const hipComplex*       alpha,
+                                          const hipComplex* const x[],
+                                          int64_t                 incx,
+                                          hipComplex* const       y[],
+                                          int64_t                 incy,
+                                          int64_t                 batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_batched_64((rocblas_handle)handle,
+                                                             n,
+                                                             (rocblas_float_complex*)alpha,
+                                                             (rocblas_float_complex* const*)x,
+                                                             incx,
+                                                             (rocblas_float_complex* const*)y,
+                                                             incy,
+                                                             batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpyBatched_64_v2(hipblasHandle_t               handle,
+                                          int64_t                       n,
+                                          const hipDoubleComplex*       alpha,
+                                          const hipDoubleComplex* const x[],
+                                          int64_t                       incx,
+                                          hipDoubleComplex* const       y[],
+                                          int64_t                       incy,
+                                          int64_t                       batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_batched_64((rocblas_handle)handle,
+                                                             n,
+                                                             (rocblas_double_complex*)alpha,
+                                                             (rocblas_double_complex* const*)x,
+                                                             incx,
+                                                             (rocblas_double_complex* const*)y,
+                                                             incy,
+                                                             batchCount));
 }
 catch(...)
 {
@@ -1926,6 +2228,187 @@ try
                                                                   incy,
                                                                   stridey,
                                                                   batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// 64-bit interface
+hipblasStatus_t hipblasHaxpyStridedBatched_64(hipblasHandle_t    handle,
+                                              int64_t            n,
+                                              const hipblasHalf* alpha,
+                                              const hipblasHalf* x,
+                                              int64_t            incx,
+                                              hipblasStride      stridex,
+                                              hipblasHalf*       y,
+                                              int64_t            incy,
+                                              hipblasStride      stridey,
+                                              int64_t            batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_haxpy_strided_batched_64((rocblas_handle)handle,
+                                                                     n,
+                                                                     (rocblas_half*)alpha,
+                                                                     (rocblas_half*)x,
+                                                                     incx,
+                                                                     stridex,
+                                                                     (rocblas_half*)y,
+                                                                     incy,
+                                                                     stridey,
+                                                                     batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSaxpyStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const float*    alpha,
+                                              const float*    x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              float*          y,
+                                              int64_t         incy,
+                                              hipblasStride   stridey,
+                                              int64_t         batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_saxpy_strided_batched_64(
+        (rocblas_handle)handle, n, alpha, x, incx, stridex, y, incy, stridey, batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDaxpyStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const double*   alpha,
+                                              const double*   x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              double*         y,
+                                              int64_t         incy,
+                                              hipblasStride   stridey,
+                                              int64_t         batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_daxpy_strided_batched_64(
+        (rocblas_handle)handle, n, alpha, x, incx, stridex, y, incy, stridey, batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatched_64(hipblasHandle_t       handle,
+                                              int64_t               n,
+                                              const hipblasComplex* alpha,
+                                              const hipblasComplex* x,
+                                              int64_t               incx,
+                                              hipblasStride         stridex,
+                                              hipblasComplex*       y,
+                                              int64_t               incy,
+                                              hipblasStride         stridey,
+                                              int64_t               batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_strided_batched_64((rocblas_handle)handle,
+                                                                     n,
+                                                                     (rocblas_float_complex*)alpha,
+                                                                     (rocblas_float_complex*)x,
+                                                                     incx,
+                                                                     stridex,
+                                                                     (rocblas_float_complex*)y,
+                                                                     incy,
+                                                                     stridey,
+                                                                     batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatched_64(hipblasHandle_t             handle,
+                                              int64_t                     n,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* x,
+                                              int64_t                     incx,
+                                              hipblasStride               stridex,
+                                              hipblasDoubleComplex*       y,
+                                              int64_t                     incy,
+                                              hipblasStride               stridey,
+                                              int64_t                     batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_strided_batched_64((rocblas_handle)handle,
+                                                                     n,
+                                                                     (rocblas_double_complex*)alpha,
+                                                                     (rocblas_double_complex*)x,
+                                                                     incx,
+                                                                     stridex,
+                                                                     (rocblas_double_complex*)y,
+                                                                     incy,
+                                                                     stridey,
+                                                                     batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasCaxpyStridedBatched_64_v2(hipblasHandle_t   handle,
+                                                 int64_t           n,
+                                                 const hipComplex* alpha,
+                                                 const hipComplex* x,
+                                                 int64_t           incx,
+                                                 hipblasStride     stridex,
+                                                 hipComplex*       y,
+                                                 int64_t           incy,
+                                                 hipblasStride     stridey,
+                                                 int64_t           batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_caxpy_strided_batched_64((rocblas_handle)handle,
+                                                                     n,
+                                                                     (rocblas_float_complex*)alpha,
+                                                                     (rocblas_float_complex*)x,
+                                                                     incx,
+                                                                     stridex,
+                                                                     (rocblas_float_complex*)y,
+                                                                     incy,
+                                                                     stridey,
+                                                                     batchCount));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasZaxpyStridedBatched_64_v2(hipblasHandle_t         handle,
+                                                 int64_t                 n,
+                                                 const hipDoubleComplex* alpha,
+                                                 const hipDoubleComplex* x,
+                                                 int64_t                 incx,
+                                                 hipblasStride           stridex,
+                                                 hipDoubleComplex*       y,
+                                                 int64_t                 incy,
+                                                 hipblasStride           stridey,
+                                                 int64_t                 batchCount)
+try
+{
+    return rocBLASStatusToHIPStatus(rocblas_zaxpy_strided_batched_64((rocblas_handle)handle,
+                                                                     n,
+                                                                     (rocblas_double_complex*)alpha,
+                                                                     (rocblas_double_complex*)x,
+                                                                     incx,
+                                                                     stridex,
+                                                                     (rocblas_double_complex*)y,
+                                                                     incy,
+                                                                     stridey,
+                                                                     batchCount));
 }
 catch(...)
 {
