@@ -21,7 +21,7 @@ Tests:
       - dotc: *single_double_precisions_complex
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   # half/bf16 precision only rocBLAS backend
   - name: dot_general_amd
@@ -31,7 +31,7 @@ Tests:
       - dot: *bf16_precision
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_batched_general
@@ -42,7 +42,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_strided_batched_general
@@ -54,7 +54,41 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
+    backend_flags: AMD
+
+  # ILP-64 tests
+  # - name: dot_64
+  #   category: stress
+  #   function:
+  #     - dot: *single_precision
+  #     - dotc: *single_precision_complex
+  #   arguments:
+  #     - { N: 2147483649, incx:  1, incy:  1 }
+  #     - { N: 2, incx:  2147483649, incy:  1 }
+  #     - { N: 2, incx:  1, incy:  2147483649 }
+  #   api: [ C_64 ]
+
+  # - name: dot_64
+  #   category: stress
+  #   function:
+  #     - dot_batched: *single_precision
+  #     - dot_strided_batched: *single_precision
+  #     - dotc_batched: *single_precision_complex
+  #     - dotc_strided_batched: *single_precision_complex
+  #   arguments:
+  #     - { N: 2147483649, incx:  1, incy:  1, batch_count: 1 }
+  #     - { N: 2, incx:  2147483649, incy:  1, batch_count: 1 }
+  #     - { N: 2, incx:  1, incy:  2147483649, batch_count: 1 }
+  #     - { N: 2, incx:  1, incy:  1, stride_x: 2, stride_y: 2, batch_count: *666666 }
+  #   api: [ C_64 ]
+
+  - name: dot_bad_arg
+    category: pre_checkin
+    function:
+      - dot_bad_arg: *single_double_precisions_complex_real
+      - dotc_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_bad_arg
@@ -62,15 +96,7 @@ Tests:
     function:
       - dot_bad_arg: *single_double_precisions_complex_real
       - dotc_bad_arg: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
-
-  - name: dot_bad_arg
-    category: pre_checkin
-    function:
-      - dot_bad_arg: *single_double_precisions_complex_real
-      - dotc_bad_arg: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -83,7 +109,7 @@ Tests:
       - dot_strided_batched_bad_arg: *half_bfloat_single_double_complex_real_precisions
       - dotc_batched_bad_arg: *single_double_precisions_complex
       - dotc_strided_batched_bad_arg: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
 
