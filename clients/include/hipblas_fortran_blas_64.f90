@@ -38,10 +38,211 @@
 ! aminStridedBatched
 
 ! asum
+function hipblasSasum_64Fortran(handle, n, x, incx, result) &
+    bind(c, name='hipblasSasum_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSasum_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: result
+            hipblasSasum_64Fortran = &
+        hipblasSasum_64(handle, n, x, incx, result)
+    return
+end function hipblasSasum_64Fortran
+
+function hipblasDasum_64Fortran(handle, n, x, incx, result) &
+    bind(c, name='hipblasDasum_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDasum_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: result
+            hipblasDasum_64Fortran = &
+        hipblasDasum_64(handle, n, x, incx, result)
+    return
+end function hipblasDasum_64Fortran
+
+function hipblasScasum_64Fortran(handle, n, x, incx, result) &
+    bind(c, name='hipblasScasum_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScasum_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: result
+            hipblasScasum_64Fortran = &
+        hipblasScasum_64(handle, n, x, incx, result)
+    return
+end function hipblasScasum_64Fortran
+
+function hipblasDzasum_64Fortran(handle, n, x, incx, result) &
+    bind(c, name='hipblasDzasum_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDzasum_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: result
+            hipblasDzasum_64Fortran = &
+        hipblasDzasum_64(handle, n, x, incx, result)
+    return
+end function hipblasDzasum_64Fortran
 
 ! asumBatched
+function hipblasSasumBatched_64Fortran(handle, n, x, incx, batch_count, result) &
+    bind(c, name='hipblasSasumBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSasumBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasSasumBatched_64Fortran = &
+        hipblasSasumBatched_64(handle, n, x, incx, batch_count, result)
+    return
+end function hipblasSasumBatched_64Fortran
+
+function hipblasDasumBatched_64Fortran(handle, n, x, incx, batch_count, result) &
+    bind(c, name='hipblasDasumBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDasumBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasDasumBatched_64Fortran = &
+        hipblasDasumBatched_64(handle, n, x, incx, batch_count, result)
+    return
+end function hipblasDasumBatched_64Fortran
+
+function hipblasScasumBatched_64Fortran(handle, n, x, incx, batch_count, result) &
+    bind(c, name='hipblasScasumBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScasumBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasScasumBatched_64Fortran = &
+        hipblasScasumBatched_64(handle, n, x, incx, batch_count, result)
+    return
+end function hipblasScasumBatched_64Fortran
+
+function hipblasDzasumBatched_64Fortran(handle, n, x, incx, batch_count, result) &
+    bind(c, name='hipblasDzasumBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDzasumBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasDzasumBatched_64Fortran = &
+        hipblasDzasumBatched_64(handle, n, x, incx, batch_count, result)
+    return
+end function hipblasDzasumBatched_64Fortran
 
 ! asumStridedBatched
+function hipblasSasumStridedBatched_64Fortran(handle, n, x, incx, stride_x, batch_count, result) &
+    bind(c, name='hipblasSasumStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSasumStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasSasumStridedBatched_64Fortran = &
+        hipblasSasumStridedBatched_64(handle, n, x, incx, stride_x, batch_count, result)
+    return
+end function hipblasSasumStridedBatched_64Fortran
+
+function hipblasDasumStridedBatched_64Fortran(handle, n, x, incx, stride_x, batch_count, result) &
+    bind(c, name='hipblasDasumStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDasumStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasDasumStridedBatched_64Fortran = &
+        hipblasDasumStridedBatched_64(handle, n, x, incx, stride_x, batch_count, result)
+    return
+end function hipblasDasumStridedBatched_64Fortran
+
+function hipblasScasumStridedBatched_64Fortran(handle, n, x, incx, stride_x, batch_count, result) &
+    bind(c, name='hipblasScasumStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScasumStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasScasumStridedBatched_64Fortran = &
+        hipblasScasumStridedBatched_64(handle, n, x, incx, stride_x, batch_count, result)
+    return
+end function hipblasScasumStridedBatched_64Fortran
+
+function hipblasDzasumStridedBatched_64Fortran(handle, n, x, incx, stride_x, batch_count, result) &
+    bind(c, name='hipblasDzasumStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDzasumStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    integer(c_int64_t), value :: batch_count
+    type(c_ptr), value :: result
+            hipblasDzasumStridedBatched_64Fortran = &
+        hipblasDzasumStridedBatched_64(handle, n, x, incx, stride_x, batch_count, result)
+    return
+end function hipblasDzasumStridedBatched_64Fortran
 
 ! axpy
 function hipblasHaxpy_64Fortran(handle, n, alpha, x, incx, y, incy) &

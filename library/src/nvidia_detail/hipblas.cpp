@@ -950,7 +950,7 @@ hipblasStatus_t hipblasIzaminStridedBatched_v2(hipblasHandle_t         handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-// ASUM
+// asum
 hipblasStatus_t hipblasSasum(hipblasHandle_t handle, int n, const float* x, int incx, float* result)
 try
 {
@@ -1014,6 +1014,101 @@ try
 {
     return hipCUBLASStatusToHIPStatus(
         cublasDzasum((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+// asum_64
+hipblasStatus_t
+    hipblasSasum_64(hipblasHandle_t handle, int64_t n, const float* x, int64_t incx, float* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasSasum_64((cublasHandle_t)handle, n, x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDasum_64(
+    hipblasHandle_t handle, int64_t n, const double* x, int64_t incx, double* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasDasum_64((cublasHandle_t)handle, n, x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasScasum_64(
+    hipblasHandle_t handle, int64_t n, const hipblasComplex* x, int64_t incx, float* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasScasum_64((cublasHandle_t)handle, n, (cuComplex*)x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDzasum_64(
+    hipblasHandle_t handle, int64_t n, const hipblasDoubleComplex* x, int64_t incx, double* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasDzasum_64((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasScasum_64_v2(
+    hipblasHandle_t handle, int64_t n, const hipComplex* x, int64_t incx, float* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasScasum_64((cublasHandle_t)handle, n, (cuComplex*)x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasDzasum_64_v2(
+    hipblasHandle_t handle, int64_t n, const hipDoubleComplex* x, int64_t incx, double* result)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasDzasum_64((cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, result));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -1084,6 +1179,67 @@ hipblasStatus_t hipblasDzasumBatched_v2(hipblasHandle_t               handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
+// asum_batched_64
+hipblasStatus_t hipblasSasumBatched_64(hipblasHandle_t    handle,
+                                       int64_t            n,
+                                       const float* const x[],
+                                       int64_t            incx,
+                                       int64_t            batchCount,
+                                       float*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDasumBatched_64(hipblasHandle_t     handle,
+                                       int64_t             n,
+                                       const double* const x[],
+                                       int64_t             incx,
+                                       int64_t             batchCount,
+                                       double*             result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScasumBatched_64(hipblasHandle_t             handle,
+                                        int64_t                     n,
+                                        const hipblasComplex* const x[],
+                                        int64_t                     incx,
+                                        int64_t                     batchCount,
+                                        float*                      result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDzasumBatched_64(hipblasHandle_t                   handle,
+                                        int64_t                           n,
+                                        const hipblasDoubleComplex* const x[],
+                                        int64_t                           incx,
+                                        int64_t                           batchCount,
+                                        double*                           result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScasumBatched_64_v2(hipblasHandle_t         handle,
+                                           int64_t                 n,
+                                           const hipComplex* const x[],
+                                           int64_t                 incx,
+                                           int64_t                 batchCount,
+                                           float*                  result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDzasumBatched_64_v2(hipblasHandle_t               handle,
+                                           int64_t                       n,
+                                           const hipDoubleComplex* const x[],
+                                           int64_t                       incx,
+                                           int64_t                       batchCount,
+                                           double*                       result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
 // asum_strided_batched
 hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
                                            int             n,
@@ -1147,6 +1303,73 @@ hipblasStatus_t hipblasDzasumStridedBatched_v2(hipblasHandle_t         handle,
                                                hipblasStride           stridex,
                                                int                     batchCount,
                                                double*                 result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+// asum_strided_batched_64
+hipblasStatus_t hipblasSasumStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const float*    x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              int64_t         batchCount,
+                                              float*          result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDasumStridedBatched_64(hipblasHandle_t handle,
+                                              int64_t         n,
+                                              const double*   x,
+                                              int64_t         incx,
+                                              hipblasStride   stridex,
+                                              int64_t         batchCount,
+                                              double*         result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScasumStridedBatched_64(hipblasHandle_t       handle,
+                                               int64_t               n,
+                                               const hipblasComplex* x,
+                                               int64_t               incx,
+                                               hipblasStride         stridex,
+                                               int64_t               batchCount,
+                                               float*                result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDzasumStridedBatched_64(hipblasHandle_t             handle,
+                                               int64_t                     n,
+                                               const hipblasDoubleComplex* x,
+                                               int64_t                     incx,
+                                               hipblasStride               stridex,
+                                               int64_t                     batchCount,
+                                               double*                     result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasScasumStridedBatched_64_v2(hipblasHandle_t   handle,
+                                                  int64_t           n,
+                                                  const hipComplex* x,
+                                                  int64_t           incx,
+                                                  hipblasStride     stridex,
+                                                  int64_t           batchCount,
+                                                  float*            result)
+{
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasStatus_t hipblasDzasumStridedBatched_64_v2(hipblasHandle_t         handle,
+                                                  int64_t                 n,
+                                                  const hipDoubleComplex* x,
+                                                  int64_t                 incx,
+                                                  hipblasStride           stridex,
+                                                  int64_t                 batchCount,
+                                                  double*                 result)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
