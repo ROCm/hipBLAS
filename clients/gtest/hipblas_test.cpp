@@ -278,7 +278,7 @@ bool hipblas_client_global_filters(const Arguments& args)
         return false;
 #endif
 
-#if CUBLAS_VER_MAJOR < 12
+#if defined(__HIP_PLATFORM_NVCC__) && CUBLAS_VER_MAJOR < 12
     if(args.api == hipblas_client_api::FORTRAN_64 || args.api == hipblas_client_api::C_64)
         return false;
 #endif

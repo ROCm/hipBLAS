@@ -90,20 +90,6 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(M, incy, batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(nullptr,
-                                                   transA,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   beta,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
         EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
                                                    (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                                                    M,
@@ -119,44 +105,29 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                                                    batch_count),
                               HIPBLAS_STATUS_INVALID_ENUM);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
-                                                   transA,
-                                                   M,
-                                                   N,
-                                                   nullptr,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   beta,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
-                                                   transA,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   nullptr,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
+            EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(nullptr,
                                                        transA,
                                                        M,
                                                        N,
                                                        alpha,
+                                                       dA.ptr_on_device(),
+                                                       lda,
+                                                       dx.ptr_on_device(),
+                                                       incx,
+                                                       beta,
+                                                       dy.ptr_on_device(),
+                                                       incy,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_NOT_INITIALIZED);
+
+            EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
+                                                       transA,
+                                                       M,
+                                                       N,
                                                        nullptr,
+                                                       dA.ptr_on_device(),
                                                        lda,
                                                        dx.ptr_on_device(),
                                                        incx,
@@ -172,27 +143,90 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                                                        alpha,
                                                        dA.ptr_on_device(),
                                                        lda,
-                                                       nullptr,
+                                                       dx.ptr_on_device(),
                                                        incx,
-                                                       beta,
+                                                       nullptr,
                                                        dy.ptr_on_device(),
                                                        incy,
                                                        batch_count),
                                   HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
-                                                       transA,
-                                                       M,
-                                                       N,
-                                                       alpha,
-                                                       dA.ptr_on_device(),
-                                                       lda,
-                                                       dx.ptr_on_device(),
-                                                       incx,
-                                                       beta,
-                                                       nullptr,
-                                                       incy,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
+                                                           transA,
+                                                           M,
+                                                           N,
+                                                           alpha,
+                                                           nullptr,
+                                                           lda,
+                                                           dx.ptr_on_device(),
+                                                           incx,
+                                                           beta,
+                                                           dy.ptr_on_device(),
+                                                           incy,
+                                                           batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
+                                                           transA,
+                                                           M,
+                                                           N,
+                                                           alpha,
+                                                           dA.ptr_on_device(),
+                                                           lda,
+                                                           nullptr,
+                                                           incx,
+                                                           beta,
+                                                           dy.ptr_on_device(),
+                                                           incy,
+                                                           batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasGemvBatchedFn(handle,
+                                                           transA,
+                                                           M,
+                                                           N,
+                                                           alpha,
+                                                           dA.ptr_on_device(),
+                                                           lda,
+                                                           dx.ptr_on_device(),
+                                                           incx,
+                                                           beta,
+                                                           nullptr,
+                                                           incy,
+                                                           batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have x nullptr
+            CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
+                                                     transA,
+                                                     M,
+                                                     N,
+                                                     zero,
+                                                     nullptr,
+                                                     lda,
+                                                     nullptr,
+                                                     incx,
+                                                     beta,
+                                                     dy.ptr_on_device(),
+                                                     incy,
+                                                     batch_count));
+
+            // With alpha == 0 && beta == 1, all other ptrs can be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
+                                                     transA,
+                                                     M,
+                                                     N,
+                                                     zero,
+                                                     nullptr,
+                                                     lda,
+                                                     nullptr,
+                                                     incx,
+                                                     one,
+                                                     nullptr,
+                                                     incy,
+                                                     batch_count));
         }
 
         // With M == 0 || N == 0, can have all nullptrs
@@ -224,36 +258,6 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                                                  batch_count));
         CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(
             handle, transA, M, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy, 0));
-
-        // With alpha == 0 can have x nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
-                                                 transA,
-                                                 M,
-                                                 N,
-                                                 zero,
-                                                 nullptr,
-                                                 lda,
-                                                 nullptr,
-                                                 incx,
-                                                 beta,
-                                                 dy.ptr_on_device(),
-                                                 incy,
-                                                 batch_count));
-
-        // With alpha == 0 && beta == 1, all other ptrs can be nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGemvBatchedFn(handle,
-                                                 transA,
-                                                 M,
-                                                 N,
-                                                 zero,
-                                                 nullptr,
-                                                 lda,
-                                                 nullptr,
-                                                 incx,
-                                                 one,
-                                                 nullptr,
-                                                 incy,
-                                                 batch_count));
     }
 }
 
@@ -296,21 +300,26 @@ void testing_gemv_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
-                                                      transA,
-                                                      M,
-                                                      N,
-                                                      nullptr,
-                                                      nullptr,
-                                                      lda,
-                                                      nullptr,
-                                                      incx,
-                                                      nullptr,
-                                                      nullptr,
-                                                      incy,
-                                                      batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        if(!invalid_size || arg.bad_arg_all)
+        {
+            // cublas backend doesn't support nullptrs with bad input sizes
+            hipblasStatus_t actual = hipblasGemvBatchedFn(handle,
+                                                          transA,
+                                                          M,
+                                                          N,
+                                                          nullptr,
+                                                          nullptr,
+                                                          lda,
+                                                          nullptr,
+                                                          incx,
+                                                          nullptr,
+                                                          nullptr,
+                                                          incy,
+                                                          batch_count);
+            EXPECT_HIPBLAS_STATUS(
+                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        }
+
         return;
     }
 

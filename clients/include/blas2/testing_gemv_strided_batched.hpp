@@ -95,23 +95,6 @@ void testing_gemv_strided_batched_bad_arg(const Arguments& arg)
         device_vector<T> dx(stridex * batch_count);
         device_vector<T> dy(stridey * batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(nullptr,
-                                                          transA,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dx,
-                                                          incx,
-                                                          stridex,
-                                                          beta,
-                                                          dy,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
         EXPECT_HIPBLAS_STATUS(
             hipblasGemvStridedBatchedFn(handle,
                                         (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
@@ -131,50 +114,32 @@ void testing_gemv_strided_batched_bad_arg(const Arguments& arg)
                                         batch_count),
             HIPBLAS_STATUS_INVALID_ENUM);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
-                                                          transA,
-                                                          M,
-                                                          N,
-                                                          nullptr,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dx,
-                                                          incx,
-                                                          stridex,
-                                                          beta,
-                                                          dy,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
-                                                          transA,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dx,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          dy,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-
-        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        if(arg.bad_arg_all)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
+            EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(nullptr,
                                                               transA,
                                                               M,
                                                               N,
                                                               alpha,
+                                                              dA,
+                                                              lda,
+                                                              strideA,
+                                                              dx,
+                                                              incx,
+                                                              stridex,
+                                                              beta,
+                                                              dy,
+                                                              incy,
+                                                              stridey,
+                                                              batch_count),
+                                  HIPBLAS_STATUS_NOT_INITIALIZED);
+
+            EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
+                                                              transA,
+                                                              M,
+                                                              N,
                                                               nullptr,
+                                                              dA,
                                                               lda,
                                                               strideA,
                                                               dx,
@@ -194,32 +159,107 @@ void testing_gemv_strided_batched_bad_arg(const Arguments& arg)
                                                               dA,
                                                               lda,
                                                               strideA,
-                                                              nullptr,
+                                                              dx,
                                                               incx,
                                                               stridex,
-                                                              beta,
+                                                              nullptr,
                                                               dy,
                                                               incy,
                                                               stridey,
                                                               batch_count),
                                   HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
-                                                              transA,
-                                                              M,
-                                                              N,
-                                                              alpha,
-                                                              dA,
-                                                              lda,
-                                                              strideA,
-                                                              dx,
-                                                              incx,
-                                                              stridex,
-                                                              beta,
-                                                              nullptr,
-                                                              incy,
-                                                              stridey,
-                                                              batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
+                                                                  transA,
+                                                                  M,
+                                                                  N,
+                                                                  alpha,
+                                                                  nullptr,
+                                                                  lda,
+                                                                  strideA,
+                                                                  dx,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  dy,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
+                                                                  transA,
+                                                                  M,
+                                                                  N,
+                                                                  alpha,
+                                                                  dA,
+                                                                  lda,
+                                                                  strideA,
+                                                                  nullptr,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  dy,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasGemvStridedBatchedFn(handle,
+                                                                  transA,
+                                                                  M,
+                                                                  N,
+                                                                  alpha,
+                                                                  dA,
+                                                                  lda,
+                                                                  strideA,
+                                                                  dx,
+                                                                  incx,
+                                                                  stridex,
+                                                                  beta,
+                                                                  nullptr,
+                                                                  incy,
+                                                                  stridey,
+                                                                  batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have x nullptr
+            CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
+                                                            transA,
+                                                            M,
+                                                            N,
+                                                            zero,
+                                                            nullptr,
+                                                            lda,
+                                                            strideA,
+                                                            nullptr,
+                                                            incx,
+                                                            stridex,
+                                                            beta,
+                                                            dy,
+                                                            incy,
+                                                            stridey,
+                                                            batch_count));
+
+            // With alpha == 0 && beta == 1, all other ptrs can be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
+                                                            transA,
+                                                            M,
+                                                            N,
+                                                            zero,
+                                                            nullptr,
+                                                            lda,
+                                                            strideA,
+                                                            nullptr,
+                                                            incx,
+                                                            stridex,
+                                                            one,
+                                                            nullptr,
+                                                            incy,
+                                                            stridey,
+                                                            batch_count));
         }
 
         // With M == 0 || N == 0, can have all nullptrs
@@ -255,42 +295,22 @@ void testing_gemv_strided_batched_bad_arg(const Arguments& arg)
                                                         incy,
                                                         stridey,
                                                         batch_count));
-
-        // With alpha == 0 can have x nullptr
         CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
                                                         transA,
                                                         M,
                                                         N,
-                                                        zero,
+                                                        nullptr,
                                                         nullptr,
                                                         lda,
                                                         strideA,
                                                         nullptr,
                                                         incx,
                                                         stridex,
-                                                        beta,
-                                                        dy,
-                                                        incy,
-                                                        stridey,
-                                                        batch_count));
-
-        // With alpha == 0 && beta == 1, all other ptrs can be nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,
-                                                        transA,
-                                                        M,
-                                                        N,
-                                                        zero,
                                                         nullptr,
-                                                        lda,
-                                                        strideA,
-                                                        nullptr,
-                                                        incx,
-                                                        stridex,
-                                                        one,
                                                         nullptr,
                                                         incy,
                                                         stridey,
-                                                        batch_count));
+                                                        0));
     }
 }
 
@@ -345,24 +365,28 @@ void testing_gemv_strided_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasGemvStridedBatchedFn(handle,
-                                                             transA,
-                                                             M,
-                                                             N,
-                                                             nullptr,
-                                                             nullptr,
-                                                             lda,
-                                                             stride_A,
-                                                             nullptr,
-                                                             incx,
-                                                             stride_x,
-                                                             nullptr,
-                                                             nullptr,
-                                                             incy,
-                                                             stride_y,
-                                                             batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        if(!invalid_size || arg.bad_arg_all)
+        {
+            // cublas backend doesn't support nullptrs with bad input sizes
+            hipblasStatus_t actual = hipblasGemvStridedBatchedFn(handle,
+                                                                 transA,
+                                                                 M,
+                                                                 N,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 lda,
+                                                                 stride_A,
+                                                                 nullptr,
+                                                                 incx,
+                                                                 stride_x,
+                                                                 nullptr,
+                                                                 nullptr,
+                                                                 incy,
+                                                                 stride_y,
+                                                                 batch_count);
+            EXPECT_HIPBLAS_STATUS(
+                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        }
         return;
     }
 
@@ -435,7 +459,7 @@ void testing_gemv_strided_batched(const Arguments& arg)
                                                         batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(hipblasGemvStridedBatchedFn(handle,

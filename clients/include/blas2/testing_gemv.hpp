@@ -176,14 +176,15 @@ void testing_gemv(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || lda < M || lda < 1 || !incx || !incy;
     if(invalid_size || !M || !N)
     {
-        // Only rocBLAS conforms to expected behaviour so commenting out
-        /*
-        hipblasStatus_t actual = hipblasGemvFn(
-            handle, transA, M, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
-        return actual;
-	*/
+        if(!invalid_size || arg.bad_arg_all)
+        {
+            // cublas backend doesn't support nullptrs with bad input sizes
+            hipblasStatus_t actual = hipblasGemvFn(
+                handle, transA, M, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
+            EXPECT_HIPBLAS_STATUS(
+                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        }
+
         return;
     }
 

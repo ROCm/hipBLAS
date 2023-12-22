@@ -50,6 +50,15 @@ namespace
                 if(!hipblas_client_global_filters(args))
                     return false;
 
+#if defined(__HIP_PLATFORM_NVCC__) && CUBLAS_VERSION < 110700
+                // avoid gemvBatched/gemvStridedBatched tests with cuBLAS older than 11.7.0
+                if(!strcmp(args.function, "gemv_batched")
+                   || !strcmp(args.function, "gemv_batched_bad_arg")
+                   || !strcmp(args.function, "gemv_strided_batched")
+                   || !strcmp(args.function, "gemv_strided_batched_bad_arg"))
+                    return false;
+#endif
+
                 // type filters
                 return static_cast<bool>(FILTER<T...>{});
             }
