@@ -30,45 +30,47 @@ Tests:
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     api: [ FORTRAN, C ]
+    backend_flags: AMD
 
-  - name: gemv_batched_general
+  - name: gemv_general
     category: quick
-    function: gemv_batched
+    function: gemv
+    precision: *single_double_precisions_complex_real
+    transA: [ 'N', 'T', 'C' ]
+    alpha_beta: *alpha_beta_range
+    matrix_size: *size_range
+    incx_incy: *incx_incy_range
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
+
+  - name: gemv_general
+    category: quick
+    function:
+      - gemv_batched
+      - gemv_strided_batched
     precision: *single_double_precisions_complex_real
     transA: [ 'N', 'T', 'C' ]
     alpha_beta: *alpha_beta_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
+    stride_scale: [ 1.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
 
-  - name: gemv_strided_batched_general
+  - name: gemv_general
     category: quick
-    function: gemv_strided_batched
+    function:
+      - gemv_batched
+      - gemv_strided_batched
     precision: *single_double_precisions_complex_real
     transA: [ 'N', 'T', 'C' ]
     alpha_beta: *alpha_beta_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
-
-  - name: gemv_bad_arg
-    category: pre_checkin
-    function:
-      - gemv_bad_arg
-    precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
-
-  - name: gemv_bad_arg
-    category: pre_checkin
-    function:
-      - gemv_bad_arg
-    precision: *single_double_precisions_complex_real
+    stride_scale: [ 1.5 ]
     api: [ FORTRAN, C ]
     bad_arg_all: false
     backend_flags: NVIDIA
@@ -76,9 +78,21 @@ Tests:
   - name: gemv_bad_arg
     category: pre_checkin
     function:
+      - gemv_bad_arg
       - gemv_batched_bad_arg
       - gemv_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: gemv_bad_arg
+    category: pre_checkin
+    function:
+      - gemv_bad_arg
+      - gemv_batched_bad_arg
+      - gemv_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...
