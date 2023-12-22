@@ -42,6 +42,8 @@ void testing_asum_bad_arg(const Arguments& arg)
     using Tr           = real_t<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAsumFn = FORTRAN ? hipblasAsum<T, Tr, true> : hipblasAsum<T, Tr, false>;
+    auto hipblasAsumFn_64
+        = arg.api == FORTRAN_64 ? hipblasAsum_64<T, Tr, true> : hipblasAsum_64<T, Tr, false>;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -56,15 +58,13 @@ void testing_asum_bad_arg(const Arguments& arg)
 
         device_vector<T> dx(N * incx);
 
-        EXPECT_HIPBLAS_STATUS(hipblasAsumFn(nullptr, N, dx, incx, &res),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, dx, incx, nullptr),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasAsumFn, (nullptr, N, dx, incx, &res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasAsumFn, (handle, N, dx, incx, nullptr));
 
         // extra tests supported with rocBLAS backend
         if(arg.bad_arg_all)
-            EXPECT_HIPBLAS_STATUS(hipblasAsumFn(handle, N, nullptr, incx, &res),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE, hipblasAsumFn, (handle, N, nullptr, incx, &res));
     }
 }
 
@@ -74,9 +74,11 @@ void testing_asum(const Arguments& arg)
     using Tr           = real_t<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAsumFn = FORTRAN ? hipblasAsum<T, Tr, true> : hipblasAsum<T, Tr, false>;
+    auto hipblasAsumFn_64
+        = arg.api == FORTRAN_64 ? hipblasAsum_64<T, Tr, true> : hipblasAsum_64<T, Tr, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
 
     hipblasLocalHandle handle(arg);
 
@@ -90,7 +92,7 @@ void testing_asum(const Arguments& arg)
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, nullptr, incx, d_hipblas_result_0));
+        DAPI_CHECK(hipblasAsumFn, (handle, N, nullptr, incx, d_hipblas_result_0));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
@@ -124,10 +126,10 @@ void testing_asum(const Arguments& arg)
         =================================================================== */
         // hipblasAsum accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
+        DAPI_CHECK(hipblasAsumFn, (handle, N, dx, incx, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, &hipblas_result_host));
+        DAPI_CHECK(hipblasAsumFn, (handle, N, dx, incx, &hipblas_result_host));
 
         CHECK_HIP_ERROR(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
@@ -136,7 +138,7 @@ void testing_asum(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        ref_asum<T, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_asum<T, Tr>((int)N, hx.data(), (int)incx, &cpu_result);
 
         if(arg.unit_check)
         {
@@ -165,7 +167,7 @@ void testing_asum(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAsumFn(handle, N, dx, incx, d_hipblas_result));
+            DAPI_CHECK(hipblasAsumFn, (handle, N, dx, incx, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

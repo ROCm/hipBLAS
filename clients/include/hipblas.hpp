@@ -612,6 +612,43 @@ hipblasStatus_t hipblasDzasumStridedBatchedCast(hipblasHandle_t             hand
                                                 int                         batch_count,
                                                 double*                     result);
 
+// asum_64
+hipblasStatus_t hipblasScasumCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasComplex* x, int64_t incx, float* result);
+
+hipblasStatus_t hipblasDzasumCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasDoubleComplex* x, int64_t incx, double* result);
+
+hipblasStatus_t hipblasScasumBatchedCast_64(hipblasHandle_t             handle,
+                                            int64_t                     n,
+                                            const hipblasComplex* const x[],
+                                            int64_t                     incx,
+                                            int64_t                     batch_count,
+                                            float*                      result);
+
+hipblasStatus_t hipblasDzasumBatchedCast_64(hipblasHandle_t                   handle,
+                                            int64_t                           n,
+                                            const hipblasDoubleComplex* const x[],
+                                            int64_t                           incx,
+                                            int64_t                           batch_count,
+                                            double*                           result);
+
+hipblasStatus_t hipblasScasumStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                   int64_t               n,
+                                                   const hipblasComplex* x,
+                                                   int64_t               incx,
+                                                   hipblasStride         stridex,
+                                                   int64_t               batch_count,
+                                                   float*                result);
+
+hipblasStatus_t hipblasDzasumStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                   int64_t                     n,
+                                                   const hipblasDoubleComplex* x,
+                                                   int64_t                     incx,
+                                                   hipblasStride               stridex,
+                                                   int64_t                     batch_count,
+                                                   double*                     result);
+
 // nrm2
 hipblasStatus_t hipblasScnrm2Cast(
     hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result);
@@ -4238,20 +4275,44 @@ namespace
                                                  int             batch_count,
                                                  T2*             result);
 
-    MAP2CF(hipblasAsum, float, float, hipblasSasum);
-    MAP2CF(hipblasAsum, double, double, hipblasDasum);
-    MAP2CF_V2(hipblasAsum, hipblasComplex, float, hipblasScasum);
-    MAP2CF_V2(hipblasAsum, hipblasDoubleComplex, double, hipblasDzasum);
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsum_64)(
+        hipblasHandle_t handle, int64_t n, const T1* x, int64_t incx, T2* result);
 
-    MAP2CF(hipblasAsumBatched, float, float, hipblasSasumBatched);
-    MAP2CF(hipblasAsumBatched, double, double, hipblasDasumBatched);
-    MAP2CF_V2(hipblasAsumBatched, hipblasComplex, float, hipblasScasumBatched);
-    MAP2CF_V2(hipblasAsumBatched, hipblasDoubleComplex, double, hipblasDzasumBatched);
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsumBatched_64)(hipblasHandle_t handle,
+                                             int64_t         n,
+                                             const T1* const x[],
+                                             int64_t         incx,
+                                             int64_t         batch_count,
+                                             T2*             result);
 
-    MAP2CF(hipblasAsumStridedBatched, float, float, hipblasSasumStridedBatched);
-    MAP2CF(hipblasAsumStridedBatched, double, double, hipblasDasumStridedBatched);
-    MAP2CF_V2(hipblasAsumStridedBatched, hipblasComplex, float, hipblasScasumStridedBatched);
-    MAP2CF_V2(hipblasAsumStridedBatched, hipblasDoubleComplex, double, hipblasDzasumStridedBatched);
+    template <typename T1, typename T2, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasAsumStridedBatched_64)(hipblasHandle_t handle,
+                                                    int64_t         n,
+                                                    const T1*       x,
+                                                    int64_t         incx,
+                                                    hipblasStride   stridex,
+                                                    int64_t         batch_count,
+                                                    T2*             result);
+
+    MAP2CF_D64(hipblasAsum, float, float, hipblasSasum);
+    MAP2CF_D64(hipblasAsum, double, double, hipblasDasum);
+    MAP2CF_D64_V2(hipblasAsum, hipblasComplex, float, hipblasScasum);
+    MAP2CF_D64_V2(hipblasAsum, hipblasDoubleComplex, double, hipblasDzasum);
+
+    MAP2CF_D64(hipblasAsumBatched, float, float, hipblasSasumBatched);
+    MAP2CF_D64(hipblasAsumBatched, double, double, hipblasDasumBatched);
+    MAP2CF_D64_V2(hipblasAsumBatched, hipblasComplex, float, hipblasScasumBatched);
+    MAP2CF_D64_V2(hipblasAsumBatched, hipblasDoubleComplex, double, hipblasDzasumBatched);
+
+    MAP2CF_D64(hipblasAsumStridedBatched, float, float, hipblasSasumStridedBatched);
+    MAP2CF_D64(hipblasAsumStridedBatched, double, double, hipblasDasumStridedBatched);
+    MAP2CF_D64_V2(hipblasAsumStridedBatched, hipblasComplex, float, hipblasScasumStridedBatched);
+    MAP2CF_D64_V2(hipblasAsumStridedBatched,
+                  hipblasDoubleComplex,
+                  double,
+                  hipblasDzasumStridedBatched);
 
     // nrm2
     template <typename T1, typename T2, bool FORTRAN = false>
