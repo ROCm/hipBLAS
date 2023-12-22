@@ -10,3 +10,6 @@ subtrees:
     - file: clients
     - file: deprecation
     - file: contributing
+  - caption: About
+    entries:
+    - file: license
