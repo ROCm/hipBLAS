@@ -5096,20 +5096,25 @@ hipblasStatus_t hipblasSgemvBatched(hipblasHandle_t    handle,
                                     int                batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
+    // at least cublas 11.7.0
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasSgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
+
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasSgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+#endif
 }
 catch(...)
 {
@@ -5131,20 +5136,23 @@ hipblasStatus_t hipblasDgemvBatched(hipblasHandle_t     handle,
                                     int                 batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasDgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         x,
+                                                         incx,
+                                                         beta,
+                                                         y,
+                                                         incy,
+                                                         batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasDgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+#endif
 }
 catch(...)
 {
@@ -5164,8 +5172,29 @@ hipblasStatus_t hipblasCgemvBatched(hipblasHandle_t             handle,
                                     hipblasComplex* const       y[],
                                     int                         incy,
                                     int                         batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuComplex*)alpha,
+                                                         (const cuComplex**)A,
+                                                         lda,
+                                                         (const cuComplex**)x,
+                                                         incx,
+                                                         (const cuComplex*)beta,
+                                                         (cuComplex**)y,
+                                                         incy,
+                                                         batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
@@ -5181,8 +5210,29 @@ hipblasStatus_t hipblasZgemvBatched(hipblasHandle_t                   handle,
                                     hipblasDoubleComplex* const       y[],
                                     int                               incy,
                                     int                               batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuDoubleComplex*)alpha,
+                                                         (const cuDoubleComplex**)A,
+                                                         lda,
+                                                         (const cuDoubleComplex**)x,
+                                                         incx,
+                                                         (const cuDoubleComplex*)beta,
+                                                         (cuDoubleComplex**)y,
+                                                         incy,
+                                                         batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
@@ -5198,8 +5248,29 @@ hipblasStatus_t hipblasCgemvBatched_v2(hipblasHandle_t         handle,
                                        hipComplex* const       y[],
                                        int                     incy,
                                        int                     batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasCgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuComplex*)alpha,
+                                                         (const cuComplex**)A,
+                                                         lda,
+                                                         (const cuComplex**)x,
+                                                         incx,
+                                                         (const cuComplex*)beta,
+                                                         (cuComplex**)y,
+                                                         incy,
+                                                         batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
@@ -5215,8 +5286,29 @@ hipblasStatus_t hipblasZgemvBatched_v2(hipblasHandle_t               handle,
                                        hipDoubleComplex* const       y[],
                                        int                           incy,
                                        int                           batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasZgemvBatched((cublasHandle_t)handle,
+                                                         hipOperationToCudaOperation(trans),
+                                                         m,
+                                                         n,
+                                                         (const cuDoubleComplex*)alpha,
+                                                         (const cuDoubleComplex**)A,
+                                                         lda,
+                                                         (const cuDoubleComplex**)x,
+                                                         incx,
+                                                         (const cuDoubleComplex*)beta,
+                                                         (cuDoubleComplex**)y,
+                                                         incy,
+                                                         batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 // gemv_strided_batched
@@ -5238,20 +5330,26 @@ hipblasStatus_t hipblasSgemvStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasSgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasSgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+#endif
 }
 catch(...)
 {
@@ -5276,20 +5374,26 @@ hipblasStatus_t hipblasDgemvStridedBatched(hipblasHandle_t    handle,
                                            int                batchCount)
 try
 {
-    // TODO warn user that function was demoted to ignore batch
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasDgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                alpha,
+                                                                A,
+                                                                lda,
+                                                                strideA,
+                                                                x,
+                                                                incx,
+                                                                stridex,
+                                                                beta,
+                                                                y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipCUBLASStatusToHIPStatus(cublasDgemv((cublasHandle_t)handle,
-    //                                               hipOperationToCudaOperation(trans),
-    //                                               m,
-    //                                               n,
-    //                                               alpha,
-    //                                               A,
-    //                                               lda,
-    //                                               x,
-    //                                               incx,
-    //                                               beta,
-    //                                               y,
-    //                                               incy));
+#endif
 }
 catch(...)
 {
@@ -5312,8 +5416,32 @@ hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t       handle,
                                            int                   incy,
                                            hipblasStride         stridey,
                                            int                   batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuComplex*)alpha,
+                                                                (const cuComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuComplex*)beta,
+                                                                (cuComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
@@ -5332,8 +5460,32 @@ hipblasStatus_t hipblasZgemvStridedBatched(hipblasHandle_t             handle,
                                            int                         incy,
                                            hipblasStride               stridey,
                                            int                         batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuDoubleComplex*)alpha,
+                                                                (const cuDoubleComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuDoubleComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuDoubleComplex*)beta,
+                                                                (cuDoubleComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
@@ -5352,8 +5504,32 @@ hipblasStatus_t hipblasCgemvStridedBatched_v2(hipblasHandle_t    handle,
                                               int                incy,
                                               hipblasStride      stridey,
                                               int                batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasCgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuComplex*)alpha,
+                                                                (const cuComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuComplex*)beta,
+                                                                (cuComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
@@ -5372,8 +5548,32 @@ hipblasStatus_t hipblasZgemvStridedBatched_v2(hipblasHandle_t         handle,
                                               int                     incy,
                                               hipblasStride           stridey,
                                               int                     batchCount)
+try
 {
+#if CUBLAS_VERSION >= 110700
+    return hipCUBLASStatusToHIPStatus(cublasZgemvStridedBatched((cublasHandle_t)handle,
+                                                                hipOperationToCudaOperation(trans),
+                                                                m,
+                                                                n,
+                                                                (const cuDoubleComplex*)alpha,
+                                                                (const cuDoubleComplex*)A,
+                                                                lda,
+                                                                strideA,
+                                                                (const cuDoubleComplex*)x,
+                                                                incx,
+                                                                stridex,
+                                                                (const cuDoubleComplex*)beta,
+                                                                (cuDoubleComplex*)y,
+                                                                incy,
+                                                                stridey,
+                                                                batchCount));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
 }
 
 // ger
