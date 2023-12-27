@@ -345,40 +345,21 @@ void testing_trsm_ex(const Arguments& arg)
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_matrix(hA, arg, K, K, lda, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             K,
+                             K,
+                             lda,
+                             0,
+                             1,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_matrix(hB_host, arg, M, N, ldb, 0, 1, hipblas_client_never_set_nan);
 
-    // pad untouched area into zero
-    for(int i = K; i < lda; i++)
+    if(diag == HIPBLAS_DIAG_UNIT)
     {
-        for(int j = 0; j < K; j++)
-        {
-            hA[i + j * lda] = 0.0;
-        }
-    }
-    // proprocess the matrix to avoid ill-conditioned matrix
-    host_vector<int> ipiv(K);
-    ref_getrf(K, K, hA.data(), lda, ipiv.data());
-    for(int i = 0; i < K; i++)
-    {
-        for(int j = i; j < K; j++)
-        {
-            hA[i + j * lda] = hA[j + i * lda];
-            if(diag == HIPBLAS_DIAG_UNIT)
-            {
-                if(i == j)
-                    hA[i + j * lda] = 1.0;
-            }
-        }
-    }
-
-    // pad untouched area into zero
-    for(int i = M; i < ldb; i++)
-    {
-        for(int j = 0; j < N; j++)
-        {
-            hB_host[i + j * ldb] = 0.0;
-        }
+        make_unit_diagonal(uplo, (T*)hA, lda, K);
     }
 
     // Calculate hB = hA*hX;

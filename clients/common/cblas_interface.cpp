@@ -3826,6 +3826,8 @@ void ref_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
  * ===========================================================================
  */
 
+#ifdef __HIP_PLATFORM_SOLVER__
+
 // potrf
 template <>
 int ref_potrf(char uplo, int m, float* A, int lda)
@@ -4142,3 +4144,5 @@ int ref_gels<hipblasDoubleComplex>(char                  trans,
     //                      ldb);
     return info;
 }
+
+#endif

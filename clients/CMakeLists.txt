@@ -88,6 +88,8 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
       list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
       if (NOT WIN32)
         list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
+      else()
+        list( APPEND COMMON_LINK_LIBS "libomp")
       endif()
     endif()
   endif()
@@ -134,7 +136,6 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     set( BLAS_INCLUDE_DIR ${OPENBLAS_DIR}/include CACHE PATH "OpenBLAS library include path" )
     find_library( BLAS_LIBRARY libopenblas
                   PATHS ${OPENBLAS_DIR}/lib
-                  REQUIRED
                   NO_DEFAULT_PATH
                 )
     if (NOT BLAS_LIBRARY)

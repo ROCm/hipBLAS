@@ -31,7 +31,6 @@
 
 #include "type_utils.h"
 #ifdef __cplusplus
-#include "cblas_interface.h"
 #include "hipblas_datatype2string.hpp"
 #include <cstdio>
 #include <iostream>

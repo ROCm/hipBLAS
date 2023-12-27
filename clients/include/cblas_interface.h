@@ -22,11 +22,9 @@
  * ************************************************************************ */
 #pragma once
 
+#include "cblas.h"
 #include "hipblas.h"
 #include "type_utils.h"
-#ifndef WIN32
-#include <cblas.h>
-#endif
 
 /*!\file
  * \brief provide template functions interfaces to CBLAS C89 interfaces, it is only used for testing
@@ -788,6 +786,8 @@ void ref_trmm(hipblasSideMode_t  side,
  * ===========================================================================
  */
 
+#ifdef __HIP_PLATFORM_SOLVER__
+
 // potrf
 template <typename T>
 int ref_potrf(char uplo, int m, T* A, int lda);
@@ -806,5 +806,7 @@ int ref_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
 
 template <typename T>
 int ref_gels(char trans, int m, int n, int nrhs, T* A, int lda, T* B, int ldb, T* work, int lwork);
+
+#endif
 
 /* ============================================================================================ */

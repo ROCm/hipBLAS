@@ -148,7 +148,6 @@ else( )
   target_link_libraries( hipblas_v2-bench PRIVATE ${CUDA_LIBRARIES} )
 endif( )
 
-
 set_target_properties( hipblas-bench PROPERTIES
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
