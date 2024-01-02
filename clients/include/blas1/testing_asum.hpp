@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,8 +63,10 @@ void testing_asum_bad_arg(const Arguments& arg)
 
         // extra tests supported with rocBLAS backend
         if(arg.bad_arg_all)
+        {
             DAPI_EXPECT(
                 HIPBLAS_STATUS_INVALID_VALUE, hipblasAsumFn, (handle, N, nullptr, incx, &res));
+        }
     }
 }
 
