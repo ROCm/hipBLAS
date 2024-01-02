@@ -1,6 +1,6 @@
 
 /* ************************************************************************
- * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -231,6 +231,19 @@
 #define hipblasDnrm2StridedBatchedFortran hipblasDnrm2StridedBatched
 #define hipblasScnrm2StridedBatchedFortran hipblasScnrm2StridedBatched
 #define hipblasDznrm2StridedBatchedFortran hipblasDznrm2StridedBatched
+
+#define hipblasSnrm2_64Fortran hipblasSnrm2_64
+#define hipblasDnrm2_64Fortran hipblasDnrm2_64
+#define hipblasScnrm2_64Fortran hipblasScnrm2_64
+#define hipblasDznrm2_64Fortran hipblasDznrm2_64
+#define hipblasSnrm2Batched_64Fortran hipblasSnrm2Batched_64
+#define hipblasDnrm2Batched_64Fortran hipblasDnrm2Batched_64
+#define hipblasScnrm2Batched_64Fortran hipblasScnrm2Batched_64
+#define hipblasDznrm2Batched_64Fortran hipblasDznrm2Batched_64
+#define hipblasSnrm2StridedBatched_64Fortran hipblasSnrm2StridedBatched_64
+#define hipblasDnrm2StridedBatched_64Fortran hipblasDnrm2StridedBatched_64
+#define hipblasScnrm2StridedBatched_64Fortran hipblasScnrm2StridedBatched_64
+#define hipblasDznrm2StridedBatched_64Fortran hipblasDznrm2StridedBatched_64
 
 #define hipblasIsamaxFortran hipblasIsamax
 #define hipblasIdamaxFortran hipblasIdamax
