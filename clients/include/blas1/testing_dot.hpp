@@ -44,9 +44,12 @@ inline void testname_dotc(const Arguments& arg, std::string& name)
 template <typename T, bool CONJ = false>
 void testing_dot_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
-                                : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotFn    = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
+                                   : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+    auto hipblasDotFn_64 = arg.api == FORTRAN_64
+                               ? (CONJ ? hipblasDotc_64<T, true> : hipblasDot_64<T, true>)
+                               : (CONJ ? hipblasDotc_64<T, false> : hipblasDot_64<T, false>);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -62,17 +65,20 @@ void testing_dot_bad_arg(const Arguments& arg)
         device_vector<T> d_res(1);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(hipblasDotFn(nullptr, N, dx, incx, dy, incy, d_res),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED, hipblasDotFn, (nullptr, N, dx, incx, dy, incy, d_res));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, nullptr, incx, dy, incy, d_res),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, nullptr, incy, d_res),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasDotFn(handle, N, dx, incx, dy, incy, nullptr),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasDotFn,
+                        (handle, N, nullptr, incx, dy, incy, d_res));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasDotFn,
+                        (handle, N, dx, incx, nullptr, incy, d_res));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasDotFn,
+                        (handle, N, dx, incx, dy, incy, nullptr));
         }
     }
 }
@@ -86,13 +92,16 @@ void testing_dotc_bad_arg(const Arguments& arg)
 template <typename T, bool CONJ = false>
 void testing_dot(const Arguments& arg)
 {
-    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDotFn = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
-                                : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotFn    = FORTRAN ? (CONJ ? hipblasDotc<T, true> : hipblasDot<T, true>)
+                                   : (CONJ ? hipblasDotc<T, false> : hipblasDot<T, false>);
+    auto hipblasDotFn_64 = arg.api == FORTRAN_64
+                               ? (CONJ ? hipblasDotc_64<T, true> : hipblasDot_64<T, true>)
+                               : (CONJ ? hipblasDotc_64<T, false> : hipblasDot_64<T, false>);
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -107,8 +116,7 @@ void testing_dot(const Arguments& arg)
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(T), hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
-            hipblasDotFn(handle, N, nullptr, incx, nullptr, incy, d_hipblas_result_0));
+        DAPI_CHECK(hipblasDotFn, (handle, N, nullptr, incx, nullptr, incy, d_hipblas_result_0));
 
         host_vector<T> cpu_0(1);
         host_vector<T> gpu_0(1);
@@ -154,10 +162,10 @@ void testing_dot(const Arguments& arg)
         =================================================================== */
         // hipblasDot accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result));
+        DAPI_CHECK(hipblasDotFn, (handle, N, dx, incx, dy, incy, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, &h_hipblas_result_1));
+        DAPI_CHECK(hipblasDotFn, (handle, N, dx, incx, dy, incy, &h_hipblas_result_1));
 
         CHECK_HIP_ERROR(
             hipMemcpy(&h_hipblas_result_2, d_hipblas_result, sizeof(T), hipMemcpyDeviceToHost));
@@ -194,7 +202,7 @@ void testing_dot(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasDotFn)(handle, N, dx, incx, dy, incy, d_hipblas_result));
+            DAPI_CHECK(hipblasDotFn, (handle, N, dx, incx, dy, incy, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
