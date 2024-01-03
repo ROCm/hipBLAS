@@ -1,6 +1,6 @@
 
 /* ************************************************************************
- * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -245,6 +245,19 @@
 #define hipblasIcamaxStridedBatchedFortran hipblasIcamaxStridedBatched
 #define hipblasIzamaxStridedBatchedFortran hipblasIzamaxStridedBatched
 
+#define hipblasIsamax_64Fortran hipblasIsamax_64
+#define hipblasIdamax_64Fortran hipblasIdamax_64
+#define hipblasIcamax_64Fortran hipblasIcamax_64
+#define hipblasIzamax_64Fortran hipblasIzamax_64
+#define hipblasIsamaxBatched_64Fortran hipblasIsamaxBatched_64
+#define hipblasIdamaxBatched_64Fortran hipblasIdamaxBatched_64
+#define hipblasIcamaxBatched_64Fortran hipblasIcamaxBatched_64
+#define hipblasIzamaxBatched_64Fortran hipblasIzamaxBatched_64
+#define hipblasIsamaxStridedBatched_64Fortran hipblasIsamaxStridedBatched_64
+#define hipblasIdamaxStridedBatched_64Fortran hipblasIdamaxStridedBatched_64
+#define hipblasIcamaxStridedBatched_64Fortran hipblasIcamaxStridedBatched_64
+#define hipblasIzamaxStridedBatched_64Fortran hipblasIzamaxStridedBatched_64
+
 #define hipblasIsaminFortran hipblasIsamin
 #define hipblasIdaminFortran hipblasIdamin
 #define hipblasIcaminFortran hipblasIcamin
@@ -257,6 +270,19 @@
 #define hipblasIdaminStridedBatchedFortran hipblasIdaminStridedBatched
 #define hipblasIcaminStridedBatchedFortran hipblasIcaminStridedBatched
 #define hipblasIzaminStridedBatchedFortran hipblasIzaminStridedBatched
+
+#define hipblasIsamin_64Fortran hipblasIsamin_64
+#define hipblasIdamin_64Fortran hipblasIdamin_64
+#define hipblasIcamin_64Fortran hipblasIcamin_64
+#define hipblasIzamin_64Fortran hipblasIzamin_64
+#define hipblasIsaminBatched_64Fortran hipblasIsaminBatched_64
+#define hipblasIdaminBatched_64Fortran hipblasIdaminBatched_64
+#define hipblasIcaminBatched_64Fortran hipblasIcaminBatched_64
+#define hipblasIzaminBatched_64Fortran hipblasIzaminBatched_64
+#define hipblasIsaminStridedBatched_64Fortran hipblasIsaminStridedBatched_64
+#define hipblasIdaminStridedBatched_64Fortran hipblasIdaminStridedBatched_64
+#define hipblasIcaminStridedBatched_64Fortran hipblasIcaminStridedBatched_64
+#define hipblasIzaminStridedBatched_64Fortran hipblasIzaminStridedBatched_64
 
 #define hipblasSrotFortran hipblasSrot
 #define hipblasDrotFortran hipblasDrot

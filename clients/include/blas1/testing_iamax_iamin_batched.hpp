@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +29,8 @@
 
 using hipblasIamaxIaminBatchedModel = ArgumentModel<e_a_type, e_N, e_incx, e_batch_count>;
 
-template <typename T>
-using hipblas_iamax_iamin_batched_t = hipblasStatus_t (*)(
-    hipblasHandle_t handle, int n, const T* const x[], int incx, int batch_count, int* result);
-
-template <typename T>
-void testing_iamax_iamin_batched_bad_arg(const Arguments&                 arg,
-                                         hipblas_iamax_iamin_batched_t<T> func)
+template <typename T, typename R, typename FUNC>
+void testing_iamax_iamin_batched_bad_arg(const Arguments& arg, FUNC func)
 {
     hipblasLocalHandle handle(arg);
     int64_t            N           = 100;
@@ -43,7 +38,7 @@ void testing_iamax_iamin_batched_bad_arg(const Arguments&                 arg,
     int64_t            batch_count = 2;
 
     device_batch_vector<T> dx(N, incx, batch_count);
-    device_vector<int>     d_res(batch_count);
+    device_vector<R>       d_res(batch_count);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -63,67 +58,73 @@ void testing_iamax_iamin_batched_bad_arg(const Arguments&                 arg,
 template <typename T>
 void testing_iamax_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxBatchedFn
-        = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+    auto hipblasIamaxBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasIamaxBatched_64<T, true>
+                                                          : hipblasIamaxBatched_64<T, false>;
 
-    testing_iamax_iamin_batched_bad_arg<T>(arg, hipblasIamaxBatchedFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_batched_bad_arg<T, int64_t>(arg, hipblasIamaxBatchedFn_64);
+    else
+        testing_iamax_iamin_batched_bad_arg<T, int>(arg, hipblasIamaxBatchedFn);
 }
 
 template <typename T>
 void testing_iamin_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminBatchedFn
-        = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+    auto hipblasIaminBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasIaminBatched_64<T, true>
+                                                          : hipblasIaminBatched_64<T, false>;
 
-    testing_iamax_iamin_batched_bad_arg<T>(arg, hipblasIaminBatchedFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_batched_bad_arg<T, int64_t>(arg, hipblasIaminBatchedFn_64);
+    else
+        testing_iamax_iamin_batched_bad_arg<T, int>(arg, hipblasIaminBatchedFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*)>
-void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batched_t<T> func)
+template <typename T, void REFBLAS_FUNC(int, const T*, int, int*), typename R, typename FUNC>
+void testing_iamax_iamin_batched(const Arguments& arg, FUNC func)
 {
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t batch_count = arg.batch_count;
 
     hipblasLocalHandle handle(arg);
-    int                zero = 0;
 
     // check to prevent undefined memory allocation error
     if(batch_count <= 0 || N <= 0 || incx <= 0)
     {
         // quick return success
-        device_vector<int> d_hipblas_result_0(std::max(1, batch_count));
-        host_vector<int>   h_hipblas_result_0(std::max(1, batch_count));
-        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
-                                  h_hipblas_result_0,
-                                  sizeof(int) * std::max(1, batch_count),
-                                  hipMemcpyHostToDevice));
+        int64_t          batches = std::max(int64_t(1), batch_count);
+        device_vector<R> d_hipblas_result_0(batches);
+        host_vector<R>   h_hipblas_result_0(batches);
+        hipblas_init_nan(h_hipblas_result_0.data(), batches);
+        CHECK_HIP_ERROR(hipMemcpy(
+            d_hipblas_result_0, h_hipblas_result_0, sizeof(R) * batches, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(func(handle, N, nullptr, incx, batch_count, d_hipblas_result_0));
 
         if(batch_count > 0)
         {
-            host_vector<int> cpu_0(batch_count);
-            host_vector<int> gpu_0(batch_count);
+            host_vector<R> cpu_0(batch_count);
+            host_vector<R> gpu_0(batch_count);
             CHECK_HIP_ERROR(hipMemcpy(
-                gpu_0, d_hipblas_result_0, sizeof(int) * batch_count, hipMemcpyDeviceToHost));
-            unit_check_general<int>(1, batch_count, 1, cpu_0, gpu_0);
+                gpu_0, d_hipblas_result_0, sizeof(R) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<R>(1, batch_count, 1, cpu_0, gpu_0);
         }
 
         return;
     }
 
     host_batch_vector<T> hx(N, incx, batch_count);
-    host_vector<int>     cpu_result(batch_count);
-    host_vector<int>     hipblas_result_host(batch_count);
-    host_vector<int>     hipblas_result_device(batch_count);
+    host_vector<R>       cpu_result(batch_count);
+    host_vector<R>       hipblas_result_host(batch_count);
+    host_vector<R>       hipblas_result_device(batch_count);
 
     device_batch_vector<T> dx(N, incx, batch_count);
-    device_vector<int>     d_hipblas_result_device(batch_count);
+    device_vector<R>       d_hipblas_result_device(batch_count);
     CHECK_HIP_ERROR(dx.memcheck());
 
     // Initial Data on CPU
@@ -131,7 +132,7 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
     CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     double gpu_time_used;
-    int    hipblas_error_host = 0, hipblas_error_device = 0;
+    R      hipblas_error_host = 0, hipblas_error_device = 0;
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -144,7 +145,7 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
             func(handle, N, dx.ptr_on_device(), incx, batch_count, d_hipblas_result_device));
         CHECK_HIP_ERROR(hipMemcpy(hipblas_result_device,
                                   d_hipblas_result_device,
-                                  sizeof(int) * batch_count,
+                                  sizeof(R) * batch_count,
                                   hipMemcpyDeviceToHost));
 
         // host_pointer
@@ -155,26 +156,31 @@ void testing_iamax_iamin_batched(const Arguments& arg, hipblas_iamax_iamin_batch
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            REFBLAS_FUNC(N, hx[b], incx, cpu_result + b);
+            int b2 = b;
+            int cpu_result_int;
+            REFBLAS_FUNC((int)N, hx[b2], (int)incx, &cpu_result_int);
             // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-            cpu_result[b] += 1;
+            cpu_result[b2] = cpu_result_int + 1;
         }
 
         if(arg.unit_check)
         {
-            unit_check_general<int>(1, 1, batch_count, cpu_result, hipblas_result_host);
-            unit_check_general<int>(1, 1, batch_count, cpu_result, hipblas_result_device);
+            unit_check_general<R>(1, 1, (int)batch_count, cpu_result, hipblas_result_host);
+            unit_check_general<R>(1, 1, (int)batch_count, cpu_result, hipblas_result_device);
         }
         if(arg.norm_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
-                hipblas_error_host   = std::max(hipblas_error_host,
-                                              hipblas_abs(hipblas_result_host[b] - cpu_result[b]));
-                hipblas_error_device = std::max(
-                    hipblas_error_device, hipblas_abs(hipblas_result_device[b] - cpu_result[b]));
+                int b2 = b;
+                hipblas_error_host
+                    = std::max(int64_t(hipblas_error_host),
+                               int64_t(hipblas_abs(hipblas_result_host[b2] - cpu_result[b2])));
+                hipblas_error_device
+                    = std::max(int64_t(hipblas_error_device),
+                               int64_t(hipblas_abs(hipblas_result_device[b2] - cpu_result[b2])));
             }
         }
     } // end of if unit/norm check
@@ -214,11 +220,15 @@ inline void testname_iamax_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamax_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIamaxBatchedFn
-        = FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasIamaxBatched<T, true> : hipblasIamaxBatched<T, false>;
+    auto hipblasIamaxBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasIamaxBatched_64<T, true>
+                                                          : hipblasIamaxBatched_64<T, false>;
 
-    testing_iamax_iamin_batched<T, ref_iamax<T>>(arg, hipblasIamaxBatchedFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_batched<T, ref_iamax<T>, int64_t>(arg, hipblasIamaxBatchedFn_64);
+    else
+        testing_iamax_iamin_batched<T, ref_iamax<T>, int>(arg, hipblasIamaxBatchedFn);
 }
 
 inline void testname_iamin_batched(const Arguments& arg, std::string& name)
@@ -229,9 +239,13 @@ inline void testname_iamin_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamin_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasIaminBatchedFn
-        = FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasIaminBatched<T, true> : hipblasIaminBatched<T, false>;
+    auto hipblasIaminBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasIaminBatched_64<T, true>
+                                                          : hipblasIaminBatched_64<T, false>;
 
-    testing_iamax_iamin_batched<T, ref_iamin<T>>(arg, hipblasIaminBatchedFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_batched<T, ref_iamin<T>, int64_t>(arg, hipblasIaminBatchedFn_64);
+    else
+        testing_iamax_iamin_batched<T, ref_iamin<T>, int>(arg, hipblasIaminBatchedFn);
 }

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1492,6 +1492,18 @@ hipblasStatus_t hipblasIzamaxCast(
     return hipblasIzamax(handle, n, (const hipDoubleComplex*)x, incx, result);
 }
 
+hipblasStatus_t hipblasIcamaxCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasComplex* x, int64_t incx, int64_t* result)
+{
+    return hipblasIcamax_64(handle, n, (const hipComplex*)x, incx, result);
+}
+
+hipblasStatus_t hipblasIzamaxCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasDoubleComplex* x, int64_t incx, int64_t* result)
+{
+    return hipblasIzamax_64(handle, n, (const hipDoubleComplex*)x, incx, result);
+}
+
 // amax_batched
 hipblasStatus_t hipblasIcamaxBatchedCast(hipblasHandle_t             handle,
                                          int                         n,
@@ -1511,6 +1523,28 @@ hipblasStatus_t hipblasIzamaxBatchedCast(hipblasHandle_t                   handl
                                          int*                              result)
 {
     return hipblasIzamaxBatched(
+        handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasIcamaxBatchedCast_64(hipblasHandle_t             handle,
+                                            int64_t                     n,
+                                            const hipblasComplex* const x[],
+                                            int64_t                     incx,
+                                            int64_t                     batch_count,
+                                            int64_t*                    result)
+{
+    return hipblasIcamaxBatched_64(
+        handle, n, (const hipComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasIzamaxBatchedCast_64(hipblasHandle_t                   handle,
+                                            int64_t                           n,
+                                            const hipblasDoubleComplex* const x[],
+                                            int64_t                           incx,
+                                            int64_t                           batch_count,
+                                            int64_t*                          result)
+{
+    return hipblasIzamaxBatched_64(
         handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
 }
 
@@ -1539,6 +1573,30 @@ hipblasStatus_t hipblasIzamaxStridedBatchedCast(hipblasHandle_t             hand
         handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
 }
 
+hipblasStatus_t hipblasIcamaxStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                   int64_t               n,
+                                                   const hipblasComplex* x,
+                                                   int64_t               incx,
+                                                   hipblasStride         stridex,
+                                                   int64_t               batch_count,
+                                                   int64_t*              result)
+{
+    return hipblasIcamaxStridedBatched_64(
+        handle, n, (const hipComplex*)x, incx, stridex, batch_count, result);
+}
+
+hipblasStatus_t hipblasIzamaxStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                   int64_t                     n,
+                                                   const hipblasDoubleComplex* x,
+                                                   int64_t                     incx,
+                                                   hipblasStride               stridex,
+                                                   int64_t                     batch_count,
+                                                   int64_t*                    result)
+{
+    return hipblasIzamaxStridedBatched_64(
+        handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
+}
+
 // amin
 hipblasStatus_t
     hipblasIcaminCast(hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, int* result)
@@ -1550,6 +1608,18 @@ hipblasStatus_t hipblasIzaminCast(
     hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, int* result)
 {
     return hipblasIzamin(handle, n, (const hipDoubleComplex*)x, incx, result);
+}
+
+hipblasStatus_t hipblasIcaminCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasComplex* x, int64_t incx, int64_t* result)
+{
+    return hipblasIcamin_64(handle, n, (const hipComplex*)x, incx, result);
+}
+
+hipblasStatus_t hipblasIzaminCast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasDoubleComplex* x, int64_t incx, int64_t* result)
+{
+    return hipblasIzamin_64(handle, n, (const hipDoubleComplex*)x, incx, result);
 }
 
 // amin_batched
@@ -1571,6 +1641,28 @@ hipblasStatus_t hipblasIzaminBatchedCast(hipblasHandle_t                   handl
                                          int*                              result)
 {
     return hipblasIzaminBatched(
+        handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasIcaminBatchedCast_64(hipblasHandle_t             handle,
+                                            int64_t                     n,
+                                            const hipblasComplex* const x[],
+                                            int64_t                     incx,
+                                            int64_t                     batch_count,
+                                            int64_t*                    result)
+{
+    return hipblasIcaminBatched_64(
+        handle, n, (const hipComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasIzaminBatchedCast_64(hipblasHandle_t                   handle,
+                                            int64_t                           n,
+                                            const hipblasDoubleComplex* const x[],
+                                            int64_t                           incx,
+                                            int64_t                           batch_count,
+                                            int64_t*                          result)
+{
+    return hipblasIzaminBatched_64(
         handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
 }
 
@@ -1599,6 +1691,31 @@ hipblasStatus_t hipblasIzaminStridedBatchedCast(hipblasHandle_t             hand
         handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
 }
 
+hipblasStatus_t hipblasIcaminStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                   int64_t               n,
+                                                   const hipblasComplex* x,
+                                                   int64_t               incx,
+                                                   hipblasStride         stridex,
+                                                   int64_t               batch_count,
+                                                   int64_t*              result)
+{
+    return hipblasIcaminStridedBatched_64(
+        handle, n, (const hipComplex*)x, incx, stridex, batch_count, result);
+}
+
+hipblasStatus_t hipblasIzaminStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                   int64_t                     n,
+                                                   const hipblasDoubleComplex* x,
+                                                   int64_t                     incx,
+                                                   hipblasStride               stridex,
+                                                   int64_t                     batch_count,
+                                                   int64_t*                    result)
+{
+    return hipblasIzaminStridedBatched_64(
+        handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
+}
+
+// scal
 hipblasStatus_t hipblasCscalCast(
     hipblasHandle_t handle, int n, const hipblasComplex* alpha, hipblasComplex* x, int incx)
 {

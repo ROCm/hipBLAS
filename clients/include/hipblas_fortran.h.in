@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,8 +38,165 @@
  * ========== */
 
 // amax
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsamax)(
+    hipblasHandle_t handle, hipblas_int n, const float* x, hipblas_int incx, hipblas_int* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdamax)(
+    hipblasHandle_t handle, hipblas_int n, const double* x, hipblas_int incx, hipblas_int* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcamax)(hipblasHandle_t       handle,
+                                            hipblas_int           n,
+                                            const hipblasComplex* x,
+                                            hipblas_int           incx,
+                                            hipblas_int*          result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzamax)(hipblasHandle_t             handle,
+                                            hipblas_int                 n,
+                                            const hipblasDoubleComplex* x,
+                                            hipblas_int                 incx,
+                                            hipblas_int*                result);
+
+// amaxBatched
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsamaxBatched)(hipblasHandle_t    handle,
+                                                   hipblas_int        n,
+                                                   const float* const x[],
+                                                   hipblas_int        incx,
+                                                   hipblas_int        batch_count,
+                                                   hipblas_int*       result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdamaxBatched)(hipblasHandle_t     handle,
+                                                   hipblas_int         n,
+                                                   const double* const x[],
+                                                   hipblas_int         incx,
+                                                   hipblas_int         batch_count,
+                                                   hipblas_int*        result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcamaxBatched)(hipblasHandle_t             handle,
+                                                   hipblas_int                 n,
+                                                   const hipblasComplex* const x[],
+                                                   hipblas_int                 incx,
+                                                   hipblas_int                 batch_count,
+                                                   hipblas_int*                result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzamaxBatched)(hipblasHandle_t                   handle,
+                                                   hipblas_int                       n,
+                                                   const hipblasDoubleComplex* const x[],
+                                                   hipblas_int                       incx,
+                                                   hipblas_int                       batch_count,
+                                                   hipblas_int*                      result);
+
+// amaxStridedBatched
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsamaxStridedBatched)(hipblasHandle_t handle,
+                                                          hipblas_int     n,
+                                                          const float*    x,
+                                                          hipblas_int     incx,
+                                                          hipblasStride   stridex,
+                                                          hipblas_int     batch_count,
+                                                          hipblas_int*    result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdamaxStridedBatched)(hipblasHandle_t handle,
+                                                          hipblas_int     n,
+                                                          const double*   x,
+                                                          hipblas_int     incx,
+                                                          hipblasStride   stridex,
+                                                          hipblas_int     batch_count,
+                                                          hipblas_int*    result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcamaxStridedBatched)(hipblasHandle_t       handle,
+                                                          hipblas_int           n,
+                                                          const hipblasComplex* x,
+                                                          hipblas_int           incx,
+                                                          hipblasStride         stridex,
+                                                          hipblas_int           batch_count,
+                                                          hipblas_int*          result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzamaxStridedBatched)(hipblasHandle_t             handle,
+                                                          hipblas_int                 n,
+                                                          const hipblasDoubleComplex* x,
+                                                          hipblas_int                 incx,
+                                                          hipblasStride               stridex,
+                                                          hipblas_int                 batch_count,
+                                                          hipblas_int*                result);
 
 // amin
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsamin)(
+    hipblasHandle_t handle, hipblas_int n, const float* x, hipblas_int incx, hipblas_int* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdamin)(
+    hipblasHandle_t handle, hipblas_int n, const double* x, hipblas_int incx, hipblas_int* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcamin)(hipblasHandle_t       handle,
+                                            hipblas_int           n,
+                                            const hipblasComplex* x,
+                                            hipblas_int           incx,
+                                            hipblas_int*          result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzamin)(hipblasHandle_t             handle,
+                                            hipblas_int                 n,
+                                            const hipblasDoubleComplex* x,
+                                            hipblas_int                 incx,
+                                            hipblas_int*                result);
+
+// aminBatched
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsaminBatched)(hipblasHandle_t    handle,
+                                                   hipblas_int        n,
+                                                   const float* const x[],
+                                                   hipblas_int        incx,
+                                                   hipblas_int        batch_count,
+                                                   hipblas_int*       result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdaminBatched)(hipblasHandle_t     handle,
+                                                   hipblas_int         n,
+                                                   const double* const x[],
+                                                   hipblas_int         incx,
+                                                   hipblas_int         batch_count,
+                                                   hipblas_int*        result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcaminBatched)(hipblasHandle_t             handle,
+                                                   hipblas_int                 n,
+                                                   const hipblasComplex* const x[],
+                                                   hipblas_int                 incx,
+                                                   hipblas_int                 batch_count,
+                                                   hipblas_int*                result);
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzaminBatched)(hipblasHandle_t                   handle,
+                                                   hipblas_int                       n,
+                                                   const hipblasDoubleComplex* const x[],
+                                                   hipblas_int                       incx,
+                                                   hipblas_int                       batch_count,
+                                                   hipblas_int*                      result);
+
+// aminStridedBatched
+hipblasStatus_t HIPBLAS_FAPI(hipblasIsaminStridedBatched)(hipblasHandle_t handle,
+                                                          hipblas_int     n,
+                                                          const float*    x,
+                                                          hipblas_int     incx,
+                                                          hipblasStride   stridex,
+                                                          hipblas_int     batch_count,
+                                                          hipblas_int*    result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIdaminStridedBatched)(hipblasHandle_t handle,
+                                                          hipblas_int     n,
+                                                          const double*   x,
+                                                          hipblas_int     incx,
+                                                          hipblasStride   stridex,
+                                                          hipblas_int     batch_count,
+                                                          hipblas_int*    result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIcaminStridedBatched)(hipblasHandle_t       handle,
+                                                          hipblas_int           n,
+                                                          const hipblasComplex* x,
+                                                          hipblas_int           incx,
+                                                          hipblasStride         stridex,
+                                                          hipblas_int           batch_count,
+                                                          hipblas_int*          result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasIzaminStridedBatched)(hipblasHandle_t             handle,
+                                                          hipblas_int                 n,
+                                                          const hipblasDoubleComplex* x,
+                                                          hipblas_int                 incx,
+                                                          hipblasStride               stridex,
+                                                          hipblas_int                 batch_count,
+                                                          hipblas_int*                result);
 
 // asum
 hipblasStatus_t HIPBLAS_FAPI(hipblasSasum)(
