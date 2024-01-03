@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -168,7 +168,7 @@ void testing_getrf_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = cblas_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);
