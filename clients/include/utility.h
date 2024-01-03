@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -686,7 +686,7 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
     {
         for(int64_t i = 0; i < N; i++)
         {
-            T diag = hA[i + i * N];
+            T diag = hA[i + i * lda];
             for(int64_t j = 0; j <= i; j++)
                 hA[i + j * lda] = hA[i + j * lda] / diag;
         }
