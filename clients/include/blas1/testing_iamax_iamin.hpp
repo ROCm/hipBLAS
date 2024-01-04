@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "hipblas_iamax_iamin_ref.hpp"
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx>;
@@ -87,7 +88,10 @@ void testing_iamin_bad_arg(const Arguments& arg)
         testing_iamax_iamin_bad_arg<T, int>(arg, hipblasIaminFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*), typename R, typename FUNC>
+template <typename T,
+          void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*),
+          typename R,
+          typename FUNC>
 void testing_iamax_iamin(const Arguments& arg, FUNC func)
 {
     int64_t N    = arg.N;
@@ -153,10 +157,9 @@ void testing_iamax_iamin(const Arguments& arg, FUNC func)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        int cpu_result_int;
-        REFBLAS_FUNC((int)N, hx.data(), (int)incx, &cpu_result_int);
-        // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-        cpu_result = cpu_result_int + 1;
+        int64_t result_i64;
+        REFBLAS_FUNC(N, hx.data(), incx, &result_i64);
+        cpu_result = result_i64;
 
         if(arg.unit_check)
         {
@@ -209,9 +212,9 @@ void testing_iamax(const Arguments& arg)
         = arg.api == FORTRAN_64 ? hipblasIamax_64<T, true> : hipblasIamax_64<T, false>;
 
     if(arg.api & c_API_64)
-        testing_iamax_iamin<T, ref_iamax<T>, int64_t>(arg, hipblasIamaxFn_64);
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>, int64_t>(arg, hipblasIamaxFn_64);
     else
-        testing_iamax_iamin<T, ref_iamax<T>, int>(arg, hipblasIamaxFn);
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>, int>(arg, hipblasIamaxFn);
 }
 
 inline void testname_iamin(const Arguments& arg, std::string& name)
@@ -227,7 +230,7 @@ void testing_iamin(const Arguments& arg)
         = arg.api == FORTRAN_64 ? hipblasIamin_64<T, true> : hipblasIamin_64<T, false>;
 
     if(arg.api & c_API_64)
-        testing_iamax_iamin<T, ref_iamin<T>, int64_t>(arg, hipblasIaminFn_64);
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>, int64_t>(arg, hipblasIaminFn_64);
     else
-        testing_iamax_iamin<T, ref_iamin<T>, int>(arg, hipblasIaminFn);
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>, int>(arg, hipblasIaminFn);
 }

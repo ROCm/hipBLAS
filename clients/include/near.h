@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,17 +50,17 @@ constexpr double sqrthalf = 0.7071067811865475244;
 
 /*! \brief Template: gtest near compare two matrices float/double/complex */
 template <typename T>
-void near_check_general(int M, int N, int lda, T* hCPU, T* hGPU, double abs_error);
+void near_check_general(int64_t M, int64_t N, int64_t lda, T* hCPU, T* hGPU, double abs_error);
 
 template <typename T>
 void near_check_general(
-    int M, int N, int lda, host_vector<T> hCPU, host_vector<T> hGPU, double abs_error);
+    int64_t M, int64_t N, int64_t lda, host_vector<T> hCPU, host_vector<T> hGPU, double abs_error);
 
 template <typename T>
-void near_check_general(int           M,
-                        int           N,
-                        int           batch_count,
-                        int           lda,
+void near_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
                         hipblasStride stride_A,
                         T*            hCPU,
                         T*            hGPU,
@@ -68,18 +68,18 @@ void near_check_general(int           M,
 
 template <typename T>
 void near_check_general(
-    int M, int N, int batch_count, int lda, T** hCPU, T** hGPU, double abs_error);
+    int64_t M, int64_t N, int64_t batch_count, int64_t lda, T** hCPU, T** hGPU, double abs_error);
 
 template <typename T>
-void near_check_general(int            M,
-                        int            N,
-                        int            batch_count,
-                        int            lda,
+void near_check_general(int64_t        M,
+                        int64_t        N,
+                        int64_t        batch_count,
+                        int64_t        lda,
                         host_vector<T> hCPU[],
                         host_vector<T> hGPU[],
                         double         abs_error);
 
-// currently only used for half-precision comparisons int dot_ex tests
+// currently only used for half-precision comparisons in dot_ex tests
 template <class T>
 HIPBLAS_CLANG_STATIC constexpr double error_tolerance = 0.0;
 
@@ -101,33 +101,35 @@ template <class Tc, class Ti, class To>
 static constexpr double sum_error_tolerance_for_gfx11 = 0.0;
 
 template <>
-HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, float> = 1 / 10.0;
+HIPBLAS_CLANG_STATIC constexpr double sum_error_tolerance_for_gfx11<float, hipblasBfloat16, float>
+    = 1 / 10.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, hipblasBfloat16> = 1 / 10.0;
+    sum_error_tolerance_for_gfx11<float, hipblasBfloat16, hipblasBfloat16>
+    = 1 / 10.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double sum_error_tolerance_for_gfx11<float, hipblasHalf, float>
+    = 1 / 100.0;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr double sum_error_tolerance_for_gfx11<float, hipblasHalf, hipblasHalf>
+    = 1 / 100.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasHalf, float> = 1 / 100.0;
+    sum_error_tolerance_for_gfx11<hipblasHalf, hipblasHalf, hipblasHalf>
+    = 1 / 100.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<float, hipblasHalf, hipblasHalf> = 1 / 100.0;
+    sum_error_tolerance_for_gfx11<hipblasComplex, hipblasComplex, hipblasComplex>
+    = 1 / 10000.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<hipblasHalf, hipblasHalf, hipblasHalf> = 1 / 100.0;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<hipblasComplex, hipblasComplex, hipblasComplex> = 1 / 10000.0;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<hipblasDoubleComplex,
-                                  hipblasDoubleComplex,
-                                  hipblasDoubleComplex> = 1 / 1000000.0;
+    sum_error_tolerance_for_gfx11<hipblasDoubleComplex, hipblasDoubleComplex, hipblasDoubleComplex>
+    = 1 / 1000000.0;
 
 #endif

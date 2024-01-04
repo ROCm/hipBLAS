@@ -140,7 +140,7 @@ void testing_asum(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        ref_asum<T, Tr>((int)N, hx.data(), (int)incx, &cpu_result);
+        ref_asum<T>(N, hx.data(), incx, &cpu_result);
 
         if(arg.unit_check)
         {

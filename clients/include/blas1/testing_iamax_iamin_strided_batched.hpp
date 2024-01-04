@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#include "hipblas_iamax_iamin_ref.hpp"
 #include "testing_common.hpp"
 
 using hipblasIamaxIaminStridedBatchedModel
@@ -90,7 +91,10 @@ void testing_iamin_strided_batched_bad_arg(const Arguments& arg)
         testing_iamax_iamin_strided_batched_bad_arg<T, int>(arg, hipblasIaminStridedBatchedFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int, const T*, int, int*), typename R, typename FUNC>
+template <typename T,
+          void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*),
+          typename R,
+          typename FUNC>
 void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
 {
     int64_t N            = arg.N;
@@ -132,12 +136,13 @@ void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice
-    host_vector<T>   hx(sizeX);
-    device_vector<T> dx(sizeX);
-    host_vector<R>   cpu_result(batch_count);
-    host_vector<R>   hipblas_result_host(batch_count);
-    host_vector<R>   hipblas_result_device(batch_count);
-    device_vector<R> d_hipblas_result(batch_count);
+    host_vector<T>       hx(sizeX);
+    device_vector<T>     dx(sizeX);
+    host_vector<R>       cpu_result(batch_count);
+    host_vector<int64_t> cpu_result_64(batch_count);
+    host_vector<R>       hipblas_result_host(batch_count);
+    host_vector<R>       hipblas_result_device(batch_count);
+    device_vector<R>     d_hipblas_result(batch_count);
 
     // Initial Data on CPU
     hipblas_init_vector(
@@ -172,12 +177,8 @@ void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            int cpu_result_int;
-            REFBLAS_FUNC((int)N, hx.data() + b2 * stridex, (int)incx, &cpu_result_int);
-
-            // change to Fortran 1 based indexing as in BLAS standard, not cblas zero based indexing
-            cpu_result[b2] = cpu_result_int + 1;
+            REFBLAS_FUNC(N, hx.data() + b * stridex, incx, &(cpu_result_64[b]));
+            cpu_result[b] = cpu_result_64[b];
         }
 
         if(arg.unit_check)
@@ -242,11 +243,11 @@ void testing_iamax_strided_batched(const Arguments& arg)
                                                : hipblasIamaxStridedBatched_64<T, false>;
 
     if(arg.api & c_API_64)
-        testing_iamax_iamin_strided_batched<T, ref_iamax<T>, int64_t>(
+        testing_iamax_iamin_strided_batched<T, hipblas_iamax_iamin_ref::iamax<T>, int64_t>(
             arg, hipblasIamaxStridedBatched_64Fn);
     else
-        testing_iamax_iamin_strided_batched<T, ref_iamax<T>, int>(arg,
-                                                                  hipblasIamaxStridedBatchedFn);
+        testing_iamax_iamin_strided_batched<T, hipblas_iamax_iamin_ref::iamax<T>, int>(
+            arg, hipblasIamaxStridedBatchedFn);
 }
 
 inline void testname_iamin_strided_batched(const Arguments& arg, std::string& name)
@@ -264,9 +265,9 @@ void testing_iamin_strided_batched(const Arguments& arg)
                                                : hipblasIaminStridedBatched_64<T, false>;
 
     if(arg.api & c_API_64)
-        testing_iamax_iamin_strided_batched<T, ref_iamin<T>, int64_t>(
+        testing_iamax_iamin_strided_batched<T, hipblas_iamax_iamin_ref::iamin<T>, int64_t>(
             arg, hipblasIaminStridedBatched_64Fn);
     else
-        testing_iamax_iamin_strided_batched<T, ref_iamin<T>, int>(arg,
-                                                                  hipblasIaminStridedBatchedFn);
+        testing_iamax_iamin_strided_batched<T, hipblas_iamax_iamin_ref::iamin<T>, int>(
+            arg, hipblasIaminStridedBatchedFn);
 }

@@ -747,6 +747,85 @@ hipblasStatus_t HIPBLAS_FAPI(hipblasZdotcStridedBatched)(hipblasHandle_t        
                                                          hipblasDoubleComplex*       result);
 
 // nrm2
+hipblasStatus_t HIPBLAS_FAPI(hipblasSnrm2)(
+    hipblasHandle_t handle, hipblas_int n, const float* x, hipblas_int incx, float* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDnrm2)(
+    hipblasHandle_t handle, hipblas_int n, const double* x, hipblas_int incx, double* result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScnrm2)(hipblasHandle_t       handle,
+                                            hipblas_int           n,
+                                            const hipblasComplex* x,
+                                            hipblas_int           incx,
+                                            float*                result);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDznrm2)(hipblasHandle_t             handle,
+                                            hipblas_int                 n,
+                                            const hipblasDoubleComplex* x,
+                                            hipblas_int                 incx,
+                                            double*                     result);
+
+// nrm2Batched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSnrm2Batched)(hipblasHandle_t    handle,
+                                                  hipblas_int        n,
+                                                  const float* const x[],
+                                                  hipblas_int        incx,
+                                                  hipblas_int        batch_count,
+                                                  float*             results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDnrm2Batched)(hipblasHandle_t     handle,
+                                                  hipblas_int         n,
+                                                  const double* const x[],
+                                                  hipblas_int         incx,
+                                                  hipblas_int         batch_count,
+                                                  double*             results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScnrm2Batched)(hipblasHandle_t             handle,
+                                                   hipblas_int                 n,
+                                                   const hipblasComplex* const x[],
+                                                   hipblas_int                 incx,
+                                                   hipblas_int                 batch_count,
+                                                   float*                      results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDznrm2Batched)(hipblasHandle_t                   handle,
+                                                   hipblas_int                       n,
+                                                   const hipblasDoubleComplex* const x[],
+                                                   hipblas_int                       incx,
+                                                   hipblas_int                       batch_count,
+                                                   double*                           results);
+
+// nrm2StridedBatched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSnrm2StridedBatched)(hipblasHandle_t handle,
+                                                         hipblas_int     n,
+                                                         const float*    x,
+                                                         hipblas_int     incx,
+                                                         hipblasStride   stridex,
+                                                         hipblas_int     batch_count,
+                                                         float*          results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDnrm2StridedBatched)(hipblasHandle_t handle,
+                                                         hipblas_int     n,
+                                                         const double*   x,
+                                                         hipblas_int     incx,
+                                                         hipblasStride   stridex,
+                                                         hipblas_int     batch_count,
+                                                         double*         results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScnrm2StridedBatched)(hipblasHandle_t       handle,
+                                                          hipblas_int           n,
+                                                          const hipblasComplex* x,
+                                                          hipblas_int           incx,
+                                                          hipblasStride         stridex,
+                                                          hipblas_int           batch_count,
+                                                          float*                results);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDznrm2StridedBatched)(hipblasHandle_t             handle,
+                                                          hipblas_int                 n,
+                                                          const hipblasDoubleComplex* x,
+                                                          hipblas_int                 incx,
+                                                          hipblasStride               stridex,
+                                                          hipblas_int                 batch_count,
+                                                          double*                     results);
 
 // rot
 

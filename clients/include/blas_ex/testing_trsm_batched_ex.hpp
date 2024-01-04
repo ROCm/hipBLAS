@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -393,42 +393,23 @@ void testing_trsm_batched_ex(const Arguments& arg)
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
     hipblas_init_vector(hB_host, arg, hipblas_client_never_set_nan);
     for(int b = 0; b < batch_count; b++)
     {
-        // pad untouched area into zero
-        for(int i = K; i < lda; i++)
-        {
-            for(int j = 0; j < K; j++)
-            {
-                hA[b][i + j * lda] = 0.0;
-            }
-        }
+        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                                 (T*)hA[b],
+                                 arg,
+                                 K,
+                                 K,
+                                 lda,
+                                 0,
+                                 1,
+                                 hipblas_client_never_set_nan,
+                                 true);
 
-        // proprocess the matrix to avoid ill-conditioned matrix
-        host_vector<int> ipiv(K);
-        ref_getrf(K, K, hA[b], lda, ipiv);
-        for(int i = 0; i < K; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            for(int j = i; j < K; j++)
-            {
-                hA[b][i + j * lda] = hA[b][j + i * lda];
-                if(diag == HIPBLAS_DIAG_UNIT)
-                {
-                    if(i == j)
-                        hA[b][i + j * lda] = 1.0;
-                }
-            }
-        }
-
-        // pad untouched area into zero
-        for(int i = M; i < ldb; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                hB_host[b][i + j * ldb] = 0.0;
-            }
+            make_unit_diagonal(uplo, (T*)hA[b], lda, K);
         }
 
         // Calculate hB = hA*hX;

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -155,8 +155,7 @@ void testing_asum_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_asum<T, Tr>((int)N, hx[b2], (int)incx, &(h_cpu_result[b2]));
+            ref_asum<T>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)
