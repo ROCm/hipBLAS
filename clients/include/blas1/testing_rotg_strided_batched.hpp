@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ void testing_rotg_strided_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgStridedBatchedFn
         = FORTRAN ? hipblasRotgStridedBatched<T, U, true> : hipblasRotgStridedBatched<T, U, false>;
+    auto hipblasRotgStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasRotgStridedBatched_64<T, U, true>
+                                              : hipblasRotgStridedBatched_64<T, U, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -57,26 +60,21 @@ void testing_rotg_strided_batched_bad_arg(const Arguments& arg)
     device_vector<U> dc(stride_c * batch_count);
     device_vector<T> ds(stride_s * batch_count);
 
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotgStridedBatchedFn(
-            nullptr, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count),
-        HIPBLAS_STATUS_NOT_INITIALIZED);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotgStridedBatchedFn(
-            handle, nullptr, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotgStridedBatchedFn(
-            handle, da, stride_a, nullptr, stride_b, dc, stride_c, ds, stride_s, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotgStridedBatchedFn(
-            handle, da, stride_a, db, stride_b, nullptr, stride_c, ds, stride_s, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotgStridedBatchedFn(
-            handle, da, stride_a, db, stride_b, dc, stride_c, nullptr, stride_s, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasRotgStridedBatchedFn,
+                (nullptr, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgStridedBatchedFn,
+                (handle, nullptr, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgStridedBatchedFn,
+                (handle, da, stride_a, nullptr, stride_b, dc, stride_c, ds, stride_s, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgStridedBatchedFn,
+                (handle, da, stride_a, db, stride_b, nullptr, stride_c, ds, stride_s, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgStridedBatchedFn,
+                (handle, da, stride_a, db, stride_b, dc, stride_c, nullptr, stride_s, batch_count));
 }
 
 template <typename T>
@@ -86,13 +84,16 @@ void testing_rotg_strided_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgStridedBatchedFn
         = FORTRAN ? hipblasRotgStridedBatched<T, U, true> : hipblasRotgStridedBatched<T, U, false>;
+    auto hipblasRotgStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasRotgStridedBatched_64<T, U, true>
+                                              : hipblasRotgStridedBatched_64<T, U, false>;
 
     double        stride_scale = arg.stride_scale;
     hipblasStride stride_a     = stride_scale;
     hipblasStride stride_b     = stride_scale;
     hipblasStride stride_c     = stride_scale;
     hipblasStride stride_s     = stride_scale;
-    int           batch_count  = arg.batch_count;
+    int64_t       batch_count  = arg.batch_count;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -145,19 +146,19 @@ void testing_rotg_strided_batched(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
-            handle, ha, stride_a, hb, stride_b, hc, stride_c, hs, stride_s, batch_count)));
+        DAPI_CHECK(hipblasRotgStridedBatchedFn,
+                   (handle, ha, stride_a, hb, stride_b, hc, stride_c, hs, stride_s, batch_count));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
-            handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count)));
+        DAPI_CHECK(hipblasRotgStridedBatchedFn,
+                   (handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(ra, da, sizeof(T) * size_a, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(rb, db, sizeof(T) * size_b, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(rc, dc, sizeof(U) * size_c, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(rs, ds, sizeof(T) * size_s, hipMemcpyDeviceToHost));
 
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_rotg<T, U>(ca.data() + b * stride_a,
                            cb.data() + b * stride_b,
@@ -211,8 +212,9 @@ void testing_rotg_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotgStridedBatchedFn(
-                handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count)));
+            DAPI_CHECK(
+                hipblasRotgStridedBatchedFn,
+                (handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
