@@ -353,8 +353,16 @@ void testing_trsm_strided_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_matrix(
-        hA, arg, K, K, lda, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             K,
+                             K,
+                             lda,
+                             strideA,
+                             batch_count,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_matrix(
         hB_host, arg, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan);
 
@@ -363,43 +371,15 @@ void testing_trsm_strided_batched(const Arguments& arg)
         T* hAb = hA.data() + b * strideA;
         T* hBb = hB_host.data() + b * strideB;
 
-        // pad ountouched area into zero
-        for(int i = K; i < lda; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            for(int j = 0; j < K; j++)
-            {
-                hAb[i + j * lda] = 0.0;
-            }
-        }
-
-        // proprocess the matrix to avoid ill-conditioned matrix
-        std::vector<int> ipiv(K);
-        ref_getrf(K, K, hAb, lda, ipiv.data());
-        for(int i = 0; i < K; i++)
-        {
-            for(int j = i; j < K; j++)
-            {
-                hAb[i + j * lda] = hAb[j + i * lda];
-                if(diag == HIPBLAS_DIAG_UNIT)
-                {
-                    if(i == j)
-                        hAb[i + j * lda] = 1.0;
-                }
-            }
-        }
-
-        // pad untouched area into zero
-        for(int i = M; i < ldb; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                hBb[i + j * ldb] = 0.0;
-            }
+            make_unit_diagonal(uplo, (T*)hAb, lda, K);
         }
 
         // Calculate hB = hA*hX;
         ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
     }
+
     hB_gold   = hB_host; // original solutions hX
     hB_device = hB_host;
 

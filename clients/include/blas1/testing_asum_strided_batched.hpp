@@ -162,8 +162,7 @@ void testing_asum_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_asum<T, Tr>((int)N, hx.data() + b2 * stridex, (int)incx, &cpu_result[b2]);
+            ref_asum<T>(N, hx.data() + b * stridex, incx, &cpu_result[b]);
         }
 
         if(arg.unit_check)
