@@ -137,7 +137,6 @@ void testing_trsv(const Arguments& arg)
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
-    host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -148,56 +147,23 @@ void testing_trsv(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             lda,
+                             0,
+                             1,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+
     hb = hx;
 
-    //  calculate AAT = hA * hA ^ T
-    ref_gemm<T>(HIPBLAS_OP_N,
-                HIPBLAS_OP_T,
-                N,
-                N,
-                N,
-                (T)1.0,
-                hA.data(),
-                lda,
-                hA.data(),
-                lda,
-                (T)0.0,
-                AAT.data(),
-                lda);
-
-    //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-    for(int i = 0; i < N; i++)
+    if(diag == HIPBLAS_DIAG_UNIT)
     {
-        T t = 0.0;
-        for(int j = 0; j < N; j++)
-        {
-            hA[i + j * lda] = AAT[i + j * lda];
-            t += hipblas_abs(AAT[i + j * lda]);
-        }
-        hA[i + i * lda] = t;
-    }
-    //  calculate Cholesky factorization of SPD matrix hA
-    ref_potrf<T>(arg.uplo, N, hA.data(), lda);
-
-    //  make hA unit diagonal if diag == rocblas_diagonal_unit
-    if(arg.diag == 'U' || arg.diag == 'u')
-    {
-        if('L' == arg.uplo || 'l' == arg.uplo)
-            for(int i = 0; i < N; i++)
-            {
-                T diag = hA[i + i * lda];
-                for(int j = 0; j <= i; j++)
-                    hA[i + j * lda] = hA[i + j * lda] / diag;
-            }
-        else
-            for(int j = 0; j < N; j++)
-            {
-                T diag = hA[j + j * lda];
-                for(int i = 0; i <= j; i++)
-                    hA[i + j * lda] = hA[i + j * lda] / diag;
-            }
+        make_unit_diagonal(uplo, (T*)hA, lda, N);
     }
 
     // Calculate hb = hA*hx;

@@ -26,32 +26,6 @@
 #include <gtest/gtest.h>
 #endif
 
-#include "hipblas_arguments.hpp"
-
-#include <cstdio>
-#include <cstring>
-#include <functional>
-#include <future>
-#include <iostream>
-#include <mutex>
-#include <queue>
-#include <sstream>
-#include <string>
-#include <utility>
-#include <vector>
-
-#ifdef WIN32
-typedef long long ssize_t; /* x64 only supported */
-#endif
-
-#ifdef GOOGLE_TEST
-#include <gtest/gtest.h>
-#endif
-
-#include "argument_model.hpp"
-#include "hipblas.h"
-#include "hipblas_arguments.hpp"
-#include "test_cleanup.hpp"
 #include <algorithm>
 #include <condition_variable>
 #include <cstdio>
@@ -68,9 +42,15 @@ typedef long long ssize_t; /* x64 only supported */
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #ifdef WIN32
 typedef long long ssize_t; /* x64 only supported */
 #endif
+
+#include "argument_model.hpp"
+#include "hipblas.h"
+#include "hipblas_arguments.hpp"
+#include "test_cleanup.hpp"
 
 #ifdef GOOGLE_TEST
 

@@ -168,7 +168,6 @@ void testing_trsv_batched(const Arguments& arg)
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(size_A, 1, batch_count);
-    host_batch_vector<T> AAT(size_A, 1, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hx_or_b_1(N, incx, batch_count);
@@ -182,64 +181,28 @@ void testing_trsv_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, true, true);
+
     hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
     {
-        //  calculate AAT = hA * hA ^ T
-        ref_gemm<T>(HIPBLAS_OP_N,
-                    HIPBLAS_OP_T,
-                    N,
-                    N,
-                    N,
-                    (T)1.0,
-                    (T*)hA[b],
-                    lda,
-                    (T*)hA[b],
-                    lda,
-                    (T)0.0,
-                    (T*)AAT[b],
-                    lda);
+        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                                 (T*)hA[b],
+                                 arg,
+                                 N,
+                                 N,
+                                 lda,
+                                 0,
+                                 1,
+                                 hipblas_client_never_set_nan,
+                                 false);
 
-        //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < N; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            T t = 0.0;
-            for(int j = 0; j < N; j++)
-            {
-                hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += hipblas_abs(AAT[b][i + j * lda]);
-            }
-            hA[b][i + i * lda] = t;
+            make_unit_diagonal(uplo, (T*)hA[b], lda, N);
         }
 
-        //  calculate Cholesky factorization of SPD matrix hA
-        ref_potrf<T>(arg.uplo, N, hA[b], lda);
-
-        //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(arg.diag == 'U' || arg.diag == 'u')
-        {
-            if('L' == arg.uplo || 'l' == arg.uplo)
-                for(int i = 0; i < N; i++)
-                {
-                    T diag = hA[b][i + i * lda];
-                    for(int j = 0; j <= i; j++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
-                }
-            else
-                for(int j = 0; j < N; j++)
-                {
-                    T diag = hA[b][j + j * lda];
-                    for(int i = 0; i <= j; i++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
-                }
-        }
-    }
-
-    for(int b = 0; b < batch_count; b++)
-    {
         // Calculate hb = hA*hx;
         ref_trmv<T>(uplo, transA, diag, N, hA[b], lda, hb[b], incx);
     }

@@ -155,8 +155,7 @@ void testing_asum_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_asum<T, Tr>((int)N, hx[b2], (int)incx, &(h_cpu_result[b2]));
+            ref_asum<T>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

@@ -23,7 +23,8 @@
 
 #pragma once
 
-#include "hipblas.h"
+#include "hipblas_test.hpp"
+
 #include <cinttypes>
 #include <clocale>
 #include <cstdio>

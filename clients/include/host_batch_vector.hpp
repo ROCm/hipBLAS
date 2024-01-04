@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ public:
     //! @param inc         The increment.
     //! @param batch_count The batch count.
     //!
-    explicit host_batch_vector(int n, int inc, int batch_count)
+    explicit host_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
         : m_n(n)
         , m_inc(inc ? inc : 1)
         , m_batch_count(batch_count)
@@ -74,7 +74,7 @@ public:
     //! @param stride      (UNUSED) The stride.
     //! @param batch_count The batch count.
     //!
-    explicit host_batch_vector(int n, int inc, hipblasStride stride, int batch_count)
+    explicit host_batch_vector(int64_t n, int64_t inc, hipblasStride stride, int64_t batch_count)
         : host_batch_vector(n, inc, batch_count)
     {
     }
@@ -90,7 +90,7 @@ public:
     //!
     //! @brief Returns the length of the vector.
     //!
-    int n() const
+    int64_t n() const
     {
         return this->m_n;
     }
@@ -98,7 +98,7 @@ public:
     //!
     //! @brief Returns the increment of the vector.
     //!
-    int inc() const
+    int64_t inc() const
     {
         return this->m_inc;
     }
@@ -106,7 +106,7 @@ public:
     //!
     //! @brief Returns the batch count.
     //!
-    int batch_count() const
+    int64_t batch_count() const
     {
         return this->m_batch_count;
     }
@@ -124,7 +124,7 @@ public:
     //! @param batch_index the batch index.
     //! @return The mutable pointer.
     //!
-    T* operator[](int batch_index)
+    T* operator[](int64_t batch_index)
     {
 
         return this->m_data[batch_index];
@@ -135,7 +135,7 @@ public:
     //! @param batch_index the batch index.
     //! @return The non-mutable pointer.
     //!
-    const T* operator[](int batch_index) const
+    const T* operator[](int64_t batch_index) const
     {
 
         return this->m_data[batch_index];
@@ -170,7 +170,7 @@ public:
            && (this->inc() == that.inc()))
         {
             size_t num_bytes = this->n() * std::abs(this->inc()) * sizeof(T);
-            for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
                 memcpy((*this)[batch_index], that[batch_index], num_bytes);
             }
@@ -191,7 +191,7 @@ public:
     {
         hipError_t hip_err;
         size_t     num_bytes = size_t(this->m_n) * std::abs(this->m_inc) * sizeof(T);
-        for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+        for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
         {
             if(hipSuccess
                != (hip_err = hipMemcpy(
@@ -213,10 +213,10 @@ public:
     }
 
 private:
-    int m_n{};
-    int m_inc{};
-    int m_batch_count{};
-    T** m_data{};
+    int64_t m_n{};
+    int64_t m_inc{};
+    int64_t m_batch_count{};
+    T**     m_data{};
 
     bool try_initialize_memory()
     {
@@ -224,7 +224,7 @@ private:
         if(success)
         {
             size_t nmemb = size_t(this->m_n) * std::abs(this->m_inc);
-            for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
                 success = (nullptr != (this->m_data[batch_index] = (T*)calloc(nmemb, sizeof(T))));
                 if(false == success)
@@ -240,7 +240,7 @@ private:
     {
         if(nullptr != this->m_data)
         {
-            for(int batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
                 if(nullptr != this->m_data[batch_index])
                 {
