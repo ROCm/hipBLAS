@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -1108,6 +1108,18 @@ hipblasStatus_t hipblasDznrm2Cast(
     return hipblasDznrm2(handle, n, (const hipDoubleComplex*)x, incx, result);
 }
 
+hipblasStatus_t hipblasScnrm2Cast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasComplex* x, int64_t incx, float* result)
+{
+    return hipblasScnrm2_64(handle, n, (const hipComplex*)x, incx, result);
+}
+
+hipblasStatus_t hipblasDznrm2Cast_64(
+    hipblasHandle_t handle, int64_t n, const hipblasDoubleComplex* x, int64_t incx, double* result)
+{
+    return hipblasDznrm2_64(handle, n, (const hipDoubleComplex*)x, incx, result);
+}
+
 // nrm2_batched
 hipblasStatus_t hipblasScnrm2BatchedCast(hipblasHandle_t             handle,
                                          int                         n,
@@ -1127,6 +1139,28 @@ hipblasStatus_t hipblasDznrm2BatchedCast(hipblasHandle_t                   handl
                                          double*                           result)
 {
     return hipblasDznrm2Batched(
+        handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasScnrm2BatchedCast_64(hipblasHandle_t             handle,
+                                            int64_t                     n,
+                                            const hipblasComplex* const x[],
+                                            int64_t                     incx,
+                                            int64_t                     batch_count,
+                                            float*                      result)
+{
+    return hipblasScnrm2Batched_64(
+        handle, n, (const hipComplex* const*)x, incx, batch_count, result);
+}
+
+hipblasStatus_t hipblasDznrm2BatchedCast_64(hipblasHandle_t                   handle,
+                                            int64_t                           n,
+                                            const hipblasDoubleComplex* const x[],
+                                            int64_t                           incx,
+                                            int64_t                           batch_count,
+                                            double*                           result)
+{
+    return hipblasDznrm2Batched_64(
         handle, n, (const hipDoubleComplex* const*)x, incx, batch_count, result);
 }
 
@@ -1152,6 +1186,30 @@ hipblasStatus_t hipblasDznrm2StridedBatchedCast(hipblasHandle_t             hand
                                                 double*                     result)
 {
     return hipblasDznrm2StridedBatched(
+        handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
+}
+
+hipblasStatus_t hipblasScnrm2StridedBatchedCast_64(hipblasHandle_t       handle,
+                                                   int64_t               n,
+                                                   const hipblasComplex* x,
+                                                   int64_t               incx,
+                                                   hipblasStride         stridex,
+                                                   int64_t               batch_count,
+                                                   float*                result)
+{
+    return hipblasScnrm2StridedBatched_64(
+        handle, n, (const hipComplex*)x, incx, stridex, batch_count, result);
+}
+
+hipblasStatus_t hipblasDznrm2StridedBatchedCast_64(hipblasHandle_t             handle,
+                                                   int64_t                     n,
+                                                   const hipblasDoubleComplex* x,
+                                                   int64_t                     incx,
+                                                   hipblasStride               stridex,
+                                                   int64_t                     batch_count,
+                                                   double*                     result)
+{
+    return hipblasDznrm2StridedBatched_64(
         handle, n, (const hipDoubleComplex*)x, incx, stridex, batch_count, result);
 }
 

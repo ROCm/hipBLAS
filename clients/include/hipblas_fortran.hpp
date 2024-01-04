@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -284,81 +284,6 @@ hipblasStatus_t hipblasZswapStridedBatchedFortran(hipblasHandle_t       handle,
                                                   int                   incy,
                                                   hipblasStride         stridey,
                                                   int                   batch_count);
-
-// nrm2
-hipblasStatus_t
-    hipblasSnrm2Fortran(hipblasHandle_t handle, int n, const float* x, int incx, float* result);
-
-hipblasStatus_t
-    hipblasDnrm2Fortran(hipblasHandle_t handle, int n, const double* x, int incx, double* result);
-
-hipblasStatus_t hipblasScnrm2Fortran(
-    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, float* result);
-
-hipblasStatus_t hipblasDznrm2Fortran(
-    hipblasHandle_t handle, int n, const hipblasDoubleComplex* x, int incx, double* result);
-
-// nrm2Batched
-hipblasStatus_t hipblasSnrm2BatchedFortran(hipblasHandle_t    handle,
-                                           int                n,
-                                           const float* const x[],
-                                           int                incx,
-                                           int                batch_count,
-                                           float*             results);
-
-hipblasStatus_t hipblasDnrm2BatchedFortran(hipblasHandle_t     handle,
-                                           int                 n,
-                                           const double* const x[],
-                                           int                 incx,
-                                           int                 batch_count,
-                                           double*             results);
-
-hipblasStatus_t hipblasScnrm2BatchedFortran(hipblasHandle_t             handle,
-                                            int                         n,
-                                            const hipblasComplex* const x[],
-                                            int                         incx,
-                                            int                         batch_count,
-                                            float*                      results);
-
-hipblasStatus_t hipblasDznrm2BatchedFortran(hipblasHandle_t                   handle,
-                                            int                               n,
-                                            const hipblasDoubleComplex* const x[],
-                                            int                               incx,
-                                            int                               batch_count,
-                                            double*                           results);
-
-// nrm2StridedBatched
-hipblasStatus_t hipblasSnrm2StridedBatchedFortran(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const float*    x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  int             batch_count,
-                                                  float*          results);
-
-hipblasStatus_t hipblasDnrm2StridedBatchedFortran(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const double*   x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  int             batch_count,
-                                                  double*         results);
-
-hipblasStatus_t hipblasScnrm2StridedBatchedFortran(hipblasHandle_t       handle,
-                                                   int                   n,
-                                                   const hipblasComplex* x,
-                                                   int                   incx,
-                                                   hipblasStride         stridex,
-                                                   int                   batch_count,
-                                                   float*                results);
-
-hipblasStatus_t hipblasDznrm2StridedBatchedFortran(hipblasHandle_t             handle,
-                                                   int                         n,
-                                                   const hipblasDoubleComplex* x,
-                                                   int                         incx,
-                                                   hipblasStride               stridex,
-                                                   int                         batch_count,
-                                                   double*                     results);
 
 // amax
 hipblasStatus_t
