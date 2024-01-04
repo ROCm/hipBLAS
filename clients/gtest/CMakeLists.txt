@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -178,8 +178,8 @@ target_compile_definitions( hipblas_v2-test PRIVATE ${COMMON_DEFINES} HIPBLAS_V2
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE lapack cblas stdc++fs )
-    target_link_libraries( hipblas_v2-test PRIVATE lapack cblas stdc++fs )
+    target_link_libraries( hipblas-test PRIVATE stdc++fs )
+    target_link_libraries( hipblas_v2-test PRIVATE stdc++fs )
 endif()
 
 if(HIP_PLATFORM STREQUAL amd)

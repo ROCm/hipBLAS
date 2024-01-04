@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -104,20 +104,19 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
   message(STATUS "CLIENT COMMON LINK: ${COMMON_LINK_LIBS}")
 
   if( NOT WIN32 )
-    find_package( cblas REQUIRED CONFIG )
-    # Linking lapack library requires fortran flags
     if (LINK_BLIS)
-      if(EXISTS          "${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a") # 4.0 and 4.1.0
-        set( BLAS_LIBRARY ${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a )
+      if(EXISTS          "${BUILD_DIR}/deps/amd-blis/lib/ILP64/libflame.a" AND EXISTS "${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a") # 4.0 and 4.1.0
+        set( BLAS_LIBRARY ${BUILD_DIR}/deps/amd-blis/lib/ILP64/libflame.a ${BUILD_DIR}/deps/amd-blis/lib/ILP64/libblis-mt.a )
         set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/amd-blis/include/ILP64 )
-      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a" )
-        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a )
+        list( APPEND COMMON_DEFINES "FLA_ENABLE_ILP64")
+      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libflame.a" AND EXISTS "/opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a" )
+        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libflame.a /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/lib_ILP64/libblis-mt.a )
         set( BLIS_INCLUDE_DIR /opt/AMD/aocl/aocl-linux-aocc-4.1.0/aocc/include_ILP64/ )
-        list( APPEND COMMON_DEFINES "LAPACK_ILP64")
-      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a" )
-        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a )
+        list( APPEND COMMON_DEFINES "FLA_ENABLE_ILP64")
+      elseif(EXISTS      "/opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libflame.a" AND EXISTS "/opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a" )
+        set( BLAS_LIBRARY /opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libflame.a /opt/AMD/aocl/aocl-linux-aocc-4.0/lib_ILP64/libblis-mt.a )
         set( BLIS_INCLUDE_DIR /opt/AMD/aocl/aocl-linux-aocc-4.0/include_ILP64/ )
-        list( APPEND COMMON_DEFINES "LAPACK_ILP64")
+        list( APPEND COMMON_DEFINES "FLA_ENABLE_ILP64")
       elseif(EXISTS      "${BUILD_DIR}/deps/blis/lib/libblis.a")
         set( BLAS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.a )
         set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
@@ -127,10 +126,12 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
       endif()
       if ( DEFINED BLIS_INCLUDE_DIR )
         set( BLIS_CPP ../common/blis_interface.cpp )
-        message(STATUS "Linking BLIS LIB: ${BLAS_LIBRARY}")
       endif()
     else()
-      set( BLAS_LIBRARY "blas" )
+      # Linking lapack library requires fortran flags
+      find_package( lapack REQUIRED CONFIG )
+      find_package( cblas REQUIRED CONFIG )
+      set( BLAS_LIBRARY "lapack cblas" )
     endif()
   else() # WIN32
     set( BLAS_INCLUDE_DIR ${OPENBLAS_DIR}/include CACHE PATH "OpenBLAS library include path" )
@@ -144,6 +145,7 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
       set( BLAS_INCLUDE_DIR "" )
     endif()
   endif()
+  message(STATUS "Linking Ref. Lib: ${BLAS_LIBRARY}")
 
   if( BUILD_CLIENTS_TESTS )
     add_subdirectory( gtest )
