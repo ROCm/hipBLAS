@@ -195,6 +195,12 @@ public:
     {
         return data & 0x7fff;
     }
+
+    inline hipblasBfloat16& operator+=(const hipblasBfloat16& a)
+    {
+        *this = hipblasBfloat16(float(*this) + float(a));
+        return *this;
+    }
 };
 
 typedef struct
