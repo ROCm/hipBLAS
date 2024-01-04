@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -576,7 +576,7 @@ if [[ "${build_relocatable}" == true ]]; then
     fi
 fi
 
-build_dir=./build
+build_dir=$(readlink -m ./build)
 printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
 
 # #################################################
@@ -620,7 +620,7 @@ if [[ "${install_dependencies}" == true ]]; then
         cd cmake-3.16.8
         ./bootstrap --prefix=/usr --no-system-curl --parallel=16
         make -j16
-        sudo make install
+        elevate_if_not_root make install
         cd ..
         rm -rf cmake-3.16.8.tar.gz cmake-3.16.8
       else
@@ -635,7 +635,7 @@ if [[ "${install_dependencies}" == true ]]; then
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
     ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
     make -j$(nproc)
-    make install
+    elevate_if_not_root make install
   popd
 fi
 
@@ -684,7 +684,10 @@ pushd .
 
   # clients
   if [[ "${build_clients}" == true ]]; then
-    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON" "-DLINK_BLIS=ON")
+    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON" "-DBUILD_DIR=${build_dir}")
+    if [[ "${build_cuda}" == false ]]; then
+      cmake_client_options+=("-DLINK_BLIS=ON")
+    fi
   fi
 
   # solver
