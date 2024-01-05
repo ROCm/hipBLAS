@@ -417,7 +417,7 @@ namespace ArgumentsHelper
             func("compute_type", hipblas_datatype2string(arg.compute_type));
         };
 };
-// clang-format on
+    // clang-format on
 
 #else
 
