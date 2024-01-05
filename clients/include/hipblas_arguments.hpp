@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,9 @@ typedef enum hipblas_client_api_
     FORTRAN    = 2,
     FORTRAN_64 = 3
 } hipblas_client_api;
+
+/*! \brief device matches pattern */
+bool gpu_arch_match(const std::string& gpu_arch, const char pattern[4]);
 
 // conversion helpers
 
@@ -180,7 +183,12 @@ struct Arguments
 
     int atomics_mode = HIPBLAS_ATOMICS_NOT_ALLOWED;
 
-    hipblas_client_os  os_flags;
+    hipblas_client_os os_flags;
+
+    // the gpu arch string after "gfx" for which the test is valid
+    // '?' is wildcard char, empty string is default as valid on all
+    char gpu_arch[4];
+
     hipblas_backend    backend_flags;
     hipblas_client_api api = hipblas_client_api::C;
 
@@ -251,6 +259,7 @@ struct Arguments
     OPER(category) SEP               \
     OPER(atomics_mode) SEP           \
     OPER(os_flags) SEP               \
+    OPER(gpu_arch) SEP               \
     OPER(backend_flags) SEP          \
     OPER(api) SEP                    \
     OPER(initialization) SEP         \
@@ -408,7 +417,7 @@ namespace ArgumentsHelper
             func("compute_type", hipblas_datatype2string(arg.compute_type));
         };
 };
-    // clang-format on
+// clang-format on
 
 #else
 
