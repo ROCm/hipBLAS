@@ -5108,7 +5108,7 @@ catch(...)
 hipblasStatus_t hipblasDrotg_64(hipblasHandle_t handle, double* a, double* b, double* c, double* s)
 try
 {
-    return hipCUBLASStatusToHIPStatus(cublasDrotg_64((cublasHandle_t)handle, a, b, c, s));
+    return hipCUBLASStatusToHIPStatus(cublasDrotg((cublasHandle_t)handle, a, b, c, s));
 }
 catch(...)
 {
