@@ -19,7 +19,7 @@ Tests:
       - iamin: *single_double_precisions_complex_real
     N: *N_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: iamaxmin_batched_general
     category: quick
@@ -29,7 +29,7 @@ Tests:
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: iamaxmin_strided_batched_general
@@ -41,7 +41,40 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
+    backend_flags: AMD
+
+    # ILP-64 tests
+    # - name: iamaxmin_64
+    #   category: stress
+    #   function:
+    #     - iamax: *single_precision
+    #     - iamin: *single_precision
+    #   arguments:
+    #     - { N: 2147483649, incx:  1 }
+    #     - { N: 2, incx:  2147483649 }
+    #   api: [ C_64 ]
+
+    # - name: iamaxmin_64
+    #   category: stress
+    #   function:
+    #     - iamax_batched: *single_precision
+    #     - iamin_batched: *single_precision
+    #     - iamax_strided_batched: *single_precision
+    #     - iamin_strided_batched: *single_precision
+    #   arguments:
+    #     - { N: 2147483649, incx:  1, batch_count: 1 }
+    #     - { N: 2, incx:  2147483649, batch_count: 1 }
+    #     - { N: 2, incx:  1, stride_x: 2, batch_count: *666666 }
+    #   api: [ C_64 ]
+
+  - name: iamaxmin_bad_arg
+    category: pre_checkin
+    function:
+      - iamax_bad_arg
+      - iamin_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: iamaxmin_bad_arg
@@ -50,16 +83,7 @@ Tests:
       - iamax_bad_arg
       - iamin_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
-
-  - name: iamaxmin_bad_arg
-    category: pre_checkin
-    function:
-      - iamax_bad_arg
-      - iamin_bad_arg
-    precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -71,6 +95,6 @@ Tests:
       - iamin_batched_bad_arg
       - iamin_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
