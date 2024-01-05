@@ -80,15 +80,7 @@ Tests:
     function:
       - rotg: *rotg_precisions
       - rotmg: *single_double_precisions
-    api: [ FORTRAN, C ]
-
-  - name: rotg_general_64
-    category: quick
-    function:
-      - rotg: *rotg_precisions
-      - rotmg: *single_double_precisions
-    api: [ FORTRAN_64, C_64 ]
-    backend_flags: AMD
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: rotg_batched_general
     category: quick
@@ -139,7 +131,7 @@ Tests:
       - rotm_bad_arg: *single_double_precisions
       - rotg_bad_arg: *rotg_precisions
       - rotmg_bad_arg: *single_double_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 

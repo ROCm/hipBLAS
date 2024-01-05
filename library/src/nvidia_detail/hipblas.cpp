@@ -5097,12 +5097,11 @@ catch(...)
 hipblasStatus_t hipblasSrotg_64(hipblasHandle_t handle, float* a, float* b, float* c, float* s)
 try
 {
-    // cuBLAS documentation claims support here but doesn't seem to have it in cuda 12.3
-    // #if CUBLAS_VER_MAJOR >= 12
-    //     return hipCUBLASStatusToHIPStatus(cublasSrotg_64((cublasHandle_t)handle, a, b, c, s));
-    // #else
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasSrotg_64((cublasHandle_t)handle, a, b, c, s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // #endif
+#endif
 }
 catch(...)
 {
@@ -5112,7 +5111,11 @@ catch(...)
 hipblasStatus_t hipblasDrotg_64(hipblasHandle_t handle, double* a, double* b, double* c, double* s)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasDrotg_64((cublasHandle_t)handle, a, b, c, s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -5123,7 +5126,12 @@ hipblasStatus_t hipblasCrotg_64(
     hipblasHandle_t handle, hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasCrotg_64((cublasHandle_t)handle, (cuComplex*)a, (cuComplex*)b, c, (cuComplex*)s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -5137,7 +5145,12 @@ hipblasStatus_t hipblasZrotg_64(hipblasHandle_t       handle,
                                 hipblasDoubleComplex* s)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasZrotg_64(
+        (cublasHandle_t)handle, (cuDoubleComplex*)a, (cuDoubleComplex*)b, c, (cuDoubleComplex*)s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -5148,7 +5161,12 @@ hipblasStatus_t hipblasCrotg_64_v2(
     hipblasHandle_t handle, hipComplex* a, hipComplex* b, float* c, hipComplex* s)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasCrotg_64((cublasHandle_t)handle, (cuComplex*)a, (cuComplex*)b, c, (cuComplex*)s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -5162,7 +5180,12 @@ hipblasStatus_t hipblasZrotg_64_v2(hipblasHandle_t   handle,
                                    hipDoubleComplex* s)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(cublasZrotg_64(
+        (cublasHandle_t)handle, (cuDoubleComplex*)a, (cuDoubleComplex*)b, c, (cuDoubleComplex*)s));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -5669,13 +5692,12 @@ hipblasStatus_t hipblasSrotmg_64(
     hipblasHandle_t handle, float* d1, float* d2, float* x1, const float* y1, float* param)
 try
 {
-    // cuBLAS documentation claims support here but doesn't seem to have it in cuda 12.3
-    // #if CUBLAS_VER_MAJOR >= 12
-    //     return hipCUBLASStatusToHIPStatus(
-    //         cublasSrotmg_64((cublasHandle_t)handle, d1, d2, x1, y1, param));
-    // #else
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasSrotmg_64((cublasHandle_t)handle, d1, d2, x1, y1, param));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // #endif
+#endif
 }
 catch(...)
 {
@@ -5686,7 +5708,12 @@ hipblasStatus_t hipblasDrotmg_64(
     hipblasHandle_t handle, double* d1, double* d2, double* x1, const double* y1, double* param)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
+    return hipCUBLASStatusToHIPStatus(
+        cublasDrotmg_64((cublasHandle_t)handle, d1, d2, x1, y1, param));
+#else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
