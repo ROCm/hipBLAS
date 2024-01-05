@@ -629,13 +629,14 @@ if [[ "${install_dependencies}" == true ]]; then
       fi
   fi
 
-  # The following builds googletest & lapack from source, installs into cmake default /usr/local
+  # The following builds googletest & lapack from source
   pushd .
-    printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
+    printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into build tree and not default \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
     ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
     make -j$(nproc)
-    elevate_if_not_root make install
+    # as installing into build tree deps/deps-install rather than /usr/local won't elevate if not root
+    make install
   popd
 fi
 
