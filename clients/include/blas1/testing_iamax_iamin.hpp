@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,22 +30,18 @@
 
 using hipblasIamaxIaminModel = ArgumentModel<e_a_type, e_N, e_incx>;
 
-template <typename T>
-using hipblas_iamax_iamin_t
-    = hipblasStatus_t (*)(hipblasHandle_t handle, int n, const T* x, int incx, int* result);
-
-template <typename T>
-void testing_iamax_iamin_bad_arg(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
+template <typename T, typename R, typename FUNC>
+void testing_iamax_iamin_bad_arg(const Arguments& arg, FUNC func)
 {
     hipblasLocalHandle handle(arg);
 
-    int64_t N     = 100;
+    R       N     = 100;
     int64_t incx  = 1;
-    int     h_res = -1;
+    R       h_res = -1;
 
-    device_vector<T>   dx(N * incx);
-    device_vector<int> d_res(1);
-    int*               res = d_res;
+    device_vector<T> dx(N * incx);
+    device_vector<R> d_res(1);
+    R*               res = d_res;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -69,47 +65,56 @@ void testing_iamax_iamin_bad_arg(const Arguments& arg, hipblas_iamax_iamin_t<T> 
 template <typename T>
 void testing_iamax_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
+    auto hipblasIamaxFn = arg.api == FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
+    auto hipblasIamaxFn_64
+        = arg.api == FORTRAN_64 ? hipblasIamax_64<T, true> : hipblasIamax_64<T, false>;
 
-    testing_iamax_iamin_bad_arg<T>(arg, hipblasIamaxFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_bad_arg<T, int64_t>(arg, hipblasIamaxFn_64);
+    else
+        testing_iamax_iamin_bad_arg<T, int>(arg, hipblasIamaxFn);
 }
 
 template <typename T>
 void testing_iamin_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
+    auto hipblasIaminFn = arg.api == FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
+    auto hipblasIaminFn_64
+        = arg.api == FORTRAN_64 ? hipblasIamin_64<T, true> : hipblasIamin_64<T, false>;
 
-    testing_iamax_iamin_bad_arg<T>(arg, hipblasIaminFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin_bad_arg<T, int64_t>(arg, hipblasIaminFn_64);
+    else
+        testing_iamax_iamin_bad_arg<T, int>(arg, hipblasIaminFn);
 }
 
-template <typename T, void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*)>
-void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
+template <typename T,
+          void REFBLAS_FUNC(int64_t, const T*, int64_t, int64_t*),
+          typename R,
+          typename FUNC>
+void testing_iamax_iamin(const Arguments& arg, FUNC func)
 {
-    int N    = arg.N;
-    int incx = arg.incx;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
 
     hipblasLocalHandle handle(arg);
-
-    int zero = 0;
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0)
     {
-        device_vector<int> d_hipblas_result_0(1);
-        host_vector<int>   h_hipblas_result_0(1);
+        device_vector<R> d_hipblas_result_0(1);
+        host_vector<R>   h_hipblas_result_0(1);
         hipblas_init_nan(h_hipblas_result_0.data(), 1);
         CHECK_HIP_ERROR(
-            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(int), hipMemcpyHostToDevice));
+            hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(R), hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(func(handle, N, nullptr, incx, d_hipblas_result_0));
 
-        host_vector<int> cpu_0(1);
-        host_vector<int> gpu_0(1);
-        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(int), hipMemcpyDeviceToHost));
-        unit_check_general<int>(1, 1, 1, cpu_0, gpu_0);
+        host_vector<R> cpu_0(1);
+        host_vector<R> gpu_0(1);
+        CHECK_HIP_ERROR(hipMemcpy(gpu_0, d_hipblas_result_0, sizeof(R), hipMemcpyDeviceToHost));
+        unit_check_general<R>(1, 1, 1, cpu_0, gpu_0);
 
         return;
     }
@@ -119,10 +124,10 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice
     host_vector<T> hx(sizeX);
-    int            cpu_result, hipblas_result_host, hipblas_result_device;
+    R              cpu_result, hipblas_result_host, hipblas_result_device;
 
-    device_vector<T>   dx(sizeX);
-    device_vector<int> d_hipblas_result(1);
+    device_vector<T> dx(sizeX);
+    device_vector<R> d_hipblas_result(1);
 
     // Initial Data on CPU
     hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
@@ -131,7 +136,7 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
     CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
 
     double gpu_time_used;
-    int    hipblas_error_host, hipblas_error_device;
+    R      hipblas_error_host, hipblas_error_device;
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -142,8 +147,8 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(func(handle, N, dx, incx, d_hipblas_result));
 
-        CHECK_HIP_ERROR(hipMemcpy(
-            &hipblas_result_device, d_hipblas_result, sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(
+            hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(R), hipMemcpyDeviceToHost));
 
         // host_pointer
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
@@ -158,8 +163,8 @@ void testing_iamax_iamin(const Arguments& arg, hipblas_iamax_iamin_t<T> func)
 
         if(arg.unit_check)
         {
-            unit_check_general<int>(1, 1, 1, &cpu_result, &hipblas_result_host);
-            unit_check_general<int>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            unit_check_general<R>(1, 1, 1, &cpu_result, &hipblas_result_host);
+            unit_check_general<R>(1, 1, 1, &cpu_result, &hipblas_result_device);
         }
         if(arg.norm_check)
         {
@@ -202,10 +207,14 @@ inline void testname_iamax(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamax(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasIamaxFn = FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
+    auto hipblasIamaxFn = arg.api == FORTRAN ? hipblasIamax<T, true> : hipblasIamax<T, false>;
+    auto hipblasIamaxFn_64
+        = arg.api == FORTRAN_64 ? hipblasIamax_64<T, true> : hipblasIamax_64<T, false>;
 
-    testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>>(arg, hipblasIamaxFn);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>, int64_t>(arg, hipblasIamaxFn_64);
+    else
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamax<T>, int>(arg, hipblasIamaxFn);
 }
 
 inline void testname_iamin(const Arguments& arg, std::string& name)
@@ -216,8 +225,12 @@ inline void testname_iamin(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_iamin(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasIaminFn = FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
+    auto hipblasIaminFn = arg.api == FORTRAN ? hipblasIamin<T, true> : hipblasIamin<T, false>;
+    auto hipblasIaminFn_64
+        = arg.api == FORTRAN_64 ? hipblasIamin_64<T, true> : hipblasIamin_64<T, false>;
 
-    testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>>(arg, hipblasIamin<T>);
+    if(arg.api & c_API_64)
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>, int64_t>(arg, hipblasIaminFn_64);
+    else
+        testing_iamax_iamin<T, hipblas_iamax_iamin_ref::iamin<T>, int>(arg, hipblasIaminFn);
 }
