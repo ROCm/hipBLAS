@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -148,6 +148,12 @@ void unit_check_general(int M, int N, int lda, int* hCPU, int* hGPU)
     UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_EQ);
 }
 
+template <>
+void unit_check_general(int M, int N, int lda, int64_t* hCPU, int64_t* hGPU)
+{
+    UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_EQ);
+}
+
 // batched checks
 template <>
 void unit_check_general(
@@ -177,6 +183,12 @@ void unit_check_general(int M, int N, int batch_count, int lda, double** hCPU, d
 
 template <>
 void unit_check_general(int M, int N, int batch_count, int lda, int** hCPU, int** hGPU)
+{
+    UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_EQ);
+}
+
+template <>
+void unit_check_general(int M, int N, int batch_count, int lda, int64_t** hCPU, int64_t** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_EQ);
 }
@@ -331,6 +343,13 @@ void unit_check_general(int                   M,
 template <>
 void unit_check_general(
     int M, int N, int batch_count, int lda, hipblasStride strideA, int* hCPU, int* hGPU)
+{
+    UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_EQ);
+}
+
+template <>
+void unit_check_general(
+    int M, int N, int batch_count, int lda, hipblasStride strideA, int64_t* hCPU, int64_t* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_EQ);
 }
