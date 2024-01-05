@@ -186,7 +186,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const*() const
+    operator const T* const *() const
     {
         return this->m_data;
     }
