@@ -51,6 +51,7 @@ Tests:
       - { N: 2, incx:  2147483649 }
     api: [ C_64 ]
     os_flags: [ LINUX ]
+    gpu_arch: '90a'
     backend_flags: AMD # temporary until cuda pipeline is fixed
 
   - name: asum_64
@@ -65,6 +66,7 @@ Tests:
     api: [ C_64 ]
     backend_flags: AMD
     os_flags: [ LINUX ]
+    gpu_arch: '90a'
 
   - name: asum_bad_arg
     category: pre_checkin
