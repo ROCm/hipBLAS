@@ -124,9 +124,6 @@ if(HIP_PLATFORM STREQUAL amd)
     endif()
   endif()
 else( )
-  target_compile_definitions( hipblas-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-  target_compile_definitions( hipblas_v2-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-
   target_include_directories( hipblas-bench
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
