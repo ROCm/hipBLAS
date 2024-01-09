@@ -89,6 +89,6 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
 
-    String hostBuildCommand = 'HIP_PLATFORM=nvidia ./install.sh -c --compiler=g++'
+    String hostBuildCommand = './install.sh -c --compiler=g++ --cuda'
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }
