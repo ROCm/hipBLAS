@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ void testing_scal_strided_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedFn
         = FORTRAN ? hipblasScalStridedBatched<T, U, true> : hipblasScalStridedBatched<T, U, false>;
+    auto hipblasScalStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasScalStridedBatched_64<T, U, true>
+                                              : hipblasScalStridedBatched_64<T, U, false>;
 
     int64_t       N           = 100;
     int64_t       incx        = 1;
@@ -61,15 +64,15 @@ void testing_scal_strided_batched_bad_arg(const Arguments& arg)
         // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasScalStridedBatchedFn(nullptr, N, &alpha, dx, incx, stride_x, batch_count),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasScalStridedBatchedFn(handle, N, nullptr, dx, incx, stride_x, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasScalStridedBatchedFn(handle, N, &alpha, nullptr, incx, stride_x, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasScalStridedBatchedFn,
+                    (nullptr, N, &alpha, dx, incx, stride_x, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasScalStridedBatchedFn,
+                    (handle, N, nullptr, dx, incx, stride_x, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasScalStridedBatchedFn,
+                    (handle, N, &alpha, nullptr, incx, stride_x, batch_count));
     }
 }
 
@@ -79,11 +82,14 @@ void testing_scal_strided_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedFn
         = FORTRAN ? hipblasScalStridedBatched<T, U, true> : hipblasScalStridedBatched<T, U, false>;
+    auto hipblasScalStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasScalStridedBatched_64<T, U, true>
+                                              : hipblasScalStridedBatched_64<T, U, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int     stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
     int unit_check = arg.unit_check;
     int timing     = arg.timing;
@@ -99,8 +105,8 @@ void testing_scal_strided_batched(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalStridedBatchedFn(handle, N, nullptr, nullptr, incx, stridex, batch_count));
+        DAPI_CHECK(hipblasScalStridedBatchedFn,
+                   (handle, N, nullptr, nullptr, incx, stridex, batch_count));
         return;
     }
 
@@ -128,8 +134,8 @@ void testing_scal_strided_batched(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
+        DAPI_CHECK(hipblasScalStridedBatchedFn,
+                   (handle, N, &alpha, dx, incx, stridex, batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -137,7 +143,7 @@ void testing_scal_strided_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_scal<T, U>(N, alpha, hz.data() + b * stridex, incx);
         }
@@ -162,8 +168,8 @@ void testing_scal_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasScalStridedBatchedFn(handle, N, &alpha, dx, incx, stridex, batch_count));
+            DAPI_CHECK(hipblasScalStridedBatchedFn,
+                       (handle, N, &alpha, dx, incx, stridex, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
