@@ -129,7 +129,8 @@ else()
 endif()
 
 if(HIP_PLATFORM STREQUAL nvidia)
-	find_package( CUDA REQUIRED )
+  find_package( CUDA REQUIRED )
+  set( HIPBLAS_HIP_PLATFORM_COMPILER_DEFINES __HIP_PLATFORM_NVCC__ __HIP_PLATFORM_NVIDIA__ )
 endif()
 
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
