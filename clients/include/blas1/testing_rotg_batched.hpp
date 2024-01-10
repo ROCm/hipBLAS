@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,8 @@ void testing_rotg_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgBatchedFn
         = FORTRAN ? hipblasRotgBatched<T, U, true> : hipblasRotgBatched<T, U, false>;
+    auto hipblasRotgBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasRotgBatched_64<T, U, true>
+                                                         : hipblasRotgBatched_64<T, U, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -53,16 +55,21 @@ void testing_rotg_batched_bad_arg(const Arguments& arg)
     device_batch_vector<U> dc(1, 1, batch_count);
     device_batch_vector<T> ds(1, 1, batch_count);
 
-    EXPECT_HIPBLAS_STATUS(hipblasRotgBatchedFn(nullptr, da, db, dc, ds, batch_count),
-                          HIPBLAS_STATUS_NOT_INITIALIZED);
-    EXPECT_HIPBLAS_STATUS(hipblasRotgBatchedFn(handle, nullptr, db, dc, ds, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(hipblasRotgBatchedFn(handle, da, nullptr, dc, ds, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(hipblasRotgBatchedFn(handle, da, db, nullptr, ds, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(hipblasRotgBatchedFn(handle, da, db, dc, nullptr, batch_count),
-                          HIPBLAS_STATUS_INVALID_VALUE);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasRotgBatchedFn,
+                (nullptr, da, db, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgBatchedFn,
+                (handle, nullptr, db, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgBatchedFn,
+                (handle, da, nullptr, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgBatchedFn,
+                (handle, da, db, nullptr, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotgBatchedFn,
+                (handle, da, db, dc, nullptr, batch_count));
 }
 
 template <typename T>
@@ -72,8 +79,10 @@ void testing_rotg_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgBatchedFn
         = FORTRAN ? hipblasRotgBatched<T, U, true> : hipblasRotgBatched<T, U, false>;
+    auto hipblasRotgBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasRotgBatched_64<T, U, true>
+                                                         : hipblasRotgBatched_64<T, U, false>;
 
-    int batch_count = arg.batch_count;
+    int64_t batch_count = arg.batch_count;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -133,16 +142,17 @@ void testing_rotg_batched(const Arguments& arg)
         // hipBLAS
         // test host
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasRotgBatchedFn(handle, ha, hb, hc, hs, batch_count));
+        DAPI_CHECK(hipblasRotgBatchedFn, (handle, ha, hb, hc, hs, batch_count));
 
         // test device
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
-                                                  da.ptr_on_device(),
-                                                  db.ptr_on_device(),
-                                                  dc.ptr_on_device(),
-                                                  ds.ptr_on_device(),
-                                                  batch_count)));
+        DAPI_CHECK(hipblasRotgBatchedFn,
+                   (handle,
+                    da.ptr_on_device(),
+                    db.ptr_on_device(),
+                    dc.ptr_on_device(),
+                    ds.ptr_on_device(),
+                    batch_count));
 
         CHECK_HIP_ERROR(ra.transfer_from(da));
         CHECK_HIP_ERROR(rb.transfer_from(db));
@@ -150,9 +160,10 @@ void testing_rotg_batched(const Arguments& arg)
         CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         // CBLAS
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_rotg<T, U>(ca[b], cb[b], cc[b], cs[b]);
+            int b2 = b;
+            ref_rotg<T, U>(ca[b2], cb[b2], cc[b2], cs[b2]);
         }
 
         if(arg.unit_check)
@@ -197,12 +208,13 @@ void testing_rotg_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotgBatchedFn(handle,
-                                                      da.ptr_on_device(),
-                                                      db.ptr_on_device(),
-                                                      dc.ptr_on_device(),
-                                                      ds.ptr_on_device(),
-                                                      batch_count)));
+            DAPI_CHECK(hipblasRotgBatchedFn,
+                       (handle,
+                        da.ptr_on_device(),
+                        db.ptr_on_device(),
+                        dc.ptr_on_device(),
+                        ds.ptr_on_device(),
+                        batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

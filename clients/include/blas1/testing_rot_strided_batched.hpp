@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,9 +46,12 @@ inline void testname_rot_strided_batched(const Arguments& arg, std::string& name
 template <typename T, typename U = T, typename V = T>
 void testing_rot_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                    = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
-                                              : hipblasRotStridedBatched<T, U, V, false>;
+    bool FORTRAN                       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotStridedBatchedFn    = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
+                                                 : hipblasRotStridedBatched<T, U, V, false>;
+    auto hipblasRotStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasRotStridedBatched_64<T, U, V, true>
+                                             : hipblasRotStridedBatched_64<T, U, V, false>;
 
     int64_t       N           = 100;
     int64_t       incx        = 1;
@@ -64,43 +67,41 @@ void testing_rot_strided_batched_bad_arg(const Arguments& arg)
     device_vector<U> dc(1);
     device_vector<V> ds(1);
 
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotStridedBatchedFn(
-            nullptr, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count),
-        HIPBLAS_STATUS_NOT_INITIALIZED);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotStridedBatchedFn(
-            handle, N, nullptr, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotStridedBatchedFn(
-            handle, N, dx, incx, stride_x, nullptr, incy, stride_y, dc, ds, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotStridedBatchedFn(
-            handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, ds, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotStridedBatchedFn(
-            handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, nullptr, batch_count),
-        HIPBLAS_STATUS_INVALID_VALUE);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasRotStridedBatchedFn,
+                (nullptr, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotStridedBatchedFn,
+                (handle, N, nullptr, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotStridedBatchedFn,
+                (handle, N, dx, incx, stride_x, nullptr, incy, stride_y, dc, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotStridedBatchedFn,
+                (handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, ds, batch_count));
+    DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasRotStridedBatchedFn,
+                (handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, nullptr, batch_count));
 }
 
 template <typename T, typename U = T, typename V = T>
 void testing_rot_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN                    = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasRotStridedBatchedFn = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
-                                              : hipblasRotStridedBatched<T, U, V, false>;
+    bool FORTRAN                       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotStridedBatchedFn    = FORTRAN ? hipblasRotStridedBatched<T, U, V, true>
+                                                 : hipblasRotStridedBatched<T, U, V, false>;
+    auto hipblasRotStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasRotStridedBatched_64<T, U, V, true>
+                                             : hipblasRotStridedBatched_64<T, U, V, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int64_t incy         = arg.incy;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
-    int           abs_incx = incx >= 0 ? incx : -incx;
-    int           abs_incy = incy >= 0 ? incy : -incy;
+    int64_t       abs_incx = incx >= 0 ? incx : -incx;
+    int64_t       abs_incy = incy >= 0 ? incy : -incy;
     hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
     hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
 
@@ -111,17 +112,18 @@ void testing_rot_strided_batched(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(handle,
-                                                        N,
-                                                        nullptr,
-                                                        incx,
-                                                        stride_x,
-                                                        nullptr,
-                                                        incy,
-                                                        stride_y,
-                                                        nullptr,
-                                                        nullptr,
-                                                        batch_count)));
+        DAPI_CHECK(hipblasRotStridedBatchedFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    incx,
+                    stride_x,
+                    nullptr,
+                    incy,
+                    stride_y,
+                    nullptr,
+                    nullptr,
+                    batch_count));
 
         return;
     }
@@ -165,7 +167,7 @@ void testing_rot_strided_batched(const Arguments& arg)
     // ref_rotg<T, U>(cx, cy, hc, hs);
     // cx[0] = hx[0];
     // cy[0] = hy[0];
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
         ref_rot<T, U, V>(
             N, cx.data() + b * stride_x, incx, cy.data() + b * stride_y, incy, *hc, *hs);
@@ -178,8 +180,8 @@ void testing_rot_strided_batched(const Arguments& arg)
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
             CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-            CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
-                handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count)));
+            DAPI_CHECK(hipblasRotStridedBatchedFn,
+                       (handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count));
 
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
@@ -206,8 +208,8 @@ void testing_rot_strided_batched(const Arguments& arg)
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-            CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
-                handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count)));
+            DAPI_CHECK(hipblasRotStridedBatchedFn,
+                       (handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count));
 
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
@@ -244,8 +246,8 @@ void testing_rot_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotStridedBatchedFn(
-                handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count)));
+            DAPI_CHECK(hipblasRotStridedBatchedFn,
+                       (handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

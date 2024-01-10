@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ void testing_rotm_strided_batched_bad_arg(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotmStridedBatchedFn
         = FORTRAN ? hipblasRotmStridedBatched<T, true> : hipblasRotmStridedBatched<T, false>;
+    auto hipblasRotmStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasRotmStridedBatched_64<T, true>
+                                              : hipblasRotmStridedBatched_64<T, false>;
 
     int64_t       N           = 100;
     int64_t       incx        = 1;
@@ -71,52 +74,37 @@ void testing_rotm_strided_batched_bad_arg(const Arguments& arg)
 
             // if pointer_mode_host, param[0] == -2, and strideparam = 0, can quick return
             param[0] = -2;
-            CHECK_HIPBLAS_ERROR(hipblasRotmStridedBatchedFn(handle,
-                                                            N,
-                                                            nullptr,
-                                                            incx,
-                                                            stride_x,
-                                                            nullptr,
-                                                            incy,
-                                                            stride_y,
-                                                            param,
-                                                            0,
-                                                            batch_count));
+            DAPI_CHECK(hipblasRotmStridedBatchedFn,
+                       (handle,
+                        N,
+                        nullptr,
+                        incx,
+                        stride_x,
+                        nullptr,
+                        incy,
+                        stride_y,
+                        param,
+                        0,
+                        batch_count));
             param[0] = 0;
         }
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotmStridedBatchedFn(
-                nullptr, N, dx, incx, stride_x, dy, incy, stride_y, param, stride_p, batch_count),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasRotmStridedBatchedFn(handle,
-                                                          N,
-                                                          nullptr,
-                                                          incx,
-                                                          stride_x,
-                                                          dy,
-                                                          incy,
-                                                          stride_y,
-                                                          param,
-                                                          stride_p,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotmStridedBatchedFn(handle,
-                                                          N,
-                                                          dx,
-                                                          incx,
-                                                          stride_x,
-                                                          nullptr,
-                                                          incy,
-                                                          stride_y,
-                                                          param,
-                                                          stride_p,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotmStridedBatchedFn(
-                handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, stride_p, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED,
+            hipblasRotmStridedBatchedFn,
+            (nullptr, N, dx, incx, stride_x, dy, incy, stride_y, param, stride_p, batch_count));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotmStridedBatchedFn,
+            (handle, N, nullptr, incx, stride_x, dy, incy, stride_y, param, stride_p, batch_count));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotmStridedBatchedFn,
+            (handle, N, dx, incx, stride_x, nullptr, incy, stride_y, param, stride_p, batch_count));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotmStridedBatchedFn,
+            (handle, N, dx, incx, stride_x, dy, incy, stride_y, nullptr, stride_p, batch_count));
     }
 }
 
@@ -126,38 +114,42 @@ void testing_rotm_strided_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotmStridedBatchedFn
         = FORTRAN ? hipblasRotmStridedBatched<T, true> : hipblasRotmStridedBatched<T, false>;
+    auto hipblasRotmStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasRotmStridedBatched_64<T, true>
+                                              : hipblasRotmStridedBatched_64<T, false>;
 
     double stride_scale = arg.stride_scale;
 
-    int           N            = arg.N;
-    int           incx         = arg.incx;
-    int           incy         = arg.incy;
+    int64_t       N            = arg.N;
+    int64_t       incx         = arg.incx;
+    int64_t       incy         = arg.incy;
     hipblasStride stride_param = 5 * stride_scale;
-    int           batch_count  = arg.batch_count;
+    int64_t       batch_count  = arg.batch_count;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     hipblasLocalHandle handle(arg);
 
-    int           abs_incx = incx >= 0 ? incx : -incx;
-    int           abs_incy = incy >= 0 ? incy : -incy;
+    int64_t       abs_incx = incx >= 0 ? incx : -incx;
+    int64_t       abs_incy = incy >= 0 ? incy : -incy;
     hipblasStride stride_x = N * abs_incx * stride_scale;
     hipblasStride stride_y = N * abs_incy * stride_scale;
 
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR((hipblasRotmStridedBatchedFn(handle,
-                                                         N,
-                                                         nullptr,
-                                                         incx,
-                                                         stride_x,
-                                                         nullptr,
-                                                         incy,
-                                                         stride_y,
-                                                         nullptr,
-                                                         stride_param,
-                                                         batch_count)));
+        DAPI_CHECK(hipblasRotmStridedBatchedFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    incx,
+                    stride_x,
+                    nullptr,
+                    incy,
+                    stride_y,
+                    nullptr,
+                    stride_param,
+                    batch_count));
 
         return;
     }
@@ -188,7 +180,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
         hy, arg, N, abs_incy, stride_y, batch_count, hipblas_client_alpha_sets_nan, false);
     hipblas_init_vector(hdata, arg, 4, 1, 4, batch_count, hipblas_client_alpha_sets_nan, false);
 
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
         ref_rotmg<T>(hdata + b * 4,
                      hdata + b * 4 + 1,
                      hdata + b * 4 + 2,
@@ -211,17 +203,18 @@ void testing_rotm_strided_batched(const Arguments& arg)
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(
                 hipMemcpy(dparam, hparam, sizeof(T) * size_param, hipMemcpyHostToDevice));
-            CHECK_HIPBLAS_ERROR((hipblasRotmStridedBatchedFn(handle,
-                                                             N,
-                                                             dx,
-                                                             incx,
-                                                             stride_x,
-                                                             dy,
-                                                             incy,
-                                                             stride_y,
-                                                             dparam,
-                                                             stride_param,
-                                                             batch_count)));
+            DAPI_CHECK(hipblasRotmStridedBatchedFn,
+                       (handle,
+                        N,
+                        dx,
+                        incx,
+                        stride_x,
+                        dy,
+                        incy,
+                        stride_y,
+                        dparam,
+                        stride_param,
+                        batch_count));
 
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
@@ -232,7 +225,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
             host_vector<T> cy = hy;
 
             // CPU BLAS reference data
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
                 ref_rotm<T>(
                     N, cx + b * stride_x, incx, cy + b * stride_y, incy, hparam + b * stride_param);
@@ -255,7 +248,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
 
     if(arg.timing)
     {
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
             (hparam + b * stride_param)[0] = 0;
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -270,17 +263,18 @@ void testing_rotm_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotmStridedBatchedFn(handle,
-                                                             N,
-                                                             dx,
-                                                             incx,
-                                                             stride_x,
-                                                             dy,
-                                                             incy,
-                                                             stride_y,
-                                                             dparam,
-                                                             stride_param,
-                                                             batch_count)));
+            DAPI_CHECK(hipblasRotmStridedBatchedFn,
+                       (handle,
+                        N,
+                        dx,
+                        incx,
+                        stride_x,
+                        dy,
+                        incy,
+                        stride_y,
+                        dparam,
+                        stride_param,
+                        batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,8 @@ void testing_rotg_bad_arg(const Arguments& arg)
     using U            = real_t<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
+    auto hipblasRotgFn_64
+        = arg.api == FORTRAN_64 ? hipblasRotg_64<T, U, true> : hipblasRotg_64<T, U, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -50,18 +52,14 @@ void testing_rotg_bad_arg(const Arguments& arg)
     device_vector<U> dc(1);
     device_vector<T> ds(1);
 
-    EXPECT_HIPBLAS_STATUS(hipblasRotgFn(nullptr, da, db, dc, ds), HIPBLAS_STATUS_NOT_INITIALIZED);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasRotgFn, (nullptr, da, db, dc, ds));
 
     if(arg.bad_arg_all)
     {
-        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, nullptr, db, dc, ds),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, nullptr, dc, ds),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, nullptr, ds),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotgFn(handle, da, db, dc, nullptr),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasRotgFn, (handle, nullptr, db, dc, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasRotgFn, (handle, da, nullptr, dc, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasRotgFn, (handle, da, db, nullptr, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasRotgFn, (handle, da, db, dc, nullptr));
     }
 }
 
@@ -71,6 +69,8 @@ void testing_rotg(const Arguments& arg)
     using U            = real_t<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotgFn = FORTRAN ? hipblasRotg<T, U, true> : hipblasRotg<T, U, false>;
+    auto hipblasRotgFn_64
+        = arg.api == FORTRAN_64 ? hipblasRotg_64<T, U, true> : hipblasRotg_64<T, U, false>;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -114,10 +114,10 @@ void testing_rotg(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, ha, hb, hc, hs)));
+        DAPI_CHECK(hipblasRotgFn, (handle, ha, hb, hc, hs));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
+        DAPI_CHECK(hipblasRotgFn, (handle, da, db, dc, ds));
 
         CHECK_HIP_ERROR(hipMemcpy(ra, da, sizeof(T), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(rb, db, sizeof(T), hipMemcpyDeviceToHost));
@@ -165,7 +165,7 @@ void testing_rotg(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasRotgFn(handle, da, db, dc, ds)));
+            DAPI_CHECK(hipblasRotgFn, (handle, da, db, dc, ds));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
