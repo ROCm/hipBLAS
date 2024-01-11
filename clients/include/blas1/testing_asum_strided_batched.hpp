@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -165,10 +165,26 @@ void testing_asum_strided_batched(const Arguments& arg)
             ref_asum<T>(N, hx.data() + b * stridex, incx, &cpu_result[b]);
         }
 
+        bool near_check = arg.initialization == hipblas_initialization::hpl;
+
+        Tr abs_error = hipblas_type_epsilon<Tr> * cpu_result[0];
+        Tr tolerance = 20.0;
+        abs_error *= tolerance;
+
         if(arg.unit_check)
         {
-            unit_check_general<Tr>(1, batch_count, 1, cpu_result, hipblas_result_host);
-            unit_check_general<Tr>(1, batch_count, 1, cpu_result, hipblas_result_device);
+            if(near_check)
+            {
+                near_check_general<Tr>(
+                    batch_count, 1, 1, cpu_result.data(), hipblas_result_host.data(), abs_error);
+                near_check_general<Tr>(
+                    batch_count, 1, 1, cpu_result.data(), hipblas_result_device.data(), abs_error);
+            }
+            else
+            {
+                unit_check_general<Tr>(1, batch_count, 1, cpu_result, hipblas_result_host);
+                unit_check_general<Tr>(1, batch_count, 1, cpu_result, hipblas_result_device);
+            }
         }
         if(arg.norm_check)
         {
