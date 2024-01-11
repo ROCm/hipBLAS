@@ -1,6 +1,6 @@
 
 /* ************************************************************************
- * Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,6 +71,25 @@
 #define hipblasZscalStridedBatchedFortran hipblasZscalStridedBatched
 #define hipblasCsscalStridedBatchedFortran hipblasCsscalStridedBatched
 #define hipblasZdscalStridedBatchedFortran hipblasZdscalStridedBatched
+
+#define hipblasSscal_64Fortran hipblasSscal_64
+#define hipblasDscal_64Fortran hipblasDscal_64
+#define hipblasCscal_64Fortran hipblasCscal_64
+#define hipblasZscal_64Fortran hipblasZscal_64
+#define hipblasCsscal_64Fortran hipblasCsscal_64
+#define hipblasZdscal_64Fortran hipblasZdscal_64
+#define hipblasSscalBatched_64Fortran hipblasSscalBatched_64
+#define hipblasDscalBatched_64Fortran hipblasDscalBatched_64
+#define hipblasCscalBatched_64Fortran hipblasCscalBatched_64
+#define hipblasZscalBatched_64Fortran hipblasZscalBatched_64
+#define hipblasCsscalBatched_64Fortran hipblasCsscalBatched_64
+#define hipblasZdscalBatched_64Fortran hipblasZdscalBatched_64
+#define hipblasSscalStridedBatched_64Fortran hipblasSscalStridedBatched_64
+#define hipblasDscalStridedBatched_64Fortran hipblasDscalStridedBatched_64
+#define hipblasCscalStridedBatched_64Fortran hipblasCscalStridedBatched_64
+#define hipblasZscalStridedBatched_64Fortran hipblasZscalStridedBatched_64
+#define hipblasCsscalStridedBatched_64Fortran hipblasCsscalStridedBatched_64
+#define hipblasZdscalStridedBatched_64Fortran hipblasZdscalStridedBatched_64
 
 #define hipblasScopyFortran hipblasScopy
 #define hipblasDcopyFortran hipblasDcopy
@@ -161,6 +180,19 @@
 #define hipblasCswapStridedBatchedFortran hipblasCswapStridedBatched
 #define hipblasZswapStridedBatchedFortran hipblasZswapStridedBatched
 
+#define hipblasSswap_64Fortran hipblasSswap_64
+#define hipblasDswap_64Fortran hipblasDswap_64
+#define hipblasCswap_64Fortran hipblasCswap_64
+#define hipblasZswap_64Fortran hipblasZswap_64
+#define hipblasSswapBatched_64Fortran hipblasSswapBatched_64
+#define hipblasDswapBatched_64Fortran hipblasDswapBatched_64
+#define hipblasCswapBatched_64Fortran hipblasCswapBatched_64
+#define hipblasZswapBatched_64Fortran hipblasZswapBatched_64
+#define hipblasSswapStridedBatched_64Fortran hipblasSswapStridedBatched_64
+#define hipblasDswapStridedBatched_64Fortran hipblasDswapStridedBatched_64
+#define hipblasCswapStridedBatched_64Fortran hipblasCswapStridedBatched_64
+#define hipblasZswapStridedBatched_64Fortran hipblasZswapStridedBatched_64
+
 #define hipblasHaxpyFortran hipblasHaxpy
 #define hipblasSaxpyFortran hipblasSaxpy
 #define hipblasDaxpyFortran hipblasDaxpy
@@ -232,6 +264,19 @@
 #define hipblasScnrm2StridedBatchedFortran hipblasScnrm2StridedBatched
 #define hipblasDznrm2StridedBatchedFortran hipblasDznrm2StridedBatched
 
+#define hipblasSnrm2_64Fortran hipblasSnrm2_64
+#define hipblasDnrm2_64Fortran hipblasDnrm2_64
+#define hipblasScnrm2_64Fortran hipblasScnrm2_64
+#define hipblasDznrm2_64Fortran hipblasDznrm2_64
+#define hipblasSnrm2Batched_64Fortran hipblasSnrm2Batched_64
+#define hipblasDnrm2Batched_64Fortran hipblasDnrm2Batched_64
+#define hipblasScnrm2Batched_64Fortran hipblasScnrm2Batched_64
+#define hipblasDznrm2Batched_64Fortran hipblasDznrm2Batched_64
+#define hipblasSnrm2StridedBatched_64Fortran hipblasSnrm2StridedBatched_64
+#define hipblasDnrm2StridedBatched_64Fortran hipblasDnrm2StridedBatched_64
+#define hipblasScnrm2StridedBatched_64Fortran hipblasScnrm2StridedBatched_64
+#define hipblasDznrm2StridedBatched_64Fortran hipblasDznrm2StridedBatched_64
+
 #define hipblasIsamaxFortran hipblasIsamax
 #define hipblasIdamaxFortran hipblasIdamax
 #define hipblasIcamaxFortran hipblasIcamax
@@ -245,6 +290,19 @@
 #define hipblasIcamaxStridedBatchedFortran hipblasIcamaxStridedBatched
 #define hipblasIzamaxStridedBatchedFortran hipblasIzamaxStridedBatched
 
+#define hipblasIsamax_64Fortran hipblasIsamax_64
+#define hipblasIdamax_64Fortran hipblasIdamax_64
+#define hipblasIcamax_64Fortran hipblasIcamax_64
+#define hipblasIzamax_64Fortran hipblasIzamax_64
+#define hipblasIsamaxBatched_64Fortran hipblasIsamaxBatched_64
+#define hipblasIdamaxBatched_64Fortran hipblasIdamaxBatched_64
+#define hipblasIcamaxBatched_64Fortran hipblasIcamaxBatched_64
+#define hipblasIzamaxBatched_64Fortran hipblasIzamaxBatched_64
+#define hipblasIsamaxStridedBatched_64Fortran hipblasIsamaxStridedBatched_64
+#define hipblasIdamaxStridedBatched_64Fortran hipblasIdamaxStridedBatched_64
+#define hipblasIcamaxStridedBatched_64Fortran hipblasIcamaxStridedBatched_64
+#define hipblasIzamaxStridedBatched_64Fortran hipblasIzamaxStridedBatched_64
+
 #define hipblasIsaminFortran hipblasIsamin
 #define hipblasIdaminFortran hipblasIdamin
 #define hipblasIcaminFortran hipblasIcamin
@@ -257,6 +315,19 @@
 #define hipblasIdaminStridedBatchedFortran hipblasIdaminStridedBatched
 #define hipblasIcaminStridedBatchedFortran hipblasIcaminStridedBatched
 #define hipblasIzaminStridedBatchedFortran hipblasIzaminStridedBatched
+
+#define hipblasIsamin_64Fortran hipblasIsamin_64
+#define hipblasIdamin_64Fortran hipblasIdamin_64
+#define hipblasIcamin_64Fortran hipblasIcamin_64
+#define hipblasIzamin_64Fortran hipblasIzamin_64
+#define hipblasIsaminBatched_64Fortran hipblasIsaminBatched_64
+#define hipblasIdaminBatched_64Fortran hipblasIdaminBatched_64
+#define hipblasIcaminBatched_64Fortran hipblasIcaminBatched_64
+#define hipblasIzaminBatched_64Fortran hipblasIzaminBatched_64
+#define hipblasIsaminStridedBatched_64Fortran hipblasIsaminStridedBatched_64
+#define hipblasIdaminStridedBatched_64Fortran hipblasIdaminStridedBatched_64
+#define hipblasIcaminStridedBatched_64Fortran hipblasIcaminStridedBatched_64
+#define hipblasIzaminStridedBatched_64Fortran hipblasIzaminStridedBatched_64
 
 #define hipblasSrotFortran hipblasSrot
 #define hipblasDrotFortran hipblasDrot
@@ -277,6 +348,25 @@
 #define hipblasCrotStridedBatchedFortran hipblasCrotStridedBatched
 #define hipblasZrotStridedBatchedFortran hipblasZrotStridedBatched
 
+#define hipblasSrot_64Fortran hipblasSrot_64
+#define hipblasDrot_64Fortran hipblasDrot_64
+#define hipblasCsrot_64Fortran hipblasCsrot_64
+#define hipblasZdrot_64Fortran hipblasZdrot_64
+#define hipblasCrot_64Fortran hipblasCrot_64
+#define hipblasZrot_64Fortran hipblasZrot_64
+#define hipblasSrotBatched_64Fortran hipblasSrotBatched_64
+#define hipblasDrotBatched_64Fortran hipblasDrotBatched_64
+#define hipblasCsrotBatched_64Fortran hipblasCsrotBatched_64
+#define hipblasZdrotBatched_64Fortran hipblasZdrotBatched_64
+#define hipblasCrotBatched_64Fortran hipblasCrotBatched_64
+#define hipblasZrotBatched_64Fortran hipblasZrotBatched_64
+#define hipblasSrotStridedBatched_64Fortran hipblasSrotStridedBatched_64
+#define hipblasDrotStridedBatched_64Fortran hipblasDrotStridedBatched_64
+#define hipblasCsrotStridedBatched_64Fortran hipblasCsrotStridedBatched_64
+#define hipblasZdrotStridedBatched_64Fortran hipblasZdrotStridedBatched_64
+#define hipblasCrotStridedBatched_64Fortran hipblasCrotStridedBatched_64
+#define hipblasZrotStridedBatched_64Fortran hipblasZrotStridedBatched_64
+
 #define hipblasSrotgFortran hipblasSrotg
 #define hipblasDrotgFortran hipblasDrotg
 #define hipblasCrotgFortran hipblasCrotg
@@ -290,6 +380,19 @@
 #define hipblasCrotgStridedBatchedFortran hipblasCrotgStridedBatched
 #define hipblasZrotgStridedBatchedFortran hipblasZrotgStridedBatched
 
+#define hipblasSrotg_64Fortran hipblasSrotg_64
+#define hipblasDrotg_64Fortran hipblasDrotg_64
+#define hipblasCrotg_64Fortran hipblasCrotg_64
+#define hipblasZrotg_64Fortran hipblasZrotg_64
+#define hipblasSrotgBatched_64Fortran hipblasSrotgBatched_64
+#define hipblasDrotgBatched_64Fortran hipblasDrotgBatched_64
+#define hipblasCrotgBatched_64Fortran hipblasCrotgBatched_64
+#define hipblasZrotgBatched_64Fortran hipblasZrotgBatched_64
+#define hipblasSrotgStridedBatched_64Fortran hipblasSrotgStridedBatched_64
+#define hipblasDrotgStridedBatched_64Fortran hipblasDrotgStridedBatched_64
+#define hipblasCrotgStridedBatched_64Fortran hipblasCrotgStridedBatched_64
+#define hipblasZrotgStridedBatched_64Fortran hipblasZrotgStridedBatched_64
+
 #define hipblasSrotmFortran hipblasSrotm
 #define hipblasDrotmFortran hipblasDrotm
 #define hipblasSrotmBatchedFortran hipblasSrotmBatched
@@ -302,6 +405,19 @@
 #define hipblasDrotmgBatchedFortran hipblasDrotmgBatched
 #define hipblasSrotmgStridedBatchedFortran hipblasSrotmgStridedBatched
 #define hipblasDrotmgStridedBatchedFortran hipblasDrotmgStridedBatched
+
+#define hipblasSrotm_64Fortran hipblasSrotm_64
+#define hipblasDrotm_64Fortran hipblasDrotm_64
+#define hipblasSrotmBatched_64Fortran hipblasSrotmBatched_64
+#define hipblasDrotmBatched_64Fortran hipblasDrotmBatched_64
+#define hipblasSrotmStridedBatched_64Fortran hipblasSrotmStridedBatched_64
+#define hipblasDrotmStridedBatched_64Fortran hipblasDrotmStridedBatched_64
+#define hipblasSrotmg_64Fortran hipblasSrotmg_64
+#define hipblasDrotmg_64Fortran hipblasDrotmg_64
+#define hipblasSrotmgBatched_64Fortran hipblasSrotmgBatched_64
+#define hipblasDrotmgBatched_64Fortran hipblasDrotmgBatched_64
+#define hipblasSrotmgStridedBatched_64Fortran hipblasSrotmgStridedBatched_64
+#define hipblasDrotmgStridedBatched_64Fortran hipblasDrotmgStridedBatched_64
 
 /* ==========
  *    L2

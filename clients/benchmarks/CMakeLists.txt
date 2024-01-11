@@ -53,14 +53,6 @@ add_executable( hipblas_v2-bench ${hipblas_bench_source} ${hipblas_benchmark_com
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 target_compile_features( hipblas_v2-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
-if(LINK_BLIS)
-  target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
-  target_link_libraries( hipblas_v2-bench PRIVATE ${BLIS_LIBRARY} )
-elseif(NOT WIN32)
-  target_link_libraries( hipblas-bench PRIVATE blas )
-  target_link_libraries( hipblas_v2-bench PRIVATE blas )
-endif()
-
 # Internal header includes
 target_include_directories( hipblas-bench
   PRIVATE
@@ -132,9 +124,6 @@ if(HIP_PLATFORM STREQUAL amd)
     endif()
   endif()
 else( )
-  target_compile_definitions( hipblas-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-  target_compile_definitions( hipblas_v2-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-
   target_include_directories( hipblas-bench
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>

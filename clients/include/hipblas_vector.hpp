@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,7 +70,7 @@ public:
     }
 
     // Disallow copying or assigning
-    device_vector(const device_vector&) = delete;
+    device_vector(const device_vector&)            = delete;
     device_vector& operator=(const device_vector&) = delete;
 
 private:
