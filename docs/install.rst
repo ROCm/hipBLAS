@@ -148,6 +148,10 @@ Dependencies
 Dependencies are listed in the script install.sh. Use ``install.sh`` with ``-d`` option to install dependencies.
 CMake has a minimum version requirement listed in the file install.sh. See --cmake_install flag in install.sh to upgrade automatically.
 
+However, for the test and benchmark clients' host reference functions you must manually download and install AMD's ILP64 version of the AOCL libraries, version 4.1 or 4.0, from https://www.amd.com/en/developer/aocl.html.
+The aocl packages include AOCL-BLAS and AOCL-LAPACK.
+If you download and install the full AOCL packages into their default locations then this reference LAPACK and BLAS should be found by the clients CMakeLists.txt.
+
 
 Manual build (all supported platforms)
 =======================================
