@@ -158,10 +158,34 @@ void testing_asum_batched(const Arguments& arg)
             ref_asum<T>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
+        bool near_check = arg.initialization == hipblas_initialization::hpl;
+
+        Tr abs_error = hipblas_type_epsilon<Tr> * h_cpu_result[0];
+        Tr tolerance = 20.0;
+        abs_error *= tolerance;
+
         if(arg.unit_check)
         {
-            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
-            unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
+            if(near_check)
+            {
+                near_check_general<Tr>(batch_count,
+                                       1,
+                                       1,
+                                       h_cpu_result.data(),
+                                       h_hipblas_result_host.data(),
+                                       abs_error);
+                near_check_general<Tr>(batch_count,
+                                       1,
+                                       1,
+                                       h_cpu_result.data(),
+                                       h_hipblas_result_device.data(),
+                                       abs_error);
+            }
+            else
+            {
+                unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_host);
+                unit_check_general<Tr>(1, batch_count, 1, h_cpu_result, h_hipblas_result_device);
+            }
         }
         if(arg.norm_check)
         {

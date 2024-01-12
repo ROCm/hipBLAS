@@ -832,6 +832,8 @@ std::string hipblas_exepath();
 // Temp directory rooted random path
 std::string hipblas_tempname();
 
+std::string getArchString();
+
 #endif // __cplusplus
 
 #ifdef __cplusplus

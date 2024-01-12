@@ -509,6 +509,7 @@ Arguments:
   - category: c_char*64
   - atomics_mode: hipblas_atomics_mode
   - os_flags: hipblas_client_os
+  - gpu_arch: c_char*4
   - backend_flags: hipblas_backend
   - api: hipblas_client_api
   - initialization: hipblas_initialization
@@ -594,6 +595,7 @@ Defaults:
   # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
   os_flags: ALL_OS
+  gpu_arch: ''
   backend_flags: ALL_BACKEND
   api: C
   initialization: rand_int

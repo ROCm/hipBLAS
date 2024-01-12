@@ -142,17 +142,31 @@ void testing_asum(const Arguments& arg)
 
         ref_asum<T>(N, hx.data(), incx, &cpu_result);
 
+        // Near check for asum ILP64 bit
+        bool near_check = arg.initialization == hipblas_initialization::hpl;
+        Tr   abs_error  = hipblas_type_epsilon<Tr> * cpu_result;
+        Tr   tolerance  = 20.0;
+        abs_error *= tolerance;
+
         if(arg.unit_check)
         {
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
-            unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            if(near_check)
+            {
+                near_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host, abs_error);
+                near_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device, abs_error);
+            }
+            else
+            {
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_host);
+                unit_check_general<Tr>(1, 1, 1, &cpu_result, &hipblas_result_device);
+            }
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<Tr>('M', 1, 1, 1, &cpu_result, &hipblas_result_host);
+                = norm_check_general<Tr>('F', 1, 1, 1, &cpu_result, &hipblas_result_host);
             hipblas_error_device
-                = norm_check_general<Tr>('M', 1, 1, 1, &cpu_result, &hipblas_result_device);
+                = norm_check_general<Tr>('F', 1, 1, 1, &cpu_result, &hipblas_result_device);
         }
 
     } // end of if unit/norm check
