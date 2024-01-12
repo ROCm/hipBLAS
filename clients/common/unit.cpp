@@ -151,7 +151,7 @@ void unit_check_general(int64_t M, int64_t N, int64_t lda, int* hCPU, int* hGPU)
 }
 
 template <>
-void unit_check_general(int M, int N, int lda, int64_t* hCPU, int64_t* hGPU)
+void unit_check_general(int64_t M, int64_t N, int64_t lda, int64_t* hCPU, int64_t* hGPU)
 {
     UNIT_CHECK(M, N, 1, lda, 0, hCPU, hGPU, ASSERT_EQ);
 }
@@ -197,7 +197,6 @@ void unit_check_general(
 }
 
 template <>
-
 void unit_check_general(
     int64_t M, int64_t N, int64_t batch_count, int64_t lda, int64_t** hCPU, int64_t** hGPU)
 {
@@ -390,8 +389,13 @@ void unit_check_general(int64_t       M,
 }
 
 template <>
-void unit_check_general(
-    int M, int N, int batch_count, int lda, hipblasStride strideA, int64_t* hCPU, int64_t* hGPU)
+void unit_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
+                        hipblasStride strideA,
+                        int64_t*      hCPU,
+                        int64_t*      hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_EQ);
 }
