@@ -154,8 +154,7 @@ void testing_nrm2_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_nrm2<T, Tr>(N, hx[b2], incx, &(h_cpu_result[b2]));
+            ref_nrm2<T, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

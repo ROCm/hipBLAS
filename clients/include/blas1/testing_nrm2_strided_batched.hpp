@@ -162,8 +162,7 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_nrm2<T, Tr>(N, hx.data() + b2 * stridex, incx, &(h_cpu_result[b2]));
+            ref_nrm2<T, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)
@@ -175,12 +174,11 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         {
             for(int64_t b = 0; b < batch_count; b++)
             {
-                int b2             = b;
-                hipblas_error_host = std::max(
-                    vector_norm_1(1, 1, &(h_cpu_result[b2]), &(h_hipblas_result_host[b2])),
-                    hipblas_error_host);
+                hipblas_error_host
+                    = std::max(vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_host[b])),
+                               hipblas_error_host);
                 hipblas_error_device = std::max(
-                    vector_norm_1(1, 1, &(h_cpu_result[b2]), &(h_hipblas_result_device[b2])),
+                    vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_device[b])),
                     hipblas_error_device);
             }
         }

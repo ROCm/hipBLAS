@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -134,10 +134,10 @@ void testing_dot_batched(const Arguments& arg)
         return;
     }
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t sizeX    = size_t(N) * abs_incx;
-    size_t sizeY    = size_t(N) * abs_incy;
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t  sizeX    = size_t(N) * abs_incx;
+    size_t  sizeY    = size_t(N) * abs_incy;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
@@ -195,8 +195,7 @@ void testing_dot_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            (CONJ ? ref_dotc<T> : ref_dot<T>)(N, hx[b2], incx, hy[b2], incy, &(h_cpu_result[b2]));
+            (CONJ ? ref_dotc<T> : ref_dot<T>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)

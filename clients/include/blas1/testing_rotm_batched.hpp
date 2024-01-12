@@ -124,8 +124,7 @@ void testing_rotm_batched(const Arguments& arg)
 
     for(int64_t b = 0; b < batch_count; b++)
     {
-        int b2 = b;
-        ref_rotmg<T>(&hdata[b2][0], &hdata[b2][1], &hdata[b2][2], &hdata[b2][3], hparam[b2]);
+        ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
     }
 
     constexpr int FLAG_COUNT        = 4;
@@ -137,8 +136,7 @@ void testing_rotm_batched(const Arguments& arg)
         {
             for(int64_t b = 0; b < batch_count; b++)
             {
-                int b2        = b;
-                hparam[b2][0] = FLAGS[i];
+                hparam[b][0] = FLAGS[i];
             }
 
             // Test device
@@ -168,18 +166,16 @@ void testing_rotm_batched(const Arguments& arg)
 
             for(int64_t b = 0; b < batch_count; b++)
             {
-                int b2 = b;
                 // CPU BLAS reference data
-                ref_rotm<T>(N, cx[b2], incx, cy[b2], incy, hparam[b2]);
+                ref_rotm<T>(N, cx[b], incx, cy[b], incy, hparam[b]);
             }
 
             if(arg.unit_check)
             {
                 for(int64_t b = 0; b < batch_count; b++)
                 {
-                    int b2 = b;
-                    near_check_general<T>(1, N, abs_incx, cx[b2], rx[b2], rel_error);
-                    near_check_general<T>(1, N, abs_incy, cy[b2], ry[b2], rel_error);
+                    near_check_general<T>(1, N, abs_incx, cx[b], rx[b], rel_error);
+                    near_check_general<T>(1, N, abs_incy, cy[b], ry[b], rel_error);
                 }
             }
             if(arg.norm_check)
@@ -196,8 +192,7 @@ void testing_rotm_batched(const Arguments& arg)
     {
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2        = b;
-            hparam[b2][0] = 0;
+            hparam[b][0] = 0;
         }
 
         hipStream_t stream;
