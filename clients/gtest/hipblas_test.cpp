@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -260,6 +260,8 @@ static bool valid_category(const char* category)
 
 bool hipblas_client_global_filters(const Arguments& args)
 {
+    static std::string gpu_arch = getArchString();
+
 #ifdef WIN32
     static constexpr hipblas_client_os os = hipblas_client_os::WINDOWS;
 #else
@@ -287,6 +289,9 @@ bool hipblas_client_global_filters(const Arguments& args)
         return false;
 
     if(!(args.backend_flags & backend))
+        return false;
+
+    if(args.gpu_arch[0] && !gpu_arch_match(gpu_arch, args.gpu_arch))
         return false;
 
     return true;

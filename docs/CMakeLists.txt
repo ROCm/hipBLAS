@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ rocm_add_sphinx_doc(
   VARS
     "doxyfile=${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
 )
-  
+
 install(
   DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
   DESTINATION "${CMAKE_INSTALL_DOCDIR}")
