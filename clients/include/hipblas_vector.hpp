@@ -70,7 +70,7 @@ public:
     }
 
     // Disallow copying or assigning
-    device_vector(const device_vector&)            = delete;
+    device_vector(const device_vector&) = delete;
     device_vector& operator=(const device_vector&) = delete;
 
 private:
