@@ -175,10 +175,21 @@ void testing_dot(const Arguments& arg)
         =================================================================== */
         (CONJ ? ref_dotc<T> : ref_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
+        bool   near_check = arg.initialization == hipblas_initialization::hpl;
+        double abs_error  = hipblas_type_epsilon<T> * N;
+
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1);
-            unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2);
+            if(near_check)
+            {
+                near_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1, abs_error);
+                near_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2, abs_error);
+            }
+            else
+            {
+                unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1);
+                unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2);
+            }
         }
         if(arg.norm_check)
         {

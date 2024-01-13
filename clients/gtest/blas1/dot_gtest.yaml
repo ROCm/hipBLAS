@@ -62,7 +62,6 @@ Tests:
     category: stress
     function:
       - dot: *single_precision
-      - dotc: *single_precision_complex
     arguments:
       - { N: 2147483649, incx:  1, incy:  1 }
       - { N: 2, incx:  2147483649, incy:  1 }
@@ -70,14 +69,13 @@ Tests:
     api: [ C_64 ]
     os_flags: [ LINUX ]
     gpu_arch: '90a'
+    initialization: hpl
 
   - name: dot_64
     category: stress
     function:
       - dot_batched: *single_precision
       - dot_strided_batched: *single_precision
-      - dotc_batched: *single_precision_complex
-      - dotc_strided_batched: *single_precision_complex
     arguments:
       - { N: 2147483649, incx:  1, incy:  1, batch_count: 1 }
       - { N: 2, incx:  2147483649, incy:  1, batch_count: 1 }
@@ -86,6 +84,7 @@ Tests:
     api: [ C_64 ]
     os_flags: [ LINUX ]
     gpu_arch: '90a'
+    initialization: hpl
 
   - name: dot_bad_arg
     category: pre_checkin

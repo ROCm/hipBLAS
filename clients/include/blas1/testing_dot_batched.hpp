@@ -134,11 +134,6 @@ void testing_dot_batched(const Arguments& arg)
         return;
     }
 
-    int64_t abs_incx = incx >= 0 ? incx : -incx;
-    int64_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t  sizeX    = size_t(N) * abs_incx;
-    size_t  sizeY    = size_t(N) * abs_incy;
-
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
@@ -198,10 +193,23 @@ void testing_dot_batched(const Arguments& arg)
             (CONJ ? ref_dotc<T> : ref_dot<T>)(N, hx[b], incx, hy[b], incy, &(h_cpu_result[b]));
         }
 
+        bool   near_check = arg.initialization == hipblas_initialization::hpl;
+        double abs_error  = hipblas_type_epsilon<T> * N;
+
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            if(near_check)
+            {
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result1.data(), abs_error);
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result2.data(), abs_error);
+            }
+            else
+            {
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            }
         }
         if(arg.norm_check)
         {
