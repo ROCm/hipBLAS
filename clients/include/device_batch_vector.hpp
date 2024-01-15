@@ -63,8 +63,9 @@ public:
     explicit device_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
         : m_n(n)
         , m_inc(inc ? inc : 1)
+        , m_nmemb(calculate_nmemb(n, inc))
         , m_batch_count(batch_count)
-        , d_vector<T, PAD, U>(size_t(n) * std::abs(inc ? inc : 1))
+        , d_vector<T, PAD, U>(calculate_nmemb(n, inc) * batch_count)
     {
         if(false == this->try_initialize_memory())
         {
@@ -186,7 +187,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const *() const
+    operator const T* const*() const
     {
         return this->m_data;
     }
@@ -219,12 +220,12 @@ public:
         //
         // Copy each vector.
         //
-        for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+        if(m_batch_count > 0)
         {
             if(hipSuccess
-               != (hip_err = hipMemcpy((*this)[batch_index],
-                                       that[batch_index],
-                                       sizeof(T) * this->nmemb(),
+               != (hip_err = hipMemcpy((*this)[0],
+                                       that[0],
+                                       sizeof(T) * m_nmemb * m_batch_count,
                                        hipMemcpyHostToDevice)))
             {
                 return hip_err;
@@ -249,9 +250,16 @@ public:
 private:
     int64_t m_n{};
     int64_t m_inc{};
+    size_t  m_nmemb{}; // in one batch
     int64_t m_batch_count{};
     T**     m_data{};
     T**     m_device_data{};
+
+    static size_t calculate_nmemb(size_t n, int64_t inc)
+    {
+        // allocate even for zero n
+        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
+    }
 
     //!
     //! @brief Try to allocate the ressources.
@@ -270,11 +278,18 @@ private:
             {
                 for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
                 {
-                    success
-                        = (nullptr != (this->m_data[batch_index] = this->device_vector_setup()));
-                    if(!success)
+                    if(batch_index == 0)
                     {
-                        break;
+                        success = (nullptr
+                                   != (this->m_data[batch_index] = this->device_vector_setup()));
+                        if(!success)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        m_data[batch_index] = m_data[0] + batch_index * m_nmemb;
                     }
                 }
 
@@ -300,10 +315,14 @@ private:
         {
             for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
-                if(nullptr != this->m_data[batch_index])
+                if(batch_index == 0 && nullptr != m_data[batch_index])
                 {
                     this->device_vector_teardown(this->m_data[batch_index]);
                     this->m_data[batch_index] = nullptr;
+                }
+                if(nullptr != this->m_data[batch_index])
+                {
+                    m_data[batch_index] = nullptr;
                 }
             }
 

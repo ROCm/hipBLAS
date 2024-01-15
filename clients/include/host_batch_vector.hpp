@@ -59,6 +59,7 @@ public:
     explicit host_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
         : m_n(n)
         , m_inc(inc ? inc : 1)
+        , m_nmemb(calculate_nmemb(n, inc))
         , m_batch_count(batch_count)
     {
         if(false == this->try_initialize_memory())
@@ -154,7 +155,7 @@ public:
     //!
     //! @brief Constant cast to a double pointer.
     //!
-    operator const T* const *()
+    operator const T* const*()
     {
         return this->m_data;
     }
@@ -169,11 +170,9 @@ public:
         if((this->batch_count() == that.batch_count()) && (this->n() == that.n())
            && (this->inc() == that.inc()))
         {
-            size_t num_bytes = this->n() * std::abs(this->inc()) * sizeof(T);
-            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
-            {
-                memcpy((*this)[batch_index], that[batch_index], num_bytes);
-            }
+            size_t num_bytes = m_nmemb * sizeof(T) * m_batch_count;
+            if(m_batch_count > 0)
+                memcpy((*this)[0], that[0], num_bytes);
             return true;
         }
         else
@@ -190,12 +189,12 @@ public:
     hipError_t transfer_from(const device_batch_vector<T>& that)
     {
         hipError_t hip_err;
-        size_t     num_bytes = size_t(this->m_n) * std::abs(this->m_inc) * sizeof(T);
-        for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+        size_t     num_bytes = m_nmemb * sizeof(T) * m_batch_count;
+
+        if(m_batch_count > 0)
         {
             if(hipSuccess
-               != (hip_err = hipMemcpy(
-                       (*this)[batch_index], that[batch_index], num_bytes, hipMemcpyDeviceToHost)))
+               != (hip_err = hipMemcpy((*this)[0], that[0], num_bytes, hipMemcpyDeviceToHost)))
             {
                 return hip_err;
             }
@@ -215,8 +214,15 @@ public:
 private:
     int64_t m_n{};
     int64_t m_inc{};
+    size_t  m_nmemb{};
     int64_t m_batch_count{};
     T**     m_data{};
+
+    static size_t calculate_nmemb(size_t n, int64_t inc)
+    {
+        // allocate when n is zero
+        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
+    }
 
     bool try_initialize_memory()
     {
@@ -226,10 +232,19 @@ private:
             size_t nmemb = size_t(this->m_n) * std::abs(this->m_inc);
             for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
-                success = (nullptr != (this->m_data[batch_index] = (T*)calloc(nmemb, sizeof(T))));
-                if(false == success)
+                if(batch_index == 0)
                 {
-                    break;
+                    success = (nullptr
+                               != (m_data[batch_index]
+                                   = (T*)calloc(m_nmemb * m_batch_count, sizeof(T))));
+                    if(false == success)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    m_data[batch_index] = m_data[0] + batch_index * m_nmemb;
                 }
             }
         }
@@ -242,10 +257,14 @@ private:
         {
             for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
             {
-                if(nullptr != this->m_data[batch_index])
+                if(batch_index == 0 && nullptr != this->m_data[batch_index])
                 {
                     free(this->m_data[batch_index]);
                     this->m_data[batch_index] = nullptr;
+                }
+                else
+                {
+                    m_data[batch_index] = nullptr;
                 }
             }
 
