@@ -484,6 +484,16 @@ typedef enum
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
 
+typedef enum
+{
+    HIPBLAS_DEFAULT_MATH,
+    HIPBLAS_XF32_XDL_MATH, /* equivalent to rocblas_xf32_xdl_math_op, not supported in cuBLAS */
+    HIPBLAS_PEDANTIC_MATH, /* equivalent to CUBLAS_PEDANTIC_MATH, not yet supported in rocBLAS */
+    HIPBLAS_TF32_TENSOR_OP_MATH, /* use TF32 tensor cores with cuBLAS backend, not supported in rocBLAS */
+    HIPBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION, /* see cuBLAS documentation, not supported in rocBLAS */
+    HIPBLAS_TENSOR_OP_MATH /* DEPRECATED, use Tensor Core operations with cuBLAS backend */
+} hipblasMath_t;
+
 #elif __cplusplus >= 201103L
 static_assert(HIPBLAS_SIDE_LEFT == 141, "Inconsistent declaration of HIPBLAS_SIDE_LEFT");
 static_assert(HIPBLAS_SIDE_RIGHT == 142, "Inconsistent declaration of HIPBLAS_SIDE_RIGHT");
@@ -613,6 +623,12 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasSetPointerMode(hipblasHandle_t      handle
 /*! \brief Get hipblas pointer mode */
 HIPBLAS_EXPORT hipblasStatus_t hipblasGetPointerMode(hipblasHandle_t       handle,
                                                      hipblasPointerMode_t* mode);
+
+/*! \brief Set hipblas math mode */
+HIPBLAS_EXPORT hipblasStatus_t hipblasSetMathMode(hipblasHandle_t handle, hipblasMath_t mode);
+
+/*! \brief Get hipblas math mode */
+HIPBLAS_EXPORT hipblasStatus_t hipblasGetMathMode(hipblasHandle_t handle, hipblasMath_t* mode);
 
 /*! \brief copy vector from host to device
     @param[in]
