@@ -44,6 +44,14 @@ hipBLAS function uses the following notations to denote precisions:
 - c  = single complex
 - z  = double complex
 
+ILP64 Interface
+===============
+The hipBLAS library Level-1 functions are also provided with ILP64 interfaces. With these interfaces all "int" arguments are replaced by the typename
+int64_t.  These ILP64 function names all end with a suffix ``_64``.   The only output arguments that change are for the
+xMAX and xMIN for which the index is now int64_t. Function level documentation is not repeated for these API as they are identical in behavior to the LP64 versions,
+however functions which support this alternate API include the line:
+``This function supports the 64-bit integer interface (ILP64)``.
+
 HIPBLAS_V2 and Deprecations
 ===========================
 

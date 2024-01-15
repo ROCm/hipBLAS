@@ -863,6 +863,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handl
     result
               device pointer or host pointer to store the amax index.
               return is 0.0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result);
@@ -932,6 +935,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax_64_v2(
     result
               device or host array of pointers of batchCount size for results.
               return is 0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsamaxBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
@@ -1041,6 +1047,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxBatched_64_v2(hipblasHandle_t       
     result
               device or host pointer for storing contiguous batchCount results.
               return is 0 if n <= 0, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -1166,6 +1174,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched_64_v2(hipblasHandle_t
     result
               device pointer or host pointer to store the amin index.
               return is 0.0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -1236,6 +1247,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamin_64_v2(
     result
               device or host pointers to array of batchCount size for results.
               return is 0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsaminBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
@@ -1345,6 +1359,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminBatched_64_v2(hipblasHandle_t       
     result
               device or host pointer to array for storing contiguous batchCount results.
               return is 0 if n <= 0, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -1472,6 +1488,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzaminStridedBatched_64_v2(hipblasHandle_t
               device pointer or host pointer to store the asum product.
               return is 0.0 if n <= 0.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -1541,6 +1559,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum_64_v2(
     result
               device array or host array of batchCount size for results.
               return is 0.0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumBatched(
@@ -1660,6 +1681,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched_64_v2(hipblasHandle_t       
     result
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
@@ -1789,6 +1813,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumStridedBatched_64_v2(hipblasHandle_t
     @param[inout]
     incy      [int]
               specifies the increment for the elements of y.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpy(hipblasHandle_t    handle,
@@ -1937,6 +1963,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy_64_v2(hipblasHandle_t         handle
     @param[in]
     batchCount [int]
               number of instances in the batch
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                                    int                      n,
@@ -2103,6 +2132,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyBatched_64_v2(hipblasHandle_t        
     @param[in]
     batchCount [int]
               number of instances in the batch
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyStridedBatched(hipblasHandle_t    handle,
@@ -2290,6 +2321,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyStridedBatched_64_v2(hipblasHandle_t 
     incy      [int]
               specifies the increment for the elements of y.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -2387,6 +2420,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_64_v2(hipblasHandle_t         handle
     @param[in]
     batchCount [int]
                 number of instances in the batch
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -2533,6 +2568,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched_64_v2(hipblasHandle_t        
     @param[in]
     batchCount [int]
                 number of instances in the batch
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -2693,6 +2730,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched_64_v2(hipblasHandle_t 
     result
               device pointer or host pointer to store the dot product.
               return is 0.0 if n <= 0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -2931,6 +2970,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu_64_v2(hipblasHandle_t         handle
     result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -3199,6 +3240,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched_64_v2(hipblasHandle_t        
     result
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -3495,6 +3538,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched_64_v2(hipblasHandle_t 
     result
               device pointer or host pointer to store the nrm2 product.
               return is 0.0 if n, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -3566,6 +3612,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2_64_v2(
     result
               device pointer or host pointer to array of batchCount size for nrm2 results.
               return is 0.0 for each element if n <= 0, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2Batched(
@@ -3687,6 +3735,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched_64_v2(hipblasHandle_t       
     result
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 for each element if n <= 0, incx<=0.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -3818,6 +3868,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched_64_v2(hipblasHandle_t
     c       device pointer or host pointer storing scalar cosine component of the rotation matrix.
     @param[in]
     s       device pointer or host pointer storing scalar sine component of the rotation matrix.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -4036,6 +4088,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrot_64_v2(hipblasHandle_t   handle,
     @param[in]
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -4280,6 +4334,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotBatched_64_v2(hipblasHandle_t        
     @param[in]
     batchCount [int]
             the number of x and y arrays, i.e. the number of batches.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -4549,6 +4605,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotStridedBatched_64_v2(hipblasHandle_t 
     @param[inout]
     s       device pointer or host pointer sine element of Givens rotation.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -4627,6 +4685,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotg_64_v2(hipblasHandle_t   handle,
     @param[in]
     batchCount [int]
                 number of batches (length of arrays a, b, c, and s).
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -4754,6 +4814,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgBatched_64_v2(hipblasHandle_t        
     @param[in]
     batchCount [int]
                 number of batches (length of arrays a, b, c, and s).
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -4930,6 +4992,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgStridedBatched_64_v2(hipblasHandle_t 
             flag = -2 => H = ( 1.0 0.0 0.0 1.0 )
             param may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotm(
@@ -4997,6 +5061,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotm_64(hipblasHandle_t handle,
     @param[in]
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -5089,6 +5155,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmBatched_64(hipblasHandle_t     handle
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle,
@@ -5178,6 +5246,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmStridedBatched_64(hipblasHandle_t han
             flag = -2 => H = ( 1.0 0.0 0.0 1.0 )
             param may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmg(
@@ -5233,6 +5303,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmg_64(
     @param[in]
     batchCount [int]
                 the number of instances in the batch.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -5325,6 +5397,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmgBatched_64(hipblasHandle_t     handl
     batchCount [int]
                 the number of instances in the batch.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
@@ -5406,6 +5480,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmgStridedBatched_64(hipblasHandle_t ha
     incx      [int]
               specifies the increment for the elements of x.
 
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
@@ -5510,6 +5585,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal_64_v2(
     @param[in]
     batchCount [int]
                 specifies the number of batches in x.
+
+        This function supports the 64-bit integer interface (ILP64).
+
      ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalBatched(
@@ -5684,6 +5762,9 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalBatched_64_v2(hipblasHandle_t       
     @param[in]
     batchCount [int]
                 specifies the number of batches in x.
+
+        This function supports the 64-bit integer interface (ILP64).
+
      ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -5875,6 +5956,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalStridedBatched_64_v2(hipblasHandle_t
     incy      [int]
               specifies the increment for the elements of y.
 
+        This function supports the 64-bit integer interface (ILP64).
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -5961,6 +6044,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswap_64_v2(hipblasHandle_t   handle,
     @param[in]
     batchCount [int]
                 number of instances in the batch.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
@@ -6104,6 +6189,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched_64_v2(hipblasHandle_t        
      @param[in]
      batchCount [int]
                  number of instances in the batch.
+
+        This function supports the 64-bit integer interface (ILP64).
 
     ********************************************************************/
 
