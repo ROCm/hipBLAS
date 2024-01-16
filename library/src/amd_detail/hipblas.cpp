@@ -436,6 +436,30 @@ hipblasAtomicsMode_t RocblasAtomicsModeToHIPAtomicsMode(rocblas_atomics_mode mod
     throw HIPBLAS_STATUS_INVALID_ENUM;
 }
 
+rocblas_math_mode hipblasMathModeTorocblasMathMode(hipblasMath_t mode)
+{
+    switch(mode)
+    {
+    case HIPBLAS_DEFAULT_MATH:
+        return rocblas_default_math;
+    case HIPBLAS_XF32_XDL_MATH:
+        return rocblas_xf32_xdl_math_op;
+    }
+    throw HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasMath_t rocblasMathModeTohipblasMathMode(rocblas_math_mode mode)
+{
+    switch(mode)
+    {
+    case rocblas_default_math:
+        return HIPBLAS_DEFAULT_MATH;
+    case rocblas_xf32_xdl_math_op:
+        return HIPBLAS_XF32_XDL_MATH;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
 hipblasStatus_t rocBLASStatusToHIPStatus(rocblas_status_ error)
 {
     switch(error)
@@ -530,6 +554,30 @@ try
     rocblas_pointer_mode rocblas_mode;
     rocblas_status       status = rocblas_get_pointer_mode((rocblas_handle)handle, &rocblas_mode);
     *mode                       = RocblasPointerModeToHIPPointerMode(rocblas_mode);
+    return rocBLASStatusToHIPStatus(status);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetMathMode(hipblasHandle_t handle, hipblasMath_t mode)
+try
+{
+    return rocBLASStatusToHIPStatus(
+        rocblas_set_math_mode((rocblas_handle)handle, hipblasMathModeTorocblasMathMode(mode)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetMathMode(hipblasHandle_t handle, hipblasMath_t* mode)
+try
+{
+    rocblas_math_mode rocblas_mode;
+    rocblas_status    status = rocblas_get_math_mode((rocblas_handle)handle, &rocblas_mode);
+    *mode                    = rocblasMathModeTohipblasMathMode(rocblas_mode);
     return rocBLASStatusToHIPStatus(status);
 }
 catch(...)
