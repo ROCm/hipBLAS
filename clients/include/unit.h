@@ -83,9 +83,9 @@ void unit_check_error(T error, T tolerance)
 template <typename T, typename Tex = T>
 void unit_check_nrm2(T cpu_result, T gpu_result, int64_t vector_length)
 {
-    T allowable_error = vector_length * hipblas_type_epsilon<T> * cpu_result;
+    T allowable_error = vector_length * hipblas_type_epsilon<Tex> * cpu_result;
     if(allowable_error == 0)
-        allowable_error = vector_length * hipblas_type_epsilon<T>;
+        allowable_error = vector_length * hipblas_type_epsilon<Tex>;
 #ifdef GOOGLE_TEST
     ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
 #endif
@@ -99,9 +99,9 @@ void unit_check_nrm2(int64_t        batch_count,
 {
     for(int64_t b = 0; b < batch_count; b++)
     {
-        T allowable_error = vector_length * hipblas_type_epsilon<T> * cpu_result[b];
+        T allowable_error = vector_length * hipblas_type_epsilon<Tex> * cpu_result[b];
         if(allowable_error == 0)
-            allowable_error = vector_length * hipblas_type_epsilon<T>;
+            allowable_error = vector_length * hipblas_type_epsilon<Tex>;
 #ifdef GOOGLE_TEST
         ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
 #endif
