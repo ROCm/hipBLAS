@@ -363,6 +363,42 @@ hipblasAtomicsMode_t CudaAtomicsModeToHIPAtomicsMode(cublasAtomicsMode_t mode)
     }
 }
 
+cublasMath_t hipblasMathModeTocublasMathMode(hipblasMath_t mode)
+{
+    switch(mode)
+    {
+    case HIPBLAS_DEFAULT_MATH:
+        return CUBLAS_DEFAULT_MATH;
+    case HIPBLAS_PEDANTIC_MATH:
+        return CUBLAS_PEDANTIC_MATH;
+    case HIPBLAS_TF32_TENSOR_OP_MATH:
+        return CUBLAS_TF32_TENSOR_OP_MATH;
+    case HIPBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION:
+        return CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION;
+    case HIPBLAS_TENSOR_OP_MATH:
+        return CUBLAS_TENSOR_OP_MATH;
+    }
+    throw HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+
+hipblasMath_t cublasMathModeTohipblasMathMode(cublasMath_t mode)
+{
+    switch(mode)
+    {
+    case CUBLAS_DEFAULT_MATH:
+        return HIPBLAS_DEFAULT_MATH;
+    case CUBLAS_PEDANTIC_MATH:
+        return HIPBLAS_PEDANTIC_MATH;
+    case CUBLAS_TF32_TENSOR_OP_MATH:
+        return HIPBLAS_TF32_TENSOR_OP_MATH;
+    case CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION:
+        return HIPBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION;
+    case CUBLAS_TENSOR_OP_MATH:
+        return HIPBLAS_TENSOR_OP_MATH;
+    }
+    throw HIPBLAS_STATUS_INVALID_ENUM;
+}
+
 hipblasStatus_t hipCUBLASStatusToHIPStatus(cublasStatus_t cuStatus)
 {
     switch(cuStatus)
@@ -448,6 +484,30 @@ try
     cublasPointerMode_t cublasMode;
     cublasStatus_t      status = cublasGetPointerMode((cublasHandle_t)handle, &cublasMode);
     *mode                      = CudaPointerModeToHIPPointerMode(cublasMode);
+    return hipCUBLASStatusToHIPStatus(status);
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasSetMathMode(hipblasHandle_t handle, hipblasMath_t mode)
+try
+{
+    return hipCUBLASStatusToHIPStatus(
+        cublasSetMathMode((cublasHandle_t)handle, hipblasMathModeTocublasMathMode(mode)));
+}
+catch(...)
+{
+    return exception_to_hipblas_status();
+}
+
+hipblasStatus_t hipblasGetMathMode(hipblasHandle_t handle, hipblasMath_t* mode)
+try
+{
+    cublasMath_t   cublasMode;
+    cublasStatus_t status = cublasGetMathMode((cublasHandle_t)handle, &cublasMode);
+    *mode                 = cublasMathModeTohipblasMathMode(cublasMode);
     return hipCUBLASStatusToHIPStatus(status);
 }
 catch(...)
