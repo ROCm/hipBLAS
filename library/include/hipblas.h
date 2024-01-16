@@ -879,6 +879,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGetAtomicsMode(hipblasHandle_t       handl
     result
               device pointer or host pointer to store the amax index.
               return is 0.0 if n, incx<=0.
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasIsamax(hipblasHandle_t handle, int n, const float* x, int incx, int* result);
@@ -948,6 +949,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamax_v2_64(
     result
               device or host array of pointers of batchCount size for results.
               return is 0 if n, incx<=0.
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsamaxBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
@@ -1182,6 +1184,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamaxStridedBatched_v2_64(hipblasHandle_t
     result
               device pointer or host pointer to store the amin index.
               return is 0.0 if n, incx<=0.
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
@@ -1252,6 +1255,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasIzamin_v2_64(
     result
               device or host pointers to array of batchCount size for results.
               return is 0 if n, incx<=0.
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasIsaminBatched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, int* result);
@@ -1557,6 +1561,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasum_v2_64(
     result
               device array or host array of batchCount size for results.
               return is 0.0 if n, incx<=0.
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumBatched(
@@ -1676,6 +1681,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDzasumBatched_v2_64(hipblasHandle_t       
     result
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 if n, incx<=0.
+
     ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSasumStridedBatched(hipblasHandle_t handle,
@@ -1953,6 +1959,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpy_v2_64(hipblasHandle_t         handle
     @param[in]
     batchCount [int]
               number of instances in the batch
+
     ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyBatched(hipblasHandle_t          handle,
                                                    int                      n,
@@ -2120,7 +2127,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyBatched_v2_64(hipblasHandle_t        
     batchCount [int]
               number of instances in the batch
 
-    ********************************************************************/
+            ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasHaxpyStridedBatched(hipblasHandle_t    handle,
                                                           int                n,
                                                           const hipblasHalf* alpha,
@@ -2306,7 +2313,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZaxpyStridedBatched_v2_64(hipblasHandle_t 
     incy      [int]
               specifies the increment for the elements of y.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasScopy(hipblasHandle_t handle, int n, const float* x, int incx, float* y, int incy);
@@ -2404,7 +2411,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_v2_64(hipblasHandle_t         handle
     batchCount [int]
                 number of instances in the batch
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyBatched(hipblasHandle_t    handle,
                                                    int                n,
@@ -2550,7 +2557,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyBatched_v2_64(hipblasHandle_t        
     batchCount [int]
                 number of instances in the batch
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasScopyStridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -2710,7 +2717,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZcopyStridedBatched_v2_64(hipblasHandle_t 
               device pointer or host pointer to store the dot product.
               return is 0.0 if n <= 0.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasHdot(hipblasHandle_t    handle,
                                            int                n,
@@ -2948,7 +2955,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotu_v2_64(hipblasHandle_t         handle
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasHdotBatched(hipblasHandle_t          handle,
                                                   int                      n,
@@ -3216,7 +3223,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuBatched_v2_64(hipblasHandle_t        
               device array or host array of batchCount size to store the dot products of each batch.
               return 0.0 for each element if n <= 0.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasHdotStridedBatched(hipblasHandle_t    handle,
                                                          int                n,
@@ -3511,7 +3518,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdotuStridedBatched_v2_64(hipblasHandle_t 
     result
               device pointer or host pointer to store the nrm2 product.
               return is 0.0 if n, incx<=0.
-    ********************************************************************/
+
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSnrm2(hipblasHandle_t handle, int n, const float* x, int incx, float* result);
@@ -3583,7 +3591,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2_v2_64(
               device pointer or host pointer to array of batchCount size for nrm2 results.
               return is 0.0 for each element if n <= 0, incx<=0.
 
-    ********************************************************************/
+            ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2Batched(
     hipblasHandle_t handle, int n, const float* const x[], int incx, int batchCount, float* result);
 
@@ -3704,7 +3712,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2Batched_v2_64(hipblasHandle_t       
               device pointer or host pointer to array for storing contiguous batchCount results.
               return is 0.0 for each element if n <= 0, incx<=0.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSnrm2StridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -3835,7 +3843,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDznrm2StridedBatched_v2_64(hipblasHandle_t
     @param[in]
     s       device pointer or host pointer storing scalar sine component of the rotation matrix.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrot(hipblasHandle_t handle,
                                            int             n,
@@ -4053,7 +4061,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrot_v2_64(hipblasHandle_t   handle,
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotBatched(hipblasHandle_t handle,
                                                   int             n,
@@ -4297,7 +4305,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotBatched_v2_64(hipblasHandle_t        
     batchCount [int]
             the number of x and y arrays, i.e. the number of batches.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotStridedBatched(hipblasHandle_t handle,
                                                          int             n,
@@ -4565,7 +4573,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdrotStridedBatched_v2_64(hipblasHandle_t 
     @param[inout]
     s       device pointer or host pointer sine element of Givens rotation.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSrotg(hipblasHandle_t handle, float* a, float* b, float* c, float* s);
@@ -4644,7 +4652,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotg_v2_64(hipblasHandle_t   handle,
     batchCount [int]
                 number of batches (length of arrays a, b, c, and s).
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotgBatched(hipblasHandle_t handle,
                                                    float* const    a[],
@@ -4771,7 +4779,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgBatched_v2_64(hipblasHandle_t        
     batchCount [int]
                 number of batches (length of arrays a, b, c, and s).
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotgStridedBatched(hipblasHandle_t handle,
                                                           float*          a,
@@ -4946,7 +4954,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZrotgStridedBatched_v2_64(hipblasHandle_t 
             flag = -2 => H = ( 1.0 0.0 0.0 1.0 )
             param may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotm(
     hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy, const float* param);
@@ -5014,7 +5022,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotm_64(hipblasHandle_t handle,
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmBatched(hipblasHandle_t    handle,
                                                    int                n,
@@ -5105,7 +5113,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmBatched_64(hipblasHandle_t     handle
     batchCount [int]
                 the number of x and y arrays, i.e. the number of batches.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmStridedBatched(hipblasHandle_t handle,
                                                           int             n,
@@ -5194,7 +5202,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmStridedBatched_64(hipblasHandle_t han
             flag = -2 => H = ( 1.0 0.0 0.0 1.0 )
             param may be stored in either host or device memory, location is specified by calling hipblasSetPointerMode.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmg(
     hipblasHandle_t handle, float* d1, float* d2, float* x1, const float* y1, float* param);
@@ -5250,7 +5258,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmg_64(
     batchCount [int]
                 the number of instances in the batch.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgBatched(hipblasHandle_t    handle,
                                                     float* const       d1[],
@@ -5341,7 +5349,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmgBatched_64(hipblasHandle_t     handl
     batchCount [int]
                 the number of instances in the batch.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSrotmgStridedBatched(hipblasHandle_t handle,
                                                            float*          d1,
@@ -5422,8 +5430,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDrotmgStridedBatched_64(hipblasHandle_t ha
     incx      [int]
               specifies the increment for the elements of x.
 
-
-    ********************************************************************/
+            ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSscal(hipblasHandle_t handle, int n, const float* alpha, float* x, int incx);
 
@@ -5526,7 +5533,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscal_v2_64(
     @param[in]
     batchCount [int]
                 specifies the number of batches in x.
-     ********************************************************************/
+
+             ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalBatched(
     hipblasHandle_t handle, int n, const float* alpha, float* const x[], int incx, int batchCount);
@@ -5700,7 +5708,8 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalBatched_v2_64(hipblasHandle_t       
     @param[in]
     batchCount [int]
                 specifies the number of batches in x.
-     ********************************************************************/
+
+             ********************************************************************/
 HIPBLAS_EXPORT hipblasStatus_t hipblasSscalStridedBatched(hipblasHandle_t handle,
                                                           int             n,
                                                           const float*    alpha,
@@ -5891,7 +5900,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZdscalStridedBatched_v2_64(hipblasHandle_t
     incy      [int]
               specifies the increment for the elements of y.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t
     hipblasSswap(hipblasHandle_t handle, int n, float* x, int incx, float* y, int incy);
@@ -5978,7 +5987,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswap_v2_64(hipblasHandle_t   handle,
     batchCount [int]
                 number of instances in the batch.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSswapBatched(hipblasHandle_t handle,
                                                    int             n,
@@ -6121,7 +6130,7 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasZswapBatched_v2_64(hipblasHandle_t        
      batchCount [int]
                  number of instances in the batch.
 
-    ********************************************************************/
+            ********************************************************************/
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasSswapStridedBatched(hipblasHandle_t handle,
                                                           int             n,
