@@ -194,7 +194,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
     {
         if(arg.unit_check || arg.norm_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
                 (hparam + b * stride_param)[0] = FLAGS[i];
 
             // Test device

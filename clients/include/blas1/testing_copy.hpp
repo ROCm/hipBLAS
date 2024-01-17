@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -133,7 +133,7 @@ void testing_copy(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
         // TODO: remove casts
-        ref_copy<T>((int)N, hx_cpu.data(), (int)incx, hy_cpu.data(), (int)incy);
+        ref_copy<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

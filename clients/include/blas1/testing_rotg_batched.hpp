@@ -162,13 +162,12 @@ void testing_rotg_batched(const Arguments& arg)
         // CBLAS
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_rotg<T, U>(ca[b2], cb[b2], cc[b2], cs[b2]);
+            ref_rotg<T, U>(ca[b], cb[b], cc[b], cs[b]);
         }
 
         if(arg.unit_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
                 near_check_general<T>(1, 1, 1, ca[b], ha[b], rel_error);
                 near_check_general<T>(1, 1, 1, cb[b], hb[b], rel_error);

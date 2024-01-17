@@ -191,13 +191,12 @@ void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
         {
             for(int64_t b = 0; b < batch_count; b++)
             {
-                int b2 = b;
                 hipblas_error_host
                     = std::max(int64_t(hipblas_error_host),
-                               int64_t(hipblas_abs(hipblas_result_host[b2] - cpu_result[b2])));
+                               int64_t(hipblas_abs(hipblas_result_host[b] - cpu_result[b])));
                 hipblas_error_device
                     = std::max(int64_t(hipblas_error_device),
-                               int64_t(hipblas_abs(hipblas_result_device[b2] - cpu_result[b2])));
+                               int64_t(hipblas_abs(hipblas_result_device[b] - cpu_result[b])));
             }
         }
     } // end of if unit/norm check

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -210,19 +210,31 @@ void testing_dot_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
             (CONJ ? ref_dotc<T> : ref_dot<T>)(N,
                                               hx.data() + b * stridex,
                                               incx,
                                               hy.data() + b * stridey,
                                               incy,
-                                              &h_cpu_result[b2]);
+                                              &h_cpu_result[b]);
         }
+
+        bool   near_check = arg.initialization == hipblas_initialization::hpl;
+        double abs_error  = hipblas_type_epsilon<T> * N;
 
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            if(near_check)
+            {
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result1.data(), abs_error);
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result2.data(), abs_error);
+            }
+            else
+            {
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            }
         }
         if(arg.norm_check)
         {

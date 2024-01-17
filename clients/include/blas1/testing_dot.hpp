@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -127,10 +127,10 @@ void testing_dot(const Arguments& arg)
         return;
     }
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t sizeX    = size_t(N) * abs_incx;
-    size_t sizeY    = size_t(N) * abs_incy;
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t  sizeX    = size_t(N) * abs_incx;
+    size_t  sizeY    = size_t(N) * abs_incy;
     if(!sizeX)
         sizeX = 1;
     if(!sizeY)
@@ -175,10 +175,21 @@ void testing_dot(const Arguments& arg)
         =================================================================== */
         (CONJ ? ref_dotc<T> : ref_dot<T>)(N, hx.data(), incx, hy.data(), incy, &cpu_result);
 
+        bool   near_check = arg.initialization == hipblas_initialization::hpl;
+        double abs_error  = hipblas_type_epsilon<T> * N;
+
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1);
-            unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2);
+            if(near_check)
+            {
+                near_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1, abs_error);
+                near_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2, abs_error);
+            }
+            else
+            {
+                unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_1);
+                unit_check_general<T>(1, 1, 1, &cpu_result, &h_hipblas_result_2);
+            }
         }
         if(arg.norm_check)
         {
