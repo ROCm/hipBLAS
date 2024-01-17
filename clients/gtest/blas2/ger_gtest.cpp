@@ -133,10 +133,16 @@ namespace
         {
             if(!strcmp(arg.function, "ger"))
                 testing_ger<T, false>(arg);
+            else if(!strcmp(arg.function, "ger_bad_arg"))
+                testing_ger_bad_arg<T, false>(arg);
             else if(!strcmp(arg.function, "ger_batched"))
                 testing_ger_batched<T, false>(arg);
+            else if(!strcmp(arg.function, "ger_batched_bad_arg"))
+                testing_ger_batched_bad_arg<T, false>(arg);
             else if(!strcmp(arg.function, "ger_strided_batched"))
                 testing_ger_strided_batched<T, false>(arg);
+            else if(!strcmp(arg.function, "ger_strided_batched_bad_arg"))
+                testing_ger_strided_batched_bad_arg<T, false>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
@@ -158,10 +164,16 @@ namespace
         {
             if(!strcmp(arg.function, "geru"))
                 testing_ger<T, false>(arg);
+            else if(!strcmp(arg.function, "geru_bad_arg"))
+                testing_ger_bad_arg<T, false>(arg);
             else if(!strcmp(arg.function, "geru_batched"))
                 testing_ger_batched<T, false>(arg);
+            else if(!strcmp(arg.function, "geru_batched_bad_arg"))
+                testing_ger_batched_bad_arg<T, false>(arg);
             else if(!strcmp(arg.function, "geru_strided_batched"))
                 testing_ger_strided_batched<T, false>(arg);
+            else if(!strcmp(arg.function, "geru_strided_batched_bad_arg"))
+                testing_ger_strided_batched_bad_arg<T, false>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
@@ -183,10 +195,16 @@ namespace
         {
             if(!strcmp(arg.function, "gerc"))
                 testing_ger<T, true>(arg);
+            else if(!strcmp(arg.function, "gerc_bad_arg"))
+                testing_ger_bad_arg<T, true>(arg);
             else if(!strcmp(arg.function, "gerc_batched"))
                 testing_ger_batched<T, true>(arg);
+            else if(!strcmp(arg.function, "gerc_batched_bad_arg"))
+                testing_ger_batched_bad_arg<T, true>(arg);
             else if(!strcmp(arg.function, "gerc_strided_batched"))
                 testing_ger_strided_batched<T, true>(arg);
+            else if(!strcmp(arg.function, "gerc_strided_batched_bad_arg"))
+                testing_ger_strided_batched_bad_arg<T, true>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

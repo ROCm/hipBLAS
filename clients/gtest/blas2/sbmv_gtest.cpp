@@ -109,10 +109,16 @@ namespace
         {
             if(!strcmp(arg.function, "sbmv"))
                 testing_sbmv<T>(arg);
+            else if(!strcmp(arg.function, "sbmv_bad_arg"))
+                testing_sbmv_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "sbmv_batched"))
                 testing_sbmv_batched<T>(arg);
+            else if(!strcmp(arg.function, "sbmv_batched_bad_arg"))
+                testing_sbmv_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "sbmv_strided_batched"))
                 testing_sbmv_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "sbmv_strided_batched_bad_arg"))
+                testing_sbmv_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

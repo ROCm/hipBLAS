@@ -67,11 +67,13 @@ namespace
             switch(GEMM_TYPE)
             {
             case GEMM:
-                return !strcmp(arg.function, "gemm");
+                return !strcmp(arg.function, "gemm") || !strcmp(arg.function, "gemm_bad_arg");
             case GEMM_BATCHED:
-                return !strcmp(arg.function, "gemm_batched");
+                return !strcmp(arg.function, "gemm_batched")
+                       || !strcmp(arg.function, "gemm_batched_bad_arg");
             case GEMM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "gemm_strided_batched");
+                return !strcmp(arg.function, "gemm_strided_batched")
+                       || !strcmp(arg.function, "gemm_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "gemm"))
                 testing_gemm<T>(arg);
+            else if(!strcmp(arg.function, "gemm_bad_arg"))
+                testing_gemm_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemm_batched"))
                 testing_gemm_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemm_batched_bad_arg"))
+                testing_gemm_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemm_strided_batched"))
                 testing_gemm_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemm_strided_batched_bad_arg"))
+                testing_gemm_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

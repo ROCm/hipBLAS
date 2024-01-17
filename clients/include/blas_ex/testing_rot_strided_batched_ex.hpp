@@ -45,6 +45,119 @@ inline void testname_rot_strided_batched_ex(const Arguments& arg, std::string& n
 }
 
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
+void testing_rot_strided_batched_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotStridedBatchedExFn
+        = FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
+
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t csType        = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t incy        = 1;
+    int64_t batch_count = 2;
+
+    hipblasStride stridex = N * incx;
+    hipblasStride stridey = N * incy;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<Tx>  dx(stridex * batch_count);
+    device_vector<Ty>  dy(stridey * batch_count);
+    device_vector<Tcs> dc(batch_count);
+    device_vector<Tcs> ds(batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(nullptr,
+                                                       N,
+                                                       dx,
+                                                       xType,
+                                                       incx,
+                                                       stridex,
+                                                       dy,
+                                                       yType,
+                                                       incy,
+                                                       stridey,
+                                                       dc,
+                                                       ds,
+                                                       csType,
+                                                       batch_count,
+                                                       executionType),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
+                                                           N,
+                                                           nullptr,
+                                                           xType,
+                                                           incx,
+                                                           stridex,
+                                                           dy,
+                                                           yType,
+                                                           incy,
+                                                           stridey,
+                                                           dc,
+                                                           ds,
+                                                           csType,
+                                                           batch_count,
+                                                           executionType),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
+                                                           N,
+                                                           dx,
+                                                           xType,
+                                                           incx,
+                                                           stridex,
+                                                           nullptr,
+                                                           yType,
+                                                           incy,
+                                                           stridey,
+                                                           dc,
+                                                           ds,
+                                                           csType,
+                                                           batch_count,
+                                                           executionType),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
+                                                           N,
+                                                           dx,
+                                                           xType,
+                                                           incx,
+                                                           stridex,
+                                                           dy,
+                                                           yType,
+                                                           incy,
+                                                           stridey,
+                                                           nullptr,
+                                                           ds,
+                                                           csType,
+                                                           batch_count,
+                                                           executionType),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
+                                                           N,
+                                                           dx,
+                                                           xType,
+                                                           incx,
+                                                           stridex,
+                                                           dy,
+                                                           yType,
+                                                           incy,
+                                                           stridey,
+                                                           dc,
+                                                           nullptr,
+                                                           csType,
+                                                           batch_count,
+                                                           executionType),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_strided_batched_ex(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
@@ -176,7 +289,7 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_rot<Tx, Tcs, Tcs>(
+            ref_rot<Tx, Tcs, Tcs>(
                 N, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy, *hc, *hs);
         }
 

@@ -37,9 +37,48 @@ inline void testname_nrm2_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
+void testing_nrm2_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t resultType    = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<Tx> dx(N * incx);
+    device_vector<Tr> d_res(1);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasNrm2ExFn(nullptr, N, dx, xType, incx, d_res, resultType, executionType),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasNrm2ExFn(handle, N, nullptr, xType, incx, d_res, resultType, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasNrm2ExFn(handle, N, dx, xType, incx, nullptr, resultType, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2ExFn = FORTRAN ? hipblasNrm2ExFortran : hipblasNrm2Ex;
 
     int N    = arg.N;
@@ -107,7 +146,7 @@ void testing_nrm2_ex(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_nrm2<Tx, Tr>(N, hx.data(), incx, &cpu_result);
 
         // tolerance taken from rocBLAS, could use some improvement
         double abs_result = cpu_result > 0 ? cpu_result : -cpu_result;

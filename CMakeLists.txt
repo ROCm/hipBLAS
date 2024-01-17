@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,9 @@ cmake_minimum_required( VERSION 3.5 )
 
 # We use C++14 features, this will add compile option: -std=c++14
 set( CMAKE_CXX_STANDARD 17 )
+
+# Build documentation
+option(BUILD_DOCS "Build documentation" OFF)
 
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
@@ -52,42 +55,19 @@ if (NOT python)
     set(python "python3") # default for linux
 endif()
 
-# This finds the rocm-cmake project, and installs it if not found
-# rocm-cmake contains common cmake code for rocm projects to help setup and install
-set( PROJECT_EXTERN_DIR ${CMAKE_CURRENT_BINARY_DIR}/extern )
-find_package( ROCM 0.7.3 CONFIG QUIET PATHS /opt/rocm )
-if( NOT ROCM_FOUND )
-  set( rocm_cmake_tag "master" CACHE STRING "rocm-cmake tag to download" )
-  file( DOWNLOAD https://github.com/RadeonOpenCompute/rocm-cmake/archive/${rocm_cmake_tag}.zip
-    ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip )
-
-  execute_process( COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag}.zip
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR} )
-  execute_process( COMMAND ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${PROJECT_EXTERN_DIR}/rocm-cmake .
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR}/rocm-cmake-${rocm_cmake_tag} )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build rocm-cmake-${rocm_cmake_tag} --target install
-    WORKING_DIRECTORY ${PROJECT_EXTERN_DIR})
-
-  find_package( ROCM 0.7.3 REQUIRED CONFIG PATHS ${PROJECT_EXTERN_DIR}/rocm-cmake )
-endif( )
-
-include( ROCMSetupVersion )
-include( ROCMCreatePackage )
-include( ROCMInstallTargets )
-include( ROCMPackageConfigHelpers )
-include( ROCMInstallSymlinks )
-include( ROCMClients )
-include( ROCMHeaderWrapper )
-
-set ( VERSION_STRING "2.1.0" )
-rocm_setup_version( VERSION ${VERSION_STRING} )
-
 # Append our library helper cmake path and the cmake path for hip (for convenience)
 # Users may override HIP path by specifying their own in CMAKE_MODULE_PATH
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake  ${ROCM_PATH}/lib/cmake/hip /opt/rocm/lib/cmake/hip ${HIP_DIR}/cmake )
 
 # NOTE:  workaround until hip cmake modules fixes symlink logic in their config files; remove when fixed
 list( APPEND CMAKE_PREFIX_PATH ${ROCM_PATH}/lib/cmake/hip /opt/rocm /opt/rocm/llvm /opt/rocm/hip )
+
+# This finds the rocm-cmake project, and installs it if not found
+# rocm-cmake contains common cmake code for rocm projects to help setup and install
+include(dependencies)
+
+set ( VERSION_STRING "2.2.0" )
+rocm_setup_version( VERSION ${VERSION_STRING} )
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
@@ -100,22 +80,37 @@ endif( )
 # BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
 option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
-# Find CUDA if the user wants a CUDA version.
-option(USE_CUDA "Look for CUDA and use that as a backend if found" OFF)
-if (USE_CUDA)
-	find_package( CUDA REQUIRED )
+# Deprecated USE_CUDA option
+if(DEFINED USE_CUDA)
+  if(USE_CUDA)
+    set(ENV{HIP_PLATFORM} nvidia)
+    message(DEPRECATED "USE_CUDA is deprecated (use environment variable HIP_PLATFORM=nvidia)")
+  else()
+    set(ENV{HIP_PLATFORM} amd)
+    message(DEPRECATION "USE_CUDA is deprecated (use environment variable HIP_PLATFORM=amd)")
+  endif()
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-if( USE_CUDA )
-    find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
-    # support for cuda backend with hip < 6.0
-    if( NOT hip_FOUND )
-        find_package( HIP MODULE REQUIRED )
-        list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
+
+# support for cuda backend with hip < 6.0
+if(NOT hip_FOUND)
+    find_package( HIP MODULE REQUIRED )
+    list( APPEND HIP_INCLUDE_DIRS "${HIP_ROOT_DIR}/include" )
+    set(ENV{HIP_PLATFORM} nvidia)
+    if (NOT HIP_PLATFORM)
+      set(HIP_PLATFORM nvidia)
     endif()
 else()
-    find_package( hip REQUIRED CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm)
+    if (NOT HIP_PLATFORM)
+      set(HIP_PLATFORM amd)
+    endif()
+endif()
+
+if(HIP_PLATFORM STREQUAL nvidia)
+  find_package( CUDA REQUIRED )
+  set( HIPBLAS_HIP_PLATFORM_COMPILER_DEFINES __HIP_PLATFORM_NVCC__ __HIP_PLATFORM_NVIDIA__ )
 endif()
 
 option(BUILD_CODE_COVERAGE "Build with code coverage enabled" OFF)
@@ -194,6 +189,11 @@ if( BUILD_CLIENTS_SAMPLES OR BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS )
   add_subdirectory( clients )
 endif( )
 
+# Build docs
+if(BUILD_DOCS)
+  add_subdirectory(docs)
+endif()
+
 # The following code is setting variables to control the behavior of CPack to generate our
 if( WIN32 )
     set( CPACK_SOURCE_GENERATOR "ZIP" )
@@ -201,8 +201,8 @@ if( WIN32 )
 endif( )
 
 # Package specific CPACK vars
-if( NOT USE_CUDA )
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.1.0" "rocsolver >= 3.25.0")
+if(HIP_PLATFORM STREQUAL amd)
+  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.2.0" "rocsolver >= 3.26.0")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
@@ -224,7 +224,7 @@ endif( )
 set( CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION "\${CPACK_PACKAGING_INSTALL_PREFIX}" )
 
 # Give hipblas compiled for CUDA backend a different name
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
     set( package_name hipblas )
 else( )
     set( package_name hipblas-alt )

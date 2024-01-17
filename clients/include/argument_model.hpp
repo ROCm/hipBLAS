@@ -146,11 +146,11 @@ public:
         // will be printed by hipblas_test or hipblas_bench. For example, the function:
         //
         //  hipblas_ddot(hipblas_handle handle,
-        //                                 hipblas_int    n,
+        //                                 int            n,
         //                                 const double*  x,
-        //                                 hipblas_int    incx,
+        //                                 int            incx,
         //                                 const double*  y,
-        //                                 hipblas_int    incy,
+        //                                 int            incy,
         //                                 double*        result);
         // will have <Args> = <e_N, e_incx, e_incy>
         //
@@ -189,7 +189,9 @@ public:
 
         // Output (name, value) pairs to name_list and value_list
         auto print = [&](const char* name, auto&& value) mutable {
-            name_list << sep << name << sep << value;
+            if(std::string(arg.function).find("bad_arg") == std::string::npos
+               || std::string(name).find("_type") != std::string::npos)
+                name_list << sep << name << sep << value;
         };
 
 #if __cplusplus >= 201703L
@@ -204,7 +206,10 @@ public:
         std::replace(params.begin(), params.end(), '-', 'n');
         std::replace(params.begin(), params.end(), '.', 'p');
         name += params;
-        name += (arg.api == hipblas_client_api::FORTRAN ? "_F" : "_C");
+        name += (arg.api == hipblas_client_api::FORTRAN      ? "_F"
+                 : arg.api == hipblas_client_api::C          ? "_C"
+                 : arg.api == hipblas_client_api::FORTRAN_64 ? "_F64"
+                                                             : "_C64");
     }
 };
 

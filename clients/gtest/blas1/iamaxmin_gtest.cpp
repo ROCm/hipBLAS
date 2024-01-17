@@ -110,8 +110,8 @@ namespace
             {                                                                                     \
                 if(!strcmp(arg.function, #NAME))                                                  \
                     testing_##NAME<ARG(Ti, To, Tc)>(arg);                                         \
-                /*else if(!strcmp(arg.function, #NAME "_bad_arg"))*/                              \
-                /*testing_##NAME##_bad_arg<ARG(Ti, To, Tc)>(arg);*/                               \
+                else if(!strcmp(arg.function, #NAME "_bad_arg"))                                  \
+                    testing_##NAME##_bad_arg<ARG(Ti, To, Tc)>(arg);                               \
                 else                                                                              \
                     FAIL() << "Internal error: Test called with unknown function: "               \
                            << arg.function;                                                       \
@@ -124,7 +124,7 @@ namespace
     template <>                                                                                   \
     inline bool NAME::function_filter(const Arguments& arg)                                       \
     {                                                                                             \
-        return !strcmp(arg.function, #NAME); /* || !strcmp(arg.function, #NAME "_bad_arg");*/     \
+        return !strcmp(arg.function, #NAME) || !strcmp(arg.function, #NAME "_bad_arg");           \
     }                                                                                             \
                                                                                                   \
     TEST_P(NAME, blas1)                                                                           \

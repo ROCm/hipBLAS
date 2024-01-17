@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -284,6 +284,31 @@ hipblasStatus_t hipblas_internal_convert_hip_to_hipblas_status_and_log(hipError_
     std::cerr << "hipBLAS error from hip error code: '" << hipGetErrorName(status) << "':" << status
               << std::endl;
     return lib_status;
+}
+
+std::string getArchString()
+{
+    int  device;
+    auto hipStatus = hipGetDevice(&device);
+    if(hipStatus != hipSuccess)
+    {
+        std::cerr << "Error with hipGetDevice: " << hipGetErrorString(hipStatus);
+        return "";
+    }
+
+    hipDeviceProp_t deviceProperties;
+    hipStatus = hipGetDeviceProperties(&deviceProperties, device);
+    if(hipStatus != hipSuccess)
+    {
+        std::cerr << "Error with hipGetDeviceProperties: " << hipGetErrorString(hipStatus);
+        return "";
+    }
+
+    // strip out xnack/ecc from name
+    std::string deviceFullString(deviceProperties.gcnArchName);
+    std::string deviceString = deviceFullString.substr(0, deviceFullString.find(":"));
+
+    return deviceString;
 }
 
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,21 +46,21 @@
 // use auto as the return type is only allowed in c++14
 // convert float/float to double
 template <typename T>
-double norm_check_general(char norm_type, int M, int N, int lda, T* hCPU, T* hGPU);
+double norm_check_general(char norm_type, int64_t M, int64_t N, int64_t lda, T* hCPU, T* hGPU);
 
 /*! \brief  Template: norm check for hermitian/symmetric Matrix: float/double/complex */
 
 template <typename T>
-double norm_check_symmetric(char norm_type, char uplo, int N, int lda, T* hCPU, T* hGPU);
+double norm_check_symmetric(char norm_type, char uplo, int64_t N, int64_t lda, T* hCPU, T* hGPU);
 
 template <typename T>
 double norm_check_general(char           norm_type,
-                          int            M,
-                          int            N,
-                          int            lda,
+                          int64_t        M,
+                          int64_t        N,
+                          int64_t        lda,
                           host_vector<T> hCPU[],
                           host_vector<T> hGPU[],
-                          int            batch_count)
+                          int64_t        batch_count)
 {
     // norm type can be O', 'I', 'F', 'o', 'i', 'f' for one, infinity or Frobenius norm
     // one norm is max column sum
@@ -72,7 +72,7 @@ double norm_check_general(char           norm_type,
 
     double cumulative_error = 0.0;
 
-    for(int i = 0; i < batch_count; i++)
+    for(int64_t i = 0; i < batch_count; i++)
     {
         auto index = i;
 
@@ -93,8 +93,14 @@ double norm_check_general(char           norm_type,
 
 /* ============== Norm Check for strided_batched case ============= */
 template <typename T>
-double norm_check_general(
-    char norm_type, int M, int N, int lda, ptrdiff_t stride_a, T* hCPU, T* hGPU, int batch_count)
+double norm_check_general(char      norm_type,
+                          int64_t   M,
+                          int64_t   N,
+                          int64_t   lda,
+                          ptrdiff_t stride_a,
+                          T*        hCPU,
+                          T*        hGPU,
+                          int64_t   batch_count)
 {
     // norm type can be O', 'I', 'F', 'o', 'i', 'f' for one, infinity or Frobenius norm
     // one norm is max column sum
@@ -127,12 +133,12 @@ double norm_check_general(
 
 template <typename T, typename T_hpa>
 double norm_check_general(char                      norm_type,
-                          int                       M,
-                          int                       N,
-                          int                       lda,
+                          int64_t                   M,
+                          int64_t                   N,
+                          int64_t                   lda,
                           host_batch_vector<T_hpa>& hCPU,
                           host_batch_vector<T>&     hGPU,
-                          int                       batch_count)
+                          int64_t                   batch_count)
 {
     // norm type can be O', 'I', 'F', 'o', 'i', 'f' for one, infinity or Frobenius norm
     // one norm is max column sum
@@ -144,7 +150,7 @@ double norm_check_general(char                      norm_type,
 
     double cumulative_error = 0.0;
 
-    for(int i = 0; i < batch_count; i++)
+    for(int64_t i = 0; i < batch_count; i++)
     {
         auto index = i;
 
@@ -164,11 +170,11 @@ double norm_check_general(char                      norm_type,
 }
 
 template <typename T>
-double vector_norm_1(int M, int incx, T* hx_gold, T* hx)
+double vector_norm_1(int64_t M, int64_t incx, T* hx_gold, T* hx)
 {
     double max_err_scal = 0.0;
     double max_err      = 0.0;
-    for(int i = 0; i < M; i++)
+    for(int64_t i = 0; i < M; i++)
     {
         max_err += hipblas_abs((hx_gold[i * incx] - hx[i * incx]));
         max_err_scal += hipblas_abs(hx_gold[i * incx]);

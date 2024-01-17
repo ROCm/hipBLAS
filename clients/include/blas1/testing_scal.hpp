@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,13 +37,50 @@ inline void testname_scal(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T>
+void testing_scal_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
+    auto hipblasScalFn_64
+        = arg.api == FORTRAN_64 ? hipblasScal_64<T, U, true> : hipblasScal_64<T, U, false>;
+
+    int64_t N     = 100;
+    int64_t incx  = 1;
+    U       alpha = (U)0.6;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(N * incx);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasScalFn, (nullptr, N, &alpha, dx, incx));
+
+        if(arg.bad_arg_all)
+        {
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE, hipblasScalFn, (handle, N, nullptr, dx, incx));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE, hipblasScalFn, (handle, N, &alpha, nullptr, incx));
+        }
+    }
+}
+
+template <typename T, typename U = T>
 void testing_scal(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
+    auto hipblasScalFn_64
+        = arg.api == FORTRAN_64 ? hipblasScal_64<T, U, true> : hipblasScal_64<T, U, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
 
     int unit_check = arg.unit_check;
     int timing     = arg.timing;
@@ -54,7 +91,7 @@ void testing_scal(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, nullptr, nullptr, incx));
+        DAPI_CHECK(hipblasScalFn, (handle, N, nullptr, nullptr, incx));
         return;
     }
 
@@ -83,7 +120,7 @@ void testing_scal(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, &alpha, dx, incx));
+        DAPI_CHECK(hipblasScalFn, (handle, N, &alpha, dx, incx));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
@@ -91,7 +128,7 @@ void testing_scal(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_scal<T, U>(N, alpha, hz.data(), incx);
+        ref_scal<T, U>(N, alpha, hz.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -119,7 +156,7 @@ void testing_scal(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasScalFn(handle, N, &alpha, dx, incx));
+            DAPI_CHECK(hipblasScalFn, (handle, N, &alpha, dx, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

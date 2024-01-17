@@ -55,4 +55,25 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: dot_ex_bad_arg
+    category: pre_checkin
+    function:
+      - dot_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dotc_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dot_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dot_strided_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dotc_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+      - dotc_strided_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: dot_ex_bad_arg
+    category: pre_checkin
+    function:
+      - dot_ex_bad_arg: *dot_ex_precision_all
+      - dotc_ex_bad_arg: *dot_ex_precision_all
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

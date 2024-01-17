@@ -67,11 +67,13 @@ namespace
             switch(DGMM_TYPE)
             {
             case DGMM:
-                return !strcmp(arg.function, "dgmm");
+                return !strcmp(arg.function, "dgmm") || !strcmp(arg.function, "dgmm_bad_arg");
             case DGMM_BATCHED:
-                return !strcmp(arg.function, "dgmm_batched");
+                return !strcmp(arg.function, "dgmm_batched")
+                       || !strcmp(arg.function, "dgmm_batched_bad_arg");
             case DGMM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "dgmm_strided_batched");
+                return !strcmp(arg.function, "dgmm_strided_batched")
+                       || !strcmp(arg.function, "dgmm_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "dgmm"))
                 testing_dgmm<T>(arg);
+            else if(!strcmp(arg.function, "dgmm_bad_arg"))
+                testing_dgmm_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "dgmm_batched"))
                 testing_dgmm_batched<T>(arg);
+            else if(!strcmp(arg.function, "dgmm_batched_bad_arg"))
+                testing_dgmm_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "dgmm_strided_batched"))
                 testing_dgmm_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "dgmm_strided_batched_bad_arg"))
+                testing_dgmm_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

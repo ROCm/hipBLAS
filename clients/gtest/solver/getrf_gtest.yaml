@@ -38,4 +38,27 @@ Tests:
     stride_scale: [ 2.0 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: getrf_bad_arg
+    category: quick
+    function:
+      - getrf_bad_arg
+      - getrf_npvt_bad_arg
+      - getrf_batched_bad_arg
+      - getrf_npvt_batched_bad_arg
+      - getrf_strided_batched_bad_arg
+      - getrf_npvt_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: getrf_bad_arg
+    category: quick
+    function:
+      - getrf_batched_bad_arg
+      - getrf_npvt_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

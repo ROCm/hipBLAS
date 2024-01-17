@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,58 @@ inline void testname_dotc_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T, bool CONJ = false>
+void testing_dot_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDotStridedBatchedFn
+        = FORTRAN
+              ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
+              : (CONJ ? hipblasDotcStridedBatched<T, false> : hipblasDotStridedBatched<T, false>);
+    auto hipblasDotStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? (CONJ ? hipblasDotcStridedBatched_64<T, true>
+                                                     : hipblasDotStridedBatched_64<T, true>)
+                                             : (CONJ ? hipblasDotcStridedBatched_64<T, false>
+                                                     : hipblasDotStridedBatched_64<T, false>);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t       N           = 100;
+        int64_t       incx        = 1;
+        int64_t       incy        = 1;
+        int64_t       batch_count = 2;
+        hipblasStride stride_x    = N * incx;
+        hipblasStride stride_y    = N * incy;
+
+        device_vector<T> dx(stride_x * batch_count);
+        device_vector<T> dy(stride_x * batch_count);
+        device_vector<T> d_res(batch_count);
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasDotStridedBatchedFn,
+                    (nullptr, N, dx, incx, stride_x, dy, incy, stride_y, batch_count, d_res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDotStridedBatchedFn,
+                    (handle, N, nullptr, incx, stride_x, dy, incy, stride_y, batch_count, d_res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDotStridedBatchedFn,
+                    (handle, N, dx, incx, stride_x, nullptr, incy, stride_y, batch_count, d_res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDotStridedBatchedFn,
+                    (handle, N, dx, incx, stride_x, dy, incy, stride_y, batch_count, nullptr));
+    }
+}
+
+template <typename T>
+void testing_dotc_strided_batched_bad_arg(const Arguments& arg)
+{
+    testing_dot_strided_batched_bad_arg<T, true>(arg);
+}
+
+template <typename T, bool CONJ = false>
 void testing_dot_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
@@ -50,15 +102,20 @@ void testing_dot_strided_batched(const Arguments& arg)
         = FORTRAN
               ? (CONJ ? hipblasDotcStridedBatched<T, true> : hipblasDotStridedBatched<T, true>)
               : (CONJ ? hipblasDotcStridedBatched<T, false> : hipblasDotStridedBatched<T, false>);
+    auto hipblasDotStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? (CONJ ? hipblasDotcStridedBatched_64<T, true>
+                                                     : hipblasDotStridedBatched_64<T, true>)
+                                             : (CONJ ? hipblasDotcStridedBatched_64<T, false>
+                                                     : hipblasDotStridedBatched_64<T, false>);
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int64_t incy         = arg.incy;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
-    int           abs_incx = incx >= 0 ? incx : -incx;
-    int           abs_incy = incy >= 0 ? incy : -incy;
+    int64_t       abs_incx = incx >= 0 ? incx : -incx;
+    int64_t       abs_incy = incy >= 0 ? incy : -incy;
     hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
     hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
     size_t        sizeX    = stridex * batch_count;
@@ -74,25 +131,25 @@ void testing_dot_strided_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        device_vector<T> d_hipblas_result_0(std::max(batch_count, 1));
-        host_vector<T>   h_hipblas_result_0(std::max(1, batch_count));
-        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
-                                  h_hipblas_result_0,
-                                  sizeof(T) * std::max(1, batch_count),
-                                  hipMemcpyHostToDevice));
+        int64_t          batches = std::max(int64_t(1), batch_count);
+        device_vector<T> d_hipblas_result_0(batches);
+        host_vector<T>   h_hipblas_result_0(batches);
+        hipblas_init_nan(h_hipblas_result_0.data(), batches);
+        CHECK_HIP_ERROR(hipMemcpy(
+            d_hipblas_result_0, h_hipblas_result_0, sizeof(T) * batches, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasDotStridedBatchedFn(handle,
-                                                       N,
-                                                       nullptr,
-                                                       incx,
-                                                       stridex,
-                                                       nullptr,
-                                                       incy,
-                                                       stridey,
-                                                       batch_count,
-                                                       d_hipblas_result_0));
+        DAPI_CHECK(hipblasDotStridedBatchedFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    incx,
+                    stridex,
+                    nullptr,
+                    incy,
+                    stridey,
+                    batch_count,
+                    d_hipblas_result_0));
 
         if(batch_count > 0)
         {
@@ -136,28 +193,14 @@ void testing_dot_strided_batched(const Arguments& arg)
         =================================================================== */
         // hipblasDot accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
-                                                         N,
-                                                         dx,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         incy,
-                                                         stridey,
-                                                         batch_count,
-                                                         d_hipblas_result));
+        DAPI_CHECK(
+            hipblasDotStridedBatchedFn,
+            (handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
-                                                         N,
-                                                         dx,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         incy,
-                                                         stridey,
-                                                         batch_count,
-                                                         h_hipblas_result1));
+        DAPI_CHECK(
+            hipblasDotStridedBatchedFn,
+            (handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, h_hipblas_result1));
 
         CHECK_HIP_ERROR(hipMemcpy(
             h_hipblas_result2, d_hipblas_result, sizeof(T) * batch_count, hipMemcpyDeviceToHost));
@@ -165,20 +208,33 @@ void testing_dot_strided_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            (CONJ ? cblas_dotc<T> : cblas_dot<T>)(N,
-                                                  hx.data() + b * stridex,
-                                                  incx,
-                                                  hy.data() + b * stridey,
-                                                  incy,
-                                                  &h_cpu_result[b]);
+            (CONJ ? ref_dotc<T> : ref_dot<T>)(N,
+                                              hx.data() + b * stridex,
+                                              incx,
+                                              hy.data() + b * stridey,
+                                              incy,
+                                              &h_cpu_result[b]);
         }
+
+        bool   near_check = arg.initialization == hipblas_initialization::hpl;
+        double abs_error  = hipblas_type_epsilon<T> * N;
 
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
-            unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            if(near_check)
+            {
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result1.data(), abs_error);
+                near_check_general<T>(
+                    batch_count, 1, 1, h_cpu_result.data(), h_hipblas_result2.data(), abs_error);
+            }
+            else
+            {
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result1);
+                unit_check_general<T>(1, batch_count, 1, h_cpu_result, h_hipblas_result2);
+            }
         }
         if(arg.norm_check)
         {
@@ -202,16 +258,9 @@ void testing_dot_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR((hipblasDotStridedBatchedFn)(handle,
-                                                             N,
-                                                             dx,
-                                                             incx,
-                                                             stridex,
-                                                             dy,
-                                                             incy,
-                                                             stridey,
-                                                             batch_count,
-                                                             d_hipblas_result));
+            DAPI_CHECK(
+                hipblasDotStridedBatchedFn,
+                (handle, N, dx, incx, stridex, dy, incy, stridey, batch_count, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

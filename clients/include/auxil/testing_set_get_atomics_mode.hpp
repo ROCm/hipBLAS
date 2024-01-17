@@ -37,7 +37,7 @@ inline void testname_set_get_atomics_mode(const Arguments& arg, std::string& nam
 
 void testing_set_get_atomics_mode(const Arguments& arg)
 {
-    bool FORTRAN                 = arg.fortran;
+    bool FORTRAN                 = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSetAtomicsModeFn = FORTRAN ? hipblasSetAtomicsModeFortran : hipblasSetAtomicsMode;
     auto hipblasGetAtomicsModeFn = FORTRAN ? hipblasGetAtomicsModeFortran : hipblasGetAtomicsMode;
 

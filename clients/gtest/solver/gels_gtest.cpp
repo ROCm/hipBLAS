@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "gels"))
                 testing_gels<T>(arg);
+            else if(!strcmp(arg.function, "gels_bad_arg"))
+                testing_gels_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gels_batched"))
                 testing_gels_batched<T>(arg);
+            else if(!strcmp(arg.function, "gels_batched_bad_arg"))
+                testing_gels_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gels_strided_batched"))
                 testing_gels_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "gels_strided_batched_bad_arg"))
+                testing_gels_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

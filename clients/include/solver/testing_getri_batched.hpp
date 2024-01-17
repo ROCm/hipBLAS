@@ -36,10 +36,106 @@ inline void testname_getri_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_getri_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGetriBatchedFn
+        = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N           = 101;
+    int64_t            M           = N;
+    int64_t            lda         = 102;
+    int64_t            batch_count = 2;
+    int64_t            A_size      = N * lda;
+    int64_t            Ipiv_size   = std::min(M, N) * batch_count;
+
+    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_vector<T> dC(A_size, 1, batch_count);
+    device_vector<int>     dIpiv(Ipiv_size);
+    device_vector<int>     dInfo(batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetriBatchedFn(nullptr,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dIpiv,
+                                                dC.ptr_on_device(),
+                                                lda,
+                                                dInfo,
+                                                batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetriBatchedFn(handle,
+                                                -1,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dIpiv,
+                                                dC.ptr_on_device(),
+                                                lda,
+                                                dInfo,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetriBatchedFn(handle,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                N - 1,
+                                                dIpiv,
+                                                dC.ptr_on_device(),
+                                                lda,
+                                                dInfo,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetriBatchedFn(handle,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dIpiv,
+                                                dC.ptr_on_device(),
+                                                N - 1,
+                                                dInfo,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasGetriBatchedFn(
+            handle, N, dA.ptr_on_device(), lda, dIpiv, dC.ptr_on_device(), lda, dInfo, -1),
+        HIPBLAS_STATUS_INVALID_VALUE);
+
+    // If N == 0 || batch_count == 0, A, C, and ipiv can be nullptr. rocSolver doesn't allow nullptr with batch_count == 0
+    CHECK_HIPBLAS_ERROR(
+        hipblasGetriBatchedFn(handle, 0, nullptr, lda, nullptr, nullptr, lda, dInfo, batch_count));
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetriBatchedFn(
+                handle, N, nullptr, lda, dIpiv, dC.ptr_on_device(), lda, dInfo, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasGetriBatchedFn(
+                handle, N, dA.ptr_on_device(), lda, dIpiv, nullptr, lda, dInfo, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasGetriBatchedFn(handle,
+                                                    N,
+                                                    dA.ptr_on_device(),
+                                                    lda,
+                                                    dIpiv,
+                                                    dC.ptr_on_device(),
+                                                    lda,
+                                                    nullptr,
+                                                    batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getri_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetriBatchedFn
         = FORTRAN ? hipblasGetriBatched<T, true> : hipblasGetriBatched<T, false>;
 
@@ -98,7 +194,7 @@ void testing_getri_batched(const Arguments& arg)
 
         // perform LU factorization on A
         int* hIpivb = hIpiv.data() + b * strideP;
-        hInfo[b]    = cblas_getrf(M, N, hA[b], lda, hIpivb);
+        hInfo[b]    = ref_getrf(M, N, hA[b], lda, hIpivb);
     }
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
@@ -135,12 +231,12 @@ void testing_getri_batched(const Arguments& arg)
         {
             // Workspace query
             host_vector<T> work(1);
-            cblas_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), -1);
+            ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), -1);
             int lwork = type2int(work[0]);
 
             // Perform inversion
             work     = host_vector<T>(lwork);
-            hInfo[b] = cblas_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), lwork);
+            hInfo[b] = ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), lwork);
 
             hipblas_error = norm_check_general<T>('F', M, N, lda, hA[b], hA1[b]);
             if(arg.unit_check)

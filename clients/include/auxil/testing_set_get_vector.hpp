@@ -40,7 +40,7 @@ inline void testname_set_get_vector(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_set_get_vector(const Arguments& arg)
 {
-    bool FORTRAN            = arg.fortran;
+    bool FORTRAN            = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSetVectorFn = FORTRAN ? hipblasSetVectorFortran : hipblasSetVector;
     auto hipblasGetVectorFn = FORTRAN ? hipblasGetVectorFortran : hipblasGetVector;
 

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,76 @@ inline void testname_tbsv(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_tbsv_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTbsvFn = FORTRAN ? hipblasTbsv<T, true> : hipblasTbsv<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_UPPER;
+        hipblasOperation_t transA = HIPBLAS_OP_N;
+        hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N      = 100;
+        int64_t            K      = 5;
+        int64_t            lda    = 100;
+        int64_t            incx   = 1;
+
+        device_vector<T> dA(N * lda);
+        device_vector<T> dx(N * incx);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTbsvFn(nullptr, uplo, transA, diag, N, K, dA, lda, dx, incx),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTbsvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, K, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTbsvFn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, K, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTbsvFn(handle,
+                                            uplo,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            diag,
+                                            N,
+                                            K,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTbsvFn(handle,
+                                            uplo,
+                                            transA,
+                                            (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                            N,
+                                            K,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTbsvFn(handle, uplo, transA, diag, N, K, nullptr, lda, dx, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTbsvFn(handle, uplo, transA, diag, N, K, dA, lda, nullptr, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(
+            hipblasTbsvFn(handle, uplo, transA, diag, 0, K, nullptr, lda, nullptr, incx));
+    }
+}
+
+template <typename T>
 void testing_tbsv(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
@@ -73,7 +143,6 @@ void testing_tbsv(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAB(size_AB);
-    host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -84,22 +153,31 @@ void testing_tbsv(const Arguments& arg)
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, size_A, 1, 1, 0, 1, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             N,
+                             0,
+                             1,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
     hb = hx;
 
     banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, N, K);
 
-    prepare_triangular_solve((T*)hA, N, (T*)AAT, N, arg.uplo);
     if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, (T*)hA, N, N);
     }
 
     regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, N, (T*)hAB, lda, N, K);
+
     CHECK_HIP_ERROR(hipMemcpy(dAB, hAB.data(), sizeof(T) * size_AB, hipMemcpyHostToDevice));
 
-    cblas_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
+    ref_tbmv<T>(uplo, transA, diag, N, K, hAB, lda, hb, incx);
     hx_or_b_1 = hb;
 
     // copy data from CPU to device

@@ -37,6 +37,75 @@ inline void testname_ger(const Arguments& arg, std::string& name)
     hipblasGerModel{}.test_name(arg, name);
 }
 
+template <typename T, bool CONJ = false>
+void testing_ger_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
+                                : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t N    = 100;
+        int64_t M    = 100;
+        int64_t lda  = 100;
+        int64_t incx = 1;
+        int64_t incy = 1;
+
+        device_vector<T> d_alpha(1), d_zero(1);
+
+        const T  h_alpha(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        device_vector<T> dA(N * lda);
+        device_vector<T> dx(N * incx);
+        device_vector<T> dy(M * incy);
+
+        EXPECT_HIPBLAS_STATUS(hipblasGerFn(nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasGerFn(handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have all nullptrs
+            CHECK_HIPBLAS_ERROR(
+                hipblasGerFn(handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(
+            hipblasGerFn(handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
+    }
+}
+
 template <typename T, bool CONJ>
 void testing_ger(const Arguments& arg)
 {
@@ -120,7 +189,7 @@ void testing_ger(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_ger<T, CONJ>(M, N, h_alpha, hx.data(), incx, hy.data(), incy, hA_cpu.data(), lda);
+        ref_ger<T, CONJ>(M, N, h_alpha, hx.data(), incx, hy.data(), incy, hA_cpu.data(), lda);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
