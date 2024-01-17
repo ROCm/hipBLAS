@@ -38,6 +38,70 @@ inline void testname_spr(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_spr_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasSprFn = FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t uplo   = HIPBLAS_FILL_MODE_UPPER;
+        int64_t           N      = 100;
+        int64_t           incx   = 1;
+        int64_t           A_size = N * (N + 1) / 2;
+
+        device_vector<T> d_alpha(1), d_zero(1);
+
+        const T  h_alpha(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        device_vector<T> dA(A_size);
+        device_vector<T> dx(N * incx);
+
+        EXPECT_HIPBLAS_STATUS(hipblasSprFn(nullptr, uplo, N, alpha, dx, incx, dA),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasSprFn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dA),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasSprFn(handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dA),
+            HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasSprFn(handle, uplo, N, nullptr, dx, incx, dA),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(hipblasSprFn(handle, uplo, N, alpha, nullptr, incx, dA),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasSprFn(handle, uplo, N, alpha, dx, incx, nullptr),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0, can have all nullptrs
+            CHECK_HIPBLAS_ERROR(hipblasSprFn(handle, uplo, N, zero, nullptr, incx, nullptr));
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasSprFn(handle, uplo, 0, nullptr, nullptr, incx, nullptr));
+    }
+}
+
+template <typename T>
 void testing_spr(const Arguments& arg)
 {
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
@@ -109,7 +173,7 @@ void testing_spr(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_spr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
+        ref_spr<T>(uplo, N, h_alpha, hx.data(), incx, hA_cpu.data());
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

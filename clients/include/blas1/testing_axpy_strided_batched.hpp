@@ -38,21 +38,95 @@ inline void testname_axpy_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_axpy_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAxpyStridedBatchedFn
+        = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
+    auto hipblasAxpyStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasAxpyStridedBatched_64<T, true>
+                                              : hipblasAxpyStridedBatched_64<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        int64_t       N           = 100;
+        int64_t       incx        = 1;
+        int64_t       incy        = 1;
+        int64_t       batch_count = 2;
+        hipblasStride stride_x    = N;
+        hipblasStride stride_y    = N;
+
+        device_vector<T> d_alpha(1), d_zero(1);
+        device_vector<T> dx(stride_x * batch_count);
+        device_vector<T> dy(stride_y * batch_count);
+
+        const T  h_alpha(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(h_alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, &h_zero, sizeof(h_zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasAxpyStridedBatchedFn,
+                    (nullptr, N, alpha, dx, incx, stride_x, dy, incy, stride_y, batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasAxpyStridedBatchedFn,
+                    (handle, N, nullptr, dx, incx, stride_x, dy, incy, stride_y, batch_count));
+
+        // Can only check for nullptr for dx/dy with host mode because
+        //device mode may not check as it could be quick-return success
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasAxpyStridedBatchedFn,
+                (handle, N, alpha, nullptr, incx, stride_x, dy, incy, stride_y, batch_count));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasAxpyStridedBatchedFn,
+                (handle, N, alpha, dx, incx, stride_x, nullptr, incy, stride_y, batch_count));
+        }
+
+        DAPI_CHECK(
+            hipblasAxpyStridedBatchedFn,
+            (handle, 0, nullptr, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
+        DAPI_CHECK(
+            hipblasAxpyStridedBatchedFn,
+            (handle, N, zero, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
+        DAPI_CHECK(hipblasAxpyStridedBatchedFn,
+                   (handle, N, nullptr, nullptr, incx, stride_x, nullptr, incy, stride_y, 0));
+    }
+}
+
+template <typename T>
 void testing_axpy_strided_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyStridedBatchedFn
         = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
+    auto hipblasAxpyStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasAxpyStridedBatched_64<T, true>
+                                              : hipblasAxpyStridedBatched_64<T, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
-    T      alpha        = arg.get_alpha<T>();
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int64_t incy         = arg.incy;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
+    T       alpha        = arg.get_alpha<T>();
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
 
     hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
     hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
@@ -69,8 +143,9 @@ void testing_axpy_strided_batched(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-            handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
+        DAPI_CHECK(
+            hipblasAxpyStridedBatchedFn,
+            (handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
         return;
     }
 
@@ -111,12 +186,12 @@ void testing_axpy_strided_batched(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-            handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
+        DAPI_CHECK(hipblasAxpyStridedBatchedFn,
+                   (handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-            handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
+        DAPI_CHECK(hipblasAxpyStridedBatchedFn,
+                   (handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(
@@ -127,9 +202,9 @@ void testing_axpy_strided_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            cblas_axpy<T>(
+            ref_axpy<T>(
                 N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy);
         }
 
@@ -163,8 +238,9 @@ void testing_axpy_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedFn(
-                handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
+            DAPI_CHECK(
+                hipblasAxpyStridedBatchedFn,
+                (handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

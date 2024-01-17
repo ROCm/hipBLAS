@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -127,11 +127,6 @@ set( hipblas_test_common
 add_executable( hipblas-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 add_executable( hipblas_v2-test ${hipblas_f90_source} ${hipblas_test_source} ${hipblas_solver_test_source} ${hipblas_test_common} )
 
-if(LINK_BLIS)
-    set( BLIS_INCLUDE_DIR ${BUILD_DIR}/deps/blis/include/blis )
-    set( BLIS_LIBRARY ${BUILD_DIR}/deps/blis/lib/libblis.so )
-endif()
-
 target_include_directories( hipblas-test
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
@@ -162,22 +157,32 @@ target_include_directories( hipblas_v2-test
     ${ROCM_PATH}/include
 )
 
-if (NOT WIN32)
-    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
-    target_link_libraries( hipblas_v2-test PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
-endif()
+target_link_libraries( hipblas-test PRIVATE roc::hipblas GTest::GTest )
+target_link_libraries( hipblas_v2-test PRIVATE roc::hipblas GTest::GTest )
 
-target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
-target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} roc::hipblas GTest::GTest Threads::Threads )
+if (NOT WIN32)
+    target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client )
+    target_link_libraries( hipblas_v2-test PRIVATE hipblas_fortran_client )
+endif()
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
-target_compile_definitions( hipblas-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
-target_compile_definitions( hipblas_v2-test PRIVATE HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2 )
+target_compile_options(hipblas-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+target_compile_options(hipblas_v2-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
 
-if( NOT USE_CUDA )
+target_compile_definitions( hipblas-test PRIVATE ${COMMON_DEFINES} )
+target_compile_definitions( hipblas_v2-test PRIVATE ${COMMON_DEFINES} HIPBLAS_V2 )
+
+target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+if (NOT WIN32)
+    target_link_libraries( hipblas-test PRIVATE stdc++fs )
+    target_link_libraries( hipblas_v2-test PRIVATE stdc++fs )
+endif()
+
+if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-test PRIVATE hip::host )
   target_link_libraries( hipblas_v2-test PRIVATE hip::host )
 
@@ -197,9 +202,6 @@ if( NOT USE_CUDA )
     endif()
   endif()
 else( )
-  target_compile_definitions( hipblas-test PRIVATE __HIP_PLATFORM_NVCC__ )
-  target_compile_definitions( hipblas_v2-test PRIVATE __HIP_PLATFORM_NVCC__ )
-
   target_include_directories( hipblas-test
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
@@ -225,7 +227,7 @@ if (WIN32)
     ${HIP_DIR}/bin/hiprt*.dll
     ${HIP_DIR}/bin/hipinfo.exe
     ${ROCBLAS_PATH}/bin/rocblas*.dll
-    ${ROCSOLVER_PATH}/bin/rocsolver.dll
+    ${ROCSOLVER_PATH}/bin/rocsolver*.dll
     ${CMAKE_SOURCE_DIR}/rtest.*
     C:/Windows/System32/libomp140*.dll
   )
@@ -243,7 +245,6 @@ set_target_properties( hipblas-test PROPERTIES
     IMPORT_PREFIX ""
     IMPORT_SUFFIX ".lib"
     LINKER_LANGUAGE CXX
-    DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
   set_target_properties( hipblas_v2-test PROPERTIES
     CXX_STANDARD 17
@@ -252,7 +253,6 @@ set_target_properties( hipblas-test PROPERTIES
     IMPORT_PREFIX ""
     IMPORT_SUFFIX ".lib"
     LINKER_LANGUAGE CXX
-    DEBUG_POSTFIX "-d"
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
 
 set( HIPBLAS_TEST_DATA "${PROJECT_BINARY_DIR}/staging/hipblas_gtest.data")

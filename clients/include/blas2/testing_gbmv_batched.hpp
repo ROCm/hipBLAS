@@ -49,6 +49,254 @@ inline void testname_gbmv_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_gbmv_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGbmvBatchedFn
+        = FORTRAN ? hipblasGbmvBatched<T, true> : hipblasGbmvBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasOperation_t transA      = HIPBLAS_OP_N;
+        int64_t            N           = 100;
+        int64_t            M           = 100;
+        int64_t            KL          = 5;
+        int64_t            KU          = 5;
+        int64_t            lda         = 100;
+        int64_t            incx        = 1;
+        int64_t            incy        = 1;
+        int64_t            batch_count = 2;
+
+        device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
+
+        const T  h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* beta  = &h_beta;
+        const T* one   = &h_one;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_beta, beta, sizeof(*beta), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_one, one, sizeof(*one), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            beta  = d_beta;
+            one   = d_one;
+            zero  = d_zero;
+        }
+
+        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        device_batch_vector<T> dx(N, incx, batch_count);
+        device_batch_vector<T> dy(M, incy, batch_count);
+
+        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(nullptr,
+                                                   transA,
+                                                   M,
+                                                   N,
+                                                   KL,
+                                                   KU,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   beta,
+                                                   dy.ptr_on_device(),
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                   (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                                   M,
+                                                   N,
+                                                   KL,
+                                                   KU,
+                                                   alpha,
+                                                   dA,
+                                                   lda,
+                                                   dx,
+                                                   incx,
+                                                   beta,
+                                                   dy,
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                   transA,
+                                                   M,
+                                                   N,
+                                                   KL,
+                                                   KU,
+                                                   nullptr,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   beta,
+                                                   dy.ptr_on_device(),
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                   transA,
+                                                   M,
+                                                   N,
+                                                   KL,
+                                                   KU,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   nullptr,
+                                                   dy.ptr_on_device(),
+                                                   incy,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                       transA,
+                                                       M,
+                                                       N,
+                                                       KL,
+                                                       KU,
+                                                       alpha,
+                                                       nullptr,
+                                                       lda,
+                                                       dx.ptr_on_device(),
+                                                       incx,
+                                                       beta,
+                                                       dy.ptr_on_device(),
+                                                       incy,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                       transA,
+                                                       M,
+                                                       N,
+                                                       KL,
+                                                       KU,
+                                                       alpha,
+                                                       dA.ptr_on_device(),
+                                                       lda,
+                                                       nullptr,
+                                                       incx,
+                                                       beta,
+                                                       dy.ptr_on_device(),
+                                                       incy,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                       transA,
+                                                       M,
+                                                       N,
+                                                       KL,
+                                                       KU,
+                                                       alpha,
+                                                       dA.ptr_on_device(),
+                                                       lda,
+                                                       dx.ptr_on_device(),
+                                                       incx,
+                                                       beta,
+                                                       nullptr,
+                                                       incy,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        // With M == 0 || N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+                                                 transA,
+                                                 0,
+                                                 N,
+                                                 KL,
+                                                 KU,
+                                                 nullptr,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 incx,
+                                                 nullptr,
+                                                 nullptr,
+                                                 incy,
+                                                 batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+                                                 transA,
+                                                 M,
+                                                 0,
+                                                 KL,
+                                                 KU,
+                                                 nullptr,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 incx,
+                                                 nullptr,
+                                                 nullptr,
+                                                 incy,
+                                                 batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+                                                 transA,
+                                                 M,
+                                                 N,
+                                                 KL,
+                                                 KU,
+                                                 nullptr,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 incx,
+                                                 nullptr,
+                                                 nullptr,
+                                                 incy,
+                                                 0));
+
+        // With alpha == 0 can have x nullptr
+        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+                                                 transA,
+                                                 M,
+                                                 N,
+                                                 KL,
+                                                 KU,
+                                                 zero,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 incx,
+                                                 beta,
+                                                 dy.ptr_on_device(),
+                                                 incy,
+                                                 batch_count));
+
+        // With alpha == 0 && beta == 1, all other ptrs can be nullptr
+        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+                                                 transA,
+                                                 M,
+                                                 N,
+                                                 KL,
+                                                 KU,
+                                                 zero,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 incx,
+                                                 one,
+                                                 nullptr,
+                                                 incy,
+                                                 batch_count));
+    }
+}
+
+template <typename T>
 void testing_gbmv_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
@@ -199,7 +447,7 @@ void testing_gbmv_batched(const Arguments& arg)
 
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_gbmv<T>(
+            ref_gbmv<T>(
                 transA, M, N, KL, KU, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
         }
 

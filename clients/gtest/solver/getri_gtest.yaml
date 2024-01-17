@@ -18,4 +18,13 @@ Tests:
     matrix_size: *size_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C ]
+
+  - name: getri_bad_arg
+    category: quick
+    function:
+      - getri_batched_bad_arg
+      - getri_npvt_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

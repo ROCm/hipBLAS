@@ -38,9 +38,56 @@ inline void testname_rot_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
+void testing_rot_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
+
+    hipblasDatatype_t xType         = arg.a_type;
+    hipblasDatatype_t yType         = arg.b_type;
+    hipblasDatatype_t csType        = arg.c_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+    int64_t incy = 1;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<Tx>  dx(N * incx);
+    device_vector<Ty>  dy(N * incy);
+    device_vector<Tcs> dc(1);
+    device_vector<Tcs> ds(1);
+
+    EXPECT_HIPBLAS_STATUS(
+        hipblasRotExFn(nullptr, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType),
+        HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotExFn(
+                handle, N, nullptr, xType, incx, dy, yType, incy, dc, ds, csType, executionType),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotExFn(
+                handle, N, dx, xType, incx, nullptr, yType, incy, dc, ds, csType, executionType),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotExFn(
+                handle, N, dx, xType, incx, dy, yType, incy, nullptr, ds, csType, executionType),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasRotExFn(
+                handle, N, dx, xType, incx, dy, yType, incy, dc, nullptr, csType, executionType),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
 
     int N    = arg.N;
@@ -141,7 +188,7 @@ void testing_rot_ex(const Arguments& arg)
 
         // CBLAS
         // TODO: execution type in cblas_rot
-        cblas_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
+        ref_rot<Tx, Tcs, Tcs>(N, hx_cpu.data(), incx, hy_cpu.data(), incy, *hc, *hs);
 
         if(arg.unit_check)
         {

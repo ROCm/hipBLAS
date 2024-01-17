@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  * ************************************************************************ */
 
 #include "auxil/testing_set_get_atomics_mode.hpp"
+#include "auxil/testing_set_get_math_mode.hpp"
 #include "auxil/testing_set_get_pointer_mode.hpp"
 #include "hipblas_data.hpp"
 #include "hipblas_test.hpp"
@@ -33,6 +34,7 @@ namespace
     {
         SG_POINTER,
         SG_ATOMICS,
+        SG_MATH,
     };
 
     // aux test template
@@ -68,6 +70,8 @@ namespace
                 return !strcmp(arg.function, "set_get_pointer_mode");
             case SG_ATOMICS:
                 return !strcmp(arg.function, "set_get_atomics_mode");
+            case SG_MATH:
+                return !strcmp(arg.function, "set_get_math_mode");
             }
             return false;
         }
@@ -80,6 +84,8 @@ namespace
                 testname_set_get_pointer_mode(arg, name);
             else if constexpr(AUX_TYPE == SG_ATOMICS)
                 testname_set_get_atomics_mode(arg, name);
+            else if constexpr(AUX_TYPE == SG_MATH)
+                testname_set_get_math_mode(arg, name);
 
             return std::move(name);
         }
@@ -94,6 +100,8 @@ namespace
                 testing_set_get_pointer_mode(arg);
             else if(!strcmp(arg.function, "set_get_atomics_mode"))
                 testing_set_get_atomics_mode(arg);
+            else if(!strcmp(arg.function, "set_get_math_mode"))
+                testing_set_get_math_mode(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }
@@ -112,5 +120,12 @@ namespace
         CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(aux_mode_testing<>{}(GetParam()));
     }
     INSTANTIATE_TEST_CATEGORIES(set_get_atomics);
+
+    using set_get_math = aux_mode_template<aux_mode_testing, SG_MATH>;
+    TEST_P(set_get_math, aux)
+    {
+        CATCH_SIGNALS_AND_EXCEPTIONS_AS_FAILURES(aux_mode_testing<>{}(GetParam()));
+    }
+    INSTANTIATE_TEST_CATEGORIES(set_get_math);
 
 } // namespace

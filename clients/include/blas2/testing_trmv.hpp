@@ -38,6 +38,73 @@ inline void testname_trmv(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trmv_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrmvFn = FORTRAN ? hipblasTrmv<T, true> : hipblasTrmv<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasOperation_t transA = HIPBLAS_OP_N;
+        hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_UPPER;
+        hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N      = 100;
+        int64_t            lda    = 100;
+        int64_t            incx   = 1;
+
+        device_vector<T> dA(N * lda);
+        device_vector<T> dx(N * incx);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTrmvFn(nullptr, uplo, transA, diag, N, dA, lda, dx, incx),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrmvFn(handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrmvFn(
+                handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dA, lda, dx, incx),
+            HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmvFn(handle,
+                                            uplo,
+                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                            diag,
+                                            N,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrmvFn(handle,
+                                            uplo,
+                                            transA,
+                                            (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                            N,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTrmvFn(handle, uplo, transA, diag, N, nullptr, lda, dx, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasTrmvFn(handle, uplo, transA, diag, N, dA, lda, nullptr, incx),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(
+            hipblasTrmvFn(handle, uplo, transA, diag, 0, nullptr, lda, nullptr, incx));
+    }
+}
+
+template <typename T>
 void testing_trmv(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
@@ -102,7 +169,7 @@ void testing_trmv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hx.data(), incx);
+        ref_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hx.data(), incx);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

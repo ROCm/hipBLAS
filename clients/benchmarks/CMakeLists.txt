@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -53,14 +53,6 @@ add_executable( hipblas_v2-bench ${hipblas_bench_source} ${hipblas_benchmark_com
 target_compile_features( hipblas-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 target_compile_features( hipblas_v2-bench PRIVATE cxx_static_assert cxx_nullptr cxx_auto_type )
 
-if(LINK_BLIS)
-  target_link_libraries( hipblas-bench PRIVATE ${BLIS_LIBRARY} )
-  target_link_libraries( hipblas_v2-bench PRIVATE ${BLIS_LIBRARY} )
-elseif(NOT WIN32)
-  target_link_libraries( hipblas-bench PRIVATE blas )
-  target_link_libraries( hipblas_v2-bench PRIVATE blas )
-endif()
-
 # Internal header includes
 target_include_directories( hipblas-bench
   PRIVATE
@@ -87,22 +79,32 @@ target_include_directories( hipblas_v2-bench
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
 )
 
-if (NOT WIN32)
-    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
-    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client lapack cblas stdc++fs )
-endif()
+target_link_libraries( hipblas-bench PRIVATE roc::hipblas )
+target_link_libraries( hipblas_v2-bench PRIVATE roc::hipblas )
 
-target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
-target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} roc::hipblas Threads::Threads )
+if (NOT WIN32)
+    target_link_libraries( hipblas-bench PRIVATE hipblas_fortran_client )
+    target_link_libraries( hipblas_v2-bench PRIVATE hipblas_fortran_client )
+endif()
 
 # need mf16c flag for float->half convertion
 target_compile_options( hipblas-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 target_compile_options( hipblas_v2-bench PRIVATE -mf16c ) # -Wno-deprecated-declarations )
 
-target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS)
-target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH HIPBLAS_BFLOAT16_CLASS ROCM_USE_FLOAT16 HIPBLAS_NO_DEPRECATED_WARNINGS HIPBLAS_V2)
+target_compile_options(hipblas-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
+target_compile_options(hipblas_v2-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
 
-if( NOT USE_CUDA )
+target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES})
+target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} HIPBLAS_V2)
+
+target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
+if (NOT WIN32)
+    target_link_libraries( hipblas-bench PRIVATE stdc++fs )
+    target_link_libraries( hipblas_v2-bench PRIVATE stdc++fs )
+endif()
+
+if(HIP_PLATFORM STREQUAL amd)
   target_link_libraries( hipblas-bench PRIVATE hip::host )
   target_link_libraries( hipblas_v2-bench PRIVATE hip::host )
 
@@ -122,9 +124,6 @@ if( NOT USE_CUDA )
     endif()
   endif()
 else( )
-  target_compile_definitions( hipblas-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-  target_compile_definitions( hipblas_v2-bench PRIVATE __HIP_PLATFORM_NVCC__ )
-
   target_include_directories( hipblas-bench
     PRIVATE
       $<BUILD_INTERFACE:${CUDA_INCLUDE_DIRS}>
@@ -139,12 +138,10 @@ else( )
 endif( )
 
 set_target_properties( hipblas-bench PROPERTIES
-  DEBUG_POSTFIX "-d"
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )
 set_target_properties( hipblas_v2-bench PROPERTIES
-  DEBUG_POSTFIX "-d"
   CXX_EXTENSIONS OFF
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging"
 )

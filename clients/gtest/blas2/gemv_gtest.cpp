@@ -50,6 +50,15 @@ namespace
                 if(!hipblas_client_global_filters(args))
                     return false;
 
+#if defined(__HIP_PLATFORM_NVCC__) && CUBLAS_VERSION < 110700
+                // avoid gemvBatched/gemvStridedBatched tests with cuBLAS older than 11.7.0
+                if(!strcmp(args.function, "gemv_batched")
+                   || !strcmp(args.function, "gemv_batched_bad_arg")
+                   || !strcmp(args.function, "gemv_strided_batched")
+                   || !strcmp(args.function, "gemv_strided_batched_bad_arg"))
+                    return false;
+#endif
+
                 // type filters
                 return static_cast<bool>(FILTER<T...>{});
             }
@@ -114,10 +123,16 @@ namespace
         {
             if(!strcmp(arg.function, "gemv"))
                 testing_gemv<T>(arg);
+            else if(!strcmp(arg.function, "gemv_bad_arg"))
+                testing_gemv_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemv_batched"))
                 testing_gemv_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemv_batched_bad_arg"))
+                testing_gemv_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "gemv_strided_batched"))
                 testing_gemv_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "gemv_strided_batched_bad_arg"))
+                testing_gemv_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

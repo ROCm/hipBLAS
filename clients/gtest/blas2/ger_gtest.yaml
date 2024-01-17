@@ -56,4 +56,35 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: ger_bad_arg
+    category: pre_checkin
+    function:
+      - ger_bad_arg: *single_double_precisions
+      - geru_bad_arg: *single_double_precisions_complex
+      - gerc_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: ger_bad_arg
+    category: pre_checkin
+    function:
+      - ger_bad_arg: *single_double_precisions
+      - geru_bad_arg: *single_double_precisions_complex
+      - gerc_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
+
+  - name: ger_bad_arg
+    category: pre_checkin
+    function:
+      - ger_batched_bad_arg: *single_double_precisions
+      - ger_strided_batched_bad_arg: *single_double_precisions
+      - geru_batched_bad_arg: *single_double_precisions_complex
+      - geru_strided_batched_bad_arg: *single_double_precisions_complex
+      - gerc_batched_bad_arg: *single_double_precisions_complex
+      - gerc_strided_batched_bad_arg: *single_double_precisions_complex
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

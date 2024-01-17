@@ -46,9 +46,163 @@ inline void testname_dgmm_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_dgmm_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasDgmmStridedBatchedFn
+        = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t M           = 101;
+    int64_t N           = 100;
+    int64_t lda         = 102;
+    int64_t incx        = 1;
+    int64_t ldc         = 103;
+    int64_t batch_count = 2;
+
+    hipblasSideMode_t side = HIPBLAS_SIDE_LEFT;
+
+    int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
+
+    hipblasStride strideA = N * lda;
+    hipblasStride stridex = K * incx;
+    hipblasStride strideC = N * ldc;
+
+    device_vector<T> dA(strideA * batch_count);
+    device_vector<T> dx(stridex * batch_count);
+    device_vector<T> dC(strideC * batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasDgmmStridedBatchedFn(nullptr,
+                                                      side,
+                                                      M,
+                                                      N,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dx,
+                                                      incx,
+                                                      stridex,
+                                                      dC,
+                                                      ldc,
+                                                      strideC,
+                                                      batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasDgmmStridedBatchedFn(handle,
+                                                      (hipblasSideMode_t)HIPBLAS_FILL_MODE_FULL,
+                                                      M,
+                                                      N,
+                                                      dA,
+                                                      lda,
+                                                      strideA,
+                                                      dx,
+                                                      incx,
+                                                      stridex,
+                                                      dC,
+                                                      ldc,
+                                                      strideC,
+                                                      batch_count),
+                          HIPBLAS_STATUS_INVALID_ENUM);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmStridedBatchedFn(handle,
+                                                          side,
+                                                          M,
+                                                          N,
+                                                          nullptr,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          dC,
+                                                          ldc,
+                                                          strideC,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmStridedBatchedFn(handle,
+                                                          side,
+                                                          M,
+                                                          N,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          nullptr,
+                                                          incx,
+                                                          stridex,
+                                                          dC,
+                                                          ldc,
+                                                          strideC,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasDgmmStridedBatchedFn(handle,
+                                                          side,
+                                                          M,
+                                                          N,
+                                                          dA,
+                                                          lda,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          nullptr,
+                                                          ldc,
+                                                          strideC,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+
+    // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
+    CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                    side,
+                                                    0,
+                                                    N,
+                                                    nullptr,
+                                                    lda,
+                                                    strideA,
+                                                    nullptr,
+                                                    incx,
+                                                    stridex,
+                                                    nullptr,
+                                                    ldc,
+                                                    strideC,
+                                                    batch_count));
+    CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                    side,
+                                                    M,
+                                                    0,
+                                                    nullptr,
+                                                    lda,
+                                                    strideA,
+                                                    nullptr,
+                                                    incx,
+                                                    stridex,
+                                                    nullptr,
+                                                    ldc,
+                                                    strideC,
+                                                    batch_count));
+    CHECK_HIPBLAS_ERROR(hipblasDgmmStridedBatchedFn(handle,
+                                                    side,
+                                                    M,
+                                                    N,
+                                                    nullptr,
+                                                    lda,
+                                                    strideA,
+                                                    nullptr,
+                                                    incx,
+                                                    stridex,
+                                                    nullptr,
+                                                    ldc,
+                                                    strideC,
+                                                    0));
+}
+
+template <typename T>
 void testing_dgmm_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasDgmmStridedBatchedFn
         = FORTRAN ? hipblasDgmmStridedBatched<T, true> : hipblasDgmmStridedBatched<T, false>;
 

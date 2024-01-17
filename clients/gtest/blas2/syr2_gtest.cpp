@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "syr2"))
                 testing_syr2<T>(arg);
+            else if(!strcmp(arg.function, "syr2_bad_arg"))
+                testing_syr2_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syr2_batched"))
                 testing_syr2_batched<T>(arg);
+            else if(!strcmp(arg.function, "syr2_batched_bad_arg"))
+                testing_syr2_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syr2_strided_batched"))
                 testing_syr2_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "syr2_strided_batched_bad_arg"))
+                testing_syr2_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

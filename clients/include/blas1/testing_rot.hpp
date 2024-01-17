@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,55 @@ inline void testname_rot(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T, typename V = T>
+void testing_rot_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotFn = FORTRAN ? hipblasRot<T, U, V, true> : hipblasRot<T, U, V, false>;
+    auto hipblasRotFn_64
+        = arg.api == FORTRAN_64 ? hipblasRot_64<T, U, V, true> : hipblasRot_64<T, U, V, false>;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+    int64_t incy = 1;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T> dx(N * incx);
+    device_vector<T> dy(N * incy);
+    device_vector<U> dc(1);
+    device_vector<V> ds(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasRotFn(nullptr, N, dx, incx, dy, incy, dc, ds),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    if(arg.bad_arg_all)
+    {
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotFn,
+                    (handle, N, nullptr, incx, dy, incy, dc, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotFn,
+                    (handle, N, dx, incx, nullptr, incy, dc, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotFn,
+                    (handle, N, dx, incx, dy, incy, nullptr, ds));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotFn,
+                    (handle, N, dx, incx, dy, incy, dc, nullptr));
+    }
+}
+
+template <typename T, typename U = T, typename V = T>
 void testing_rot(const Arguments& arg)
 {
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotFn = FORTRAN ? hipblasRot<T, U, V, true> : hipblasRot<T, U, V, false>;
+    auto hipblasRotFn_64
+        = arg.api == FORTRAN_64 ? hipblasRot_64<T, U, V, true> : hipblasRot_64<T, U, V, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -53,17 +94,16 @@ void testing_rot(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasRotFn(handle, N, nullptr, incx, nullptr, incy, nullptr, nullptr));
+        DAPI_CHECK(hipblasRotFn, (handle, N, nullptr, incx, nullptr, incy, nullptr, nullptr));
         return;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t size_x   = N * size_t(abs_incx);
-    size_t size_y   = N * size_t(abs_incy);
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t  size_x   = N * size_t(abs_incx);
+    size_t  size_y   = N * size_t(abs_incy);
     if(!size_x)
         size_x = 1;
     if(!size_y)
@@ -95,7 +135,7 @@ void testing_rot(const Arguments& arg)
     host_vector<T> cx = hx;
     host_vector<T> cy = hy;
 
-    cblas_rot<T, U, V>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
+    ref_rot<T, U, V>(N, cx.data(), incx, cy.data(), incy, *hc, *hs);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -104,7 +144,7 @@ void testing_rot(const Arguments& arg)
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
             CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(T) * size_x, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
-            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, hc, hs));
+            DAPI_CHECK(hipblasRotFn, (handle, N, dx, incx, dy, incy, hc, hs));
 
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
@@ -129,7 +169,7 @@ void testing_rot(const Arguments& arg)
             CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(T) * size_y, hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
             CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(V), hipMemcpyHostToDevice));
-            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
+            DAPI_CHECK(hipblasRotFn, (handle, N, dx, incx, dy, incy, dc, ds));
             host_vector<T> rx(size_x);
             host_vector<T> ry(size_y);
             CHECK_HIP_ERROR(hipMemcpy(rx, dx, sizeof(T) * size_x, hipMemcpyDeviceToHost));
@@ -163,7 +203,7 @@ void testing_rot(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotFn(handle, N, dx, incx, dy, incy, dc, ds));
+            DAPI_CHECK(hipblasRotFn, (handle, N, dx, incx, dy, incy, dc, ds));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,224 @@ inline void testname_trsm_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trsm_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrsmBatchedFn
+        = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t            M           = 101;
+    int64_t            N           = 100;
+    int64_t            lda         = 102;
+    int64_t            ldb         = 103;
+    int64_t            batch_count = 2;
+    hipblasSideMode_t  side        = HIPBLAS_SIDE_LEFT;
+    hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_LOWER;
+    hipblasOperation_t transA      = HIPBLAS_OP_N;
+    hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
+
+    int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
+
+    device_batch_vector<T> dA(K * lda, 1, batch_count);
+    device_batch_vector<T> dB(N * ldb, 1, batch_count);
+
+    device_vector<T> d_alpha(1), d_zero(1);
+    const T          h_alpha(1), h_zero(0);
+
+    const T* alpha = &h_alpha;
+    const T* zero  = &h_zero;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(nullptr,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                   HIPBLAS_SIDE_BOTH,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count),
+#ifdef __HIP_PLATFORM_NVCC__
+                              HIPBLAS_STATUS_INVALID_ENUM);
+#else
+                              HIPBLAS_STATUS_INVALID_VALUE);
+#endif
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                   side,
+                                                   HIPBLAS_FILL_MODE_FULL,
+                                                   transA,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                                   diag,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                   side,
+                                                   uplo,
+                                                   transA,
+                                                   (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                                   M,
+                                                   N,
+                                                   alpha,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dB.ptr_on_device(),
+                                                   ldb,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                       side,
+                                                       uplo,
+                                                       transA,
+                                                       diag,
+                                                       M,
+                                                       N,
+                                                       nullptr,
+                                                       dA.ptr_on_device(),
+                                                       lda,
+                                                       dB.ptr_on_device(),
+                                                       ldb,
+                                                       batch_count),
+                                  HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                           side,
+                                                           uplo,
+                                                           transA,
+                                                           diag,
+                                                           M,
+                                                           N,
+                                                           alpha,
+                                                           nullptr,
+                                                           lda,
+                                                           dB.ptr_on_device(),
+                                                           ldb,
+                                                           batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasTrsmBatchedFn(handle,
+                                                           side,
+                                                           uplo,
+                                                           transA,
+                                                           diag,
+                                                           M,
+                                                           N,
+                                                           alpha,
+                                                           dA.ptr_on_device(),
+                                                           lda,
+                                                           nullptr,
+                                                           ldb,
+                                                           batch_count),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // If alpha == 0, then A can be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedFn(handle,
+                                                     side,
+                                                     uplo,
+                                                     transA,
+                                                     diag,
+                                                     M,
+                                                     N,
+                                                     zero,
+                                                     nullptr,
+                                                     lda,
+                                                     dB.ptr_on_device(),
+                                                     ldb,
+                                                     batch_count));
+        }
+
+        // If M == 0 || N == 0  batch_count == 0, can have nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedFn(handle,
+                                                 side,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 0,
+                                                 N,
+                                                 nullptr,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 ldb,
+                                                 batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedFn(handle,
+                                                 side,
+                                                 uplo,
+                                                 transA,
+                                                 diag,
+                                                 M,
+                                                 0,
+                                                 nullptr,
+                                                 nullptr,
+                                                 lda,
+                                                 nullptr,
+                                                 ldb,
+                                                 batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasTrsmBatchedFn(
+            handle, side, uplo, transA, diag, M, N, nullptr, nullptr, lda, nullptr, ldb, 0));
+    }
+}
+
+template <typename T>
 void testing_trsm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmBatchedFn
         = FORTRAN ? hipblasTrsmBatched<T, true> : hipblasTrsmBatched<T, false>;
 
@@ -97,59 +312,40 @@ void testing_trsm_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
     hipblas_init_vector(hB_host, arg, hipblas_client_never_set_nan);
 
     for(int b = 0; b < batch_count; b++)
     {
-        // pad untouched area into zero
-        for(int i = K; i < lda; i++)
-        {
-            for(int j = 0; j < K; j++)
-            {
-                hA[b][i + j * lda] = 0.0;
-            }
-        }
+        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                                 (T*)hA[b],
+                                 arg,
+                                 K,
+                                 K,
+                                 lda,
+                                 0,
+                                 1,
+                                 hipblas_client_never_set_nan,
+                                 true);
 
-        // proprocess the matrix to avoid ill-conditioned matrix
-        std::vector<int> ipiv(K);
-        cblas_getrf(K, K, hA[b], lda, ipiv.data());
-        for(int i = 0; i < K; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            for(int j = i; j < K; j++)
-            {
-                hA[b][i + j * lda] = hA[b][j + i * lda];
-                if(diag == HIPBLAS_DIAG_UNIT)
-                {
-                    if(i == j)
-                        hA[b][i + j * lda] = 1.0;
-                }
-            }
+            make_unit_diagonal(uplo, (T*)hA[b], lda, K);
         }
-
-        // pad untouched area into zero
-        for(int i = M; i < ldb; i++)
-        {
-            for(int j = 0; j < N; j++)
-            {
-                hB_host[b][i + j * ldb] = 0.0;
-            }
-        }
-        // hB_gold[b] = hB_host[b]; // original solution hX
 
         // Calculate hB = hA*hX;
-        cblas_trmm<T>(side,
-                      uplo,
-                      transA,
-                      diag,
-                      M,
-                      N,
-                      T(1.0) / h_alpha,
-                      (const T*)hA[b],
-                      lda,
-                      hB_host[b],
-                      ldb);
+        ref_trmm<T>(side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    T(1.0) / h_alpha,
+                    (const T*)hA[b],
+                    lda,
+                    hB_host[b],
+                    ldb);
     }
+
     hB_gold.copy_from(hB_host);
     hB_device.copy_from(hB_host);
 
@@ -202,7 +398,7 @@ void testing_trsm_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trsm<T>(
+            ref_trsm<T>(
                 side, uplo, transA, diag, M, N, h_alpha, (const T*)hA[b], lda, hB_gold[b], ldb);
         }
 

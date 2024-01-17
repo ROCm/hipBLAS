@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,17 +38,58 @@ inline void testname_nrm2_strided_batched(const Arguments& arg, std::string& nam
 }
 
 template <typename T>
+void testing_nrm2_strided_batched_bad_arg(const Arguments& arg)
+{
+    using Tr                            = real_t<T>;
+    bool FORTRAN                        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasNrm2StridedBatchedFn    = FORTRAN ? hipblasNrm2StridedBatched<T, Tr, true>
+                                                  : hipblasNrm2StridedBatched<T, Tr, false>;
+    auto hipblasNrm2StridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasNrm2StridedBatched_64<T, Tr, true>
+                                              : hipblasNrm2StridedBatched_64<T, Tr, false>;
+
+    int64_t       N           = 100;
+    int64_t       incx        = 1;
+    int64_t       batch_count = 2;
+    hipblasStride stride_x    = N * incx;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T>  dx(stride_x * batch_count);
+    device_vector<Tr> d_res(batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasNrm2StridedBatchedFn,
+                    (nullptr, N, dx, incx, stride_x, batch_count, d_res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasNrm2StridedBatchedFn,
+                    (handle, N, nullptr, incx, stride_x, batch_count, d_res));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasNrm2StridedBatchedFn,
+                    (handle, N, dx, incx, stride_x, batch_count, nullptr));
+    }
+}
+
+template <typename T>
 void testing_nrm2_strided_batched(const Arguments& arg)
 {
-    using Tr                         = real_t<T>;
-    bool FORTRAN                     = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasNrm2StridedBatchedFn = FORTRAN ? hipblasNrm2StridedBatched<T, Tr, true>
-                                               : hipblasNrm2StridedBatched<T, Tr, false>;
+    using Tr                            = real_t<T>;
+    bool FORTRAN                        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasNrm2StridedBatchedFn    = FORTRAN ? hipblasNrm2StridedBatched<T, Tr, true>
+                                                  : hipblasNrm2StridedBatched<T, Tr, false>;
+    auto hipblasNrm2StridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasNrm2StridedBatched_64<T, Tr, true>
+                                              : hipblasNrm2StridedBatched_64<T, Tr, false>;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
     hipblasStride stridex = size_t(N) * incx * stride_scale;
     size_t        sizeX   = stridex * batch_count;
@@ -58,13 +99,12 @@ void testing_nrm2_strided_batched(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        device_vector<Tr> d_hipblas_result_0(std::max(1, batch_count));
-        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
-        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
-                                  h_hipblas_result_0,
-                                  sizeof(Tr) * std::max(1, batch_count),
-                                  hipMemcpyHostToDevice));
+        int64_t           batches = std::max(int64_t(1), batch_count);
+        device_vector<Tr> d_hipblas_result_0(batches);
+        host_vector<Tr>   h_hipblas_result_0(batches);
+        hipblas_init_nan(h_hipblas_result_0.data(), batches);
+        CHECK_HIP_ERROR(hipMemcpy(
+            d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr) * batches, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
@@ -105,12 +145,12 @@ void testing_nrm2_strided_batched(const Arguments& arg)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
-            handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+        DAPI_CHECK(hipblasNrm2StridedBatchedFn,
+                   (handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
-            handle, N, dx, incx, stridex, batch_count, h_hipblas_result_host));
+        DAPI_CHECK(hipblasNrm2StridedBatchedFn,
+                   (handle, N, dx, incx, stridex, batch_count, h_hipblas_result_host));
 
         CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
                                   d_hipblas_result,
@@ -120,9 +160,9 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            cblas_nrm2<T, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
+            ref_nrm2<T, Tr>(N, hx.data() + b * stridex, incx, &(h_cpu_result[b]));
         }
 
         if(arg.unit_check)
@@ -132,7 +172,7 @@ void testing_nrm2_strided_batched(const Arguments& arg)
         }
         if(arg.norm_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
                 hipblas_error_host
                     = std::max(vector_norm_1(1, 1, &(h_cpu_result[b]), &(h_hipblas_result_host[b])),
@@ -156,8 +196,8 @@ void testing_nrm2_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasNrm2StridedBatchedFn(
-                handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
+            DAPI_CHECK(hipblasNrm2StridedBatchedFn,
+                       (handle, N, dx, incx, stridex, batch_count, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

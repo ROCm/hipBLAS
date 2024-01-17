@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,32 +26,6 @@
 #include <gtest/gtest.h>
 #endif
 
-#include "hipblas_arguments.hpp"
-
-#include <cstdio>
-#include <cstring>
-#include <functional>
-#include <future>
-#include <iostream>
-#include <mutex>
-#include <queue>
-#include <sstream>
-#include <string>
-#include <utility>
-#include <vector>
-
-#ifdef WIN32
-typedef long long ssize_t; /* x64 only supported */
-#endif
-
-#ifdef GOOGLE_TEST
-#include <gtest/gtest.h>
-#endif
-
-#include "argument_model.hpp"
-#include "hipblas.h"
-#include "hipblas_arguments.hpp"
-#include "test_cleanup.hpp"
 #include <algorithm>
 #include <condition_variable>
 #include <cstdio>
@@ -68,9 +42,15 @@ typedef long long ssize_t; /* x64 only supported */
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #ifdef WIN32
 typedef long long ssize_t; /* x64 only supported */
 #endif
+
+#include "argument_model.hpp"
+#include "hipblas.h"
+#include "hipblas_arguments.hpp"
+#include "test_cleanup.hpp"
 
 #ifdef GOOGLE_TEST
 

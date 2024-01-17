@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,9 @@ cat <<EOF
     -c, --clients                 Build the library clients benchmark and gtest.
                                   (Generated binaries will be located at builddir/clients/staging)
 
-    --cuda, --use-cuda            Build library for CUDA backend.
+    --cuda, --use-cuda            Build library for CUDA backend (deprecated).
+                                  The target HIP platform is determined by `hipconfig --platform`.
+                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
 
     --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
 
@@ -505,6 +507,8 @@ while true; do
         compiler=${2}
         shift 2 ;;
     --cuda|--use-cuda)
+        echo "--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)"
+        export HIP_PLATFORM="nvidia"
         build_cuda=true
         shift ;;
     --cudapath)
@@ -572,7 +576,7 @@ if [[ "${build_relocatable}" == true ]]; then
     fi
 fi
 
-build_dir=./build
+build_dir=$(readlink -m ./build)
 printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
 
 # #################################################
@@ -606,7 +610,7 @@ if [[ "${install_dependencies}" == true ]]; then
 
   CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
 
-  install_packages
+  #install_packages
 
   if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
       if $update_cmake == true; then
@@ -616,7 +620,7 @@ if [[ "${install_dependencies}" == true ]]; then
         cd cmake-3.16.8
         ./bootstrap --prefix=/usr --no-system-curl --parallel=16
         make -j16
-        sudo make install
+        elevate_if_not_root make install
         cd ..
         rm -rf cmake-3.16.8.tar.gz cmake-3.16.8
       else
@@ -625,12 +629,13 @@ if [[ "${install_dependencies}" == true ]]; then
       fi
   fi
 
-  # The following builds googletest & lapack from source, installs into cmake default /usr/local
+  # The following builds googletest & lapack from source
   pushd .
-    printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into \033[33m/usr/local\033[0m\n"
+    printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into build tree and not default \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
     ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
     make -j$(nproc)
+    # as installing into build tree deps/deps-install rather than /usr/local won't elevate if not root
     make install
   popd
 fi
@@ -646,6 +651,17 @@ pushd .
   # #################################################
   # configure & build
   # #################################################
+
+  # Support deprecated use of --cuda by only calling
+  # hipconfig when --cuda is not used.
+  if [[ "${build_cuda}" != true ]]; then
+    hip_platform="$(hipconfig --platform)"
+    if [[ "${hip_platform}" == "nvidia" ]]; then
+      build_cuda=true
+    else # hip_platform=amd; or default
+      build_cuda=false
+    fi
+  fi
 
   if [[ "${build_static}" == true ]]; then
     if [[ "${build_cuda}" == true ]]; then
@@ -667,16 +683,12 @@ pushd .
     cmake_common_options+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
-  # cuda
-  if [[ "${build_cuda}" == true ]]; then
-    cmake_common_options+=("-DUSE_CUDA=ON")
-  else
-    cmake_common_options+=("-DUSE_CUDA=OFF")
-  fi
-
   # clients
   if [[ "${build_clients}" == true ]]; then
-    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON")
+    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON" "-DBUILD_DIR=${build_dir}")
+    if [[ "${build_cuda}" == false ]]; then
+      cmake_client_options+=("-DLINK_BLIS=ON")
+    fi
   fi
 
   # solver

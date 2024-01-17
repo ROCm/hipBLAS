@@ -121,10 +121,14 @@ Datatypes:
       bases: [ c_uint32 ]
       attr:
         C: 0
-        FORTRAN: 1
+        C_64: 1
+        FORTRAN: 2
+        FORTRAN_64: 3
       attr_v2:
         C: 0
-        FORTRAN: 1
+        C_64: 1
+        FORTRAN: 2
+        FORTRAN_64: 3
 
 Real precisions: &real_precisions
   - &half_precision
@@ -448,27 +452,27 @@ nrm2_ex precisions double: &nrm2_ex_precisions_double
   - *double_precision_complex_real_in_real_compute
 
 Arguments:
-  - M: int
-  - N: int
-  - K: int
-  - KL: int
-  - KU: int
-  - rows: int
-  - cols: int
-  - lda: int
-  - ldb: int
-  - ldc: int
-  - ldd: int
+  - M: c_int64
+  - N: c_int64
+  - K: c_int64
+  - KL: c_int64
+  - KU: c_int64
+  - rows: c_int64
+  - cols: c_int64
+  - lda: c_int64
+  - ldb: c_int64
+  - ldc: c_int64
+  - ldd: c_int64
   - a_type: hipblasDatatype_t
   - b_type: hipblasDatatype_t
   - c_type: hipblasDatatype_t
   - d_type: hipblasDatatype_t
   - compute_type: hipblasDatatype_t
   - compute_type_gemm: hipblasComputeType_t
-  - incx: int
-  - incy: int
-  - incd: int
-  - incb: int
+  - incx: c_int64
+  - incy: c_int64
+  - incd: c_int64
+  - incb: c_int64
   - stride_scale: c_double
   - stride_a: c_int64
   - stride_b: c_int64
@@ -489,8 +493,7 @@ Arguments:
   - uplo: c_char
   - diag: c_char
   - call_count: int
-  - batch_count: int
-  - fortran: c_bool
+  - batch_count: c_int64
   - inplace: c_bool
   - with_flags: c_bool
   - norm_check: int
@@ -506,9 +509,11 @@ Arguments:
   - category: c_char*64
   - atomics_mode: hipblas_atomics_mode
   - os_flags: hipblas_client_os
+  - gpu_arch: c_char*4
   - backend_flags: hipblas_backend
   - api: hipblas_client_api
   - initialization: hipblas_initialization
+  - bad_arg_all: c_bool
   # - known_bug_platforms: c_char*64
   # - c_noalias_d: c_bool
 
@@ -575,7 +580,6 @@ Defaults:
   diag: '*'
   call_count: 1
   batch_count: -1
-  fortran: false
   inplace: false
   with_flags: false
   norm_check: 0
@@ -591,9 +595,11 @@ Defaults:
   # default benchmarking to faster atomics_allowed (test is default not allowed)
   atomics_mode: atomics_allowed
   os_flags: ALL_OS
+  gpu_arch: ''
   backend_flags: ALL_BACKEND
   api: C
   initialization: rand_int
+  bad_arg_all: true
   compute_type_gemm: 2
 #workspace_size: 0
 #  known_bug_platforms: ''

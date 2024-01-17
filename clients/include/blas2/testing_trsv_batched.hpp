@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,102 @@ inline void testname_trsv_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trsv_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrsvBatchedFn
+        = FORTRAN ? hipblasTrsvBatched<T, true> : hipblasTrsvBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasOperation_t transA      = HIPBLAS_OP_N;
+        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
+        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N           = 100;
+        int64_t            lda         = 100;
+        int64_t            incx        = 1;
+        int64_t            batch_count = 2;
+
+        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        device_batch_vector<T> dx(N, incx, batch_count);
+
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvBatchedFn(nullptr,
+                                                   uplo,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvBatchedFn(handle,
+                                                   HIPBLAS_FILL_MODE_FULL,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvBatchedFn(handle,
+                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                   transA,
+                                                   diag,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvBatchedFn(handle,
+                                                   uplo,
+                                                   (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                                   diag,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTrsvBatchedFn(handle,
+                                                   uplo,
+                                                   transA,
+                                                   (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                                   N,
+                                                   dA.ptr_on_device(),
+                                                   lda,
+                                                   dx.ptr_on_device(),
+                                                   incx,
+                                                   batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsvBatchedFn(
+                handle, uplo, transA, diag, N, nullptr, lda, dx.ptr_on_device(), incx, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrsvBatchedFn(
+                handle, uplo, transA, diag, N, dA.ptr_on_device(), lda, nullptr, incx, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasTrsvBatchedFn(
+            handle, uplo, transA, diag, 0, nullptr, lda, nullptr, incx, batch_count));
+        CHECK_HIPBLAS_ERROR(
+            hipblasTrsvBatchedFn(handle, uplo, transA, diag, N, nullptr, lda, nullptr, incx, 0));
+    }
+}
+
+template <typename T>
 void testing_trsv_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
@@ -72,7 +168,6 @@ void testing_trsv_batched(const Arguments& arg)
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_vector<T> hA(size_A, 1, batch_count);
-    host_batch_vector<T> AAT(size_A, 1, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hx_or_b_1(N, incx, batch_count);
@@ -86,66 +181,30 @@ void testing_trsv_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, true, true);
+
     hb.copy_from(hx);
 
     for(int b = 0; b < batch_count; b++)
     {
-        //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N,
-                      HIPBLAS_OP_T,
-                      N,
-                      N,
-                      N,
-                      (T)1.0,
-                      (T*)hA[b],
-                      lda,
-                      (T*)hA[b],
-                      lda,
-                      (T)0.0,
-                      (T*)AAT[b],
-                      lda);
+        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                                 (T*)hA[b],
+                                 arg,
+                                 N,
+                                 N,
+                                 lda,
+                                 0,
+                                 1,
+                                 hipblas_client_never_set_nan,
+                                 false);
 
-        //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < N; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            T t = 0.0;
-            for(int j = 0; j < N; j++)
-            {
-                hA[b][i + j * lda] = AAT[b][i + j * lda];
-                t += hipblas_abs(AAT[b][i + j * lda]);
-            }
-            hA[b][i + i * lda] = t;
+            make_unit_diagonal(uplo, (T*)hA[b], lda, N);
         }
 
-        //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(arg.uplo, N, hA[b], lda);
-
-        //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(arg.diag == 'U' || arg.diag == 'u')
-        {
-            if('L' == arg.uplo || 'l' == arg.uplo)
-                for(int i = 0; i < N; i++)
-                {
-                    T diag = hA[b][i + i * lda];
-                    for(int j = 0; j <= i; j++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
-                }
-            else
-                for(int j = 0; j < N; j++)
-                {
-                    T diag = hA[b][j + j * lda];
-                    for(int i = 0; i <= j; i++)
-                        hA[b][i + j * lda] = hA[b][i + j * lda] / diag;
-                }
-        }
-    }
-
-    for(int b = 0; b < batch_count; b++)
-    {
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, N, hA[b], lda, hb[b], incx);
+        ref_trmv<T>(uplo, transA, diag, N, hA[b], lda, hb[b], incx);
     }
 
     hx_or_b_1.copy_from(hb);

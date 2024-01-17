@@ -67,11 +67,13 @@ namespace
             switch(SYR2K_TYPE)
             {
             case SYR2K:
-                return !strcmp(arg.function, "syr2k");
+                return !strcmp(arg.function, "syr2k") || !strcmp(arg.function, "syr2k_bad_arg");
             case SYR2K_BATCHED:
-                return !strcmp(arg.function, "syr2k_batched");
+                return !strcmp(arg.function, "syr2k_batched")
+                       || !strcmp(arg.function, "syr2k_batched_bad_arg");
             case SYR2K_STRIDED_BATCHED:
-                return !strcmp(arg.function, "syr2k_strided_batched");
+                return !strcmp(arg.function, "syr2k_strided_batched")
+                       || !strcmp(arg.function, "syr2k_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "syr2k"))
                 testing_syr2k<T>(arg);
+            else if(!strcmp(arg.function, "syr2k_bad_arg"))
+                testing_syr2k_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syr2k_batched"))
                 testing_syr2k_batched<T>(arg);
+            else if(!strcmp(arg.function, "syr2k_batched_bad_arg"))
+                testing_syr2k_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "syr2k_strided_batched"))
                 testing_syr2k_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "syr2k_strided_batched_bad_arg"))
+                testing_syr2k_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

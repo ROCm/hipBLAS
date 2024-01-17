@@ -71,10 +71,10 @@ void setup_getrs_testing(host_vector<T>&     hA,
 
     // Calculate hB = hA*hX;
     hipblasOperation_t opN = HIPBLAS_OP_N;
-    cblas_gemm<T>(opN, opN, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
+    ref_gemm<T>(opN, opN, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
 
     // LU factorize hA on the CPU
-    int info = cblas_getrf<T>(N, N, hA.data(), lda, hIpiv.data());
+    int info = ref_getrf<T>(N, N, hA.data(), lda, hIpiv.data());
     if(info != 0)
     {
         std::cerr << "LU decomposition failed" << std::endl;
@@ -91,7 +91,8 @@ void setup_getrs_testing(host_vector<T>&     hA,
 template <typename T>
 void testing_getrs_bad_arg(const Arguments& arg)
 {
-    auto hipblasGetrsFn = arg.fortran ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
+    auto hipblasGetrsFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          N         = 100;
@@ -175,7 +176,7 @@ template <typename T>
 void testing_getrs(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrsFn = FORTRAN ? hipblasGetrs<T, true> : hipblasGetrs<T, false>;
 
     int N   = arg.N;
@@ -225,7 +226,7 @@ void testing_getrs(const Arguments& arg)
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-        cblas_getrs('N', N, 1, hA.data(), lda, hIpiv.data(), hB.data(), ldb);
+        ref_getrs('N', N, 1, hA.data(), lda, hIpiv.data(), hB.data(), ldb);
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
 
