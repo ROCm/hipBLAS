@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -131,29 +131,24 @@ void testing_axpy_batched(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy_host(N, incy, batch_count);
     host_batch_vector<T> hy_device(N, incy, batch_count);
     host_batch_vector<T> hx_cpu(N, incx, batch_count);
     host_batch_vector<T> hy_cpu(N, incy, batch_count);
 
     device_batch_vector<T> dx(N, incx, batch_count);
-    device_batch_vector<T> dy_host(N, incy, batch_count);
-    device_batch_vector<T> dy_device(N, incy, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
     CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy_host.memcheck());
-    CHECK_HIP_ERROR(dy_device.memcheck());
+    CHECK_HIP_ERROR(dy.memcheck());
 
-    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx_cpu, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy_host, arg, hipblas_client_alpha_sets_nan, false);
     hy_device.copy_from(hy_host);
-    hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy_host);
 
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dy_host.transfer_from(hy_host));
-    CHECK_HIP_ERROR(dy_device.transfer_from(hy_device));
+    CHECK_HIP_ERROR(dx.transfer_from(hx_cpu));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
@@ -162,37 +157,26 @@ void testing_axpy_batched(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        DAPI_CHECK(hipblasAxpyBatchedFn,
-                   (handle,
-                    N,
-                    d_alpha,
-                    dx.ptr_on_device(),
-                    incx,
-                    dy_device.ptr_on_device(),
-                    incy,
-                    batch_count));
+        DAPI_CHECK(
+            hipblasAxpyBatchedFn,
+            (handle, N, d_alpha, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
+
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy_host));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasAxpyBatchedFn,
-                   (handle,
-                    N,
-                    &alpha,
-                    dx.ptr_on_device(),
-                    incx,
-                    dy_host.ptr_on_device(),
-                    incy,
-                    batch_count));
+        DAPI_CHECK(
+            hipblasAxpyBatchedFn,
+            (handle, N, &alpha, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
 
-        CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
-        CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_axpy<T>((int)N, alpha, hx_cpu[b2], (int)incx, hy_cpu[b2], (int)incy);
+            ref_axpy<T>(N, alpha, hx_cpu[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -230,7 +214,7 @@ void testing_axpy_batched(const Arguments& arg)
                         d_alpha,
                         dx.ptr_on_device(),
                         incx,
-                        dy_device.ptr_on_device(),
+                        dy.ptr_on_device(),
                         incy,
                         batch_count));
         }

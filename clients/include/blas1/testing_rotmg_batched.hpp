@@ -172,26 +172,24 @@ void testing_rotmg_batched(const Arguments& arg)
         // CBLAS
         for(int64_t b = 0; b < batch_count; b++)
         {
-            int b2 = b;
-            ref_rotmg<T>(cd1[b2], cd2[b2], cx1[b2], cy1[b2], cparams[b2]);
+            ref_rotmg<T>(cd1[b], cd2[b], cx1[b], cy1[b], cparams[b]);
         }
 
         if(arg.unit_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
-                int b2 = b;
-                near_check_general<T>(1, 1, 1, cd1[b2], hd1[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cd2[b2], hd2[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cx1[b2], hx1[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cy1[b2], hy1[b2], rel_error);
-                near_check_general<T>(1, 5, 1, cparams[b2], hparams[b2], rel_error);
+                near_check_general<T>(1, 1, 1, cd1[b], hd1[b], rel_error);
+                near_check_general<T>(1, 1, 1, cd2[b], hd2[b], rel_error);
+                near_check_general<T>(1, 1, 1, cx1[b], hx1[b], rel_error);
+                near_check_general<T>(1, 1, 1, cy1[b], hy1[b], rel_error);
+                near_check_general<T>(1, 5, 1, cparams[b], hparams[b], rel_error);
 
-                near_check_general<T>(1, 1, 1, cd1[b2], hd1_d[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cd2[b2], hd2_d[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cx1[b2], hx1_d[b2], rel_error);
-                near_check_general<T>(1, 1, 1, cy1[b2], hy1_d[b2], rel_error);
-                near_check_general<T>(1, 5, 1, cparams[b2], hparams_d[b2], rel_error);
+                near_check_general<T>(1, 1, 1, cd1[b], hd1_d[b], rel_error);
+                near_check_general<T>(1, 1, 1, cd2[b], hd2_d[b], rel_error);
+                near_check_general<T>(1, 1, 1, cx1[b], hx1_d[b], rel_error);
+                near_check_general<T>(1, 1, 1, cy1[b], hy1_d[b], rel_error);
+                near_check_general<T>(1, 5, 1, cparams[b], hparams_d[b], rel_error);
             }
         }
 

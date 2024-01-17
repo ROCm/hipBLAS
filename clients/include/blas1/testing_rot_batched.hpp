@@ -139,8 +139,7 @@ void testing_rot_batched(const Arguments& arg)
     // cy[0] = hy[0];
     for(int64_t b = 0; b < batch_count; b++)
     {
-        int b2 = b;
-        ref_rot<T, U, V>(N, cx[b2], incx, cy[b2], incy, *hc, *hs);
+        ref_rot<T, U, V>(N, cx[b], incx, cy[b], incy, *hc, *hs);
     }
 
     if(arg.unit_check || arg.norm_check)
@@ -168,7 +167,7 @@ void testing_rot_batched(const Arguments& arg)
 
             if(arg.unit_check)
             {
-                for(int b = 0; b < batch_count; b++)
+                for(int64_t b = 0; b < batch_count; b++)
                 {
                     near_check_general(1, N, abs_incx, cx[b], rx[b], rel_error);
                     near_check_general(1, N, abs_incy, cy[b], ry[b], rel_error);
@@ -210,9 +209,8 @@ void testing_rot_batched(const Arguments& arg)
             {
                 for(int64_t b = 0; b < batch_count; b++)
                 {
-                    int b2 = b;
-                    near_check_general(1, N, abs_incx, cx[b2], rx[b2], rel_error);
-                    near_check_general(1, N, abs_incy, cy[b2], ry[b2], rel_error);
+                    near_check_general(1, N, abs_incx, cx[b], rx[b], rel_error);
+                    near_check_general(1, N, abs_incy, cy[b], ry[b], rel_error);
                 }
             }
             if(arg.norm_check)
