@@ -18,6 +18,7 @@ Tests:
     function: set_get_math_mode
     precision: *single_precision
     bad_arg_all: false
+    gpu_arch: 90?
 
   - name: set_get_math_mode_general
     category: quick
