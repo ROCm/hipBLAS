@@ -248,8 +248,6 @@
 //using namespace roc; // For emulated program_options
 using namespace std::literals; // For std::string literals of form "str"s
 
-typedef int hipblas_int;
-
 struct str_less
 {
     bool operator()(const char* a, const char* b) const
@@ -1213,9 +1211,9 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
     if(!strcmp(function, "gemm") || !strcmp(function, "gemm_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
-        hipblas_int min_ldc = arg.M;
+        int64_t min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        int64_t min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        int64_t min_ldc = arg.M;
 
         if(arg.lda < min_lda)
         {
@@ -1236,9 +1234,9 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
     else if(!strcmp(function, "gemm_strided_batched"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
-        hipblas_int min_ldc = arg.M;
+        int64_t min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        int64_t min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        int64_t min_ldc = arg.M;
         if(arg.lda < min_lda)
         {
             std::cout << "hipblas-bench INFO: lda < min_lda, set lda = " << min_lda << std::endl;
@@ -1255,15 +1253,15 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
             arg.ldc = min_ldc;
         }
 
-        //      hipblas_int min_stride_a =
+        //      int64_t min_stride_a =
         //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
-        //      hipblas_int min_stride_b =
+        //      int64_t min_stride_b =
         //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
-        //      hipblas_int min_stride_a =
+        //      int64_t min_stride_a =
         //          arg.transA == 'N' ? arg.K * arg.lda : arg.M * arg.lda;
-        //      hipblas_int min_stride_b =
+        //      int64_t min_stride_b =
         //          arg.transB == 'N' ? arg.N * arg.ldb : arg.K * arg.ldb;
-        hipblas_int min_stride_c = arg.ldc * arg.N;
+        int64_t min_stride_c = arg.ldc * arg.N;
         //      if (arg.stride_a < min_stride_a)
         //      {
         //          std::cout << "hipblas-bench INFO: stride_a < min_stride_a, set stride_a = " <<
@@ -1287,10 +1285,10 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
     if(!strcmp(function, "gemm_ex") || !strcmp(function, "gemm_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
-        hipblas_int min_ldc = arg.M;
-        hipblas_int min_ldd = arg.M;
+        int64_t min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        int64_t min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        int64_t min_ldc = arg.M;
+        int64_t min_ldd = arg.M;
 
         if(arg.lda < min_lda)
         {
@@ -1317,10 +1315,10 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
     else if(!strcmp(function, "gemm_strided_batched_ex"))
     {
         // adjust dimension for GEMM routines
-        hipblas_int min_lda = arg.transA == 'N' ? arg.M : arg.K;
-        hipblas_int min_ldb = arg.transB == 'N' ? arg.K : arg.N;
-        hipblas_int min_ldc = arg.M;
-        hipblas_int min_ldd = arg.M;
+        int64_t min_lda = arg.transA == 'N' ? arg.M : arg.K;
+        int64_t min_ldb = arg.transB == 'N' ? arg.K : arg.N;
+        int64_t min_ldc = arg.M;
+        int64_t min_ldd = arg.M;
         if(arg.lda < min_lda)
         {
             std::cout << "hipblas-bench INFO: lda < min_lda, set lda = " << min_lda << std::endl;
@@ -1341,7 +1339,7 @@ int run_bench_test(Arguments& arg, int unit_check, int timing)
             std::cout << "hipblas-bench INFO: ldd < min_ldd, set ldd = " << min_ldc << std::endl;
             arg.ldd = min_ldd;
         }
-        hipblas_int min_stride_c = arg.ldc * arg.N;
+        int64_t min_stride_c = arg.ldc * arg.N;
         if(arg.stride_c < min_stride_c)
         {
             std::cout << "hipblas-bench INFO: stride_c < min_stride_c, set stride_c = "

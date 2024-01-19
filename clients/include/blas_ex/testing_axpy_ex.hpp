@@ -38,9 +38,104 @@ inline void testname_axpy_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
+void testing_axpy_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasAxpyExFn = FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasDatatype_t alphaType     = arg.a_type;
+        hipblasDatatype_t xType         = arg.b_type;
+        hipblasDatatype_t yType         = arg.c_type;
+        hipblasDatatype_t executionType = arg.compute_type;
+
+        int64_t N    = 100;
+        int64_t incx = 1;
+        int64_t incy = 1;
+
+        device_vector<Ta> d_alpha(1), d_zero(1);
+        device_vector<Tx> dx(N * incx);
+        device_vector<Ty> dy(N * incy);
+
+        const Ta  h_alpha(1), h_zero(0);
+        const Ta* alpha = &h_alpha;
+        const Ta* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(h_alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, &h_zero, sizeof(h_zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasAxpyExFn(
+                nullptr, N, alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasAxpyExFn(
+                    handle, N, nullptr, alphaType, dx, xType, incx, dy, yType, incy, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            // Can only check for nullptr for dx/dy with host mode because
+            // device mode may not check as it could be quick-return success
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyExFn(handle,
+                                                      N,
+                                                      alpha,
+                                                      alphaType,
+                                                      nullptr,
+                                                      xType,
+                                                      incx,
+                                                      dy,
+                                                      yType,
+                                                      incy,
+                                                      executionType),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(hipblasAxpyExFn(handle,
+                                                      N,
+                                                      alpha,
+                                                      alphaType,
+                                                      dx,
+                                                      xType,
+                                                      incx,
+                                                      nullptr,
+                                                      yType,
+                                                      incy,
+                                                      executionType),
+                                      HIPBLAS_STATUS_INVALID_VALUE);
+            }
+        }
+
+        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(handle,
+                                            0,
+                                            nullptr,
+                                            alphaType,
+                                            nullptr,
+                                            xType,
+                                            incx,
+                                            nullptr,
+                                            yType,
+                                            incy,
+                                            executionType));
+        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
+            handle, N, zero, alphaType, nullptr, xType, incx, nullptr, yType, incy, executionType));
+    }
+}
+
+template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.fortran;
+    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyExFn = FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
 
     int N    = arg.N;
@@ -130,7 +225,7 @@ void testing_axpy_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        cblas_axpy(N, h_alpha, hx.data(), incx, hy_cpu.data(), incy);
+        ref_axpy(N, h_alpha, hx.data(), incx, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

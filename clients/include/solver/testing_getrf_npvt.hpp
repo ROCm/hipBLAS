@@ -36,10 +36,43 @@ inline void testname_getrf_npvt(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_getrf_npvt_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
+
+    hipblasLocalHandle handle(arg);
+    int64_t            N      = 101;
+    int64_t            M      = N;
+    int64_t            lda    = 102;
+    int64_t            A_size = N * lda;
+
+    device_vector<T>   dA(A_size);
+    device_vector<int> dInfo(1);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(nullptr, N, dA, lda, nullptr, dInfo),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, -1, dA, lda, nullptr, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, dA, N - 1, nullptr, dInfo),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, nullptr, lda, nullptr, dInfo),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasGetrfFn(handle, N, dA, lda, nullptr, nullptr),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+    }
+}
+
+template <typename T>
 void testing_getrf_npvt(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.fortran;
+    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGetrfFn = FORTRAN ? hipblasGetrf<T, true> : hipblasGetrf<T, false>;
 
     int M   = arg.N;
@@ -102,7 +135,7 @@ void testing_getrf_npvt(const Arguments& arg)
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-        hInfo[0] = cblas_getrf(M, N, hA.data(), lda, hIpiv.data());
+        hInfo[0] = ref_getrf(M, N, hA.data(), lda, hIpiv.data());
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1);
         if(arg.unit_check)

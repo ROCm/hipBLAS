@@ -67,11 +67,13 @@ namespace
             switch(GEMM_EX_TYPE)
             {
             case GEMM_EX:
-                return !strcmp(arg.function, "gemm_ex");
+                return !strcmp(arg.function, "gemm_ex") || !strcmp(arg.function, "gemm_ex_bad_arg");
             case GEMM_BATCHED_EX:
-                return !strcmp(arg.function, "gemm_batched_ex");
+                return !strcmp(arg.function, "gemm_batched_ex")
+                       || !strcmp(arg.function, "gemm_batched_ex_bad_arg");
             case GEMM_STRIDED_BATCHED_EX:
-                return !strcmp(arg.function, "gemm_strided_batched_ex");
+                return !strcmp(arg.function, "gemm_strided_batched_ex")
+                       || !strcmp(arg.function, "gemm_strided_batched_ex_bad_arg");
             }
             return false;
         }
@@ -114,10 +116,16 @@ namespace
         {
             if(!strcmp(arg.function, "gemm_ex"))
                 testing_gemm_ex<Ti, To, Tc>(arg);
+            else if(!strcmp(arg.function, "gemm_ex_bad_arg"))
+                testing_gemm_ex_bad_arg<Ti, To, Tc>(arg);
             else if(!strcmp(arg.function, "gemm_batched_ex"))
                 testing_gemm_batched_ex<Ti, To, Tc>(arg);
+            else if(!strcmp(arg.function, "gemm_batched_ex_bad_arg"))
+                testing_gemm_batched_ex_bad_arg<Ti, To, Tc>(arg);
             else if(!strcmp(arg.function, "gemm_strided_batched_ex"))
                 testing_gemm_strided_batched_ex<Ti, To, Tc>(arg);
+            else if(!strcmp(arg.function, "gemm_strided_batched_ex_bad_arg"))
+                testing_gemm_strided_batched_ex_bad_arg<Ti, To, Tc>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

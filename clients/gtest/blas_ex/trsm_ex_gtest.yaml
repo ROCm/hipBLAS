@@ -55,4 +55,13 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: trsm_ex_bad_arg
+    category: pre_checkin
+    function:
+      - trsm_ex_bad_arg: *single_double_precisions_complex_real
+      - trsm_batched_ex_bad_arg: *single_double_precisions_complex_real
+      - trsm_strided_batched_ex_bad_arg: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

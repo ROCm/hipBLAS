@@ -39,6 +39,105 @@ inline void testname_hemv(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_hemv_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasHemvFn = FORTRAN ? hipblasHemv<T, true> : hipblasHemv<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t uplo = HIPBLAS_FILL_MODE_UPPER;
+        int64_t           N    = 100;
+        int64_t           lda  = 100;
+        int64_t           incx = 1;
+        int64_t           incy = 1;
+
+        device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
+
+        const T  h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+        const T* alpha = &h_alpha;
+        const T* beta  = &h_beta;
+        const T* one   = &h_one;
+        const T* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_beta, beta, sizeof(*beta), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_one, one, sizeof(*one), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            beta  = d_beta;
+            one   = d_one;
+            zero  = d_zero;
+        }
+
+        device_vector<T> dA(N * lda);
+        device_vector<T> dx(N * incx);
+        device_vector<T> dy(N * incy);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHemvFn(nullptr, uplo, N, alpha, dA, lda, dx, incx, beta, dy, incy),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHemvFn(
+                handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dA, lda, dx, incx, beta, dy, incy),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHemvFn(handle,
+                                            (hipblasFillMode_t)HIPBLAS_OP_N,
+                                            N,
+                                            alpha,
+                                            dA,
+                                            lda,
+                                            dx,
+                                            incx,
+                                            beta,
+                                            dy,
+                                            incy),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHemvFn(handle, uplo, N, nullptr, dA, lda, dx, incx, beta, dy, incy),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHemvFn(handle, uplo, N, alpha, dA, lda, dx, incx, nullptr, dy, incy),
+                HIPBLAS_STATUS_INVALID_VALUE);
+
+            if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+            {
+                // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHemvFn(handle, uplo, N, alpha, nullptr, lda, dx, incx, beta, dy, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHemvFn(handle, uplo, N, alpha, dA, lda, nullptr, incx, beta, dy, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+                EXPECT_HIPBLAS_STATUS(
+                    hipblasHemvFn(handle, uplo, N, alpha, dA, lda, dx, incx, beta, nullptr, incy),
+                    HIPBLAS_STATUS_INVALID_VALUE);
+            }
+
+            // With alpha == 0 can have A and x nullptr
+            CHECK_HIPBLAS_ERROR(
+                hipblasHemvFn(handle, uplo, N, zero, nullptr, lda, nullptr, incx, beta, dy, incy));
+
+            // With alpha == 0 && beta == 1, all other ptrs can be nullptr
+            CHECK_HIPBLAS_ERROR(hipblasHemvFn(
+                handle, uplo, N, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasHemvFn(
+            handle, uplo, 0, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
+    }
+}
+
+template <typename T>
 void testing_hemv(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
@@ -126,8 +225,7 @@ void testing_hemv(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        cblas_hemv<T>(
-            uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
+        ref_hemv<T>(uplo, N, h_alpha, hA.data(), lda, hx.data(), incx, h_beta, hy_cpu.data(), incy);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,50 @@ inline void testname_nrm2(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_nrm2_bad_arg(const Arguments& arg)
+{
+    using Tr           = real_t<T>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasNrm2Fn = FORTRAN ? hipblasNrm2<T, Tr, true> : hipblasNrm2<T, Tr, false>;
+    auto hipblasNrm2Fn_64
+        = arg.api == FORTRAN_64 ? hipblasNrm2_64<T, Tr, true> : hipblasNrm2_64<T, Tr, false>;
+
+    int64_t N    = 100;
+    int64_t incx = 1;
+
+    hipblasLocalHandle handle(arg);
+
+    device_vector<T>  dx(N * incx);
+    device_vector<Tr> d_res(1);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasNrm2Fn, (nullptr, N, dx, incx, d_res));
+
+        if(arg.bad_arg_all)
+        {
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE, hipblasNrm2Fn, (handle, N, nullptr, incx, d_res));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE, hipblasNrm2Fn, (handle, N, dx, incx, nullptr));
+        }
+    }
+}
+
+template <typename T>
 void testing_nrm2(const Arguments& arg)
 {
     using Tr           = real_t<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasNrm2Fn = FORTRAN ? hipblasNrm2<T, Tr, true> : hipblasNrm2<T, Tr, false>;
+    auto hipblasNrm2Fn_64
+        = arg.api == FORTRAN_64 ? hipblasNrm2_64<T, Tr, true> : hipblasNrm2_64<T, Tr, false>;
 
-    int N    = arg.N;
-    int incx = arg.incx;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
 
     hipblasLocalHandle handle(arg);
 
@@ -58,7 +94,7 @@ void testing_nrm2(const Arguments& arg)
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, nullptr, incx, d_hipblas_result_0));
+        DAPI_CHECK(hipblasNrm2Fn, (handle, N, nullptr, incx, d_hipblas_result_0));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
@@ -68,7 +104,7 @@ void testing_nrm2(const Arguments& arg)
         return;
     }
 
-    size_t sizeX = size_t(N) * incx;
+    int64_t sizeX = N * incx;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_vector<T> hx(sizeX);
@@ -89,10 +125,10 @@ void testing_nrm2(const Arguments& arg)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, d_hipblas_result));
+        DAPI_CHECK(hipblasNrm2Fn, (handle, N, dx, incx, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, &hipblas_result_host));
+        DAPI_CHECK(hipblasNrm2Fn, (handle, N, dx, incx, &hipblas_result_host));
 
         CHECK_HIP_ERROR(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
@@ -101,7 +137,7 @@ void testing_nrm2(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        cblas_nrm2<T, Tr>(N, hx.data(), incx, &cpu_result);
+        ref_nrm2<T, Tr>(N, hx.data(), incx, &cpu_result);
 
         if(arg.unit_check)
         {
@@ -128,7 +164,7 @@ void testing_nrm2(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasNrm2Fn(handle, N, dx, incx, d_hipblas_result));
+            DAPI_CHECK(hipblasNrm2Fn, (handle, N, dx, incx, d_hipblas_result));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

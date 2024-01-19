@@ -46,4 +46,14 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: trtri_bad_arg
+    category: pre_checkin
+    function:
+      - trtri_bad_arg
+      - trtri_batched_bad_arg
+      - trtri_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
 ...

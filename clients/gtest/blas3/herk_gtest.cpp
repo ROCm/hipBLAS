@@ -67,11 +67,13 @@ namespace
             switch(HERK_TYPE)
             {
             case HERK:
-                return !strcmp(arg.function, "herk");
+                return !strcmp(arg.function, "herk") || !strcmp(arg.function, "herk_bad_arg");
             case HERK_BATCHED:
-                return !strcmp(arg.function, "herk_batched");
+                return !strcmp(arg.function, "herk_batched")
+                       || !strcmp(arg.function, "herk_batched_bad_arg");
             case HERK_STRIDED_BATCHED:
-                return !strcmp(arg.function, "herk_strided_batched");
+                return !strcmp(arg.function, "herk_strided_batched")
+                       || !strcmp(arg.function, "herk_strided_batched_bad_arg");
             }
             return false;
         }
@@ -110,10 +112,16 @@ namespace
         {
             if(!strcmp(arg.function, "herk"))
                 testing_herk<T>(arg);
+            else if(!strcmp(arg.function, "herk_bad_arg"))
+                testing_herk_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "herk_batched"))
                 testing_herk_batched<T>(arg);
+            else if(!strcmp(arg.function, "herk_batched_bad_arg"))
+                testing_herk_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "herk_strided_batched"))
                 testing_herk_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "herk_strided_batched_bad_arg"))
+                testing_herk_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

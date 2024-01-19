@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,15 +38,54 @@ inline void testname_scal_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T, typename U = T>
+void testing_scal_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasScalBatchedFn
+        = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
+    auto hipblasScalBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasScalBatched_64<T, U, true>
+                                                         : hipblasScalBatched_64<T, U, false>;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t batch_count = 2;
+    U       alpha       = (U)0.6;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
+
+        // None of these test cases will write to result so using host pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasScalBatchedFn,
+                    (nullptr, N, &alpha, dx, incx, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasScalBatchedFn,
+                    (handle, N, nullptr, dx, incx, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasScalBatchedFn,
+                    (handle, N, &alpha, nullptr, incx, batch_count));
+    }
+}
+
+template <typename T, typename U = T>
 void testing_scal_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedFn
         = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
+    auto hipblasScalBatchedFn_64 = arg.api == FORTRAN_64 ? hipblasScalBatched_64<T, U, true>
+                                                         : hipblasScalBatched_64<T, U, false>;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t batch_count = arg.batch_count;
 
     int unit_check = arg.unit_check;
     int norm_check = arg.norm_check;
@@ -58,7 +97,7 @@ void testing_scal_batched(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasScalBatchedFn(handle, N, nullptr, nullptr, incx, batch_count));
+        DAPI_CHECK(hipblasScalBatchedFn, (handle, N, nullptr, nullptr, incx, batch_count));
         return;
     }
 
@@ -87,8 +126,8 @@ void testing_scal_batched(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
+        DAPI_CHECK(hipblasScalBatchedFn,
+                   (handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx.transfer_from(dx));
@@ -96,9 +135,9 @@ void testing_scal_batched(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
-            cblas_scal<T, U>(N, alpha, hz[b], incx);
+            ref_scal<T, U>(N, alpha, hz[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -125,8 +164,8 @@ void testing_scal_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasScalBatchedFn(handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
+            DAPI_CHECK(hipblasScalBatchedFn,
+                       (handle, N, &alpha, dx.ptr_on_device(), incx, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

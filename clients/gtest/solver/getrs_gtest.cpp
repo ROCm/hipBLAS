@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "getrs"))
                 testing_getrs<T>(arg);
+            else if(!strcmp(arg.function, "getrs_bad_arg"))
+                testing_getrs_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrs_batched"))
                 testing_getrs_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrs_batched_bad_arg"))
+                testing_getrs_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrs_strided_batched"))
                 testing_getrs_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrs_strided_batched_bad_arg"))
+                testing_getrs_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

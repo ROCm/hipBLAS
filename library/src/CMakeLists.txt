@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ endfunction( )
 # ########################################################################
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
 else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
@@ -65,7 +65,7 @@ add_library( hipblas
 add_library( roc::hipblas ALIAS hipblas )
 
 # Build hipblas from source on AMD platform
-if( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
   if( NOT TARGET rocblas )
     if( CUSTOM_ROCBLAS )
       set ( ENV{rocblas_DIR} ${CUSTOM_ROCBLAS})
@@ -106,7 +106,7 @@ if( NOT USE_CUDA )
   endif( )
 
 else( )
-  target_compile_definitions( hipblas PRIVATE __HIP_PLATFORM_NVCC__ )
+  target_compile_definitions( hipblas PRIVATE ${HIPBLAS_HIP_PLATFORM_COMPILER_DEFINES} )
 
   target_link_libraries( hipblas PRIVATE ${CUDA_CUBLAS_LIBRARIES} )
 
@@ -139,7 +139,6 @@ target_include_directories( hipblas
 rocm_set_soversion( hipblas ${hipblas_SOVERSION} )
 set_target_properties( hipblas PROPERTIES CXX_EXTENSIONS NO )
 set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/staging" )
-set_target_properties( hipblas PROPERTIES DEBUG_POSTFIX "-d" )
 
 if (WIN32)
   add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/$<TARGET_FILE_NAME:hipblas> ${PROJECT_BINARY_DIR}/clients/staging/$<TARGET_FILE_NAME:hipblas> )
@@ -177,7 +176,7 @@ rocm_install_targets(
 )
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
-if ( NOT USE_CUDA )
+if(HIP_PLATFORM STREQUAL amd)
     rocm_export_targets(
         TARGETS roc::hipblas
 	DEPENDS PACKAGE hip

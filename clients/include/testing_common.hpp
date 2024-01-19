@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,12 @@
 #else
 #include "hipblas_no_fortran.hpp"
 #endif
+#include "hipblas_init.hpp"
 #include "hipblas_test.hpp"
 #include "hipblas_vector.hpp"
 #include "near.h"
 #include "norm.h"
+#include "testing_macros.hpp"
 #include "unit.h"
 #include "utility.h"
 
