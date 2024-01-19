@@ -67,11 +67,13 @@ namespace
             switch(TRTRI_TYPE)
             {
             case TRTRI:
-                return !strcmp(arg.function, "trtri");
+                return !strcmp(arg.function, "trtri") || !strcmp(arg.function, "trtri_bad_arg");
             case TRTRI_BATCHED:
-                return !strcmp(arg.function, "trtri_batched");
+                return !strcmp(arg.function, "trtri_batched")
+                       || !strcmp(arg.function, "trtri_batched_bad_arg");
             case TRTRI_STRIDED_BATCHED:
-                return !strcmp(arg.function, "trtri_strided_batched");
+                return !strcmp(arg.function, "trtri_strided_batched")
+                       || !strcmp(arg.function, "trtri_strided_batched_bad_arg");
             }
             return false;
         }
@@ -112,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "trtri"))
                 testing_trtri<T>(arg);
+            else if(!strcmp(arg.function, "trtri_bad_arg"))
+                testing_trtri_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trtri_batched"))
                 testing_trtri_batched<T>(arg);
+            else if(!strcmp(arg.function, "trtri_batched_bad_arg"))
+                testing_trtri_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "trtri_strided_batched"))
                 testing_trtri_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "trtri_strided_batched_bad_arg"))
+                testing_trtri_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

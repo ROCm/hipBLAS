@@ -67,11 +67,13 @@ namespace
             switch(HEMM_TYPE)
             {
             case HEMM:
-                return !strcmp(arg.function, "hemm");
+                return !strcmp(arg.function, "hemm") || !strcmp(arg.function, "hemm_bad_arg");
             case HEMM_BATCHED:
-                return !strcmp(arg.function, "hemm_batched");
+                return !strcmp(arg.function, "hemm_batched")
+                       || !strcmp(arg.function, "hemm_batched_bad_arg");
             case HEMM_STRIDED_BATCHED:
-                return !strcmp(arg.function, "hemm_strided_batched");
+                return !strcmp(arg.function, "hemm_strided_batched")
+                       || !strcmp(arg.function, "hemm_strided_batched_bad_arg");
             }
             return false;
         }
@@ -110,10 +112,16 @@ namespace
         {
             if(!strcmp(arg.function, "hemm"))
                 testing_hemm<T>(arg);
+            else if(!strcmp(arg.function, "hemm_bad_arg"))
+                testing_hemm_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "hemm_batched"))
                 testing_hemm_batched<T>(arg);
+            else if(!strcmp(arg.function, "hemm_batched_bad_arg"))
+                testing_hemm_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "hemm_strided_batched"))
                 testing_hemm_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "hemm_strided_batched_bad_arg"))
+                testing_hemm_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

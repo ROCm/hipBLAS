@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,18 +50,27 @@
 // case
 // a wrapper will cause the loop keep going
 template <typename T>
-void unit_check_general(int M, int N, int lda, T* hCPU, T* hGPU);
+void unit_check_general(int64_t M, int64_t N, int64_t lda, T* hCPU, T* hGPU);
 
 template <typename T>
-void unit_check_general(
-    int M, int N, int batch_count, int lda, hipblasStride stride_A, T* hCPU, T* hGPU);
+void unit_check_general(int64_t       M,
+                        int64_t       N,
+                        int64_t       batch_count,
+                        int64_t       lda,
+                        hipblasStride stride_A,
+                        T*            hCPU,
+                        T*            hGPU);
 
 template <typename T>
-void unit_check_general(int M, int N, int batch_count, int lda, T** hCPU, T** hGPU);
+void unit_check_general(int64_t M, int64_t N, int64_t batch_count, int64_t lda, T** hCPU, T** hGPU);
 
 template <typename T>
-void unit_check_general(
-    int M, int N, int batch_count, int lda, host_vector<T> hCPU[], host_vector<T> hGPU[]);
+void unit_check_general(int64_t        M,
+                        int64_t        N,
+                        int64_t        batch_count,
+                        int64_t        lda,
+                        host_vector<T> hCPU[],
+                        host_vector<T> hGPU[]);
 
 template <typename T>
 void unit_check_error(T error, T tolerance)
@@ -72,27 +81,27 @@ void unit_check_error(T error, T tolerance)
 }
 
 template <typename T, typename Tex = T>
-void unit_check_nrm2(T cpu_result, T gpu_result, int vector_length)
+void unit_check_nrm2(T cpu_result, T gpu_result, int64_t vector_length)
 {
-    T allowable_error = vector_length * std::numeric_limits<Tex>::epsilon() * cpu_result;
+    T allowable_error = vector_length * hipblas_type_epsilon<Tex> * cpu_result;
     if(allowable_error == 0)
-        allowable_error = vector_length * std::numeric_limits<Tex>::epsilon();
+        allowable_error = vector_length * hipblas_type_epsilon<Tex>;
 #ifdef GOOGLE_TEST
     ASSERT_NEAR(cpu_result, gpu_result, allowable_error);
 #endif
 }
 
 template <typename T, typename Tex = T>
-void unit_check_nrm2(int            batch_count,
+void unit_check_nrm2(int64_t        batch_count,
                      host_vector<T> cpu_result,
                      host_vector<T> gpu_result,
-                     int            vector_length)
+                     int64_t        vector_length)
 {
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
-        T allowable_error = vector_length * std::numeric_limits<Tex>::epsilon() * cpu_result[b];
+        T allowable_error = vector_length * hipblas_type_epsilon<Tex> * cpu_result[b];
         if(allowable_error == 0)
-            allowable_error = vector_length * std::numeric_limits<Tex>::epsilon();
+            allowable_error = vector_length * hipblas_type_epsilon<Tex>;
 #ifdef GOOGLE_TEST
         ASSERT_NEAR(cpu_result[b], gpu_result[b], allowable_error);
 #endif

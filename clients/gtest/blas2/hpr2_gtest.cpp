@@ -112,10 +112,16 @@ namespace
         {
             if(!strcmp(arg.function, "hpr2"))
                 testing_hpr2<T>(arg);
+            else if(!strcmp(arg.function, "hpr2_bad_arg"))
+                testing_hpr2_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "hpr2_batched"))
                 testing_hpr2_batched<T>(arg);
+            else if(!strcmp(arg.function, "hpr2_batched_bad_arg"))
+                testing_hpr2_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "hpr2_strided_batched"))
                 testing_hpr2_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "hpr2_strided_batched_bad_arg"))
+                testing_hpr2_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

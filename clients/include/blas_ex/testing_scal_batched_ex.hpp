@@ -38,9 +38,54 @@ inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
 }
 
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
+void testing_scal_batched_ex_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
+
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t batch_count = 2;
+    Ta      alpha       = (Ta)0.6;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<Tx> dx(N, incx, batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        EXPECT_HIPBLAS_STATUS(
+            hipblasScalBatchedExFn(
+                nullptr, N, &alpha, alphaType, dx, xType, incx, batch_count, executionType),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+
+        if(arg.bad_arg_all)
+        {
+            EXPECT_HIPBLAS_STATUS(
+                hipblasScalBatchedExFn(
+                    handle, N, nullptr, alphaType, dx, xType, incx, batch_count, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasScalBatchedExFn(
+                    handle, N, &alpha, alphaType, nullptr, xType, incx, batch_count, executionType),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+    }
+}
+
+template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.fortran;
+    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
 
     int N           = arg.N;
@@ -130,7 +175,7 @@ void testing_scal_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
+            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
         }
 
         for(size_t b = 0; b < batch_count; b++)

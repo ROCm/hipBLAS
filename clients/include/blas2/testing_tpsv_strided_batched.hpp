@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,102 @@ using hipblasTpsvStridedBatchedModel
 inline void testname_tpsv_strided_batched(const Arguments& arg, std::string& name)
 {
     hipblasTpsvStridedBatchedModel{}.test_name(arg, name);
+}
+
+template <typename T>
+void testing_tpsv_strided_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTpsvStridedBatchedFn
+        = FORTRAN ? hipblasTpsvStridedBatched<T, true> : hipblasTpsvStridedBatched<T, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasOperation_t transA      = HIPBLAS_OP_N;
+        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
+        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N           = 100;
+        int64_t            incx        = 1;
+        int64_t            batch_count = 2;
+        int64_t            A_size      = N * (N + 1) / 2;
+        hipblasStride      strideA     = A_size;
+        hipblasStride      stridex     = N * incx;
+
+        device_vector<T> dA(strideA * batch_count);
+        device_vector<T> dx(stridex * batch_count);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTpsvStridedBatchedFn(
+                nullptr, uplo, transA, diag, N, dA, strideA, dx, incx, stridex, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasTpsvStridedBatchedFn(handle,
+                                                          HIPBLAS_FILL_MODE_FULL,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          dA,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasTpsvStridedBatchedFn(handle,
+                                                          (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                          transA,
+                                                          diag,
+                                                          N,
+                                                          dA,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTpsvStridedBatchedFn(handle,
+                                        uplo,
+                                        (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                                        diag,
+                                        N,
+                                        dA,
+                                        strideA,
+                                        dx,
+                                        incx,
+                                        stridex,
+                                        batch_count),
+            HIPBLAS_STATUS_INVALID_ENUM);
+        EXPECT_HIPBLAS_STATUS(hipblasTpsvStridedBatchedFn(handle,
+                                                          uplo,
+                                                          transA,
+                                                          (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                                                          N,
+                                                          dA,
+                                                          strideA,
+                                                          dx,
+                                                          incx,
+                                                          stridex,
+                                                          batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTpsvStridedBatchedFn(
+                handle, uplo, transA, diag, N, nullptr, strideA, dx, incx, stridex, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTpsvStridedBatchedFn(
+                handle, uplo, transA, diag, N, dA, strideA, nullptr, incx, stridex, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasTpsvStridedBatchedFn(
+            handle, uplo, transA, diag, 0, nullptr, strideA, nullptr, incx, stridex, batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasTpsvStridedBatchedFn(
+            handle, uplo, transA, diag, N, nullptr, strideA, nullptr, incx, stridex, 0));
+    }
 }
 
 template <typename T>
@@ -79,7 +175,6 @@ void testing_tpsv_strided_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(size_A);
     host_vector<T> hAP(size_AP);
-    host_vector<T> AAT(size_A);
     host_vector<T> hb(size_x);
     host_vector<T> hx(size_x);
     host_vector<T> hx_or_b_1(size_x);
@@ -90,8 +185,18 @@ void testing_tpsv_strided_batched(const Arguments& arg)
     device_vector<T> dx_or_b(size_x);
 
     double gpu_time_used, hipblas_error, cumulative_hipblas_error = 0;
+
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, N, strideA, batch_count, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
+                             (T*)hA,
+                             arg,
+                             N,
+                             N,
+                             N,
+                             strideA,
+                             batch_count,
+                             hipblas_client_never_set_nan,
+                             true);
     hipblas_init_vector(
         hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_never_set_nan, false, true);
     hb = hx;
@@ -100,46 +205,15 @@ void testing_tpsv_strided_batched(const Arguments& arg)
     {
         T* hAb  = hA.data() + b * strideA;
         T* hAPb = hAP.data() + b * strideAP;
-        T* AATb = AAT.data() + b * strideA;
         T* hbb  = hb.data() + b * stridex;
-        //  calculate AAT = hA * hA ^ T
-        cblas_gemm<T>(HIPBLAS_OP_N, HIPBLAS_OP_T, N, N, N, (T)1.0, hAb, N, hAb, N, (T)0.0, AATb, N);
 
-        //  copy AAT into hA, make hA strictly diagonal dominant, and therefore SPD
-        for(int i = 0; i < N; i++)
+        if(diag == HIPBLAS_DIAG_UNIT)
         {
-            T t = 0.0;
-            for(int j = 0; j < N; j++)
-            {
-                hAb[i + j * N] = AATb[i + j * N];
-                t += hipblas_abs(AATb[i + j * N]);
-            }
-            hAb[i + i * N] = t;
-        }
-        //  calculate Cholesky factorization of SPD matrix hA
-        cblas_potrf<T>(arg.uplo, N, hAb, N);
-
-        //  make hA unit diagonal if diag == rocblas_diagonal_unit
-        if(arg.diag == 'U' || arg.diag == 'u')
-        {
-            if('L' == arg.uplo || 'l' == arg.uplo)
-                for(int i = 0; i < N; i++)
-                {
-                    T diag = hAb[i + i * N];
-                    for(int j = 0; j <= i; j++)
-                        hAb[i + j * N] = hAb[i + j * N] / diag;
-                }
-            else
-                for(int j = 0; j < N; j++)
-                {
-                    T diag = hAb[j + j * N];
-                    for(int i = 0; i <= j; i++)
-                        hAb[i + j * N] = hAb[i + j * N] / diag;
-                }
+            make_unit_diagonal(uplo, hAb, N, N);
         }
 
         // Calculate hb = hA*hx;
-        cblas_trmv<T>(uplo, transA, diag, N, hAb, N, hbb, incx);
+        ref_trmv<T>(uplo, transA, diag, N, hAb, N, hbb, incx);
 
         regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hAb, (T*)hAPb, N);
     }

@@ -39,6 +39,103 @@ inline void testname_her_strided_batched(const Arguments& arg, std::string& name
 }
 
 template <typename T>
+void testing_her_strided_batched_bad_arg(const Arguments& arg)
+{
+    using U      = real_t<T>;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasHerStridedBatchedFn
+        = FORTRAN ? hipblasHerStridedBatched<T, U, true> : hipblasHerStridedBatched<T, U, false>;
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        hipblasLocalHandle handle(arg);
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_UPPER;
+        int64_t           N           = 100;
+        int64_t           lda         = 100;
+        int64_t           incx        = 1;
+        int64_t           batch_count = 2;
+        hipblasStride     strideA     = N * lda;
+        hipblasStride     stridex     = N * incx;
+
+        device_vector<U> d_alpha(1), d_zero(1);
+
+        const U  h_alpha(1), h_zero(0);
+        const U* alpha = &h_alpha;
+        const U* zero  = &h_zero;
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
+        {
+            CHECK_HIP_ERROR(hipMemcpy(d_alpha, alpha, sizeof(*alpha), hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(hipMemcpy(d_zero, zero, sizeof(*zero), hipMemcpyHostToDevice));
+            alpha = d_alpha;
+            zero  = d_zero;
+        }
+
+        device_vector<T> dA(strideA * batch_count);
+        device_vector<T> dx(stridex * batch_count);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHerStridedBatchedFn(
+                nullptr, uplo, N, alpha, dx, incx, stridex, dA, lda, strideA, batch_count),
+            HIPBLAS_STATUS_NOT_INITIALIZED);
+        EXPECT_HIPBLAS_STATUS(hipblasHerStridedBatchedFn(handle,
+                                                         HIPBLAS_FILL_MODE_FULL,
+                                                         N,
+                                                         alpha,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dA,
+                                                         lda,
+                                                         strideA,
+                                                         batch_count),
+                              HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(hipblasHerStridedBatchedFn(handle,
+                                                         (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                         N,
+                                                         alpha,
+                                                         dx,
+                                                         incx,
+                                                         stridex,
+                                                         dA,
+                                                         lda,
+                                                         strideA,
+                                                         batch_count),
+                              HIPBLAS_STATUS_INVALID_ENUM);
+
+        EXPECT_HIPBLAS_STATUS(
+            hipblasHerStridedBatchedFn(
+                handle, uplo, N, nullptr, dx, incx, stridex, dA, lda, strideA, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+
+        if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
+        {
+            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHerStridedBatchedFn(
+                    handle, uplo, N, alpha, nullptr, incx, stridex, dA, lda, strideA, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+            EXPECT_HIPBLAS_STATUS(
+                hipblasHerStridedBatchedFn(
+                    handle, uplo, N, alpha, dx, incx, stridex, nullptr, lda, strideA, batch_count),
+                HIPBLAS_STATUS_INVALID_VALUE);
+        }
+
+        // With N == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
+            handle, uplo, 0, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
+        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
+            handle, uplo, N, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, 0));
+
+        // With alpha == 0, can have all nullptrs
+        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
+            handle, uplo, N, zero, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
+    }
+}
+
+template <typename T>
 void testing_her_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
@@ -126,13 +223,13 @@ void testing_her_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_her<T>(uplo,
-                         N,
-                         h_alpha,
-                         hx.data() + b * stride_x,
-                         incx,
-                         hA_cpu.data() + b * stride_A,
-                         lda);
+            ref_her<T>(uplo,
+                       N,
+                       h_alpha,
+                       hx.data() + b * stride_x,
+                       incx,
+                       hA_cpu.data() + b * stride_A,
+                       lda);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

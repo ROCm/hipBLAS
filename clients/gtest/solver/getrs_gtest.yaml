@@ -35,4 +35,23 @@ Tests:
     stride_scale: [ 2.0 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: getrs_bad_arg
+    category: quick
+    function:
+      - getrs_bad_arg
+      - getrs_batched_bad_arg
+      - getrs_strided_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: getrs_bad_arg
+    category: quick
+    function:
+      - getrs_batched_bad_arg
+    precision: *single_double_precisions_complex_real
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

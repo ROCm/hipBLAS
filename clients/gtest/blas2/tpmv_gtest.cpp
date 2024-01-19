@@ -114,10 +114,16 @@ namespace
         {
             if(!strcmp(arg.function, "tpmv"))
                 testing_tpmv<T>(arg);
+            else if(!strcmp(arg.function, "tpmv_bad_arg"))
+                testing_tpmv_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "tpmv_batched"))
                 testing_tpmv_batched<T>(arg);
+            else if(!strcmp(arg.function, "tpmv_batched_bad_arg"))
+                testing_tpmv_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "tpmv_strided_batched"))
                 testing_tpmv_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "tpmv_strided_batched_bad_arg"))
+                testing_tpmv_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

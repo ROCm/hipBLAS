@@ -73,17 +73,22 @@ namespace
             switch(GETRF_TYPE)
             {
             case GETRF:
-                return !strcmp(arg.function, "getrf");
+                return !strcmp(arg.function, "getrf") || !strcmp(arg.function, "getrf_bad_arg");
             case GETRF_BATCHED:
-                return !strcmp(arg.function, "getrf_batched");
+                return !strcmp(arg.function, "getrf_batched")
+                       || !strcmp(arg.function, "getrf_batched_bad_arg");
             case GETRF_STRIDED_BATCHED:
-                return !strcmp(arg.function, "getrf_strided_batched");
+                return !strcmp(arg.function, "getrf_strided_batched")
+                       || !strcmp(arg.function, "getrf_strided_batched_bad_arg");
             case GETRF_NPVT:
-                return !strcmp(arg.function, "getrf_npvt");
+                return !strcmp(arg.function, "getrf_npvt")
+                       || !strcmp(arg.function, "getrf_npvt_bad_arg");
             case GETRF_NPVT_BATCHED:
-                return !strcmp(arg.function, "getrf_npvt_batched");
+                return !strcmp(arg.function, "getrf_npvt_batched")
+                       || !strcmp(arg.function, "getrf_npvt_batched_bad_arg");
             case GETRF_NPVT_STRIDED_BATCHED:
-                return !strcmp(arg.function, "getrf_npvt_strided_batched");
+                return !strcmp(arg.function, "getrf_npvt_strided_batched")
+                       || !strcmp(arg.function, "getrf_npvt_strided_batched_bad_arg");
             }
             return false;
         }
@@ -130,16 +135,28 @@ namespace
         {
             if(!strcmp(arg.function, "getrf"))
                 testing_getrf<T>(arg);
+            else if(!strcmp(arg.function, "getrf_bad_arg"))
+                testing_getrf_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrf_batched"))
                 testing_getrf_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrf_batched_bad_arg"))
+                testing_getrf_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrf_strided_batched"))
                 testing_getrf_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrf_strided_batched_bad_arg"))
+                testing_getrf_strided_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrf_npvt"))
                 testing_getrf_npvt<T>(arg);
+            else if(!strcmp(arg.function, "getrf_npvt_bad_arg"))
+                testing_getrf_npvt_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrf_npvt_batched"))
                 testing_getrf_npvt_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrf_npvt_batched_bad_arg"))
+                testing_getrf_npvt_batched_bad_arg<T>(arg);
             else if(!strcmp(arg.function, "getrf_npvt_strided_batched"))
                 testing_getrf_npvt_strided_batched<T>(arg);
+            else if(!strcmp(arg.function, "getrf_npvt_strided_batched_bad_arg"))
+                testing_getrf_npvt_strided_batched_bad_arg<T>(arg);
             else
                 FAIL() << "Internal error: Test called with unknown function: " << arg.function;
         }

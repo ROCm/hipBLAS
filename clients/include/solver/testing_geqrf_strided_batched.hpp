@@ -79,8 +79,9 @@ void setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
 template <typename T>
 void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
 {
-    auto hipblasGeqrfStridedBatchedFn
-        = arg.fortran ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
+    auto hipblasGeqrfStridedBatchedFn = arg.api == hipblas_client_api::FORTRAN
+                                            ? hipblasGeqrfStridedBatched<T, true>
+                                            : hipblasGeqrfStridedBatched<T, false>;
 
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
@@ -166,7 +167,7 @@ template <typename T>
 void testing_geqrf_strided_batched(const Arguments& arg)
 {
     using U      = real_t<T>;
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGeqrfStridedBatchedFn
         = FORTRAN ? hipblasGeqrfStridedBatched<T, true> : hipblasGeqrfStridedBatched<T, false>;
 
@@ -242,14 +243,14 @@ void testing_geqrf_strided_batched(const Arguments& arg)
 
         // Workspace query
         host_vector<T> work(1);
-        cblas_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
+        ref_geqrf(M, N, hA.data(), lda, hIpiv.data(), work.data(), -1);
         int lwork = type2int(work[0]);
 
         // Perform factorization
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_geqrf(
+            ref_geqrf(
                 M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP, work.data(), N);
         }
 

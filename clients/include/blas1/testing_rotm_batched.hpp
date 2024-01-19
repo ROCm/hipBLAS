@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,16 +37,60 @@ inline void testname_rotm_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_rotm_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasRotmBatchedFn
+        = FORTRAN ? hipblasRotmBatched<T, true> : hipblasRotmBatched<T, false>;
+    auto hipblasRotmBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasRotmBatched_64<T, true> : hipblasRotmBatched_64<T, false>;
+
+    int64_t N           = 100;
+    int64_t incx        = 1;
+    int64_t incy        = 1;
+    int64_t batch_count = 2;
+
+    hipblasLocalHandle handle(arg);
+
+    device_batch_vector<T> dx(N, incx, batch_count);
+    device_batch_vector<T> dy(N, incy, batch_count);
+    device_batch_vector<T> dparam(5, 1, batch_count);
+
+    for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
+    {
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
+
+        // No param checking for batched version
+
+        // None of these test cases will write to result so using device pointer is fine for both modes
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasRotmBatchedFn,
+                    (nullptr, N, dx, incx, dy, incy, dparam, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotmBatchedFn,
+                    (handle, N, nullptr, incx, dy, incy, dparam, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotmBatchedFn,
+                    (handle, N, dx, incx, nullptr, incy, dparam, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotmBatchedFn,
+                    (handle, N, dx, incx, dy, incy, nullptr, batch_count));
+    }
+}
+
+template <typename T>
 void testing_rotm_batched(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotmBatchedFn
         = FORTRAN ? hipblasRotmBatched<T, true> : hipblasRotmBatched<T, false>;
+    auto hipblasRotmBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasRotmBatched_64<T, true> : hipblasRotmBatched_64<T, false>;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
@@ -55,13 +99,13 @@ void testing_rotm_batched(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasRotmBatchedFn(handle, N, nullptr, incx, nullptr, incy, nullptr, batch_count));
+        DAPI_CHECK(hipblasRotmBatchedFn,
+                   (handle, N, nullptr, incx, nullptr, incy, nullptr, batch_count));
         return;
     }
 
-    int abs_incx = incx >= 0 ? incx : -incx;
-    int abs_incy = incy >= 0 ? incy : -incy;
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
 
     double gpu_time_used, hipblas_error_device;
 
@@ -78,9 +122,9 @@ void testing_rotm_batched(const Arguments& arg)
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
     hipblas_init_vector(hdata, arg, hipblas_client_alpha_sets_nan, false);
 
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
-        cblas_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
+        ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
     }
 
     constexpr int FLAG_COUNT        = 4;
@@ -90,22 +134,25 @@ void testing_rotm_batched(const Arguments& arg)
     {
         if(arg.unit_check || arg.norm_check)
         {
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
+            {
                 hparam[b][0] = FLAGS[i];
+            }
 
             // Test device
             CHECK_HIP_ERROR(dx.transfer_from(hx));
             CHECK_HIP_ERROR(dy.transfer_from(hy));
             CHECK_HIP_ERROR(dparam.transfer_from(hparam));
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-            CHECK_HIPBLAS_ERROR(hipblasRotmBatchedFn(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     dparam.ptr_on_device(),
-                                                     batch_count));
+            DAPI_CHECK(hipblasRotmBatchedFn,
+                       (handle,
+                        N,
+                        dx.ptr_on_device(),
+                        incx,
+                        dy.ptr_on_device(),
+                        incy,
+                        dparam.ptr_on_device(),
+                        batch_count));
 
             host_batch_vector<T> rx(N, incx, batch_count);
             host_batch_vector<T> ry(N, incy, batch_count);
@@ -117,15 +164,15 @@ void testing_rotm_batched(const Arguments& arg)
             cx.copy_from(hx);
             cy.copy_from(hy);
 
-            for(int b = 0; b < batch_count; b++)
+            for(int64_t b = 0; b < batch_count; b++)
             {
                 // CPU BLAS reference data
-                cblas_rotm<T>(N, cx[b], incx, cy[b], incy, hparam[b]);
+                ref_rotm<T>(N, cx[b], incx, cy[b], incy, hparam[b]);
             }
 
             if(arg.unit_check)
             {
-                for(int b = 0; b < batch_count; b++)
+                for(int64_t b = 0; b < batch_count; b++)
                 {
                     near_check_general<T>(1, N, abs_incx, cx[b], rx[b], rel_error);
                     near_check_general<T>(1, N, abs_incy, cy[b], ry[b], rel_error);
@@ -143,8 +190,11 @@ void testing_rotm_batched(const Arguments& arg)
 
     if(arg.timing)
     {
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
+        {
             hparam[b][0] = 0;
+        }
+
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -158,14 +208,15 @@ void testing_rotm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotmBatchedFn(handle,
-                                                     N,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     dparam.ptr_on_device(),
-                                                     batch_count));
+            DAPI_CHECK(hipblasRotmBatchedFn,
+                       (handle,
+                        N,
+                        dx.ptr_on_device(),
+                        incx,
+                        dy.ptr_on_device(),
+                        incy,
+                        dparam.ptr_on_device(),
+                        batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

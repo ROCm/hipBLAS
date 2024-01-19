@@ -38,9 +38,88 @@ inline void testname_trtri_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
+void testing_trtri_batched_bad_arg(const Arguments& arg)
+{
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrtriBatchedFn
+        = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
+
+    hipblasLocalHandle handle(arg);
+
+    int64_t           N           = 100;
+    int64_t           lda         = 102;
+    int64_t           batch_count = 2;
+    hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_LOWER;
+    hipblasDiagType_t diag        = HIPBLAS_DIAG_NON_UNIT;
+
+    device_batch_vector<T> dA(N * lda, 1, batch_count);
+    device_batch_vector<T> dinvA(N * lda, 1, batch_count);
+
+    EXPECT_HIPBLAS_STATUS(hipblasTrtriBatchedFn(nullptr,
+                                                uplo,
+                                                diag,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dinvA.ptr_on_device(),
+                                                lda,
+                                                batch_count),
+                          HIPBLAS_STATUS_NOT_INITIALIZED);
+
+    EXPECT_HIPBLAS_STATUS(hipblasTrtriBatchedFn(handle,
+                                                HIPBLAS_FILL_MODE_FULL,
+                                                diag,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dinvA.ptr_on_device(),
+                                                lda,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_VALUE);
+    EXPECT_HIPBLAS_STATUS(hipblasTrtriBatchedFn(handle,
+                                                (hipblasFillMode_t)HIPBLAS_OP_N,
+                                                diag,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dinvA.ptr_on_device(),
+                                                lda,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_ENUM);
+    EXPECT_HIPBLAS_STATUS(hipblasTrtriBatchedFn(handle,
+                                                uplo,
+                                                (hipblasDiagType_t)HIPBLAS_OP_N,
+                                                N,
+                                                dA.ptr_on_device(),
+                                                lda,
+                                                dinvA.ptr_on_device(),
+                                                lda,
+                                                batch_count),
+                          HIPBLAS_STATUS_INVALID_ENUM);
+
+    if(arg.bad_arg_all)
+    {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrtriBatchedFn(
+                handle, uplo, diag, N, nullptr, lda, dinvA.ptr_on_device(), lda, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrtriBatchedFn(
+                handle, uplo, diag, N, dA.ptr_on_device(), lda, nullptr, lda, batch_count),
+            HIPBLAS_STATUS_INVALID_VALUE);
+    }
+
+    // If N == 0, can have nullptrs
+    CHECK_HIPBLAS_ERROR(
+        hipblasTrtriBatchedFn(handle, uplo, diag, 0, nullptr, lda, nullptr, lda, batch_count));
+    CHECK_HIPBLAS_ERROR(
+        hipblasTrtriBatchedFn(handle, uplo, diag, N, nullptr, lda, nullptr, lda, 0));
+}
+
+template <typename T>
 void testing_trtri_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.fortran;
+    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrtriBatchedFn
         = FORTRAN ? hipblasTrtriBatched<T, true> : hipblasTrtriBatched<T, false>;
 
@@ -128,7 +207,7 @@ void testing_trtri_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            cblas_trtri<T>(arg.uplo, arg.diag, N, hB[b], lda);
+            ref_trtri<T>(arg.uplo, arg.diag, N, hB[b], lda);
         }
 
         if(arg.unit_check)

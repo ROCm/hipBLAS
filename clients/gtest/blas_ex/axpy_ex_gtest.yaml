@@ -60,4 +60,24 @@ Tests:
     stride_scale: [ 1.0, 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
+
+  - name: axpy_ex_bad_arg
+    category: pre_checkin
+    function:
+      - axpy_ex_bad_arg: *axpy_ex_precision_all
+      - axpy_batched_ex_bad_arg: *axpy_ex_precision_all
+      - axpy_strided_batched_ex_bad_arg: *axpy_ex_precision_all
+      - axpy_ex_bad_arg: *axpy_ex_precision_amd
+      - axpy_batched_ex_bad_arg: *axpy_ex_precision_amd
+      - axpy_strided_batched_ex_bad_arg: *axpy_ex_precision_amd
+    api: [ FORTRAN, C ]
+    backend_flags: AMD
+
+  - name: axpy_ex_bad_arg
+    category: pre_checkin
+    function:
+      - axpy_ex_bad_arg: *axpy_ex_precision_all
+    api: [ FORTRAN, C ]
+    bad_arg_all: false
+    backend_flags: NVIDIA
 ...

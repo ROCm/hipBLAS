@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,25 @@
 #include <iomanip>
 #include <iostream>
 #include <utility>
+
+bool gpu_arch_match(const std::string& gpu_arch, const char pattern[4])
+{
+    int         gpu_len = gpu_arch.length();
+    const char* gpu     = gpu_arch.c_str();
+
+    // gpu is currently "gfx" followed by 3 or 4 characters, followed by optional ":" sections
+    int prefix_len = 3;
+    for(int i = 0; i < 4; i++)
+    {
+        if(!pattern[i])
+            break;
+        else if(pattern[i] == '?')
+            continue;
+        else if(prefix_len + i >= gpu_len || pattern[i] != gpu[prefix_len + i])
+            return false;
+    }
+    return true;
+};
 
 // Pairs for YAML output
 template <typename T1, typename T2>
