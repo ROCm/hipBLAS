@@ -44,12 +44,6 @@ project( hipblas-dependencies NONE )
 option( BUILD_GTEST "Download and build googletest library" ON )
 option( BUILD_LAPACK "Download and build lapack library" ON )
 
-if( WIN32 )
-  option( LINK_BLIS "Link AOCL Blis reference library" OFF )
-else()
-  option( LINK_BLIS "Link AOCL Blis reference library" ON )
-endif()
-
 # option( BUILD_VERBOSE "Print helpful build debug information" OFF )
 
 # if( BUILD_VERBOSE )
