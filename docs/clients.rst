@@ -1,19 +1,25 @@
-============
+.. meta::
+  :description: hipBLAS documentation and API reference library
+  :keywords: hipBLAS, rocBLAS, BLAS, ROCm, API, Linear Algebra, documentation
+
+.. _hipblas-clients:
+
+********************************************************************
 Clients
-============
+********************************************************************
 
 There are two client executables that can be used with hipBLAS. They are,
 
 1. hipblas-bench
-
 2. hipblas-test
 
-These two clients can be built by following the instructions in the `Building and Installing hipBLAS github page <https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docs/source/install.rst>`_ . After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
+These two clients can be built by following the instructions in the :ref:`install`. After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
 
 The next two sections will cover a brief explanation and the usage of each hipBLAS client.
 
 hipblas-bench
 =============
+
 hipblas-bench is used to measure performance and to verify the correctness of hipBLAS functions.
 
 It has a command line interface. For more information:
