@@ -88,9 +88,9 @@ Complex Datatypes
 hipBLAS defines ``hipblasComplex`` and ``hipblasDoubleComplex`` structs. These types contain x and y components and identical memory layout to ``std::complex``
 for float and double precision.
 
-For simplified usage with Hipified code, there is an option to interpret the API as using ``hipFloatComplex`` and ``hipDoubleComplex``
-types (i.e. ``typedef hipFloatComplex hipblasComplex``). This is provided for users to avoid casting when using the hip complex types in their code.
-As the memory layout is consistent across all three types, it is safe to cast arguments to API calls between the 3 types: ``hipFloatComplex``,
+For simplified usage with Hipified code, there is an option to interpret the API as using ``hipComplex`` and ``hipDoubleComplex``
+types (i.e. ``typedef hipComplex hipblasComplex``). This is provided for users to avoid casting when using the hip complex types in their code.
+As the memory layout is consistent across all three types, it is safe to cast arguments to API calls between the 3 types: ``hipComplex``,
 ``std::complex<float>``, and ``hipblasComplex``, as well as for the double precision variants. To expose the API as using the hip defined complex types,
 users can use either a compiler define or inline ``#define ROCM_MATHLIBS_API_USE_HIP_COMPLEX`` before including the header file `<hipblas.h>`. Thus, the
 API is compatible with both forms, but recompilation is required to avoid casting if switching to pass in the hip complex types.
