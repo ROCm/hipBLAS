@@ -54,10 +54,10 @@ xMAX and xMIN for which the index is now int64_t. Function level documentation i
 however functions which support this alternate API include the line:
 ``This function supports the 64-bit integer interface``.
 
+.. _HIPBLASV2 DEP:
+
 HIPBLAS_V2 and Deprecations
 ===========================
-
-.. _HIPBLAS_V2_DEP:
 
 As of hipBLAS version 2.0.0, hipblasDatatype_t is deprecated, along with all functions which use this type. In a future release, all uses of hipblasDatatype_t
 will be replaced by hipDataType. See the hipblasGemmEx documentation for a small exception where hipblasComputeType_t replaces hipblasDatatype_t for the
@@ -95,7 +95,7 @@ users can use either a compiler define or inline #define ROCM_MATHLIBS_API_USE_H
 API is compatible with both forms, but recompilation is required to avoid casting if switching to pass in the hip complex types.
 
 Note that hipblasComplex, hipblasDoubleComplex, and use of ROCM_MATHLIBS_API_USE_HIP_COMPLEX are now deprecated. The API will provide interfaces
-using only hipComplex and hipDoubleComplex in the future. See :ref:`HIPBLAS_V2_DEP` for more information.
+using only hipComplex and hipDoubleComplex in the future. See :ref:`HIPBLASV2 DEP` for more information.
 
 Atomic Operations
 =================
