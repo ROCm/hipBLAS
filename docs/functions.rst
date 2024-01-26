@@ -54,6 +54,8 @@ xMAX and xMIN for which the index is now int64_t. Function level documentation i
 however functions which support this alternate API include the line:
 ``This function supports the 64-bit integer interface``.
 
+.. _HIPBLASV2 DEP:
+
 HIPBLAS_V2 and Deprecations
 ===========================
 
@@ -61,9 +63,12 @@ As of hipBLAS version 2.0.0, hipblasDatatype_t is deprecated, along with all fun
 will be replaced by hipDataType. See the hipblasGemmEx documentation for a small exception where hipblasComputeType_t replaces hipblasDatatype_t for the
 computeType parameter.
 
-While hipblasDatatype_t is deprecated, users may use the compiler define or inline #define HIPBLAS_V2 before including the header file <hipblas.h> to
+hipblasComplex and hipblasDoubleComplex are also deprecated. In a future release, all uses of these types will be replaced with their HIP counterparts:
+hipComplex and hipDoubleComplex.
+
+While hipblasDatatype_t, ``hipblasComplex``, and ``hipblasDoubleComplex`` are deprecated, users may use the compiler define or inline #define HIPBLAS_V2 before including the header file <hipblas.h> to
 access the updated API. In a future release, this define will no longer be needed and deprecated functions will be removed, leaving the updated interface.
-Please see the documentation for the following functions to see the new interfaces: hipblasTrsmEx, hipblasGemmEx,
+Please see the documentation for the following functions to see the new interfaces using hipDataType: hipblasTrsmEx, hipblasGemmEx,
 hipblasAxpyEx, hipblasDot(c)Ex, hipblasNrm2Ex, hipblasRotEx, hipblasScalEx, and all batched and strided-batched variants.
 
 bfloat 16 Datatype
@@ -90,7 +95,7 @@ users can use either a compiler define or inline #define ROCM_MATHLIBS_API_USE_H
 API is compatible with both forms, but recompilation is required to avoid casting if switching to pass in the hip complex types.
 
 Note that hipblasComplex, hipblasDoubleComplex, and use of ROCM_MATHLIBS_API_USE_HIP_COMPLEX are now deprecated. The API will provide interfaces
-using only hipComplex and hipDoubleComplex in the future.
+using only hipComplex and hipDoubleComplex in the future. See :ref:`HIPBLASV2 DEP` for more information.
 
 Atomic Operations
 =================
