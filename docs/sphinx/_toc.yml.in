@@ -9,6 +9,6 @@ subtrees:
     - file: functions
     - file: deprecation
     - file: contributing
-  - caption: About
-    entries:
+- caption: About
+  entries:
     - file: license
