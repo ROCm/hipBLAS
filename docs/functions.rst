@@ -70,8 +70,7 @@ will be replaced by ``hipDataType``. See the :any:`hipblasGemmEx` documentation 
 ``hipComplex`` and ``hipDoubleComplex``.
 
 While ``hipblasDatatype_t``, ``hipblasComplex``, and ``hipblasDoubleComplex`` are deprecated, users may use the compiler define or inline ``#define HIPBLAS_V2`` before including the header file `<hipblas.h>` to access the updated API. In a future release, this define will no longer be needed and deprecated functions will be removed, leaving the updated interface.
-Please see the documentation for the following functions to see the new interfaces using hipDataType: hipblasTrsmEx, hipblasGemmEx,
-hipblasAxpyEx, hipblasDot(c)Ex, hipblasNrm2Ex, hipblasRotEx, hipblasScalEx, and all batched and strided-batched variants.
+To see the new interfaces using ``hipDataType`` refer to the documentation for the following functions: ``hipblasTrsmEx``, ``hipblasGemmEx``, ``hipblasAxpyEx``, ``hipblasDot(c)Ex``, ``hipblasNrm2Ex``, ``hipblasRotEx``, ``hipblasScalEx``, and all batched and strided-batched variants.
 
 bfloat 16 Datatype
 ==================
