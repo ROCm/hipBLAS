@@ -1,15 +1,14 @@
-# Anywhere {branch} is used, the branch name will be substituted.
-# These comments will also be removed.
+defaults:
+  numbered: False
 root: index
 subtrees:
-  - numbered: False
-    entries:
+- entries: 
     - file: install
     - file: orga
-    - file: functions
     - file: clients
+    - file: functions
     - file: deprecation
     - file: contributing
-  - caption: About
-    entries:
+- caption: About
+  entries:
     - file: license
