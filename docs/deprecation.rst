@@ -1,7 +1,12 @@
-#######################
-Deprecations by version
-#######################
+.. meta::
+  :description: hipBLAS documentation and API reference library
+  :keywords: hipBLAS, rocBLAS, BLAS, ROCm, API, Linear Algebra, documentation
 
+.. _deprecations:
+
+********************************************************************
+Deprecations by version
+********************************************************************
 
 Announced in hipBLAS 0.49
 *************************
