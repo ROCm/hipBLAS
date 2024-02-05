@@ -64,6 +64,8 @@ add_library( hipblas
 )
 add_library( roc::hipblas ALIAS hipblas )
 
+set(static_depends)
+
 # Build hipblas from source on AMD platform
 if(HIP_PLATFORM STREQUAL amd)
   if( NOT TARGET rocblas )
@@ -76,6 +78,7 @@ if(HIP_PLATFORM STREQUAL amd)
     else()
       find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
     endif( )
+    list(APPEND static_depends PACKAGE rocblas)
   endif( )
 
   target_link_libraries( hipblas PRIVATE roc::rocblas hip::host )
@@ -98,6 +101,7 @@ if(HIP_PLATFORM STREQUAL amd)
         find_package( rocsolver REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocsolver /usr/local/rocsolver )
       endif()
     endif( )
+    list(APPEND static_depends PACKAGE rocsolver)
     target_link_libraries( hipblas PRIVATE roc::rocsolver )
   endif( )
 
@@ -180,6 +184,7 @@ if(HIP_PLATFORM STREQUAL amd)
     rocm_export_targets(
         TARGETS roc::hipblas
 	DEPENDS PACKAGE hip
+	STATIC_DEPENDS ${static_depends}
 	NAMESPACE roc::
     )
 else( )
