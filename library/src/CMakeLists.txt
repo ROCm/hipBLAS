@@ -78,9 +78,9 @@ if(HIP_PLATFORM STREQUAL amd)
     else()
       find_package( rocblas REQUIRED CONFIG PATHS /opt/rocm /opt/rocm/rocblas )
     endif( )
-    list(APPEND static_depends PACKAGE rocblas)
   endif( )
 
+  list(APPEND static_depends PACKAGE rocblas)
   target_link_libraries( hipblas PRIVATE roc::rocblas hip::host )
 
   # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
