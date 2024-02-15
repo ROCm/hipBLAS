@@ -39,7 +39,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="""Checks build arguments""")
 
     parser.add_argument(       '--address-sanitizer', dest='address_sanitizer', required=False, default=False,
-                        help='uild with address sanitizer enabled. (optional, default: False)')
+                        help='Build with address sanitizer enabled. (optional, default: False)')
 
     parser.add_argument(      '--build_dir', type=str, required=False, default = "build",
                         help='Configure & build process output directory.(optional, default: ./build)')
@@ -317,9 +317,6 @@ def config_cmd():
     cmake_options.append( f"{src_path}")
     cmd_opts = " ".join(cmake_options)
 
-    print('cmake_options:')
-    print(cmd_opts)
-    # exit(1)
     return cmake_executable, cmd_opts
 
 def make_cmd():
@@ -356,10 +353,6 @@ def main():
     global args
     os_detect()
     args = parse_args()
-
-    print("args:")
-    print(args)
-    # exit(1)
 
     hip_platform = os.getenv('HIP_PLATFORM')
     if hip_platform == 'nvidia' and args.static_libs:

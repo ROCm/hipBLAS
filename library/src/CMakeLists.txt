@@ -143,7 +143,7 @@ set_target_properties( hipblas PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BI
 if (WIN32)
   add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/$<TARGET_FILE_NAME:hipblas> ${PROJECT_BINARY_DIR}/clients/staging/$<TARGET_FILE_NAME:hipblas> )
   if( ${CMAKE_BUILD_TYPE} MATCHES "Debug")
-    add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/hipblas-d.pdb ${PROJECT_BINARY_DIR}/clients/staging/hipblas-d.pdb )
+    add_custom_command( TARGET hipblas POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/staging/hipblas.pdb ${PROJECT_BINARY_DIR}/clients/staging/hipblas.pdb )
   endif()
 endif()
 
