@@ -38,9 +38,6 @@ def parse_args():
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description="""Checks build arguments""")
 
-    parser.add_argument('-b', '--rocblas', dest='rocblas_version', type=str, required=False, default="",
-                        help='Specify rocblas version (e.g. 2.42.0). (optional).')
-
     parser.add_argument(       '--address-sanitizer', dest='address_sanitizer', required=False, default=False,
                         help='uild with address sanitizer enabled. (optional, default: False)')
 
@@ -87,7 +84,7 @@ def parse_args():
                         help='Used with --installcuda, optionally specify cuda version to install.')
 
     parser.add_argument(      '--install_invoked', required=False, default=False, action='store_true',
-                help='rmake invoked from install.sh so do not do dependency or package installation (default: False)')
+                        help='rmake invoked from install.sh so do not do dependency or package installation (default: False)')
 
     parser.add_argument('-k', '--relwithdebinfo', required=False, default = False, action='store_true',
                         help='Build in Release with Debug Info (optional, default: False)')
@@ -104,10 +101,8 @@ def parse_args():
     parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default=None,
                         help='Specify path to an existing rocSOLVER install directory (optional, e.g. /src/rocSOLVER/build/release/rocsolver-install).')
 
-    parser.add_argument('--rocm-dev', '--rocm_dev', type=str, required=False, default = "",
-                        help='Specify specific rocm-dev version to install, used with -d. (e.g. 4.5.0)')
-
-    parser.add_argument(      '--skip_ld_conf_entry', required=False, default = False, help='Linux only: Skip ld.so.conf entry.')
+    parser.add_argument(      '--skip_ld_conf_entry', action='store_true', required=False, default = False,
+                        help='Linux only: Skip ld.so.conf entry.')
 
     parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
@@ -115,7 +110,7 @@ def parse_args():
     parser.add_argument(      '--src_path', type=str, required=False, default="",
                         help='Source path. (optional, default: Current directory)')
 
-    parser.add_argument(      '--hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_true',
+    parser.add_argument(      '--hip-clang', dest='use_hipcc_compiler', required=False, default=False, action='store_true',
                         help='[DEPRECATED] Linux only: Build hipBLAS using hipcc compiler. Deprecated, use --compiler instead.')
 
     parser.add_argument(      '--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
@@ -183,7 +178,10 @@ def config_cmd():
     cwd_path = os.getcwd()
     cmake_executable = "cmake"
     cmake_options = []
-    src_path = cmake_path(cwd_path)
+    if len(args.src_path):
+        src_path = args.src_path
+    else:
+        src_path = cmake_path(cwd_path)
     cmake_platform_opts = []
     if os.name == "nt":
         generator = f"-G Ninja"

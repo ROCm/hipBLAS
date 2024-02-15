@@ -172,23 +172,6 @@ install_packages( )
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
     library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
   else
-    # Custom rocm-dev installation
-    if [[ -z ${custom_rocm_dev+foo} ]]; then
-      # Install base rocm-dev package unless -v/--rocm-dev flag is passed
-      library_dependencies_ubuntu+=( "rocm-dev" )
-      library_dependencies_centos_rhel+=( "rocm-dev" )
-      library_dependencies_centos_rhel_8=( "rocm-dev" )
-      library_dependencies_fedora+=( "rocm-dev" )
-      library_dependencies_sles+=( "rocm-dev" )
-    else
-      # Install rocm-specific rocm-dev package
-      library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
-      library_dependencies_centos_rhel+=( "${custom_rocm_dev}" )
-      library_dependencies_centos_rhel_8+=( "${custom_rocm_dev}" )
-      library_dependencies_fedora+=( "${custom_rocm_dev}" )
-      library_dependencies_sles+=( "${custom_rocm_dev}" )
-    fi
-
     # Custom rocblas installation
     # Do not install rocblas if --rocblas_path flag is set,
     # as we will be building against our own rocblas instead.
@@ -400,7 +383,7 @@ cat <<EOF
 
     -i, -install                  Generate and install library package after build.
 
-    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo.(Default build type is Release)
+    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo. (Default build type is Release)
 
     -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
 
@@ -413,8 +396,6 @@ cat <<EOF
     --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
 
     -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
-
-    -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
 EOF
 }
 
@@ -450,7 +431,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,relocatable:,rmake_invoked,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,cmake-arg: --options rhicndgv:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,relwithdebinfo,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,relocatable:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,cmake-arg: --options rhickndgsb: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -531,9 +512,6 @@ while true; do
     --custom-target)
         custom_target=${2}
         shift 2 ;;
-    -v|--rocm-dev)
-         custom_rocm_dev=${2}
-         shift 2;;
     -b|--rocblas)
          custom_rocblas=${2}
          shift 2;;
@@ -610,7 +588,7 @@ if [[ "${install_dependencies}" == true ]]; then
   pushd .
     printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into build tree and not default \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
-    CXX=${cxx} CC=${cc} FC=${fc} ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
+    CXX=${cxx} CC=${cc} FC=${fc} ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ${HIPBLAS_SRC_PATH}/deps
     make -j$(nproc)
     # as installing into build tree deps/deps-install rather than /usr/local won't elevate if not root
     make install
