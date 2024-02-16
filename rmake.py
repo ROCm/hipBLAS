@@ -59,7 +59,7 @@ def parse_args():
     parser.add_argument(      '--compiler', type=str, required=False, default='g++', dest='compiler',
                         help='Spcify path to host compiler.')
 
-    parser.add_argument('--cuda', '--use-cuda', dest='use_cuda', required=False, default=False,
+    parser.add_argument('--cuda', '--use-cuda', dest='use_cuda', required=False, default=False, action='store_true',
                         help='[DEPRECATED] Build library for CUDA backend. Deprecated, use HIP_PLATFORM environment variable to override default which is determined by `hipconfig --platform`')
 
     parser.add_argument(      '--cudapath', type=str, required=False, default='/usr/local/cuda', dest='cuda_path',
@@ -355,7 +355,7 @@ def main():
     args = parse_args()
 
     hip_platform = os.getenv('HIP_PLATFORM')
-    if hip_platform == 'nvidia' and args.static_libs:
+    if hip_platform == 'nvidia' and args.static_lib:
         fatal("Static library not supported for CUDA backend. Not continuing.")
 
     if args.install_invoked:
