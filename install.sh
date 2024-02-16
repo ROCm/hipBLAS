@@ -168,7 +168,7 @@ install_packages( )
   local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
-  if [[ "${build_cuda}" == true ]]; then
+  if [[ $HIP_PLATFORM == "nvidia" ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
     library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
   else
@@ -347,7 +347,6 @@ cat <<EOF
     $0 <options> (modify default behavior according to the following flags)
 
   Options:
-    --address-sanitizer           Build with address sanitizer enabled. Uses hipcc as compiler.
 
     -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
 
@@ -357,16 +356,6 @@ cat <<EOF
     --cuda, --use-cuda            Build library for CUDA backend (deprecated).
                                   The target HIP platform is determined by `hipconfig --platform`.
                                   To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
-
-    --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
-
-    --cmake-arg                   Forward the given argument to CMake when configuring the build.
-
-    --compiler </compiler/path>    Specify path to host compiler. (e.g. /opt/rocm/bin/hipcc)
-
-    --custom-target <target>      Specify custom target to link the library against (eg. host, device).
-
-    --codecoverage                Build with code coverage profiling enabled, excluding release mode.
 
     -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
                                   This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
@@ -379,23 +368,16 @@ cat <<EOF
 
     -h, --help                    Print this help message.
 
-    --hip-clang                   [DEPRECATED] Build library using the hip-clang compiler. Deprecated, use --compiler.
-
     -i, -install                  Generate and install library package after build.
 
     -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo. (Default build type is Release)
 
     -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
 
-    --no-hip-clang                [DEPRECATED] Build library without using hip-clang compiler. Deprecated, use --compiler.
-
-    -r, --relocatable             Create a package to support relocatable ROCm
-
     --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
 
     --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
 
-    -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
 EOF
 }
 
@@ -407,21 +389,14 @@ install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
 build_solver=true
-build_cuda=false
 build_release=true
-build_relocatable=false
-build_address_sanitizer=false
 install_cuda=false
 cuda_version_install=default
 cuda_path=/usr/local/cuda
 rocm_path=/opt/rocm
-compiler=g++
-build_static=false
 build_release_debug=false
-build_codecoverage=false
 update_cmake=false
 rmake_invoked=false
-declare -a cmake_common_options
 declare -a cmake_client_options
 
 # #################################################
@@ -431,16 +406,17 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,relwithdebinfo,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,relocatable:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,cmake-arg: --options rhickndgsb: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer, --options rhickndgb: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
 fi
 
-if [[ $? -ne 0 ]]; then
-  echo "getopt invocation failed; could not parse the command line";
-  exit 1
-fi
+# don't check args as rmake.py handles additional options
+# if [[ $? -ne 0 ]]; then
+#   echo "getopt invocation failed; could not parse the command line";
+#   exit 1
+# fi
 
 eval set -- "${GETOPT_PARSE}"
 
@@ -456,9 +432,6 @@ while true; do
     -d|--dependencies)
         install_dependencies=true
         shift ;;
-    -r|--relocatable)
-        build_relocatable=true
-        shift ;;
     -c|--clients)
         build_clients=true
         shift ;;
@@ -472,46 +445,21 @@ while true; do
         build_release=false
         build_release_debug=true
         shift ;;
-    --codecoverage)
-        build_codecoverage=true
-        shift ;;
-    --hip-clang)
-        compiler=hipcc
-        shift ;;
-    --no-hip-clang)
-        compiler=g++
-        shift ;;
-    --compiler)
-        compiler=${2}
-        shift 2 ;;
     --cuda|--use-cuda)
+        # still need this flag in install.sh to support install.sh --cuda -d for now
         echo "--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)"
         export HIP_PLATFORM="nvidia"
         build_cuda=true
         shift ;;
-    --cudapath)
-      cuda_path=${2}
-      export CUDA_BIN_PATH=${cuda_path}
-      shift 2 ;;
     --installcuda)
       install_cuda=true
       shift ;;
     --installcudaversion)
       cuda_version_install=${2}
       shift 2 ;;
-    --static)
-        build_static=true
-        shift ;;
     --cmake_install)
         update_cmake=true
         shift ;;
-    --address-sanitizer)
-        build_address_sanitizer=true
-        compiler=hipcc
-        shift ;;
-    --custom-target)
-        custom_target=${2}
-        shift 2 ;;
     -b|--rocblas)
          custom_rocblas=${2}
          shift 2;;
@@ -523,9 +471,6 @@ while true; do
         shift 2 ;;
     --prefix)
         install_prefix=${2}
-        shift 2 ;;
-    --cmake-arg)
-        cmake_common_options+=("${2}")
         shift 2 ;;
     --rmake_invoked)
         rmake_invoked=true
@@ -565,7 +510,7 @@ if [[ "${install_dependencies}" == true ]]; then
 
   CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
 
-  #install_packages
+  install_packages
 
   if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
       if $update_cmake == true; then
@@ -612,8 +557,7 @@ else
   full_build_dir=${build_dir}/debug
 fi
 
-# Support deprecated use of --cuda by only calling
-# hipconfig when --cuda is not used.
+# this can be removed and be done in rmake.py once --cuda flag support is gone
 if [[ "${build_cuda}" != true ]]; then
   export HIP_PLATFORM="$(hipconfig --platform)"
 fi

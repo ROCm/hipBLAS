@@ -56,7 +56,7 @@ def parse_args():
     parser.add_argument(      '--codecoverage', required=False, default=False, action='store_true',
                         help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
 
-    parser.add_argument(      '--compiler', type=str, required=False, default='g++', dest='compiler',
+    parser.add_argument(      '--compiler', type=str, required=False, default=None, dest='compiler',
                         help='Spcify path to host compiler.')
 
     parser.add_argument('--cuda', '--use-cuda', dest='use_cuda', required=False, default=False, action='store_true',
@@ -255,12 +255,15 @@ def config_cmd():
     os.chdir( build_path )
 
     # compiler
-    if os.name != "nt":
+    if args.compiler is not None:
+        cmake_options.append(f"-DCMAKE_CXX_COMPILER={args.compiler}")
+
+    # windows defaults to clang++ in toolchain
+    if os.name != "nt" and args.compiler is None:
         if args.use_hipcc_compiler:
-            cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
             cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
         else:
-            cmake_options.append(f"-DCMAKE_C_COMPILER=gcc")
+            # default to g++ for now
             cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
 
     if args.static_lib:
@@ -310,6 +313,9 @@ def config_cmd():
     cmake_options.append( f"-DROCBLAS_PATH={rocblas_path_cmake}")
     cmake_options.append( f"-DROCSOLVER_PATH={rocsolver_path_cmake}")
 
+    if args.cuda_path:
+        os.environ['CUDA_BIN_PATH'] = args.cuda_path
+
     if args.cmake_dargs:
         for i in args.cmake_dargs:
           cmake_options.append( f"-D{i}" )
@@ -354,8 +360,15 @@ def main():
     os_detect()
     args = parse_args()
 
-    hip_platform = os.getenv('HIP_PLATFORM')
-    if hip_platform == 'nvidia' and args.static_lib:
+    # support --cuda flag for now by overwriting HIP_PLATFORM envvar
+    if args.use_cuda:
+        os.environ['HIP_PLATFORM'] = 'nvidia'
+        print("--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)")
+
+    # otherwise query hipconfig to get platform
+    os.environ['HIP_PLATFORM'] = subprocess.getoutput('hipconfig --platform')
+
+    if os.environ['HIP_PLATFORM'] == 'nvidia' and args.static_lib:
         fatal("Static library not supported for CUDA backend. Not continuing.")
 
     if args.install_invoked:
