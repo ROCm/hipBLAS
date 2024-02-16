@@ -28,6 +28,7 @@ import platform
 import subprocess
 import argparse
 import pathlib
+from shutil import which
 from fnmatch import fnmatchcase
 
 args = {}
@@ -163,6 +164,14 @@ def fatal(msg, code=1):
     print(msg)
     exit(code)
 
+def get_rocm_path():
+    if os.name == "nt":
+        raw_rocm_path = cmake_path(os.getenv('HIP_PATH', 'C:/hip'))
+        rocm_path = f'"{raw_rocm_path}"' # guard against spaces in path
+    else:
+        rocm_path = os.getenv('ROCM_PATH', '/opt/rocm')
+    return rocm_path
+
 def deps_cmd():
     if os.name == "nt":
         exe = f"python3 rdeps.py"
@@ -183,19 +192,17 @@ def config_cmd():
     else:
         src_path = cmake_path(cwd_path)
     cmake_platform_opts = []
+    rocm_path = get_rocm_path()
     if os.name == "nt":
         generator = f"-G Ninja"
         cmake_options.append( generator )
         # CMAKE_PREFIX_PATH set to rocm_path and HIP_PATH set BY SDK Installer
-        raw_rocm_path = cmake_path(os.getenv('HIP_PATH', "C:/hip"))
-        rocm_path = f'"{raw_rocm_path}"' # guard against spaces in path
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
         cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
         cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"C:/hipSDK\"" )
         toolchain = os.path.join( src_path, "toolchain-windows.cmake" )
     else:
-        rocm_path = os.getenv( 'ROCM_PATH', "/opt/rocm")
         if (OS_info["ID"] in ['centos', 'rhel']):
           cmake_executable = "cmake" # was cmake3 but now we built cmake
         else:
@@ -360,13 +367,20 @@ def main():
     os_detect()
     args = parse_args()
 
+    rocm_path = get_rocm_path()
+
     # support --cuda flag for now by overwriting HIP_PLATFORM envvar
     if args.use_cuda:
         os.environ['HIP_PLATFORM'] = 'nvidia'
         print("--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)")
 
     # otherwise query hipconfig to get platform
-    os.environ['HIP_PLATFORM'] = subprocess.getoutput('hipconfig --platform')
+    if which('hipconfig') is not None:
+        os.environ['HIP_PLATFORM'] = subprocess.getoutput('hipconfig --platform')
+    elif which(f'{rocm_path}/bin/hipconfig') is not None:
+        os.environ['HIP_PLATFORM'] = subprocess.getoutput(f'{rocm_path}/bin/hipconfig --platform')
+    else:
+        os.environ['HIP_PLATFORM'] = 'amd' # if can't find hipconfig, default amd
 
     if os.environ['HIP_PLATFORM'] == 'nvidia' and args.static_lib:
         fatal("Static library not supported for CUDA backend. Not continuing.")
