@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2022 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ project( hipblas-dependencies NONE )
 
 option( BUILD_GTEST "Download and build googletest library" ON )
 option( BUILD_LAPACK "Download and build lapack library" ON )
+
 # option( BUILD_VERBOSE "Print helpful build debug information" OFF )
 
 # if( BUILD_VERBOSE )

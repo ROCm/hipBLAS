@@ -176,6 +176,10 @@ hipblasDatatype_t
 ------------------
 .. doxygenenum:: hipblasDatatype_t
 
+hipblasComputeType_t
+--------------------
+.. doxygenenum:: hipblasComputeType_t
+
 hipblasGemmAlgo_t
 ------------------
 .. doxygenenum:: hipblasGemmAlgo_t

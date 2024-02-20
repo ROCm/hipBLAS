@@ -554,6 +554,8 @@ typedef enum
 
 #endif
 
+/*! \brief The compute type to be used. Currently only used with GemmEx with the HIPBLAS_V2 interface.
+ *         Note that support for compute types is largely dependent on backend. */
 typedef enum
 {
     // Note that these types are taken from cuBLAS. With the rocBLAS backend, currently hipBLAS will
