@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright 2016-2020 Advanced Micro Devices, Inc.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc.
 # ########################################################################
 
 # This file is intended to be used in two ways; independently in a stand alone PROJECT
@@ -21,5 +21,10 @@ if( NOT BUILD_CLIENTS_SAMPLES )
   option( BUILD_CLIENTS_SAMPLES "Build hipBLAS samples" OFF )
 endif( )
 
+if( WIN32 OR HIP_PLATFORM STREQUAL nvidia )
+  option( LINK_BLIS "Link AOCL Blis reference library" OFF )
+else()
+  option( LINK_BLIS "Link AOCL Blis reference library" ON )
+endif()
 
 

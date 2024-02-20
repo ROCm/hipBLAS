@@ -5,6 +5,17 @@ Documentation for hipBLAS is available at
 
 ## (Unreleased) hipBLAS 2.1.0
 
+### Additions
+
+* New build option to automatically use hipconfig --platform to determine HIP platform
+* Level 1 functions have additional ILP64 API for both C and Fortran (`_64` name
+  suffix) with int64_t function arguments
+* New functions hipblasGetMathMode and hipblasSetMathMode
+
+### Deprecations
+
+* USE_CUDA build option; use HIP_PLATFORM=amd or HIP_PLATFORM=nvidia to override hipconfig
+
 ### Changes
 
 * Some Level 2 function argument names have changed from `m` to `n` to match legacy BLAS; there
