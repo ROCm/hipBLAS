@@ -31,6 +31,9 @@ if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
+if(EXISTS  "${BUILD_DIR}/deps/deps-install/lib/libgtest.a")
+  set( GTEST_ROOT "${BUILD_DIR}/deps/deps-install")
+endif()
 find_package( GTest REQUIRED )
 
 set(hipblas_test_source
@@ -146,6 +149,7 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     ${ROCM_PATH}/include
 )
 target_include_directories( hipblas_v2-test
@@ -154,6 +158,7 @@ target_include_directories( hipblas_v2-test
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     ${ROCM_PATH}/include
 )
 
