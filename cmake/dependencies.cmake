@@ -35,7 +35,7 @@ if(NOT ROCM_FOUND)
     CACHE STRING "rocm-cmake tag to download")
   FetchContent_Declare(
     rocm-cmake
-    GIT_REPOSITORY https://github.com/RadeonOpenCompute/rocm-cmake.git
+    GIT_REPOSITORY https://github.com/ROCm/rocm-cmake.git
     GIT_TAG        ${rocm_cmake_tag}
     SOURCE_SUBDIR "DISABLE ADDING TO BUILD" # We don't really want to consume the build and test targets of ROCm CMake.
   )
