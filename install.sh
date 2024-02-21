@@ -22,80 +22,13 @@
 #
 # ########################################################################
 
+declare -a input_args
+input_args="$@"
+
+#use readlink rather than realpath for CentOS 6.10 support
+HIPBLAS_SRC_PATH=`dirname "$(readlink -m $0)"`
+
 /bin/ln -fs ../../.githooks/pre-commit "$(dirname "$0")/.git/hooks/"
-
-
-# #################################################
-# helper functions
-# #################################################
-function display_help()
-{
-cat <<EOF
-
-  hipBLAS library build & installation helper script.
-
-  Usage:
-    $0 (build hipblas and put library files at ./build/hipblas-install)
-    $0 <options> (modify default behavior according to the following flags)
-
-  Options:
-    --address-sanitizer           Build with address sanitizer enabled. Uses hipcc as compiler.
-
-    -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
-
-    -c, --clients                 Build the library clients benchmark and gtest.
-                                  (Generated binaries will be located at builddir/clients/staging)
-
-    --cuda, --use-cuda            Build library for CUDA backend (deprecated).
-                                  The target HIP platform is determined by `hipconfig --platform`.
-                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
-
-    --cudapath <cudadir>          Specify path of CUDA install (default /usr/local/cuda).
-
-    --cmake-arg                   Forward the given argument to CMake when configuring the build.
-
-    --compiler </compiler/path>    Specify path to host compiler. (e.g. /opt/rocm/bin/hipcc)
-
-    --custom-target <target>      Specify custom target to link the library against (eg. host, device).
-
-    --codecoverage                Build with code coverage profiling enabled, excluding release mode.
-
-    -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
-                                  This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
-
-    --installcuda                 Install cuda package.
-
-    --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
-
-    -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
-
-    -h, --help                    Print this help message.
-
-    --hip-clang                   Build library using the hip-clang compiler.
-
-    -i, -install                  Generate and install library package after build.
-
-    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo.(Default build type is Release)
-
-    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
-
-    --no-hip-clang                Build library without using hip-clang compiler.
-
-    -p, --cmakepp                 To add CMAKE_PREFIX_PATH
-
-    -r, --relocatable             Create a package to support relocatable ROCm
-
-    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
-
-    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
-
-    -s, --static                  Build hipblas as a static library (hipblas must be built statically when the used companion rocblas is also static).
-
-    -v, --rocm-dev <version>      Specify specific rocm-dev version. (e.g. 4.5.0)
-
-    --rm-legacy-include-dir       Remove legacy include dir Packaging added for file/folder reorg backward compatibility.
-EOF
-}
 
 # This function is helpful for dockerfiles that do not have sudo installed, but the default user is root
 # true is a system command that completes successfully, function returns success
@@ -235,27 +168,10 @@ install_packages( )
   local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
   local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
 
-  if [[ "${build_cuda}" == true ]]; then
+  if [[ $HIP_PLATFORM == "nvidia" ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
     library_dependencies_ubuntu+=( "" ) # removed, use --installcuda option to install cuda
   else
-    # Custom rocm-dev installation
-    if [[ -z ${custom_rocm_dev+foo} ]]; then
-      # Install base rocm-dev package unless -v/--rocm-dev flag is passed
-      library_dependencies_ubuntu+=( "rocm-dev" )
-      library_dependencies_centos_rhel+=( "rocm-dev" )
-      library_dependencies_centos_rhel_8=( "rocm-dev" )
-      library_dependencies_fedora+=( "rocm-dev" )
-      library_dependencies_sles+=( "rocm-dev" )
-    else
-      # Install rocm-specific rocm-dev package
-      library_dependencies_ubuntu+=( "${custom_rocm_dev}" )
-      library_dependencies_centos_rhel+=( "${custom_rocm_dev}" )
-      library_dependencies_centos_rhel_8+=( "${custom_rocm_dev}" )
-      library_dependencies_fedora+=( "${custom_rocm_dev}" )
-      library_dependencies_sles+=( "${custom_rocm_dev}" )
-    fi
-
     # Custom rocblas installation
     # Do not install rocblas if --rocblas_path flag is set,
     # as we will be building against our own rocblas instead.
@@ -420,6 +336,51 @@ fi
 # The following function exits script if an unsupported distro is detected
 supported_distro
 
+function display_help()
+{
+cat <<EOF
+
+  hipBLAS library build & installation helper script.
+
+  Usage:
+    $0 (build hipblas and put library files at ./build/hipblas-install)
+    $0 <options> (modify default behavior according to the following flags)
+
+  Options:
+
+    -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
+
+    -c, --clients                 Build the library clients benchmark and gtest.
+                                  (Generated binaries will be located at builddir/clients/staging)
+
+    --cuda, --use-cuda            Build library for CUDA backend (deprecated).
+                                  The target HIP platform is determined by `hipconfig --platform`.
+                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
+
+    -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
+                                  This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
+
+    --installcuda                 Install cuda package.
+
+    --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
+
+    -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
+
+    -h, --help                    Print this help message.
+
+    -i, -install                  Generate and install library package after build.
+
+    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo. (Default build type is Release)
+
+    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
+
+    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
+
+    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
+
+EOF
+}
+
 # #################################################
 # global variables
 # #################################################
@@ -428,22 +389,14 @@ install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
 build_solver=true
-build_cuda=false
 build_release=true
-build_relocatable=false
-build_address_sanitizer=false
 install_cuda=false
 cuda_version_install=default
 cuda_path=/usr/local/cuda
-cmake_prefix_path=/opt/rocm
 rocm_path=/opt/rocm
-compiler=g++
-build_static=false
 build_release_debug=false
-build_codecoverage=false
 update_cmake=false
-build_freorg_bkwdcomp=false
-declare -a cmake_common_options
+rmake_invoked=false
 declare -a cmake_client_options
 
 # #################################################
@@ -453,16 +406,17 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,codecoverage,clients,no-solver,dependencies,debug,hip-clang,no-hip-clang,compiler:,cmake_install,cuda,use-cuda,cudapath:,installcuda,installcudaversion:,static,cmakepp,relocatable:,rocm-dev:,rocblas:,rocblas-path:,rocsolver-path:,custom-target:,address-sanitizer,rm-legacy-include-dir,cmake-arg: --options rhicndgp:v:b: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer, --options rhickndgb: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
 fi
 
-if [[ $? -ne 0 ]]; then
-  echo "getopt invocation failed; could not parse the command line";
-  exit 1
-fi
+# don't check args as rmake.py handles additional options
+# if [[ $? -ne 0 ]]; then
+#   echo "getopt invocation failed; could not parse the command line";
+#   exit 1
+# fi
 
 eval set -- "${GETOPT_PARSE}"
 
@@ -478,9 +432,6 @@ while true; do
     -d|--dependencies)
         install_dependencies=true
         shift ;;
-    -r|--relocatable)
-        build_relocatable=true
-        shift ;;
     -c|--clients)
         build_clients=true
         shift ;;
@@ -494,55 +445,21 @@ while true; do
         build_release=false
         build_release_debug=true
         shift ;;
-    --codecoverage)
-        build_codecoverage=true
-        shift ;;
-    --hip-clang)
-        compiler=hipcc
-        shift ;;
-    --no-hip-clang)
-        compiler=g++
-        shift ;;
-    --compiler)
-        compiler=${2}
-        shift 2 ;;
     --cuda|--use-cuda)
+        # still need this flag in install.sh to support install.sh --cuda -d for now
         echo "--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)"
         export HIP_PLATFORM="nvidia"
         build_cuda=true
         shift ;;
-    --cudapath)
-	cuda_path=${2}
-	export CUDA_BIN_PATH=${cuda_path}
-	shift 2 ;;
     --installcuda)
-	install_cuda=true
-	shift ;;
+      install_cuda=true
+      shift ;;
     --installcudaversion)
-	cuda_version_install=${2}
-	shift 2 ;;
-    --static)
-        build_static=true
-        shift ;;
+      cuda_version_install=${2}
+      shift 2 ;;
     --cmake_install)
         update_cmake=true
         shift ;;
-    --address-sanitizer)
-        build_address_sanitizer=true
-        compiler=hipcc
-        shift ;;
-    --rm-legacy-include-dir)
-        build_freorg_bkwdcomp=false
-        shift ;;
-    -p|--cmakepp)
-        cmake_prefix_path=${2}
-        shift 2 ;;
-    --custom-target)
-        custom_target=${2}
-        shift 2 ;;
-    -v|--rocm-dev)
-         custom_rocm_dev=${2}
-         shift 2;;
     -b|--rocblas)
          custom_rocblas=${2}
          shift 2;;
@@ -555,26 +472,15 @@ while true; do
     --prefix)
         install_prefix=${2}
         shift 2 ;;
-    --cmake-arg)
-        cmake_common_options+=("${2}")
-        shift 2 ;;
+    --rmake_invoked)
+        rmake_invoked=true
+        shift ;;
     --) shift ; break ;;
     *)  echo "Unexpected command line parameter received; aborting";
         exit 1
         ;;
   esac
 done
-
-if [[ "${build_relocatable}" == true ]]; then
-    if ! [ -z ${ROCM_PATH+x} ]; then
-        rocm_path=${ROCM_PATH}
-    fi
-
-    rocm_rpath=" -Wl,--enable-new-dtags -Wl,--rpath,/opt/rocm/lib:/opt/rocm/lib64"
-    if ! [ -z ${ROCM_RPATH+x} ]; then
-        rocm_rpath=" -Wl,--enable-new-dtags -Wl,--rpath,${ROCM_RPATH}"
-    fi
-fi
 
 build_dir=$(readlink -m ./build)
 printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
@@ -591,17 +497,11 @@ else
   rm -rf ${build_dir}/debug
 fi
 
-# resolve relative paths
-if [[ -n "${rocblas_path+x}" ]]; then
-  rocblas_path="$(make_absolute_path "${rocblas_path}")"
-fi
-if [[ -n "${rocsolver_path+x}" ]]; then
-  rocsolver_path="$(make_absolute_path "${rocsolver_path}")"
-fi
-
 # Default cmake executable is called cmake
 cmake_executable=cmake
-export FC="gfortran"
+cxx="g++"
+cc="gcc"
+fc="gfortran"
 
 # #################################################
 # dependencies
@@ -610,7 +510,7 @@ if [[ "${install_dependencies}" == true ]]; then
 
   CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
 
-  #install_packages
+  install_packages
 
   if [ -z "$CMAKE_VERSION" ] || $(dpkg --compare-versions $CMAKE_VERSION lt 3.16.8); then
       if $update_cmake == true; then
@@ -633,7 +533,7 @@ if [[ "${install_dependencies}" == true ]]; then
   pushd .
     printf "\033[32mBuilding \033[33mgoogletest & lapack\033[32m from source; installing into build tree and not default \033[33m/usr/local\033[0m\n"
     mkdir -p ${build_dir}/deps && cd ${build_dir}/deps
-    ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ../../deps
+    CXX=${cxx} CC=${cc} FC=${fc} ${cmake_executable} -DCMAKE_INSTALL_PREFIX=deps-install ${HIPBLAS_SRC_PATH}/deps
     make -j$(nproc)
     # as installing into build tree deps/deps-install rather than /usr/local won't elevate if not root
     make install
@@ -644,130 +544,69 @@ if [[ "${install_cuda}" == true ]]; then
   install_cuda_package
 fi
 
-# We append customary rocm path; if user provides custom rocm path in ${path}, our
-# hard-coded path has lesser priority
-# export PATH=${PATH}:/opt/rocm/bin
+# #################################################
+# configure & build
+# #################################################
+
+full_build_dir=""
+if [[ "${build_release}" == true ]]; then
+  full_build_dir=${build_dir}/release
+elif [[ "${build_release_debug}" == true ]]; then
+  full_build_dir=${build_dir}/release-debug
+else
+  full_build_dir=${build_dir}/debug
+fi
+
+# this can be removed and be done in rmake.py once --cuda flag support is gone
+if [[ "${build_cuda}" != true ]]; then
+  export HIP_PLATFORM="$(hipconfig --platform)"
+fi
+
+if [[ "${rmake_invoked}" == false ]]; then
+  pushd .
+
+  # ensure a clean build environment
+  rm -rf ${full_build_dir}
+
+  # rmake.py at top level same as install.sh
+  python3 ./rmake.py --install_invoked ${input_args} --build_dir=${build_dir} --src_path=${HIPBLAS_SRC_PATH}
+  check_exit_code "$?"
+
+  popd
+else
+  # only dependency install supported when called from rmake
+  exit 0
+fi
+
+# #################################################
+# install
+# #################################################
+
 pushd .
-  # #################################################
-  # configure & build
-  # #################################################
 
-  # Support deprecated use of --cuda by only calling
-  # hipconfig when --cuda is not used.
-  if [[ "${build_cuda}" != true ]]; then
-    hip_platform="$(hipconfig --platform)"
-    if [[ "${hip_platform}" == "nvidia" ]]; then
-      build_cuda=true
-    else # hip_platform=amd; or default
-      build_cuda=false
-    fi
-  fi
+cd ${full_build_dir}
 
-  if [[ "${build_static}" == true ]]; then
-    if [[ "${build_cuda}" == true ]]; then
-      printf "Static library not supported for CUDA backend.\n"
-      exit 1
-    fi
-    cmake_common_options+=("-DBUILD_SHARED_LIBS=OFF")
-  fi
-
-  # build type
-  if [[ "${build_release}" == true ]]; then
-    mkdir -p ${build_dir}/release/clients && cd ${build_dir}/release
-    cmake_common_options+=("-DCMAKE_BUILD_TYPE=Release")
-  elif [[ "${build_release_debug}" == true ]]; then
-    mkdir -p ${build_dir}/release-debug/clients && cd ${build_dir}/release-debug
-    cmake_common_options+=("-DCMAKE_BUILD_TYPE=RelWithDebInfo")
-  else
-    mkdir -p ${build_dir}/debug/clients && cd ${build_dir}/debug
-    cmake_common_options+=("-DCMAKE_BUILD_TYPE=Debug")
-  fi
-
-  # clients
-  if [[ "${build_clients}" == true ]]; then
-    cmake_client_options+=("-DBUILD_CLIENTS_TESTS=ON" "-DBUILD_CLIENTS_BENCHMARKS=ON" "-DBUILD_CLIENTS_SAMPLES=ON" "-DBUILD_DIR=${build_dir}")
-    if [[ "${build_cuda}" == false ]]; then
-      cmake_client_options+=("-DLINK_BLIS=ON")
-    fi
-  fi
-
-  # solver
-  if [[ "${build_solver}" == false ]]; then
-    cmake_common_options+=("-DBUILD_WITH_SOLVER=OFF")
-  fi
-
-  # sanitizer
-  if [[ "${build_address_sanitizer}" == true ]]; then
-    cmake_common_options+=("-DBUILD_ADDRESS_SANITIZER=ON")
-  fi
-
-  if [[ ${custom_target+foo} ]]; then
-    cmake_common_options+=("-DCUSTOM_TARGET=${custom_target}")
-  fi
-
-  # custom rocblas
-  if [[ ${rocblas_path+foo} ]]; then
-    cmake_common_options+=("-DCUSTOM_ROCBLAS=${rocblas_path}")
-  fi
-
-  # custom rocsolver
-  if [[ ${rocsolver_path+foo} ]]; then
-    cmake_common_options+=("-DCUSTOM_ROCSOLVER=${rocsolver_path}")
-  fi
-
-  # code coverage
-  if [[ "${build_codecoverage}" == true ]]; then
-      if [[ "${build_release}" == true ]]; then
-          echo "Code coverage is disabled in Release mode, to enable code coverage select either Debug mode (-g | --debug) or RelWithDebInfo mode (-k | --relwithdebinfo); aborting";
-          exit 1
-      fi
-      cmake_common_options+=("-DBUILD_CODE_COVERAGE=ON")
-  fi
-
-  if [[ "${build_freorg_bkwdcomp}" == true ]]; then
-    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=ON")
-  else
-    cmake_common_options+=("-DBUILD_FILE_REORG_BACKWARD_COMPATIBILITY=OFF")
-  fi
-
-  # Build library
-  if [[ "${build_relocatable}" == true ]]; then
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_INSTALL_PREFIX="${rocm_path}" \
-    -DCMAKE_PREFIX_PATH="${rocm_path};${rocm_path}/hip;$(pwd)/../deps/deps-install;${cuda_path};${cmake_prefix_path}" \
-    -DCMAKE_SHARED_LINKER_FLAGS="${rocm_rpath}" \
-    -DCMAKE_EXE_LINKER_FLAGS=" -Wl,--enable-new-dtags -Wl,--rpath,${rocm_path}/lib:${rocm_path}/lib64" \
-    -DROCM_DISABLE_LDCONFIG=ON \
-    -DROCM_PATH="${rocm_path}" ../..
-  else
-    CXX=${compiler} ${cmake_executable} ${cmake_common_options[@]} ${cmake_client_options[@]} -DCPACK_SET_DESTDIR=OFF -DCMAKE_PREFIX_PATH="$(pwd)/../deps/deps-install;${cmake_prefix_path}" -DROCM_PATH=${rocm_path} ../..
-  fi
+# installing through package manager, which makes uninstalling easy
+if [[ "${install_package}" == true ]]; then
+  make package
   check_exit_code "$?"
 
-  make -j$(nproc)
-  check_exit_code "$?"
+  case "${ID}" in
+    ubuntu)
+      elevate_if_not_root dpkg -i hipblas[-\_]*.deb
+    ;;
+    centos|rhel)
+      elevate_if_not_root yum -y localinstall hipblas-*.rpm
+    ;;
+    fedora)
+      elevate_if_not_root dnf install hipblas-*.rpm
+    ;;
+    sles|opensuse-leap)
+      elevate_if_not_root zypper -n --no-gpg-checks install hipblas-*.rpm
+    ;;
+  esac
 
-  # #################################################
-  # install
-  # #################################################
-  # installing through package manager, which makes uninstalling easy
-  if [[ "${install_package}" == true ]]; then
-    make package
-    check_exit_code "$?"
+fi
+check_exit_code "$?"
 
-    case "${ID}" in
-      ubuntu)
-        elevate_if_not_root dpkg -i hipblas[-\_]*.deb
-      ;;
-      centos|rhel)
-        elevate_if_not_root yum -y localinstall hipblas-*.rpm
-      ;;
-      fedora)
-        elevate_if_not_root dnf install hipblas-*.rpm
-      ;;
-      sles|opensuse-leap)
-        elevate_if_not_root zypper -n --no-gpg-checks install hipblas-*.rpm
-      ;;
-    esac
-
-  fi
 popd

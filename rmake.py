@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import platform
 import subprocess
 import argparse
 import pathlib
+from shutil import which
 from fnmatch import fnmatchcase
 
 args = {}
@@ -38,11 +39,8 @@ def parse_args():
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description="""Checks build arguments""")
 
-    parser.add_argument('-b', '--rocblas', dest='rocblas_version', type=str, required=False, default="",
-                        help='Specify rocblas version (e.g. 2.42.0). (optional).')
-
     parser.add_argument(       '--address-sanitizer', dest='address_sanitizer', required=False, default=False,
-                        help='uild with address sanitizer enabled. (optional, default: False)')
+                        help='Build with address sanitizer enabled. (optional, default: False)')
 
     parser.add_argument(      '--build_dir', type=str, required=False, default = "build",
                         help='Configure & build process output directory.(optional, default: ./build)')
@@ -59,11 +57,35 @@ def parse_args():
     parser.add_argument(      '--codecoverage', required=False, default=False, action='store_true',
                         help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
 
+    parser.add_argument(      '--compiler', type=str, required=False, default=None, dest='compiler',
+                        help='Spcify path to host compiler.')
+
+    parser.add_argument('--cuda', '--use-cuda', dest='use_cuda', required=False, default=False, action='store_true',
+                        help='[DEPRECATED] Build library for CUDA backend. Deprecated, use HIP_PLATFORM environment variable to override default which is determined by `hipconfig --platform`')
+
+    parser.add_argument(      '--cudapath', type=str, required=False, default='/usr/local/cuda', dest='cuda_path',
+                        help='Specify path of CUDA install.')
+
+    parser.add_argument(      '--custom-target', type=str, required=False, default='host', dest='custom_target',
+                        help="Specify custom target to link the library against (e.g. host, device).",)
+
+    parser.add_argument( '-d', '--dependencies', required=False, default=False, action='store_true',
+                        help='Build and install external dependencies. (Handled by install.sh on linux and rdeps.py on Windows')
+
     parser.add_argument('-g', '--debug', required=False, default = False, action='store_true',
                         help='Build in Debug mode.(optional, default: False)')
 
     parser.add_argument('-i', '--install', required=False, default = False, dest='install', action='store_true',
                         help='Generate and install library package after build. (optional, default: False)')
+
+    parser.add_argument(      '--installcuda', required=False, default=False, dest='install_cuda',
+                        help='Install cuda package.')
+
+    parser.add_argument(      '--installcudaversion', type=str, required=False, default='default', dest='cuda_version_install',
+                        help='Used with --installcuda, optionally specify cuda version to install.')
+
+    parser.add_argument(      '--install_invoked', required=False, default=False, action='store_true',
+                        help='rmake invoked from install.sh so do not do dependency or package installation (default: False)')
 
     parser.add_argument('-k', '--relwithdebinfo', required=False, default = False, action='store_true',
                         help='Build in Release with Debug Info (optional, default: False)')
@@ -80,19 +102,20 @@ def parse_args():
     parser.add_argument('--rocsolver-path', dest='rocsolver_path', type=str, required=False, default=None,
                         help='Specify path to an existing rocSOLVER install directory (optional, e.g. /src/rocSOLVER/build/release/rocsolver-install).')
 
-    parser.add_argument(      '--rocm_dev', type=str, required=False, default = "",
-                        help='Specify specific rocm-dev version.(e.g. 4.5.0)')
-
-    parser.add_argument(      '--skip_ld_conf_entry', required=False, default = False, help='Linux only: Skip ld.so.conf entry.')
+    parser.add_argument(      '--skip_ld_conf_entry', action='store_true', required=False, default = False,
+                        help='Linux only: Skip ld.so.conf entry.')
 
     parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
 
-    parser.add_argument('--hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_true',
-                        help='Linux only: Build hipBLAS using hipcc compiler.')
+    parser.add_argument(      '--src_path', type=str, required=False, default="",
+                        help='Source path. (optional, default: Current directory)')
 
-    parser.add_argument('--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
-                        help='Linux only: Build hipBLAS with g++ compiler instead of hipcc compiler.')
+    parser.add_argument(      '--hip-clang', dest='use_hipcc_compiler', required=False, default=False, action='store_true',
+                        help='[DEPRECATED] Linux only: Build hipBLAS using hipcc compiler. Deprecated, use --compiler instead.')
+
+    parser.add_argument(      '--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
+                        help='[DEPRECATED] Linux only: Build hipBLAS with g++ compiler instead of hipcc compiler. Deprecated, use --compiler instead.')
 
     parser.add_argument('-v', '--verbose', required=False, default = False, action='store_true',
                         help='Verbose build (optional, default: False)')
@@ -137,27 +160,49 @@ def cmake_path(os_path):
     else:
         return os.path.realpath(os_path)
 
+def fatal(msg, code=1):
+    print(msg)
+    exit(code)
+
+def get_rocm_path():
+    if os.name == "nt":
+        raw_rocm_path = cmake_path(os.getenv('HIP_PATH', 'C:/hip'))
+        rocm_path = f'"{raw_rocm_path}"' # guard against spaces in path
+    else:
+        rocm_path = os.getenv('ROCM_PATH', '/opt/rocm')
+    return rocm_path
+
+def deps_cmd():
+    if os.name == "nt":
+        exe = f"python3 rdeps.py"
+        all_args = ""
+    else:
+        exe = f"./install.sh --rmake_invoked -d"
+        all_args = ' '.join(sys.argv[1:])
+    return exe, all_args
+
 def config_cmd():
     global args
     global OS_info
     cwd_path = os.getcwd()
     cmake_executable = "cmake"
     cmake_options = []
-    src_path = cmake_path(cwd_path)
+    if len(args.src_path):
+        src_path = args.src_path
+    else:
+        src_path = cmake_path(cwd_path)
     cmake_platform_opts = []
+    rocm_path = get_rocm_path()
     if os.name == "nt":
         generator = f"-G Ninja"
         cmake_options.append( generator )
         # CMAKE_PREFIX_PATH set to rocm_path and HIP_PATH set BY SDK Installer
-        raw_rocm_path = cmake_path(os.getenv('HIP_PATH', "C:/hip"))
-        rocm_path = f'"{raw_rocm_path}"' # guard against spaces in path
         cmake_executable = "cmake"
         #set CPACK_PACKAGING_INSTALL_PREFIX= defined as blank as it is appended to end of path for archive creation
         cmake_platform_opts.append( f"-DCPACK_PACKAGING_INSTALL_PREFIX=" )
         cmake_platform_opts.append( f"-DCMAKE_INSTALL_PREFIX=\"C:/hipSDK\"" )
         toolchain = os.path.join( src_path, "toolchain-windows.cmake" )
     else:
-        rocm_path = os.getenv( 'ROCM_PATH', "/opt/rocm")
         if (OS_info["ID"] in ['centos', 'rhel']):
           cmake_executable = "cmake" # was cmake3 but now we built cmake
         else:
@@ -205,7 +250,7 @@ def config_cmd():
         if args.debug or args.relwithdebinfo:
             cmake_options.append( f"-DBUILD_CODE_COVERAGE=ON" )
         else:
-            os.exit( "*** Code coverage is not supported for Release build! Aborting. ***" )
+            fatal( "*** Code coverage is not supported for Release build! Aborting. ***" )
 
     if args.address_sanitizer:
         cmake_options.append( f"-DBUILD_ADDRESS_SANITIZER=ON" )
@@ -217,16 +262,22 @@ def config_cmd():
     os.chdir( build_path )
 
     # compiler
-    if os.name != "nt":
+    if args.compiler is not None:
+        cmake_options.append(f"-DCMAKE_CXX_COMPILER={args.compiler}")
+
+    # windows defaults to clang++ in toolchain
+    if os.name != "nt" and args.compiler is None:
         if args.use_hipcc_compiler:
-            cmake_options.append(f"-DCMAKE_C_COMPILER={rocm_path}/bin/hipcc")
             cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
         else:
-            cmake_options.append(f"-DCMAKE_C_COMPILER=gcc")
+            # default to g++ for now
             cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
 
     if args.static_lib:
         cmake_options.append( f"-DBUILD_SHARED_LIBS=OFF" )
+
+    if args.custom_target:
+        cmake_options.append( f"-DCUSTOM_TARGET={args.custom_target}")
 
     if args.relocatable:
         rocm_rpath = os.getenv( 'ROCM_RPATH', "/opt/rocm/lib:/opt/rocm/lib64")
@@ -238,8 +289,9 @@ def config_cmd():
     if args.build_clients:
         cmake_build_dir = cmake_path(build_dir)
         cmake_options.append( f"-DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_DIR={cmake_build_dir} " )
-        # if os.name != "nt":
-        #     cmake_options.append( f"-DLINK_BLIS=ON")
+        if os.name != "nt" and os.environ['HIP_PLATFORM'] == 'amd':
+            cmake_options.append( f"-DLINK_BLIS=ON")
+
 
     if args.build_solver:
         cmake_options.append (f"-DBUILD_WITH_SOLVER=ON")
@@ -269,6 +321,9 @@ def config_cmd():
     cmake_options.append( f"-DROCBLAS_PATH={rocblas_path_cmake}")
     cmake_options.append( f"-DROCSOLVER_PATH={rocsolver_path_cmake}")
 
+    if args.cuda_path:
+        os.environ['CUDA_BIN_PATH'] = args.cuda_path
+
     if args.cmake_dargs:
         for i in args.cmake_dargs:
           cmake_options.append( f"-D{i}" )
@@ -277,7 +332,6 @@ def config_cmd():
     cmd_opts = " ".join(cmake_options)
 
     return cmake_executable, cmd_opts
-
 
 def make_cmd():
     global args
@@ -314,13 +368,45 @@ def main():
     os_detect()
     args = parse_args()
 
+    rocm_path = get_rocm_path()
+
+    # support --cuda flag for now by overwriting HIP_PLATFORM envvar
+    if args.use_cuda:
+        os.environ['HIP_PLATFORM'] = 'nvidia'
+        print("--cuda option is deprecated (use environment variable HIP_PLATFORM=nvidia)")
+
+    # otherwise query hipconfig to get platform
+    if which('hipconfig') is not None:
+        os.environ['HIP_PLATFORM'] = subprocess.getoutput('hipconfig --platform')
+    elif which(f'{rocm_path}/bin/hipconfig') is not None:
+        os.environ['HIP_PLATFORM'] = subprocess.getoutput(f'{rocm_path}/bin/hipconfig --platform')
+    else:
+        os.environ['HIP_PLATFORM'] = 'amd' # if can't find hipconfig, default amd
+
+    if os.environ['HIP_PLATFORM'] == 'nvidia' and args.static_lib:
+        fatal("Static library not supported for CUDA backend. Not continuing.")
+
+    if args.install_invoked:
+        # ignore any install handled options
+        args.dependencies = False
+        args.install = False
+
+    if args.dependencies:
+        exe, opts = deps_cmd()
+        if run_cmd(exe, opts):
+            fatal("Dependency install failed. Not continuing.")
+
     # configure
     exe, opts = config_cmd()
-    run_cmd(exe, opts)
+    if run_cmd(exe, opts):
+        fatal("Configuration failed. Not continuing.")
 
     # make
     exe, opts = make_cmd()
-    run_cmd(exe, opts)
+    if run_cmd(exe, opts):
+        fatal("Build failed. Not continuing.")
+
+    # Linux install and cleanup not supported from rmake yet
 
 if __name__ == '__main__':
     main()
