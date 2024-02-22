@@ -13,7 +13,7 @@ def runCI =
 {
     nodeDetails, jobName->
 
-    def prj  = new rocProject('hipBLAS', 'StaticLibrary')
+    def prj  = new rocProject('hipBLAS', 'static')
     prj.paths.build_command = './install.sh -cd --static -p /opt/rocm/lib/cmake'
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
@@ -87,7 +87,7 @@ ci: {
     {
         properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
         stage(urlJobName) {
-            runCI([ubuntu18:['gfx900']], urlJobName)
+            runCI([ubuntu18:['gfx906']], urlJobName)
         }
     }
 }
