@@ -15,6 +15,9 @@ Definitions:
   - &alpha_range
     - [ -0.5, 2.0, 0.0 ]
 
+  - &alpha_range_ILP64
+    - { alpha: -2.5, alphai:  1.5 }
+
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
 
@@ -27,7 +30,7 @@ Tests:
     alpha: *alpha_range
     matrix_size: *size_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: her_batched_general
     category: quick
@@ -38,7 +41,7 @@ Tests:
     matrix_size: *size_range
     incx: *incx_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: her_strided_batched_general
@@ -51,7 +54,44 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
+    backend_flags: AMD
+
+# ILP64 tests
+  - name: her_64
+    category: pre_checkin #move to stress before merge
+    function:
+      - her: *single_precision_complex
+    arguments:
+      - { N: 2, lda: 2147483649, incx: 1}
+      - { N: 2, lda: 2, incx: 2147483649}
+    uplo: [ U ]
+    stride_scale: [ 1.0 ]
+    alpha_beta: *alpha_range_ILP64
+    api: [ C_64 ]
+    os_flags: [ LINUX ]
+
+  - name: her_64
+    category: pre_checkin #move to stress before merge
+    function:
+      - her_batched: *single_precision_complex
+      - her_strided_batched: *single_precision_complex
+    arguments:
+      - { N: 2, lda: 2147483649, incx: 1, batch_count: 1 }
+      - { N: 2, lda: 2, incx: 2147483649, batch_count: 1 }
+      - { N: 2, lda: 2, stride_a: 2, incx: 1, batch_count: 666666 }
+    uplo: [ L ]
+    stride_scale: [ 1.0 ]
+    alpha_beta: *alpha_range_ILP64
+    api: [ C_64 ]
+    os_flags: [ LINUX ]
+
+  - name: her_bad_arg
+    category: pre_checkin
+    function:
+      - her_bad_arg
+    precision: *single_double_precisions_complex
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: her_bad_arg
@@ -59,15 +99,7 @@ Tests:
     function:
       - her_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
-    backend_flags: AMD
-
-  - name: her_bad_arg
-    category: pre_checkin
-    function:
-      - her_bad_arg
-    precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -77,6 +109,6 @@ Tests:
       - her_batched_bad_arg
       - her_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
