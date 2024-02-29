@@ -132,8 +132,9 @@ void testing_her_strided_batched_bad_arg(const Arguments& arg)
         }
 
         // With N == 0, can have all nullptrs
-        DAPI_CHECK(hipblasHerStridedBatchedFn,
-                   (handle, uplo, N, alpha, dx, incx, stridex, nullptr, lda, strideA, batch_count));
+        DAPI_CHECK(
+            hipblasHerStridedBatchedFn,
+            (handle, uplo, 0, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
 
         // With batch_count == 0, can have all nullptrs
         DAPI_CHECK(hipblasHerStridedBatchedFn,

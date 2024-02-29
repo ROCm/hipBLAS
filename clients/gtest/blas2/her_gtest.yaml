@@ -16,7 +16,7 @@ Definitions:
     - [ -0.5, 2.0, 0.0 ]
 
   - &alpha_range_ILP64
-    - { alpha: -2.5, alphai:  1.5 }
+    - { alpha: -0.5, alphai:  0.5 }
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
@@ -63,8 +63,8 @@ Tests:
     function:
       - her: *single_precision_complex
     arguments:
-      - { N: 2, lda: 2147483649, incx: 1}
-      - { N: 2, lda: 2, incx: 2147483649}
+      - { N: 2, lda: *c_pos_int64_t_value, incx: 1}
+      - { N: 2, lda: 2, incx: *c_pos_int64_t_value}
     uplo: [ U ]
     stride_scale: [ 1.0 ]
     alpha_beta: *alpha_range_ILP64
@@ -77,9 +77,9 @@ Tests:
       - her_batched: *single_precision_complex
       - her_strided_batched: *single_precision_complex
     arguments:
-      - { N: 2, lda: 2147483649, incx: 1, batch_count: 1 }
-      - { N: 2, lda: 2, incx: 2147483649, batch_count: 1 }
-      - { N: 2, lda: 2, stride_a: 2, incx: 1, batch_count: 666666 }
+      - { N: 2, lda: *c_pos_int64_t_value, incx: 1, batch_count: 1 }
+      - { N: 2, lda: 2, incx: *c_pos_int64_t_value, batch_count: 1 }
+      - { N: 2, lda: 2, stride_a: 2, incx: 1, batch_count: *c_grid_yz_require_passes }
     uplo: [ L ]
     stride_scale: [ 1.0 ]
     alpha_beta: *alpha_range_ILP64
