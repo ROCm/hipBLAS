@@ -13947,7 +13947,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCher_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCher_v2_64(hipblasHandle_t   handle,
                                   hipblasFillMode_t uplo,
                                   int64_t           n,
                                   const float*      alpha,
@@ -13971,7 +13971,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZher_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZher_v2_64(hipblasHandle_t         handle,
                                   hipblasFillMode_t       uplo,
                                   int64_t                 n,
                                   const double*           alpha,
@@ -14153,7 +14153,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCherBatched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCherBatched_v2_64(hipblasHandle_t         handle,
                                          hipblasFillMode_t       uplo,
                                          int64_t                 n,
                                          const float*            alpha,
@@ -14179,7 +14179,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZherBatched_64_v2(hipblasHandle_t               handle,
+hipblasStatus_t hipblasZherBatched_v2_64(hipblasHandle_t               handle,
                                          hipblasFillMode_t             uplo,
                                          int64_t                       n,
                                          const double*                 alpha,
@@ -14387,7 +14387,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCherStridedBatched_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCherStridedBatched_v2_64(hipblasHandle_t   handle,
                                                 hipblasFillMode_t uplo,
                                                 int64_t           n,
                                                 const float*      alpha,
@@ -14417,7 +14417,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZherStridedBatched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZherStridedBatched_v2_64(hipblasHandle_t         handle,
                                                 hipblasFillMode_t       uplo,
                                                 int64_t                 n,
                                                 const double*           alpha,
@@ -14617,7 +14617,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCher2_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCher2_v2_64(hipblasHandle_t   handle,
                                    hipblasFillMode_t uplo,
                                    int64_t           n,
                                    const hipComplex* alpha,
@@ -14645,7 +14645,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZher2_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZher2_v2_64(hipblasHandle_t         handle,
                                    hipblasFillMode_t       uplo,
                                    int64_t                 n,
                                    const hipDoubleComplex* alpha,
@@ -14855,7 +14855,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCher2Batched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCher2Batched_v2_64(hipblasHandle_t         handle,
                                           hipblasFillMode_t       uplo,
                                           int64_t                 n,
                                           const hipComplex*       alpha,
@@ -14885,7 +14885,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZher2Batched_64_v2(hipblasHandle_t               handle,
+hipblasStatus_t hipblasZher2Batched_v2_64(hipblasHandle_t               handle,
                                           hipblasFillMode_t             uplo,
                                           int64_t                       n,
                                           const hipDoubleComplex*       alpha,
@@ -15133,7 +15133,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasCher2StridedBatched_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCher2StridedBatched_v2_64(hipblasHandle_t   handle,
                                                  hipblasFillMode_t uplo,
                                                  int64_t           n,
                                                  const hipComplex* alpha,
@@ -15169,7 +15169,7 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasZher2StridedBatched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZher2StridedBatched_v2_64(hipblasHandle_t         handle,
                                                  hipblasFillMode_t       uplo,
                                                  int64_t                 n,
                                                  const hipDoubleComplex* alpha,
