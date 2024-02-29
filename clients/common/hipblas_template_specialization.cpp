@@ -3650,7 +3650,7 @@ hipblasStatus_t hipblasZherCast_64(hipblasHandle_t             handle,
         handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, (hipDoubleComplex*)A, lda);
 }
 
-// her_batched
+// her_batched_64
 hipblasStatus_t hipblasCherBatchedCast_64(hipblasHandle_t             handle,
                                           hipblasFillMode_t           uplo,
                                           int64_t                     n,
@@ -3693,7 +3693,7 @@ hipblasStatus_t hipblasZherBatchedCast_64(hipblasHandle_t                   hand
                                  batchCount);
 }
 
-// her_strided_batched
+// her_strided_batched_64
 hipblasStatus_t hipblasCherStridedBatchedCast_64(hipblasHandle_t       handle,
                                                  hipblasFillMode_t     uplo,
                                                  int64_t               n,
@@ -3952,7 +3952,7 @@ hipblasStatus_t hipblasZher2Cast_64(hipblasHandle_t             handle,
                            lda);
 }
 
-// her2_batched
+// her2_batched_64
 hipblasStatus_t hipblasCher2BatchedCast_64(hipblasHandle_t             handle,
                                            hipblasFillMode_t           uplo,
                                            int64_t                     n,
@@ -4003,7 +4003,7 @@ hipblasStatus_t hipblasZher2BatchedCast_64(hipblasHandle_t                   han
                                   batchCount);
 }
 
-// her2_strided_batched
+// her2_strided_batched_64
 hipblasStatus_t hipblasCher2StridedBatchedCast_64(hipblasHandle_t       handle,
                                                   hipblasFillMode_t     uplo,
                                                   int64_t               n,
