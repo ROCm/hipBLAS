@@ -115,6 +115,12 @@ void testing_her2_bad_arg(const Arguments& arg)
                        (handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
         }
 
+        // Check 64-bit API with quick return
+        if(arg.api & c_API_64)
+        {
+            DAPI_CHECK(hipblasHer2Fn, (handle, uplo, N, zero, dx, incx, dy, incy, dA, lda));
+        }
+
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHer2Fn,
                    (handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));

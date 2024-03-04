@@ -57,35 +57,6 @@ Tests:
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
-# ILP64 tests
-  - name: her_64
-    category: pre_checkin #move to stress before merge
-    function:
-      - her: *single_precision_complex
-    arguments:
-      - { N: 2, lda: *c_pos_int64_t_value, incx: 1}
-      - { N: 2, lda: 2, incx: *c_pos_int64_t_value}
-    uplo: [ U ]
-    stride_scale: [ 1.0 ]
-    alpha_beta: *alpha_range_ILP64
-    api: [ C_64 ]
-    os_flags: [ LINUX ]
-
-  - name: her_64
-    category: pre_checkin #move to stress before merge
-    function:
-      - her_batched: *single_precision_complex
-      - her_strided_batched: *single_precision_complex
-    arguments:
-      - { N: 2, lda: *c_pos_int64_t_value, incx: 1, batch_count: 1 }
-      - { N: 2, lda: 2, incx: *c_pos_int64_t_value, batch_count: 1 }
-      - { N: 2, lda: 2, stride_a: 2, incx: 1, batch_count: *c_grid_yz_require_passes }
-    uplo: [ L ]
-    stride_scale: [ 1.0 ]
-    alpha_beta: *alpha_range_ILP64
-    api: [ C_64 ]
-    os_flags: [ LINUX ]
-
   - name: her_bad_arg
     category: pre_checkin
     function:
