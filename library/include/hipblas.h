@@ -568,10 +568,16 @@ typedef enum
     HIPBLAS_COMPUTE_32F_FAST_16BF = 5, /**< 32-bit input can is bf16 compute */
     HIPBLAS_COMPUTE_32F_FAST_TF32
     = 6, /**< 32-bit input can use tensor cores w/ TF32 compute. Only supported with cuBLAS backend currently */
-    HIPBLAS_COMPUTE_64F          = 7, /**< compute will be at least 64-bit precision */
-    HIPBLAS_COMPUTE_64F_PEDANTIC = 8, /**< compute will be exactly 64-bit precision */
-    HIPBLAS_COMPUTE_32I          = 9, /**< compute will be at least 32-bit integer precision */
-    HIPBLAS_COMPUTE_32I_PEDANTIC = 10, /**< compute will be exactly 32-bit integer precision */
+    HIPBLAS_COMPUTE_64F               = 7, /**< compute will be at least 64-bit precision */
+    HIPBLAS_COMPUTE_64F_PEDANTIC      = 8, /**< compute will be exactly 64-bit precision */
+    HIPBLAS_COMPUTE_32I               = 9, /**< compute will be at least 32-bit integer precision */
+    HIPBLAS_COMPUTE_32I_PEDANTIC      = 10, /**< compute will be exactly 32-bit integer precision */
+    HIPBLAS_COMPUTE_32F_FAST_8F_FNUZ  = 100, /**< 32-bit input can use fp8 compute */
+    HIPBLAS_COMPUTE_32F_FAST_8BF_FNUZ = 101, /**< 32-bit input can use bf8 compute */
+    HIPBLAS_COMPUTE_32F_FAST_8F8BF_FNUZ
+    = 102, /**< 32-bit input can use fp8 for A and bf8 for B compute */
+    HIPBLAS_COMPUTE_32F_FAST_8BF8F_FNUZ
+    = 103, /**< 32-bit input can use bf8 for A and fp8 for B compute */
 } hipblasComputeType_t;
 
 /*! \brief Indicates if layer is active with bitmask. */
