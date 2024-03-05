@@ -13,13 +13,13 @@ Prerequisites
 
 * If using the cuBLAS backend on a Nvidia machine:
 
-  * A HIP enabled platform, more information `HIP installation <https://docs.amd.com/bundle/HIP_Installation/page/HIP_Installation.html#d2e131>`_.
+  * A HIP enabled platform, more information :ref:`HIP installation <hip:how_to_guides/install>`.
   * A working CUDA toolkit, including cuBLAS, see `CUDA toolkit <https://developer.nvidia.com/accelerated-computing-toolkit/>`_.
 
 Installing pre-built packages
 =============================
 
-Download pre-built packages either from `ROCm's package servers <https://rocm.github.io/install.html#installing-from-amd-rocm-repositories>`_ or by clicking the GitHub releases tab and manually downloading, which could be newer.  Release notes are available for each release on the releases tab.
+Download pre-built packages either from `ROCm's package servers <https://github.com/ROCm/ROCm>`_ or by clicking the GitHub releases tab and manually downloading, which could be newer.  Release notes are available for each release on the releases tab.
 
 .. code-block::bash
    sudo apt update && sudo apt install hipblas
