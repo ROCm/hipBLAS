@@ -3,7 +3,7 @@ Introduction
 ************
 AMD **ROCm** has two classification of libraries,
 
-- **roc**\* : AMD GPU Libraries, written in `HIP <https://docs.amd.com/bundle/AMD_HIP_Programming_Guide/page/Introduction.html>`_.
+- **roc**\* : AMD GPU Libraries, written in :doc:`HIP <hip:user_guide/programming_manual>`.
 - **hip**\* : AMD CPU library that is a thin interface to either AMD **roc*** or Nvidia **cu*** libraries.
 
 Users targeting both CUDA and AMD devices must use the **hip*** libraries.
