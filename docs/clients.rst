@@ -13,7 +13,7 @@ There are two client executables that can be used with hipBLAS. They are,
 1. hipblas-bench
 2. hipblas-test
 
-These two clients can be built by following the instructions in the :doc:`./install`. After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
+These two clients can be built by following the instructions in :doc:`./install`. After building the hipBLAS clients, they can be found in the directory ``hipBLAS/build/release/clients/staging``.
 
 The next two sections will cover a brief explanation and the usage of each hipBLAS client.
 
