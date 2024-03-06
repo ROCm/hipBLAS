@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,10 @@ void testing_her_strided_batched_bad_arg(const Arguments& arg)
     auto hipblasHerStridedBatchedFn
         = FORTRAN ? hipblasHerStridedBatched<T, U, true> : hipblasHerStridedBatched<T, U, false>;
 
+    auto hipblasHerStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasHerStridedBatched_64<T, U, true>
+                                             : hipblasHerStridedBatched_64<T, U, false>;
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -76,62 +80,77 @@ void testing_her_strided_batched_bad_arg(const Arguments& arg)
         device_vector<T> dA(strideA * batch_count);
         device_vector<T> dx(stridex * batch_count);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasHerStridedBatchedFn(
-                nullptr, uplo, N, alpha, dx, incx, stridex, dA, lda, strideA, batch_count),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasHerStridedBatchedFn(handle,
-                                                         HIPBLAS_FILL_MODE_FULL,
-                                                         N,
-                                                         alpha,
-                                                         dx,
-                                                         incx,
-                                                         stridex,
-                                                         dA,
-                                                         lda,
-                                                         strideA,
-                                                         batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasHerStridedBatchedFn(handle,
-                                                         (hipblasFillMode_t)HIPBLAS_OP_N,
-                                                         N,
-                                                         alpha,
-                                                         dx,
-                                                         incx,
-                                                         stridex,
-                                                         dA,
-                                                         lda,
-                                                         strideA,
-                                                         batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasHerStridedBatchedFn,
+                    (nullptr, uplo, N, alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasHerStridedBatchedFn(
-                handle, uplo, N, nullptr, dx, incx, stridex, dA, lda, strideA, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHerStridedBatchedFn,
+                    (handle,
+                     HIPBLAS_FILL_MODE_FULL,
+                     N,
+                     alpha,
+                     dx,
+                     incx,
+                     stridex,
+                     dA,
+                     lda,
+                     strideA,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasHerStridedBatchedFn,
+                    (handle,
+                     (hipblasFillMode_t)HIPBLAS_OP_N,
+                     N,
+                     alpha,
+                     dx,
+                     incx,
+                     stridex,
+                     dA,
+                     lda,
+                     strideA,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHerStridedBatchedFn,
+                    (handle, uplo, N, nullptr, dx, incx, stridex, dA, lda, strideA, batch_count));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
+
             // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHerStridedBatchedFn(
-                    handle, uplo, N, alpha, nullptr, incx, stridex, dA, lda, strideA, batch_count),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHerStridedBatchedFn(
-                    handle, uplo, N, alpha, dx, incx, stridex, nullptr, lda, strideA, batch_count),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasHerStridedBatchedFn,
+                (handle, uplo, N, alpha, nullptr, incx, stridex, dA, lda, strideA, batch_count));
+
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasHerStridedBatchedFn,
+                (handle, uplo, N, alpha, dx, incx, stridex, nullptr, lda, strideA, batch_count));
+        }
+
+        // Check 64-bit API with quick return
+        if(arg.api & c_API_64)
+        {
+            DAPI_CHECK(hipblasHerStridedBatchedFn,
+                       (handle, uplo, N, zero, dx, incx, stridex, dA, lda, strideA, batch_count));
         }
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-            handle, uplo, 0, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-            handle, uplo, N, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, 0));
+        DAPI_CHECK(
+            hipblasHerStridedBatchedFn,
+            (handle, uplo, 0, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
+
+        // With batch_count == 0, can have all nullptrs
+        DAPI_CHECK(hipblasHerStridedBatchedFn,
+                   (handle, uplo, N, nullptr, nullptr, incx, stridex, nullptr, lda, strideA, 0));
 
         // With alpha == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-            handle, uplo, N, zero, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
+        DAPI_CHECK(
+            hipblasHerStridedBatchedFn,
+            (handle, uplo, N, zero, nullptr, incx, stridex, nullptr, lda, strideA, batch_count));
     }
 }
 
@@ -143,17 +162,21 @@ void testing_her_strided_batched(const Arguments& arg)
     auto hipblasHerStridedBatchedFn
         = FORTRAN ? hipblasHerStridedBatched<T, U, true> : hipblasHerStridedBatched<T, U, false>;
 
+    auto hipblasHerStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasHerStridedBatched_64<T, U, true>
+                                             : hipblasHerStridedBatched_64<T, U, false>;
+
     hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
-    int               N            = arg.N;
-    int               incx         = arg.incx;
-    int               lda          = arg.lda;
+    int64_t           N            = arg.N;
+    int64_t           incx         = arg.incx;
+    int64_t           lda          = arg.lda;
     double            stride_scale = arg.stride_scale;
-    int               batch_count  = arg.batch_count;
+    int64_t           batch_count  = arg.batch_count;
 
-    int abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
 
-    hipblasStride stride_A = size_t(lda) * N * stride_scale;
-    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
+    hipblasStride stride_A = lda * N * stride_scale;
+    hipblasStride stride_x = N * abs_incx * stride_scale;
     size_t        A_size   = stride_A * batch_count;
     size_t        x_size   = stride_x * batch_count;
 
@@ -164,10 +187,19 @@ void testing_her_strided_batched(const Arguments& arg)
     bool invalid_size = N < 0 || lda < N || lda < 1 || !incx || batch_count < 0;
     if(invalid_size || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasHerStridedBatchedFn(
-            handle, uplo, N, nullptr, nullptr, incx, stride_x, nullptr, lda, stride_A, batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasHerStridedBatchedFn,
+                    (handle,
+                     uplo,
+                     N,
+                     nullptr,
+                     nullptr,
+                     incx,
+                     stride_x,
+                     nullptr,
+                     lda,
+                     stride_A,
+                     batch_count));
         return;
     }
 
@@ -182,7 +214,7 @@ void testing_her_strided_batched(const Arguments& arg)
     device_vector<T> dx(x_size);
     device_vector<U> d_alpha(1);
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double hipblas_error_host, hipblas_error_device;
 
     U h_alpha = arg.get_alpha<U>();
 
@@ -206,22 +238,23 @@ void testing_her_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-            handle, uplo, N, (U*)&h_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
+        DAPI_CHECK(
+            hipblasHerStridedBatchedFn,
+            (handle, uplo, N, (U*)&h_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-            handle, uplo, N, d_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
+        DAPI_CHECK(hipblasHerStridedBatchedFn,
+                   (handle, uplo, N, d_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(size_t b = 0; b < batch_count; b++)
         {
             ref_her<T>(uplo,
                        N,
@@ -251,6 +284,7 @@ void testing_her_strided_batched(const Arguments& arg)
 
     if(arg.timing)
     {
+        double gpu_time_used;
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -262,8 +296,9 @@ void testing_her_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasHerStridedBatchedFn(
-                handle, uplo, N, d_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
+            DAPI_DISPATCH(
+                hipblasHerStridedBatchedFn,
+                (handle, uplo, N, d_alpha, dx, incx, stride_x, dA, lda, stride_A, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

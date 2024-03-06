@@ -451,6 +451,16 @@ nrm2_ex precisions double: &nrm2_ex_precisions_double
   - *double_precision
   - *double_precision_complex_real_in_real_compute
 
+Definitions:
+  - &c_pos_int64_t_value
+   - [2147483649] # force looping over y/z chunks
+
+  - &c_neg_int64_t_value
+   - [-2147483649] # force looping over y/z chunks
+
+  - &c_grid_yz_require_passes
+   - [666666] # force looping over y/z chunks
+
 Arguments:
   - M: c_int64
   - N: c_int64

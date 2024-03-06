@@ -3624,6 +3624,126 @@ hipblasStatus_t hipblasZherStridedBatchedCast(hipblasHandle_t             handle
                                      batchCount);
 }
 
+// her_64
+hipblasStatus_t hipblasCherCast_64(hipblasHandle_t       handle,
+                                   hipblasFillMode_t     uplo,
+                                   int64_t               n,
+                                   const float*          alpha,
+                                   const hipblasComplex* x,
+                                   int64_t               incx,
+                                   hipblasComplex*       A,
+                                   int64_t               lda)
+{
+    return hipblasCher_64(handle, uplo, n, alpha, (const hipComplex*)x, incx, (hipComplex*)A, lda);
+}
+
+hipblasStatus_t hipblasZherCast_64(hipblasHandle_t             handle,
+                                   hipblasFillMode_t           uplo,
+                                   int64_t                     n,
+                                   const double*               alpha,
+                                   const hipblasDoubleComplex* x,
+                                   int64_t                     incx,
+                                   hipblasDoubleComplex*       A,
+                                   int64_t                     lda)
+{
+    return hipblasZher_64(
+        handle, uplo, n, alpha, (const hipDoubleComplex*)x, incx, (hipDoubleComplex*)A, lda);
+}
+
+// her_batched_64
+hipblasStatus_t hipblasCherBatchedCast_64(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          int64_t                     n,
+                                          const float*                alpha,
+                                          const hipblasComplex* const x[],
+                                          int64_t                     incx,
+                                          hipblasComplex* const       A[],
+                                          int64_t                     lda,
+                                          int64_t                     batchCount)
+{
+    return hipblasCherBatched_64(handle,
+                                 uplo,
+                                 n,
+                                 alpha,
+                                 (const hipComplex* const*)x,
+                                 incx,
+                                 (hipComplex* const*)A,
+                                 lda,
+                                 batchCount);
+}
+
+hipblasStatus_t hipblasZherBatchedCast_64(hipblasHandle_t                   handle,
+                                          hipblasFillMode_t                 uplo,
+                                          int64_t                           n,
+                                          const double*                     alpha,
+                                          const hipblasDoubleComplex* const x[],
+                                          int64_t                           incx,
+                                          hipblasDoubleComplex* const       A[],
+                                          int64_t                           lda,
+                                          int64_t                           batchCount)
+{
+    return hipblasZherBatched_64(handle,
+                                 uplo,
+                                 n,
+                                 alpha,
+                                 (const hipDoubleComplex* const*)x,
+                                 incx,
+                                 (hipDoubleComplex* const*)A,
+                                 lda,
+                                 batchCount);
+}
+
+// her_strided_batched_64
+hipblasStatus_t hipblasCherStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                 hipblasFillMode_t     uplo,
+                                                 int64_t               n,
+                                                 const float*          alpha,
+                                                 const hipblasComplex* x,
+                                                 int64_t               incx,
+                                                 hipblasStride         stridex,
+                                                 hipblasComplex*       A,
+                                                 int64_t               lda,
+                                                 hipblasStride         strideA,
+                                                 int64_t               batchCount)
+{
+    return hipblasCherStridedBatched_64(handle,
+                                        uplo,
+                                        n,
+                                        alpha,
+                                        (const hipComplex*)x,
+                                        incx,
+                                        stridex,
+                                        (hipComplex*)A,
+                                        lda,
+                                        strideA,
+                                        batchCount);
+}
+
+hipblasStatus_t hipblasZherStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                 hipblasFillMode_t           uplo,
+                                                 int64_t                     n,
+                                                 const double*               alpha,
+                                                 const hipblasDoubleComplex* x,
+                                                 int64_t                     incx,
+                                                 hipblasStride               stridex,
+                                                 hipblasDoubleComplex*       A,
+                                                 int64_t                     lda,
+                                                 hipblasStride               strideA,
+                                                 int64_t                     batchCount)
+{
+    return hipblasZherStridedBatched_64(handle,
+                                        uplo,
+                                        n,
+                                        alpha,
+                                        (const hipDoubleComplex*)x,
+                                        incx,
+                                        stridex,
+                                        (hipDoubleComplex*)A,
+                                        lda,
+                                        strideA,
+                                        batchCount);
+}
+
 // her2
 hipblasStatus_t hipblasCher2Cast(hipblasHandle_t       handle,
                                  hipblasFillMode_t     uplo,
@@ -3783,6 +3903,167 @@ hipblasStatus_t hipblasZher2StridedBatchedCast(hipblasHandle_t             handl
                                       lda,
                                       strideA,
                                       batchCount);
+}
+
+// her2_64
+hipblasStatus_t hipblasCher2Cast_64(hipblasHandle_t       handle,
+                                    hipblasFillMode_t     uplo,
+                                    int64_t               n,
+                                    const hipblasComplex* alpha,
+                                    const hipblasComplex* x,
+                                    int64_t               incx,
+                                    const hipblasComplex* y,
+                                    int64_t               incy,
+                                    hipblasComplex*       A,
+                                    int64_t               lda)
+{
+    return hipblasCher2_64(handle,
+                           uplo,
+                           n,
+                           (const hipComplex*)alpha,
+                           (const hipComplex*)x,
+                           incx,
+                           (const hipComplex*)y,
+                           incy,
+                           (hipComplex*)A,
+                           lda);
+}
+
+hipblasStatus_t hipblasZher2Cast_64(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int64_t                     n,
+                                    const hipblasDoubleComplex* alpha,
+                                    const hipblasDoubleComplex* x,
+                                    int64_t                     incx,
+                                    const hipblasDoubleComplex* y,
+                                    int64_t                     incy,
+                                    hipblasDoubleComplex*       A,
+                                    int64_t                     lda)
+{
+    return hipblasZher2_64(handle,
+                           uplo,
+                           n,
+                           (const hipDoubleComplex*)alpha,
+                           (const hipDoubleComplex*)x,
+                           incx,
+                           (const hipDoubleComplex*)y,
+                           incy,
+                           (hipDoubleComplex*)A,
+                           lda);
+}
+
+// her2_batched_64
+hipblasStatus_t hipblasCher2BatchedCast_64(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int64_t                     n,
+                                           const hipblasComplex*       alpha,
+                                           const hipblasComplex* const x[],
+                                           int64_t                     incx,
+                                           const hipblasComplex* const y[],
+                                           int64_t                     incy,
+                                           hipblasComplex* const       A[],
+                                           int64_t                     lda,
+                                           int64_t                     batchCount)
+{
+    return hipblasCher2Batched_64(handle,
+                                  uplo,
+                                  n,
+                                  (const hipComplex*)alpha,
+                                  (const hipComplex* const*)x,
+                                  incx,
+                                  (const hipComplex* const*)y,
+                                  incy,
+                                  (hipComplex* const*)A,
+                                  lda,
+                                  batchCount);
+}
+
+hipblasStatus_t hipblasZher2BatchedCast_64(hipblasHandle_t                   handle,
+                                           hipblasFillMode_t                 uplo,
+                                           int64_t                           n,
+                                           const hipblasDoubleComplex*       alpha,
+                                           const hipblasDoubleComplex* const x[],
+                                           int64_t                           incx,
+                                           const hipblasDoubleComplex* const y[],
+                                           int64_t                           incy,
+                                           hipblasDoubleComplex* const       A[],
+                                           int64_t                           lda,
+                                           int64_t                           batchCount)
+{
+    return hipblasZher2Batched_64(handle,
+                                  uplo,
+                                  n,
+                                  (const hipDoubleComplex*)alpha,
+                                  (const hipDoubleComplex* const*)x,
+                                  incx,
+                                  (const hipDoubleComplex* const*)y,
+                                  incy,
+                                  (hipDoubleComplex* const*)A,
+                                  lda,
+                                  batchCount);
+}
+
+// her2_strided_batched_64
+hipblasStatus_t hipblasCher2StridedBatchedCast_64(hipblasHandle_t       handle,
+                                                  hipblasFillMode_t     uplo,
+                                                  int64_t               n,
+                                                  const hipblasComplex* alpha,
+                                                  const hipblasComplex* x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stridex,
+                                                  const hipblasComplex* y,
+                                                  int64_t               incy,
+                                                  hipblasStride         stridey,
+                                                  hipblasComplex*       A,
+                                                  int64_t               lda,
+                                                  hipblasStride         strideA,
+                                                  int64_t               batchCount)
+{
+    return hipblasCher2StridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         (const hipComplex*)alpha,
+                                         (const hipComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (const hipComplex*)y,
+                                         incy,
+                                         stridey,
+                                         (hipComplex*)A,
+                                         lda,
+                                         strideA,
+                                         batchCount);
+}
+
+hipblasStatus_t hipblasZher2StridedBatchedCast_64(hipblasHandle_t             handle,
+                                                  hipblasFillMode_t           uplo,
+                                                  int64_t                     n,
+                                                  const hipblasDoubleComplex* alpha,
+                                                  const hipblasDoubleComplex* x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stridex,
+                                                  const hipblasDoubleComplex* y,
+                                                  int64_t                     incy,
+                                                  hipblasStride               stridey,
+                                                  hipblasDoubleComplex*       A,
+                                                  int64_t                     lda,
+                                                  hipblasStride               strideA,
+                                                  int64_t                     batchCount)
+{
+    return hipblasZher2StridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         (const hipDoubleComplex*)alpha,
+                                         (const hipDoubleComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (const hipDoubleComplex*)y,
+                                         incy,
+                                         stridey,
+                                         (hipDoubleComplex*)A,
+                                         lda,
+                                         strideA,
+                                         batchCount);
 }
 
 // hpmv
