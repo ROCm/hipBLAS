@@ -14,10 +14,13 @@ Definitions:
     - { incx:  0, incy:  0 }
     - { incx: -1, incy: -1 }
 
-  - &alpha_beta_range
+  - &alpha_range
     - { alpha: -0.5, alphai:  1.5 }
     - { alpha:  2.0, alphai: -1.0 }
     - { alpha:  0.0, alphai:  0.0 }
+
+  - &alpha_range_ILP64
+    - { alpha: -0.5, alphai:  0.5 }
 
   - &batch_count_range
     - [ -1, 0, 1, 2, 10 ]
@@ -28,21 +31,21 @@ Tests:
     function: her2
     precision: *single_double_precisions_complex
     uplo: [ 'L', 'U' ]
-    alpha_beta: *alpha_beta_range
+    alpha_beta: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: her2_batched_general
     category: quick
     function: her2_batched
     precision: *single_double_precisions_complex
     uplo: [ 'L', 'U' ]
-    alpha_beta: *alpha_beta_range
+    alpha_beta: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: her2_strided_batched_general
@@ -50,12 +53,12 @@ Tests:
     function: her2_strided_batched
     precision: *single_double_precisions_complex
     uplo: [ 'L', 'U' ]
-    alpha_beta: *alpha_beta_range
+    alpha_beta: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: her2_bad_arg
@@ -63,7 +66,7 @@ Tests:
     function:
       - her2_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: her2_bad_arg
@@ -71,7 +74,7 @@ Tests:
     function:
       - her2_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -81,6 +84,6 @@ Tests:
       - her2_batched_bad_arg
       - her2_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
