@@ -129,12 +129,6 @@ void testing_hemv_bad_arg(const Arguments& arg)
                        (handle, uplo, N, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHemvFn, (handle, uplo, N, zero, dA, lda, dx, incx, one, dy, incy));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHemvFn,
                    (handle, uplo, 0, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));

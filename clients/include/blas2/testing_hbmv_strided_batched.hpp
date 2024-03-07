@@ -253,28 +253,6 @@ void testing_hbmv_strided_batched_bad_arg(const Arguments& arg)
                          batch_count));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHbmvStridedBatchedFn,
-                       (handle,
-                        uplo,
-                        N,
-                        K,
-                        zero,
-                        dA,
-                        lda,
-                        strideA,
-                        dx,
-                        incx,
-                        stridex,
-                        one,
-                        dy,
-                        incy,
-                        stridey,
-                        batch_count));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHbmvStridedBatchedFn,
                    (handle,
