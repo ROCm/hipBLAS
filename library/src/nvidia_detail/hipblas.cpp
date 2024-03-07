@@ -11420,16 +11420,16 @@ catch(...)
 }
 
 // hpmv_64
-hipblasStatus_t hipblasChpmv(hipblasHandle_t       handle,
-                             hipblasFillMode_t     uplo,
-                             int64_t               n,
-                             const hipblasComplex* alpha,
-                             const hipblasComplex* AP,
-                             const hipblasComplex* x,
-                             int64_t               incx,
-                             const hipblasComplex* beta,
-                             hipblasComplex*       y,
-                             int64_t               incy)
+hipblasStatus_t hipblasChpmv_64(hipblasHandle_t       handle,
+                                hipblasFillMode_t     uplo,
+                                int64_t               n,
+                                const hipblasComplex* alpha,
+                                const hipblasComplex* AP,
+                                const hipblasComplex* x,
+                                int64_t               incx,
+                                const hipblasComplex* beta,
+                                hipblasComplex*       y,
+                                int64_t               incy)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -12330,12 +12330,12 @@ catch(...)
 // hpr2_64
 hipblasStatus_t hipblasChpr2_64(hipblasHandle_t       handle,
                                 hipblasFillMode_t     uplo,
-                                int                   n,
+                                int64_t               n,
                                 const hipblasComplex* alpha,
                                 const hipblasComplex* x,
-                                int                   incx,
+                                int64_t               incx,
                                 const hipblasComplex* y,
-                                int                   incy,
+                                int64_t               incy,
                                 hipblasComplex*       AP)
 try
 {
@@ -12360,12 +12360,12 @@ catch(...)
 
 hipblasStatus_t hipblasZhpr2_64(hipblasHandle_t             handle,
                                 hipblasFillMode_t           uplo,
-                                int                         n,
+                                int64_t                     n,
                                 const hipblasDoubleComplex* alpha,
                                 const hipblasDoubleComplex* x,
-                                int                         incx,
+                                int64_t                     incx,
                                 const hipblasDoubleComplex* y,
-                                int                         incy,
+                                int64_t                     incy,
                                 hipblasDoubleComplex*       AP)
 try
 {
@@ -12390,12 +12390,12 @@ catch(...)
 
 hipblasStatus_t hipblasChpr2_v2_64(hipblasHandle_t   handle,
                                    hipblasFillMode_t uplo,
-                                   int               n,
+                                   int64_t           n,
                                    const hipComplex* alpha,
                                    const hipComplex* x,
-                                   int               incx,
+                                   int64_t           incx,
                                    const hipComplex* y,
-                                   int               incy,
+                                   int64_t           incy,
                                    hipComplex*       AP)
 try
 {
@@ -12420,12 +12420,12 @@ catch(...)
 
 hipblasStatus_t hipblasZhpr2_v2_64(hipblasHandle_t         handle,
                                    hipblasFillMode_t       uplo,
-                                   int                     n,
+                                   int64_t                 n,
                                    const hipDoubleComplex* alpha,
                                    const hipDoubleComplex* x,
-                                   int                     incx,
+                                   int64_t                 incx,
                                    const hipDoubleComplex* y,
-                                   int                     incy,
+                                   int64_t                 incy,
                                    hipDoubleComplex*       AP)
 try
 {

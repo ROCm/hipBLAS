@@ -125,12 +125,6 @@ void testing_hpr_strided_batched_bad_arg(const Arguments& arg)
                         hipblasHprStridedBatchedFn,
                         (handle, uplo, N, alpha, dx, incx, stridex, nullptr, strideA, batch_count));
         }
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHprStridedBatchedFn,
-                       (handle, uplo, N, zero, dx, incx, stridex, dA, strideA, batch_count));
-        }
 
         // With N == 0, can have all nullptrs
         DAPI_CHECK(

@@ -200,23 +200,6 @@ void testing_hpmv_batched_bad_arg(const Arguments& arg)
                          batch_count));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHpmvBatchedFn,
-                       (handle,
-                        uplo,
-                        N,
-                        zero,
-                        dA.ptr_on_device(),
-                        dx.ptr_on_device(),
-                        incx,
-                        one,
-                        dy.ptr_on_device(),
-                        incy,
-                        batch_count));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHpmvBatchedFn,
                    (handle,

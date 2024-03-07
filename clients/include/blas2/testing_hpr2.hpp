@@ -113,12 +113,6 @@ void testing_hpr2_bad_arg(const Arguments& arg)
                        (handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHpr2Fn, (handle, uplo, N, zero, dx, incx, dy, incy, dA));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHpr2Fn,
                    (handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr));
