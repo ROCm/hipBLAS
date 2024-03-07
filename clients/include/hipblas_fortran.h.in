@@ -1760,7 +1760,7 @@ hipblasStatus_t HIPBLAS_FAPI(hipblasZhemvStridedBatched)(hipblasHandle_t        
                                                          hipblas_int                 incy,
                                                          hipblasStride               stride_y,
                                                          hipblas_int                 batch_count);
-                                                         
+
 #ifdef HIPBLAS_V2
 #undef hipblasComplex
 #undef hipblasDoubleComplex
