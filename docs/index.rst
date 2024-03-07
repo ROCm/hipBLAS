@@ -21,13 +21,13 @@ The hipBLAS documentation is structured as follows:
 
     * :ref:`install`
 
-  .. grid-item-card:: How-To
+  .. grid-item-card:: How to
 
     * :ref:`hipblas-orga`
     * :ref:`hipblas-clients`
     * :ref:`contribute`
 
-  .. grid-item-card:: Reference
+  .. grid-item-card:: API Reference
 
     * :ref:`api_label`
     * :ref:`deprecations`
