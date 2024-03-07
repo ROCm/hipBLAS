@@ -89,7 +89,8 @@ void testing_hpr2_bad_arg(const Arguments& arg)
         if(arg.bad_arg_all)
         {
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                        hipblasHpr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA));
+                        hipblasHpr2Fn,
+                        (handle, uplo, N, nullptr, dx, incx, dy, incy, dA));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
@@ -99,10 +100,12 @@ void testing_hpr2_bad_arg(const Arguments& arg)
                             (handle, uplo, N, alpha, nullptr, incx, dy, incy, dA));
 
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                            hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA));
+                            hipblasHpr2Fn,
+                            (handle, uplo, N, alpha, dx, incx, nullptr, incy, dA));
 
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                            hipblasHpr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr));
+                            hipblasHpr2Fn,
+                            (handle, uplo, N, alpha, dx, incx, dy, incy, nullptr));
             }
 
             // With alpha == 0, can have all nullptrs
@@ -149,7 +152,8 @@ void testing_hpr2(const Arguments& arg)
     if(invalid_size || !N)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
-                    hipblasHpr2Fn(handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr));
+                    hipblasHpr2Fn,
+                    (handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr));
         return;
     }
 

@@ -115,17 +115,16 @@ void testing_hpr_batched_bad_arg(const Arguments& arg)
                         hipblasHprBatchedFn,
                         (handle, uplo, N, alpha, nullptr, incx, dA.ptr_on_device(), batch_count));
 
-            DAPI_EXPECT(
-                HIPBLAS_STATUS_INVALID_VALUE,
-                hipblasHprBatchedFn(
-                    handle, uplo, N, alpha, dx.ptr_on_device(), incx, nullptr, batch_count));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHprBatchedFn,
+                        (handle, uplo, N, alpha, dx.ptr_on_device(), incx, nullptr, batch_count));
         }
 
         // Check 64-bit API with quick return
         if(arg.api & c_API_64)
         {
             DAPI_CHECK(
-                hipblasHprFn,
+                hipblasHprBatchedFn,
                 (handle, uplo, N, zero, dx.ptr_on_device(), incx, dA.ptr_on_device(), batch_count));
         }
 
@@ -169,9 +168,9 @@ void testing_hpr_batched(const Arguments& arg)
     bool invalid_size = N < 0 || !incx || batch_count < 0;
     if(invalid_size || !N || !batch_count)
     {
-        DAPI_EXPECT(
-            invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
-            hipblasHprBatchedFn(handle, uplo, N, nullptr, nullptr, incx, nullptr, batch_count));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasHprBatchedFn,
+                    (handle, uplo, N, nullptr, nullptr, incx, nullptr, batch_count));
         return;
     }
 
@@ -262,14 +261,15 @@ void testing_hpr_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            DAPI_DISPATCH(hipblasHprBatchedFn(handle,
-                                              uplo,
-                                              N,
-                                              d_alpha,
-                                              dx.ptr_on_device(),
-                                              incx,
-                                              dA.ptr_on_device(),
-                                              batch_count));
+            DAPI_DISPATCH(hipblasHprBatchedFn,
+                          (handle,
+                           uplo,
+                           N,
+                           d_alpha,
+                           dx.ptr_on_device(),
+                           incx,
+                           dA.ptr_on_device(),
+                           batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

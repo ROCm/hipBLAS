@@ -123,6 +123,8 @@ void testing_hpr(const Arguments& arg)
     using U           = real_t<T>;
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHprFn = FORTRAN ? hipblasHpr<T, U, true> : hipblasHpr<T, U, false>;
+    auto hipblasHprFn_64
+        = arg.api == FORTRAN_64 ? hipblasHpr_64<T, U, true> : hipblasHpr_64<T, U, false>;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
     int64_t           N    = arg.N;
@@ -140,7 +142,8 @@ void testing_hpr(const Arguments& arg)
     if(invalid_size || !N)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
-                    hipblasHprFn(handle, uplo, N, nullptr, nullptr, incx, nullptr));
+                    hipblasHprFn,
+                    (handle, uplo, N, nullptr, nullptr, incx, nullptr));
         return;
     }
 
@@ -220,7 +223,7 @@ void testing_hpr(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            DAPI_DISPATCH(hipblasHprFn(handle, uplo, N, d_alpha, dx, incx, dA));
+            DAPI_DISPATCH(hipblasHprFn, (handle, uplo, N, d_alpha, dx, incx, dA));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

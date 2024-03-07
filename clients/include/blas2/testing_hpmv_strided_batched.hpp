@@ -49,6 +49,7 @@ template <typename T>
 void testing_hpmv_strided_batched_bad_arg(const Arguments& arg)
 {
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
+
     auto hipblasHpmvStridedBatchedFn
         = FORTRAN ? hipblasHpmvStridedBatched<T, true> : hipblasHpmvStridedBatched<T, false>;
 
@@ -111,7 +112,9 @@ void testing_hpmv_strided_batched_bad_arg(const Arguments& arg)
                      incy,
                      stridey,
                      batch_count));
-        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUEhipblasHpmvStridedBatchedFn,
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHpmvStridedBatchedFn,
                     (handle,
                      HIPBLAS_FILL_MODE_FULL,
                      N,
@@ -126,6 +129,7 @@ void testing_hpmv_strided_batched_bad_arg(const Arguments& arg)
                      incy,
                      stridey,
                      batch_count));
+
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHpmvStridedBatchedFn,
                     (handle,
@@ -159,6 +163,7 @@ void testing_hpmv_strided_batched_bad_arg(const Arguments& arg)
                      incy,
                      stridey,
                      batch_count));
+
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasHpmvStridedBatchedFn,
                     (handle,
@@ -195,7 +200,8 @@ void testing_hpmv_strided_batched_bad_arg(const Arguments& arg)
                          incy,
                          stridey,
                          batch_count));
-            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUEhipblasHpmvStridedBatchedFn,
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHpmvStridedBatchedFn,
                         (handle,
                          uplo,
                          N,
@@ -353,20 +359,21 @@ void testing_hpmv_strided_batched(const Arguments& arg)
     if(invalid_size || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
-                    hipblasHpmvStridedBatchedFn(handle,
-                                                uplo,
-                                                N,
-                                                nullptr,
-                                                nullptr,
-                                                stride_A,
-                                                nullptr,
-                                                incx,
-                                                stride_x,
-                                                nullptr,
-                                                nullptr,
-                                                incy,
-                                                stride_y,
-                                                batch_count));
+                    hipblasHpmvStridedBatchedFn,
+                    (handle,
+                     uplo,
+                     N,
+                     nullptr,
+                     nullptr,
+                     stride_A,
+                     nullptr,
+                     incx,
+                     stride_x,
+                     nullptr,
+                     nullptr,
+                     incy,
+                     stride_y,
+                     batch_count));
         return;
     }
 
