@@ -29,7 +29,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: hemv_batched_general
     category: quick
@@ -40,7 +40,7 @@ Tests:
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: hemv_strided_batched_general
@@ -53,7 +53,7 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: hemv_bad_arg
@@ -61,7 +61,7 @@ Tests:
     function:
       - hemv_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: hemv_bad_arg
@@ -69,7 +69,7 @@ Tests:
     function:
       - hemv_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -79,6 +79,6 @@ Tests:
       - hemv_batched_bad_arg
       - hemv_strided_batched_bad_arg
     precision: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
