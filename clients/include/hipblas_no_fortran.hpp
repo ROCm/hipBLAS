@@ -509,6 +509,7 @@
 #define hipblasDspmvBatchedFortran hipblasDspmvBatched
 #define hipblasSspmvStridedBatchedFortran hipblasSspmvStridedBatched
 #define hipblasDspmvStridedBatchedFortran hipblasDspmvStridedBatched
+
 #define hipblasSsprFortran hipblasSspr
 #define hipblasDsprFortran hipblasDspr
 #define hipblasCsprFortran hipblasCspr
@@ -521,12 +522,34 @@
 #define hipblasDsprStridedBatchedFortran hipblasDsprStridedBatched
 #define hipblasCsprStridedBatchedFortran hipblasCsprStridedBatched
 #define hipblasZsprStridedBatchedFortran hipblasZsprStridedBatched
+
+#define hipblasSspr_64Fortran hipblasSspr_64
+#define hipblasDspr_64Fortran hipblasDspr_64
+#define hipblasCspr_64Fortran hipblasCspr_64
+#define hipblasZspr_64Fortran hipblasZspr_64
+#define hipblasSsprBatched_64Fortran hipblasSsprBatched_64
+#define hipblasDsprBatched_64Fortran hipblasDsprBatched_64
+#define hipblasCsprBatched_64Fortran hipblasCsprBatched_64
+#define hipblasZsprBatched_64Fortran hipblasZsprBatched_64
+#define hipblasSsprStridedBatched_64Fortran hipblasSsprStridedBatched_64
+#define hipblasDsprStridedBatched_64Fortran hipblasDsprStridedBatched_64
+#define hipblasCsprStridedBatched_64Fortran hipblasCsprStridedBatched_64
+#define hipblasZsprStridedBatched_64Fortran hipblasZsprStridedBatched_64
+
 #define hipblasSspr2Fortran hipblasSspr2
 #define hipblasDspr2Fortran hipblasDspr2
 #define hipblasSspr2BatchedFortran hipblasSspr2Batched
 #define hipblasDspr2BatchedFortran hipblasDspr2Batched
 #define hipblasSspr2StridedBatchedFortran hipblasSspr2StridedBatched
 #define hipblasDspr2StridedBatchedFortran hipblasDspr2StridedBatched
+
+#define hipblasSspr2_64Fortran hipblasSspr2_64
+#define hipblasDspr2_64Fortran hipblasDspr2_64
+#define hipblasSspr2Batched_64Fortran hipblasSspr2Batched_64
+#define hipblasDspr2Batched_64Fortran hipblasDspr2Batched_64
+#define hipblasSspr2StridedBatched_64Fortran hipblasSspr2StridedBatched_64
+#define hipblasDspr2StridedBatched_64Fortran hipblasDspr2StridedBatched_64
+
 #define hipblasSsymvFortran hipblasSsymv
 #define hipblasDsymvFortran hipblasDsymv
 #define hipblasCsymvFortran hipblasCsymv
