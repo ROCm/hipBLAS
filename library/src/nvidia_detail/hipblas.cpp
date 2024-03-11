@@ -12059,6 +12059,7 @@ hipblasStatus_t hipblasSsbmv_64(hipblasHandle_t   handle,
                                 int64_t           incy)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasSsbmv_64((cublasHandle_t)handle,
                                                      hipFillToCudaFill(uplo),
                                                      n,
@@ -12071,6 +12072,9 @@ try
                                                      beta,
                                                      y,
                                                      incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -12091,6 +12095,7 @@ hipblasStatus_t hipblasDsbmv_64(hipblasHandle_t   handle,
                                 int64_t           incy)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasDsbmv_64((cublasHandle_t)handle,
                                                      hipFillToCudaFill(uplo),
                                                      n,
@@ -12103,6 +12108,9 @@ try
                                                      beta,
                                                      y,
                                                      incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -12315,8 +12323,12 @@ hipblasStatus_t hipblasSspmv_64(hipblasHandle_t   handle,
                                 int64_t           incy)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasSspmv_64(
         (cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, AP, x, incx, beta, y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -12335,8 +12347,12 @@ hipblasStatus_t hipblasDspmv_64(hipblasHandle_t   handle,
                                 int64_t           incy)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasDspmv_64(
         (cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, AP, x, incx, beta, y, incy));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
