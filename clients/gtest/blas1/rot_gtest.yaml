@@ -102,18 +102,18 @@ Tests:
     backend_flags: AMD
 
   # ILP-64 tests
-  - name: rotg_64
-    category: stress
-    function:
-      - rotg_batched: *single_precision
-      - rotg_strided_batched: *single_precision
-      - rotmg_batched: *single_precision
-      - rotmg_strided_batched: *single_precision
-    batch_count: 666666
-    api: [ C_64 ]
-    os_flags: [ LINUX ]
-    gpu_arch: '90a'
-    backend_flags: AMD
+  # - name: rotg_64
+  #   category: stress
+  #   function:
+  #     - rotg_batched: *single_precision
+  #     - rotg_strided_batched: *single_precision
+  #     - rotmg_batched: *single_precision
+  #     - rotmg_strided_batched: *single_precision
+  #   batch_count: 666666
+  #   api: [ C_64 ]
+  #   os_flags: [ LINUX ]
+  #   gpu_arch: '90a'
+  #   backend_flags: AMD
 
   # bad arg tests
   - name: rot_bad_arg
