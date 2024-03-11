@@ -5711,43 +5711,42 @@ hipblasStatus_t hipblasZtbmvCast(hipblasHandle_t             handle,
 
 // tbmv_64
 hipblasStatus_t hipblasCtbmvCast_64(hipblasHandle_t       handle,
-                                 hipblasFillMode_t     uplo,
-                                 hipblasOperation_t    transA,
-                                 hipblasDiagType_t     diag,
-                                 int64_t                   m,
-                                 int64_t                   k,
-                                 const hipblasComplex* A,
-                                 int64_t                   lda,
-                                 hipblasComplex*       x,
-                                 int64_t                   incx)
+                                    hipblasFillMode_t     uplo,
+                                    hipblasOperation_t    transA,
+                                    hipblasDiagType_t     diag,
+                                    int64_t               m,
+                                    int64_t               k,
+                                    const hipblasComplex* A,
+                                    int64_t               lda,
+                                    hipblasComplex*       x,
+                                    int64_t               incx)
 {
     return hipblasCtbmv_64(
         handle, uplo, transA, diag, m, k, (const hipComplex*)A, lda, (hipComplex*)x, incx);
 }
 
 hipblasStatus_t hipblasZtbmvCast_64(hipblasHandle_t             handle,
-                                 hipblasFillMode_t           uplo,
-                                 hipblasOperation_t          transA,
-                                 hipblasDiagType_t           diag,
-                                 int64_t                         m,
-                                 int64_t                         k,
-                                 const hipblasDoubleComplex* A,
-                                 int64_t                         lda,
-                                 hipblasDoubleComplex*       x,
-                                 int64_t                         incx)
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int64_t                     m,
+                                    int64_t                     k,
+                                    const hipblasDoubleComplex* A,
+                                    int64_t                     lda,
+                                    hipblasDoubleComplex*       x,
+                                    int64_t                     incx)
 {
     return hipblasZtbmv_64(handle,
-                        uplo,
-                        transA,
-                        diag,
-                        m,
-                        k,
-                        (const hipDoubleComplex*)A,
-                        lda,
-                        (hipDoubleComplex*)x,
-                        incx);
+                           uplo,
+                           transA,
+                           diag,
+                           m,
+                           k,
+                           (const hipDoubleComplex*)A,
+                           lda,
+                           (hipDoubleComplex*)x,
+                           incx);
 }
-
 
 // tbmv_batched
 hipblasStatus_t hipblasCtbmvBatchedCast(hipblasHandle_t             handle,
@@ -5802,53 +5801,53 @@ hipblasStatus_t hipblasZtbmvBatchedCast(hipblasHandle_t                   handle
 
 // tbmv_batched_64
 hipblasStatus_t hipblasCtbmvBatchedCast_64(hipblasHandle_t             handle,
-                                        hipblasFillMode_t           uplo,
-                                        hipblasOperation_t          transA,
-                                        hipblasDiagType_t           diag,
-                                        int64_t                         m,
-                                        int64_t                         k,
-                                        const hipblasComplex* const A[],
-                                        int64_t                         lda,
-                                        hipblasComplex* const       x[],
-                                        int64_t                         incx,
-                                        int64_t                         batch_count)
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int64_t                     m,
+                                           int64_t                     k,
+                                           const hipblasComplex* const A[],
+                                           int64_t                     lda,
+                                           hipblasComplex* const       x[],
+                                           int64_t                     incx,
+                                           int64_t                     batch_count)
 {
     return hipblasCtbmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               k,
-                               (const hipComplex* const*)A,
-                               lda,
-                               (hipComplex* const*)x,
-                               incx,
-                               batch_count);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  k,
+                                  (const hipComplex* const*)A,
+                                  lda,
+                                  (hipComplex* const*)x,
+                                  incx,
+                                  batch_count);
 }
 
 hipblasStatus_t hipblasZtbmvBatchedCast_64(hipblasHandle_t                   handle,
-                                        hipblasFillMode_t                 uplo,
-                                        hipblasOperation_t                transA,
-                                        hipblasDiagType_t                 diag,
-                                        int64_t                               m,
-                                        int64_t                               k,
-                                        const hipblasDoubleComplex* const A[],
-                                        int64_t                               lda,
-                                        hipblasDoubleComplex* const       x[],
-                                        int64_t                               incx,
-                                        int64_t                               batch_count)
+                                           hipblasFillMode_t                 uplo,
+                                           hipblasOperation_t                transA,
+                                           hipblasDiagType_t                 diag,
+                                           int64_t                           m,
+                                           int64_t                           k,
+                                           const hipblasDoubleComplex* const A[],
+                                           int64_t                           lda,
+                                           hipblasDoubleComplex* const       x[],
+                                           int64_t                           incx,
+                                           int64_t                           batch_count)
 {
     return hipblasZtbmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               k,
-                               (const hipDoubleComplex* const*)A,
-                               lda,
-                               (hipDoubleComplex* const*)x,
-                               incx,
-                               batch_count);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  k,
+                                  (const hipDoubleComplex* const*)A,
+                                  lda,
+                                  (hipDoubleComplex* const*)x,
+                                  incx,
+                                  batch_count);
 }
 
 // tbmv_strided_batched
@@ -5912,61 +5911,61 @@ hipblasStatus_t hipblasZtbmvStridedBatchedCast(hipblasHandle_t             handl
 
 // tbmv_strided_batched_64
 hipblasStatus_t hipblasCtbmvStridedBatchedCast_64(hipblasHandle_t       handle,
-                                               hipblasFillMode_t     uplo,
-                                               hipblasOperation_t    transA,
-                                               hipblasDiagType_t     diag,
-                                               int64_t                   m,
-                                               int64_t                   k,
-                                               const hipblasComplex* A,
-                                               int64_t                   lda,
-                                               hipblasStride         stride_a,
-                                               hipblasComplex*       x,
-                                               int64_t                   incx,
-                                               hipblasStride         stride_x,
-                                               int64_t                   batch_count)
+                                                  hipblasFillMode_t     uplo,
+                                                  hipblasOperation_t    transA,
+                                                  hipblasDiagType_t     diag,
+                                                  int64_t               m,
+                                                  int64_t               k,
+                                                  const hipblasComplex* A,
+                                                  int64_t               lda,
+                                                  hipblasStride         stride_a,
+                                                  hipblasComplex*       x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stride_x,
+                                                  int64_t               batch_count)
 {
     return hipblasCtbmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      k,
-                                      (const hipComplex*)A,
-                                      lda,
-                                      stride_a,
-                                      (hipComplex*)x,
-                                      incx,
-                                      stride_x,
-                                      batch_count);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         k,
+                                         (const hipComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (hipComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         batch_count);
 }
 
 hipblasStatus_t hipblasZtbmvStridedBatchedCast_64(hipblasHandle_t             handle,
-                                               hipblasFillMode_t           uplo,
-                                               hipblasOperation_t          transA,
-                                               hipblasDiagType_t           diag,
-                                               int64_t                         m,
-                                               int64_t                         k,
-                                               const hipblasDoubleComplex* A,
-                                               int64_t                         lda,
-                                               hipblasStride               stride_a,
-                                               hipblasDoubleComplex*       x,
-                                               int64_t                         incx,
-                                               hipblasStride               stride_x,
-                                               int64_t                         batch_count)
+                                                  hipblasFillMode_t           uplo,
+                                                  hipblasOperation_t          transA,
+                                                  hipblasDiagType_t           diag,
+                                                  int64_t                     m,
+                                                  int64_t                     k,
+                                                  const hipblasDoubleComplex* A,
+                                                  int64_t                     lda,
+                                                  hipblasStride               stride_a,
+                                                  hipblasDoubleComplex*       x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stride_x,
+                                                  int64_t                     batch_count)
 {
     return hipblasZtbmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      k,
-                                      (const hipDoubleComplex*)A,
-                                      lda,
-                                      stride_a,
-                                      (hipDoubleComplex*)x,
-                                      incx,
-                                      stride_x,
-                                      batch_count);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         k,
+                                         (const hipDoubleComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (hipDoubleComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         batch_count);
 }
 
 // tbsv
@@ -6146,25 +6145,26 @@ hipblasStatus_t hipblasZtpmvCast(hipblasHandle_t             handle,
 
 // tpmv_64
 hipblasStatus_t hipblasCtpmvCast_64(hipblasHandle_t       handle,
-                                 hipblasFillMode_t     uplo,
-                                 hipblasOperation_t    transA,
-                                 hipblasDiagType_t     diag,
-                                 int64_t                   m,
-                                 const hipblasComplex* AP,
-                                 hipblasComplex*       x,
-                                 int64_t                   incx)
+                                    hipblasFillMode_t     uplo,
+                                    hipblasOperation_t    transA,
+                                    hipblasDiagType_t     diag,
+                                    int64_t               m,
+                                    const hipblasComplex* AP,
+                                    hipblasComplex*       x,
+                                    int64_t               incx)
 {
-    return hipblasCtpmv_64(handle, uplo, transA, diag, m, (const hipComplex*)AP, (hipComplex*)x, incx);
+    return hipblasCtpmv_64(
+        handle, uplo, transA, diag, m, (const hipComplex*)AP, (hipComplex*)x, incx);
 }
 
 hipblasStatus_t hipblasZtpmvCast_64(hipblasHandle_t             handle,
-                                 hipblasFillMode_t           uplo,
-                                 hipblasOperation_t          transA,
-                                 hipblasDiagType_t           diag,
-                                 int64_t                         m,
-                                 const hipblasDoubleComplex* AP,
-                                 hipblasDoubleComplex*       x,
-                                 int64_t                         incx)
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int64_t                     m,
+                                    const hipblasDoubleComplex* AP,
+                                    hipblasDoubleComplex*       x,
+                                    int64_t                     incx)
 {
     return hipblasZtpmv_64(
         handle, uplo, transA, diag, m, (const hipDoubleComplex*)AP, (hipDoubleComplex*)x, incx);
@@ -6215,45 +6215,45 @@ hipblasStatus_t hipblasZtpmvBatchedCast(hipblasHandle_t                   handle
 
 // tpmv_batched_64
 hipblasStatus_t hipblasCtpmvBatchedCast_64(hipblasHandle_t             handle,
-                                        hipblasFillMode_t           uplo,
-                                        hipblasOperation_t          transA,
-                                        hipblasDiagType_t           diag,
-                                        int64_t                         m,
-                                        const hipblasComplex* const AP[],
-                                        hipblasComplex* const       x[],
-                                        int64_t                         incx,
-                                        int64_t                         batchCount)
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int64_t                     m,
+                                           const hipblasComplex* const AP[],
+                                           hipblasComplex* const       x[],
+                                           int64_t                     incx,
+                                           int64_t                     batchCount)
 {
     return hipblasCtpmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               (const hipComplex* const*)AP,
-                               (hipComplex* const*)x,
-                               incx,
-                               batchCount);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  (const hipComplex* const*)AP,
+                                  (hipComplex* const*)x,
+                                  incx,
+                                  batchCount);
 }
 
 hipblasStatus_t hipblasZtpmvBatchedCast_64(hipblasHandle_t                   handle,
-                                        hipblasFillMode_t                 uplo,
-                                        hipblasOperation_t                transA,
-                                        hipblasDiagType_t                 diag,
-                                        int64_t                               m,
-                                        const hipblasDoubleComplex* const AP[],
-                                        hipblasDoubleComplex* const       x[],
-                                        int64_t                               incx,
-                                        int64_t                               batchCount)
+                                           hipblasFillMode_t                 uplo,
+                                           hipblasOperation_t                transA,
+                                           hipblasDiagType_t                 diag,
+                                           int64_t                           m,
+                                           const hipblasDoubleComplex* const AP[],
+                                           hipblasDoubleComplex* const       x[],
+                                           int64_t                           incx,
+                                           int64_t                           batchCount)
 {
     return hipblasZtpmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               (const hipDoubleComplex* const*)AP,
-                               (hipDoubleComplex* const*)x,
-                               incx,
-                               batchCount);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  (const hipDoubleComplex* const*)AP,
+                                  (hipDoubleComplex* const*)x,
+                                  incx,
+                                  batchCount);
 }
 
 // tpmv_strided_batched
@@ -6309,53 +6309,53 @@ hipblasStatus_t hipblasZtpmvStridedBatchedCast(hipblasHandle_t             handl
 
 // tpmv_strided_batched_64
 hipblasStatus_t hipblasCtpmvStridedBatchedCast_64(hipblasHandle_t       handle,
-                                               hipblasFillMode_t     uplo,
-                                               hipblasOperation_t    transA,
-                                               hipblasDiagType_t     diag,
-                                               int64_t                   m,
-                                               const hipblasComplex* AP,
-                                               hipblasStride         strideAP,
-                                               hipblasComplex*       x,
-                                               int64_t                   incx,
-                                               hipblasStride         stridex,
-                                               int64_t                   batchCount)
+                                                  hipblasFillMode_t     uplo,
+                                                  hipblasOperation_t    transA,
+                                                  hipblasDiagType_t     diag,
+                                                  int64_t               m,
+                                                  const hipblasComplex* AP,
+                                                  hipblasStride         strideAP,
+                                                  hipblasComplex*       x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stridex,
+                                                  int64_t               batchCount)
 {
     return hipblasCtpmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      (const hipComplex*)AP,
-                                      strideAP,
-                                      (hipComplex*)x,
-                                      incx,
-                                      stridex,
-                                      batchCount);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         (const hipComplex*)AP,
+                                         strideAP,
+                                         (hipComplex*)x,
+                                         incx,
+                                         stridex,
+                                         batchCount);
 }
 
 hipblasStatus_t hipblasZtpmvStridedBatchedCast_64(hipblasHandle_t             handle,
-                                               hipblasFillMode_t           uplo,
-                                               hipblasOperation_t          transA,
-                                               hipblasDiagType_t           diag,
-                                               int64_t                         m,
-                                               const hipblasDoubleComplex* AP,
-                                               hipblasStride               strideAP,
-                                               hipblasDoubleComplex*       x,
-                                               int64_t                         incx,
-                                               hipblasStride               stridex,
-                                               int64_t                         batchCount)
+                                                  hipblasFillMode_t           uplo,
+                                                  hipblasOperation_t          transA,
+                                                  hipblasDiagType_t           diag,
+                                                  int64_t                     m,
+                                                  const hipblasDoubleComplex* AP,
+                                                  hipblasStride               strideAP,
+                                                  hipblasDoubleComplex*       x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stridex,
+                                                  int64_t                     batchCount)
 {
     return hipblasZtpmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      (const hipDoubleComplex*)AP,
-                                      strideAP,
-                                      (hipDoubleComplex*)x,
-                                      incx,
-                                      stridex,
-                                      batchCount);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         (const hipDoubleComplex*)AP,
+                                         strideAP,
+                                         (hipDoubleComplex*)x,
+                                         incx,
+                                         stridex,
+                                         batchCount);
 }
 
 // tpsv
@@ -6509,28 +6509,28 @@ hipblasStatus_t hipblasZtrmvCast(hipblasHandle_t             handle,
 
 // trmv_64
 hipblasStatus_t hipblasCtrmvCast_64(hipblasHandle_t       handle,
-                                 hipblasFillMode_t     uplo,
-                                 hipblasOperation_t    transA,
-                                 hipblasDiagType_t     diag,
-                                 int64_t                   m,
-                                 const hipblasComplex* A,
-                                 int64_t                   lda,
-                                 hipblasComplex*       x,
-                                 int64_t                   incx)
+                                    hipblasFillMode_t     uplo,
+                                    hipblasOperation_t    transA,
+                                    hipblasDiagType_t     diag,
+                                    int64_t               m,
+                                    const hipblasComplex* A,
+                                    int64_t               lda,
+                                    hipblasComplex*       x,
+                                    int64_t               incx)
 {
     return hipblasCtrmv_64(
         handle, uplo, transA, diag, m, (const hipComplex*)A, lda, (hipComplex*)x, incx);
 }
 
 hipblasStatus_t hipblasZtrmvCast_64(hipblasHandle_t             handle,
-                                 hipblasFillMode_t           uplo,
-                                 hipblasOperation_t          transA,
-                                 hipblasDiagType_t           diag,
-                                 int64_t                         m,
-                                 const hipblasDoubleComplex* A,
-                                 int64_t                         lda,
-                                 hipblasDoubleComplex*       x,
-                                 int64_t                         incx)
+                                    hipblasFillMode_t           uplo,
+                                    hipblasOperation_t          transA,
+                                    hipblasDiagType_t           diag,
+                                    int64_t                     m,
+                                    const hipblasDoubleComplex* A,
+                                    int64_t                     lda,
+                                    hipblasDoubleComplex*       x,
+                                    int64_t                     incx)
 {
     return hipblasZtrmv_64(
         handle, uplo, transA, diag, m, (const hipDoubleComplex*)A, lda, (hipDoubleComplex*)x, incx);
@@ -6585,49 +6585,49 @@ hipblasStatus_t hipblasZtrmvBatchedCast(hipblasHandle_t                   handle
 
 // trmv_batched_64
 hipblasStatus_t hipblasCtrmvBatchedCast_64(hipblasHandle_t             handle,
-                                        hipblasFillMode_t           uplo,
-                                        hipblasOperation_t          transA,
-                                        hipblasDiagType_t           diag,
-                                        int64_t                         m,
-                                        const hipblasComplex* const A[],
-                                        int64_t                         lda,
-                                        hipblasComplex* const       x[],
-                                        int64_t                         incx,
-                                        int64_t                         batch_count)
+                                           hipblasFillMode_t           uplo,
+                                           hipblasOperation_t          transA,
+                                           hipblasDiagType_t           diag,
+                                           int64_t                     m,
+                                           const hipblasComplex* const A[],
+                                           int64_t                     lda,
+                                           hipblasComplex* const       x[],
+                                           int64_t                     incx,
+                                           int64_t                     batch_count)
 {
     return hipblasCtrmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               (const hipComplex* const*)A,
-                               lda,
-                               (hipComplex* const*)x,
-                               incx,
-                               batch_count);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  (const hipComplex* const*)A,
+                                  lda,
+                                  (hipComplex* const*)x,
+                                  incx,
+                                  batch_count);
 }
 
 hipblasStatus_t hipblasZtrmvBatchedCast_64(hipblasHandle_t                   handle,
-                                        hipblasFillMode_t                 uplo,
-                                        hipblasOperation_t                transA,
-                                        hipblasDiagType_t                 diag,
-                                        int64_t                               m,
-                                        const hipblasDoubleComplex* const A[],
-                                        int64_t                               lda,
-                                        hipblasDoubleComplex* const       x[],
-                                        int64_t                               incx,
-                                        int64_t                               batch_count)
+                                           hipblasFillMode_t                 uplo,
+                                           hipblasOperation_t                transA,
+                                           hipblasDiagType_t                 diag,
+                                           int64_t                           m,
+                                           const hipblasDoubleComplex* const A[],
+                                           int64_t                           lda,
+                                           hipblasDoubleComplex* const       x[],
+                                           int64_t                           incx,
+                                           int64_t                           batch_count)
 {
     return hipblasZtrmvBatched_64(handle,
-                               uplo,
-                               transA,
-                               diag,
-                               m,
-                               (const hipDoubleComplex* const*)A,
-                               lda,
-                               (hipDoubleComplex* const*)x,
-                               incx,
-                               batch_count);
+                                  uplo,
+                                  transA,
+                                  diag,
+                                  m,
+                                  (const hipDoubleComplex* const*)A,
+                                  lda,
+                                  (hipDoubleComplex* const*)x,
+                                  incx,
+                                  batch_count);
 }
 
 // trmv_strided_batched
@@ -6687,57 +6687,57 @@ hipblasStatus_t hipblasZtrmvStridedBatchedCast(hipblasHandle_t             handl
 
 // trmv_strided_batched_64
 hipblasStatus_t hipblasCtrmvStridedBatchedCast_64(hipblasHandle_t       handle,
-                                               hipblasFillMode_t     uplo,
-                                               hipblasOperation_t    transA,
-                                               hipblasDiagType_t     diag,
-                                               int64_t                   m,
-                                               const hipblasComplex* A,
-                                               int64_t                   lda,
-                                               hipblasStride         stride_a,
-                                               hipblasComplex*       x,
-                                               int64_t                   incx,
-                                               hipblasStride         stride_x,
-                                               int64_t                   batch_count)
+                                                  hipblasFillMode_t     uplo,
+                                                  hipblasOperation_t    transA,
+                                                  hipblasDiagType_t     diag,
+                                                  int64_t               m,
+                                                  const hipblasComplex* A,
+                                                  int64_t               lda,
+                                                  hipblasStride         stride_a,
+                                                  hipblasComplex*       x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stride_x,
+                                                  int64_t               batch_count)
 {
     return hipblasCtrmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      (const hipComplex*)A,
-                                      lda,
-                                      stride_a,
-                                      (hipComplex*)x,
-                                      incx,
-                                      stride_x,
-                                      batch_count);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         (const hipComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (hipComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         batch_count);
 }
 
 hipblasStatus_t hipblasZtrmvStridedBatchedCast_64(hipblasHandle_t             handle,
-                                               hipblasFillMode_t           uplo,
-                                               hipblasOperation_t          transA,
-                                               hipblasDiagType_t           diag,
-                                               int64_t                         m,
-                                               const hipblasDoubleComplex* A,
-                                               int64_t                         lda,
-                                               hipblasStride               stride_a,
-                                               hipblasDoubleComplex*       x,
-                                               int64_t                         incx,
-                                               hipblasStride               stride_x,
-                                               int64_t                         batch_count)
+                                                  hipblasFillMode_t           uplo,
+                                                  hipblasOperation_t          transA,
+                                                  hipblasDiagType_t           diag,
+                                                  int64_t                     m,
+                                                  const hipblasDoubleComplex* A,
+                                                  int64_t                     lda,
+                                                  hipblasStride               stride_a,
+                                                  hipblasDoubleComplex*       x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stride_x,
+                                                  int64_t                     batch_count)
 {
     return hipblasZtrmvStridedBatched_64(handle,
-                                      uplo,
-                                      transA,
-                                      diag,
-                                      m,
-                                      (const hipDoubleComplex*)A,
-                                      lda,
-                                      stride_a,
-                                      (hipDoubleComplex*)x,
-                                      incx,
-                                      stride_x,
-                                      batch_count);
+                                         uplo,
+                                         transA,
+                                         diag,
+                                         m,
+                                         (const hipDoubleComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (hipDoubleComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         batch_count);
 }
 
 /*

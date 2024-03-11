@@ -14396,12 +14396,12 @@ hipblasStatus_t hipblasStbmv_64(hipblasHandle_t    handle,
                                 hipblasFillMode_t  uplo,
                                 hipblasOperation_t transA,
                                 hipblasDiagType_t  diag,
-                                c_int64_t          n,
-                                c_int64_t          k,
+                                int64_t            n,
+                                int64_t            k,
                                 const float*       A,
-                                c_int64_t          lda,
+                                int64_t            lda,
                                 float*             x,
-                                c_int64_t          incx)
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14428,12 +14428,12 @@ hipblasStatus_t hipblasDtbmv_64(hipblasHandle_t    handle,
                                 hipblasFillMode_t  uplo,
                                 hipblasOperation_t transA,
                                 hipblasDiagType_t  diag,
-                                c_int64_t          n,
-                                c_int64_t          k,
+                                int64_t            n,
+                                int64_t            k,
                                 const double*      A,
-                                c_int64_t          lda,
+                                int64_t            lda,
                                 double*            x,
-                                c_int64_t          incx)
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14460,12 +14460,12 @@ hipblasStatus_t hipblasCtbmv_64(hipblasHandle_t       handle,
                                 hipblasFillMode_t     uplo,
                                 hipblasOperation_t    transA,
                                 hipblasDiagType_t     diag,
-                                c_int64_t             n,
-                                c_int64_t             k,
+                                int64_t               n,
+                                int64_t               k,
                                 const hipblasComplex* A,
-                                c_int64_t             lda,
+                                int64_t               lda,
                                 hipblasComplex*       x,
-                                c_int64_t             incx)
+                                int64_t               incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14492,12 +14492,12 @@ hipblasStatus_t hipblasZtbmv_64(hipblasHandle_t             handle,
                                 hipblasFillMode_t           uplo,
                                 hipblasOperation_t          transA,
                                 hipblasDiagType_t           diag,
-                                c_int64_t                   n,
-                                c_int64_t                   k,
+                                int64_t                     n,
+                                int64_t                     k,
                                 const hipblasDoubleComplex* A,
-                                c_int64_t                   lda,
+                                int64_t                     lda,
                                 hipblasDoubleComplex*       x,
-                                c_int64_t                   incx)
+                                int64_t                     incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14524,12 +14524,12 @@ hipblasStatus_t hipblasCtbmv_v2_64(hipblasHandle_t    handle,
                                    hipblasFillMode_t  uplo,
                                    hipblasOperation_t transA,
                                    hipblasDiagType_t  diag,
-                                   c_int64_t          n,
-                                   c_int64_t          k,
+                                   int64_t            n,
+                                   int64_t            k,
                                    const hipComplex*  A,
-                                   c_int64_t          lda,
+                                   int64_t            lda,
                                    hipComplex*        x,
-                                   c_int64_t          incx)
+                                   int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14556,12 +14556,12 @@ hipblasStatus_t hipblasZtbmv_v2_64(hipblasHandle_t         handle,
                                    hipblasFillMode_t       uplo,
                                    hipblasOperation_t      transA,
                                    hipblasDiagType_t       diag,
-                                   c_int64_t               n,
-                                   c_int64_t               k,
+                                   int64_t                 n,
+                                   int64_t                 k,
                                    const hipDoubleComplex* A,
-                                   c_int64_t               lda,
+                                   int64_t                 lda,
                                    hipDoubleComplex*       x,
-                                   c_int64_t               incx)
+                                   int64_t                 incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -14874,15 +14874,15 @@ hipblasStatus_t hipblasStbmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
-                                              c_int64_t          k,
+                                              int64_t            n,
+                                              int64_t            k,
                                               const float*       A,
-                                              c_int64_t          lda,
+                                              int64_t            lda,
                                               hipblasStride      stride_a,
                                               float*             x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stride_x,
-                                              c_int64_t          batch_count)
+                                              int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14891,15 +14891,15 @@ hipblasStatus_t hipblasDtbmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
-                                              c_int64_t          k,
+                                              int64_t            n,
+                                              int64_t            k,
                                               const double*      A,
-                                              c_int64_t          lda,
+                                              int64_t            lda,
                                               hipblasStride      stride_a,
                                               double*            x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stride_x,
-                                              c_int64_t          batch_count)
+                                              int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14908,15 +14908,15 @@ hipblasStatus_t hipblasCtbmvStridedBatched_64(hipblasHandle_t       handle,
                                               hipblasFillMode_t     uplo,
                                               hipblasOperation_t    transA,
                                               hipblasDiagType_t     diag,
-                                              c_int64_t             n,
-                                              c_int64_t             k,
+                                              int64_t               n,
+                                              int64_t               k,
                                               const hipblasComplex* A,
-                                              c_int64_t             lda,
+                                              int64_t               lda,
                                               hipblasStride         stride_a,
                                               hipblasComplex*       x,
-                                              c_int64_t             incx,
+                                              int64_t               incx,
                                               hipblasStride         stride_x,
-                                              c_int64_t             batch_count)
+                                              int64_t               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14925,15 +14925,15 @@ hipblasStatus_t hipblasZtbmvStridedBatched_64(hipblasHandle_t             handle
                                               hipblasFillMode_t           uplo,
                                               hipblasOperation_t          transA,
                                               hipblasDiagType_t           diag,
-                                              c_int64_t                   n,
-                                              c_int64_t                   k,
+                                              int64_t                     n,
+                                              int64_t                     k,
                                               const hipblasDoubleComplex* A,
-                                              c_int64_t                   lda,
+                                              int64_t                     lda,
                                               hipblasStride               stride_a,
                                               hipblasDoubleComplex*       x,
-                                              c_int64_t                   incx,
+                                              int64_t                     incx,
                                               hipblasStride               stride_x,
-                                              c_int64_t                   batch_count)
+                                              int64_t                     batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14942,15 +14942,15 @@ hipblasStatus_t hipblasCtbmvStridedBatched_v2_64(hipblasHandle_t    handle,
                                                  hipblasFillMode_t  uplo,
                                                  hipblasOperation_t transA,
                                                  hipblasDiagType_t  diag,
-                                                 c_int64_t          n,
-                                                 c_int64_t          k,
+                                                 int64_t            n,
+                                                 int64_t            k,
                                                  const hipComplex*  A,
-                                                 c_int64_t          lda,
+                                                 int64_t            lda,
                                                  hipblasStride      stride_a,
                                                  hipComplex*        x,
-                                                 c_int64_t          incx,
+                                                 int64_t            incx,
                                                  hipblasStride      stride_x,
-                                                 c_int64_t          batch_count)
+                                                 int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -14959,15 +14959,15 @@ hipblasStatus_t hipblasZtbmvStridedBatched_v2_64(hipblasHandle_t         handle,
                                                  hipblasFillMode_t       uplo,
                                                  hipblasOperation_t      transA,
                                                  hipblasDiagType_t       diag,
-                                                 c_int64_t               n,
-                                                 c_int64_t               k,
+                                                 int64_t                 n,
+                                                 int64_t                 k,
                                                  const hipDoubleComplex* A,
-                                                 c_int64_t               lda,
+                                                 int64_t                 lda,
                                                  hipblasStride           stride_a,
                                                  hipDoubleComplex*       x,
-                                                 c_int64_t               incx,
+                                                 int64_t                 incx,
                                                  hipblasStride           stride_x,
-                                                 c_int64_t               batch_count)
+                                                 int64_t                 batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15485,10 +15485,10 @@ hipblasStatus_t hipblasStpmv_64(hipblasHandle_t    handle,
                                 hipblasFillMode_t  uplo,
                                 hipblasOperation_t transA,
                                 hipblasDiagType_t  diag,
-                                c_int64_t          n,
+                                int64_t            n,
                                 const float*       AP,
                                 float*             x,
-                                c_int64_t          incx)
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15513,10 +15513,10 @@ hipblasStatus_t hipblasDtpmv_64(hipblasHandle_t    handle,
                                 hipblasFillMode_t  uplo,
                                 hipblasOperation_t transA,
                                 hipblasDiagType_t  diag,
-                                c_int64_t          n,
+                                int64_t            n,
                                 const double*      AP,
                                 double*            x,
-                                c_int64_t          incx)
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15541,10 +15541,10 @@ hipblasStatus_t hipblasCtpmv_64(hipblasHandle_t       handle,
                                 hipblasFillMode_t     uplo,
                                 hipblasOperation_t    transA,
                                 hipblasDiagType_t     diag,
-                                c_int64_t             n,
+                                int64_t               n,
                                 const hipblasComplex* AP,
                                 hipblasComplex*       x,
-                                c_int64_t             incx)
+                                int64_t               incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15569,10 +15569,10 @@ hipblasStatus_t hipblasZtpmv_64(hipblasHandle_t             handle,
                                 hipblasFillMode_t           uplo,
                                 hipblasOperation_t          transA,
                                 hipblasDiagType_t           diag,
-                                c_int64_t                   n,
+                                int64_t                     n,
                                 const hipblasDoubleComplex* AP,
                                 hipblasDoubleComplex*       x,
-                                c_int64_t                   incx)
+                                int64_t                     incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15597,10 +15597,10 @@ hipblasStatus_t hipblasCtpmv_v2_64(hipblasHandle_t    handle,
                                    hipblasFillMode_t  uplo,
                                    hipblasOperation_t transA,
                                    hipblasDiagType_t  diag,
-                                   c_int64_t          n,
+                                   int64_t            n,
                                    const hipComplex*  AP,
                                    hipComplex*        x,
-                                   c_int64_t          incx)
+                                   int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15625,10 +15625,10 @@ hipblasStatus_t hipblasZtpmv_v2_64(hipblasHandle_t         handle,
                                    hipblasFillMode_t       uplo,
                                    hipblasOperation_t      transA,
                                    hipblasDiagType_t       diag,
-                                   c_int64_t               n,
+                                   int64_t                 n,
                                    const hipDoubleComplex* AP,
                                    hipDoubleComplex*       x,
-                                   c_int64_t               incx)
+                                   int64_t                 incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -15733,11 +15733,11 @@ hipblasStatus_t hipblasStpmvBatched_64(hipblasHandle_t    handle,
                                        hipblasFillMode_t  uplo,
                                        hipblasOperation_t transA,
                                        hipblasDiagType_t  diag,
-                                       c_int64_t          n,
+                                       int64_t            n,
                                        const float* const AP[],
                                        float* const       x[],
-                                       c_int64_t          incx,
-                                       c_int64_t          batchCount)
+                                       int64_t            incx,
+                                       int64_t            batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15746,11 +15746,11 @@ hipblasStatus_t hipblasDtpmvBatched_64(hipblasHandle_t     handle,
                                        hipblasFillMode_t   uplo,
                                        hipblasOperation_t  transA,
                                        hipblasDiagType_t   diag,
-                                       c_int64_t           n,
+                                       int64_t             n,
                                        const double* const AP[],
                                        double* const       x[],
-                                       c_int64_t           incx,
-                                       c_int64_t           batchCount)
+                                       int64_t             incx,
+                                       int64_t             batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15759,11 +15759,11 @@ hipblasStatus_t hipblasCtpmvBatched_64(hipblasHandle_t             handle,
                                        hipblasFillMode_t           uplo,
                                        hipblasOperation_t          transA,
                                        hipblasDiagType_t           diag,
-                                       c_int64_t                   n,
+                                       int64_t                     n,
                                        const hipblasComplex* const AP[],
                                        hipblasComplex* const       x[],
-                                       c_int64_t                   incx,
-                                       c_int64_t                   batchCount)
+                                       int64_t                     incx,
+                                       int64_t                     batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15772,11 +15772,11 @@ hipblasStatus_t hipblasZtpmvBatched_64(hipblasHandle_t                   handle,
                                        hipblasFillMode_t                 uplo,
                                        hipblasOperation_t                transA,
                                        hipblasDiagType_t                 diag,
-                                       c_int64_t                         n,
+                                       int64_t                           n,
                                        const hipblasDoubleComplex* const AP[],
                                        hipblasDoubleComplex* const       x[],
-                                       c_int64_t                         incx,
-                                       c_int64_t                         batchCount)
+                                       int64_t                           incx,
+                                       int64_t                           batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15785,11 +15785,11 @@ hipblasStatus_t hipblasCtpmvBatched_v2_64(hipblasHandle_t         handle,
                                           hipblasFillMode_t       uplo,
                                           hipblasOperation_t      transA,
                                           hipblasDiagType_t       diag,
-                                          c_int64_t               n,
+                                          int64_t                 n,
                                           const hipComplex* const AP[],
                                           hipComplex* const       x[],
-                                          c_int64_t               incx,
-                                          c_int64_t               batchCount)
+                                          int64_t                 incx,
+                                          int64_t                 batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15798,11 +15798,11 @@ hipblasStatus_t hipblasZtpmvBatched_v2_64(hipblasHandle_t               handle,
                                           hipblasFillMode_t             uplo,
                                           hipblasOperation_t            transA,
                                           hipblasDiagType_t             diag,
-                                          c_int64_t                     n,
+                                          int64_t                       n,
                                           const hipDoubleComplex* const AP[],
                                           hipDoubleComplex* const       x[],
-                                          c_int64_t                     incx,
-                                          c_int64_t                     batchCount)
+                                          int64_t                       incx,
+                                          int64_t                       batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15903,13 +15903,13 @@ hipblasStatus_t hipblasStpmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
+                                              int64_t            n,
                                               const float*       AP,
                                               hipblasStride      strideAP,
                                               float*             x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stridex,
-                                              c_int64_t          batchCount)
+                                              int64_t            batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15918,13 +15918,13 @@ hipblasStatus_t hipblasDtpmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
+                                              int64_t            n,
                                               const double*      AP,
                                               hipblasStride      strideAP,
                                               double*            x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stridex,
-                                              c_int64_t          batchCount)
+                                              int64_t            batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15933,13 +15933,13 @@ hipblasStatus_t hipblasCtpmvStridedBatched_64(hipblasHandle_t       handle,
                                               hipblasFillMode_t     uplo,
                                               hipblasOperation_t    transA,
                                               hipblasDiagType_t     diag,
-                                              c_int64_t             n,
+                                              int64_t               n,
                                               const hipblasComplex* AP,
                                               hipblasStride         strideAP,
                                               hipblasComplex*       x,
-                                              c_int64_t             incx,
+                                              int64_t               incx,
                                               hipblasStride         stridex,
-                                              c_int64_t             batchCount)
+                                              int64_t               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15948,13 +15948,13 @@ hipblasStatus_t hipblasZtpmvStridedBatched_64(hipblasHandle_t             handle
                                               hipblasFillMode_t           uplo,
                                               hipblasOperation_t          transA,
                                               hipblasDiagType_t           diag,
-                                              c_int64_t                   n,
+                                              int64_t                     n,
                                               const hipblasDoubleComplex* AP,
                                               hipblasStride               strideAP,
                                               hipblasDoubleComplex*       x,
-                                              c_int64_t                   incx,
+                                              int64_t                     incx,
                                               hipblasStride               stridex,
-                                              c_int64_t                   batchCount)
+                                              int64_t                     batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15963,13 +15963,13 @@ hipblasStatus_t hipblasCtpmvStridedBatched_v2_64(hipblasHandle_t    handle,
                                                  hipblasFillMode_t  uplo,
                                                  hipblasOperation_t transA,
                                                  hipblasDiagType_t  diag,
-                                                 c_int64_t          n,
+                                                 int64_t            n,
                                                  const hipComplex*  AP,
                                                  hipblasStride      strideAP,
                                                  hipComplex*        x,
-                                                 c_int64_t          incx,
+                                                 int64_t            incx,
                                                  hipblasStride      stridex,
-                                                 c_int64_t          batchCount)
+                                                 int64_t            batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -15978,13 +15978,13 @@ hipblasStatus_t hipblasZtpmvStridedBatched_v2_64(hipblasHandle_t         handle,
                                                  hipblasFillMode_t       uplo,
                                                  hipblasOperation_t      transA,
                                                  hipblasDiagType_t       diag,
-                                                 c_int64_t               n,
+                                                 int64_t                 n,
                                                  const hipDoubleComplex* AP,
                                                  hipblasStride           strideAP,
                                                  hipDoubleComplex*       x,
-                                                 c_int64_t               incx,
+                                                 int64_t                 incx,
                                                  hipblasStride           stridex,
-                                                 c_int64_t               batchCount)
+                                                 int64_t                 batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16466,11 +16466,11 @@ hipblasStatus_t hipblasStrmv_64(hipblasHandle_t    handle,
                                 hipblasFillMode_t  uplo,
                                 hipblasOperation_t transA,
                                 hipblasDiagType_t  diag,
-                                c_int64_t          n,
+                                int64_t            n,
                                 const float*       A,
-                                c_int64_t          lda,
+                                int64_t            lda,
                                 float*             x,
-                                c_int64_t          incx)
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16496,11 +16496,11 @@ hipblasStatus_t hipblasDtrmv(hipblasHandle_t    handle,
                              hipblasFillMode_t  uplo,
                              hipblasOperation_t transA,
                              hipblasDiagType_t  diag,
-                             c_int64_t          n,
+                             int64_t            n,
                              const double*      A,
-                             c_int64_t          lda,
+                             int64_t            lda,
                              double*            x,
-                             c_int64_t          incx)
+                             int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16526,11 +16526,11 @@ hipblasStatus_t hipblasCtrmv_64(hipblasHandle_t       handle,
                                 hipblasFillMode_t     uplo,
                                 hipblasOperation_t    transA,
                                 hipblasDiagType_t     diag,
-                                c_int64_t             n,
+                                int64_t               n,
                                 const hipblasComplex* A,
-                                c_int64_t             lda,
+                                int64_t               lda,
                                 hipblasComplex*       x,
-                                c_int64_t             incx)
+                                int64_t               incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16556,11 +16556,11 @@ hipblasStatus_t hipblasZtrmv_64(hipblasHandle_t             handle,
                                 hipblasFillMode_t           uplo,
                                 hipblasOperation_t          transA,
                                 hipblasDiagType_t           diag,
-                                c_int64_t                   n,
+                                int64_t                     n,
                                 const hipblasDoubleComplex* A,
-                                c_int64_t                   lda,
+                                int64_t                     lda,
                                 hipblasDoubleComplex*       x,
-                                c_int64_t                   incx)
+                                int64_t                     incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16586,11 +16586,11 @@ hipblasStatus_t hipblasCtrmv_v2_64(hipblasHandle_t    handle,
                                    hipblasFillMode_t  uplo,
                                    hipblasOperation_t transA,
                                    hipblasDiagType_t  diag,
-                                   c_int64_t          n,
+                                   int64_t            n,
                                    const hipComplex*  A,
-                                   c_int64_t          lda,
+                                   int64_t            lda,
                                    hipComplex*        x,
-                                   c_int64_t          incx)
+                                   int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16616,11 +16616,11 @@ hipblasStatus_t hipblasZtrmv_v2_64(hipblasHandle_t         handle,
                                    hipblasFillMode_t       uplo,
                                    hipblasOperation_t      transA,
                                    hipblasDiagType_t       diag,
-                                   c_int64_t               n,
+                                   int64_t                 n,
                                    const hipDoubleComplex* A,
-                                   c_int64_t               lda,
+                                   int64_t                 lda,
                                    hipDoubleComplex*       x,
-                                   c_int64_t               incx)
+                                   int64_t                 incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
@@ -16732,12 +16732,12 @@ hipblasStatus_t hipblasStrmvBatched_64(hipblasHandle_t    handle,
                                        hipblasFillMode_t  uplo,
                                        hipblasOperation_t transA,
                                        hipblasDiagType_t  diag,
-                                       c_int64_t          n,
+                                       int64_t            n,
                                        const float* const A[],
-                                       c_int64_t          lda,
+                                       int64_t            lda,
                                        float* const       x[],
-                                       c_int64_t          incx,
-                                       c_int64_t          batch_count)
+                                       int64_t            incx,
+                                       int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16746,12 +16746,12 @@ hipblasStatus_t hipblasDtrmvBatched_64(hipblasHandle_t     handle,
                                        hipblasFillMode_t   uplo,
                                        hipblasOperation_t  transA,
                                        hipblasDiagType_t   diag,
-                                       c_int64_t           n,
+                                       int64_t             n,
                                        const double* const A[],
-                                       c_int64_t           lda,
+                                       int64_t             lda,
                                        double* const       x[],
-                                       c_int64_t           incx,
-                                       c_int64_t           batch_count)
+                                       int64_t             incx,
+                                       int64_t             batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16760,12 +16760,12 @@ hipblasStatus_t hipblasCtrmvBatched_64(hipblasHandle_t             handle,
                                        hipblasFillMode_t           uplo,
                                        hipblasOperation_t          transA,
                                        hipblasDiagType_t           diag,
-                                       c_int64_t                   n,
+                                       int64_t                     n,
                                        const hipblasComplex* const A[],
-                                       c_int64_t                   lda,
+                                       int64_t                     lda,
                                        hipblasComplex* const       x[],
-                                       c_int64_t                   incx,
-                                       c_int64_t                   batch_count)
+                                       int64_t                     incx,
+                                       int64_t                     batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16774,12 +16774,12 @@ hipblasStatus_t hipblasZtrmvBatched_64(hipblasHandle_t                   handle,
                                        hipblasFillMode_t                 uplo,
                                        hipblasOperation_t                transA,
                                        hipblasDiagType_t                 diag,
-                                       c_int64_t                         n,
+                                       int64_t                           n,
                                        const hipblasDoubleComplex* const A[],
-                                       c_int64_t                         lda,
+                                       int64_t                           lda,
                                        hipblasDoubleComplex* const       x[],
-                                       c_int64_t                         incx,
-                                       c_int64_t                         batch_count)
+                                       int64_t                           incx,
+                                       int64_t                           batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16788,12 +16788,12 @@ hipblasStatus_t hipblasCtrmvBatched_v2_64(hipblasHandle_t         handle,
                                           hipblasFillMode_t       uplo,
                                           hipblasOperation_t      transA,
                                           hipblasDiagType_t       diag,
-                                          c_int64_t               n,
+                                          int64_t                 n,
                                           const hipComplex* const A[],
-                                          c_int64_t               lda,
+                                          int64_t                 lda,
                                           hipComplex* const       x[],
-                                          c_int64_t               incx,
-                                          c_int64_t               batch_count)
+                                          int64_t                 incx,
+                                          int64_t                 batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16802,12 +16802,12 @@ hipblasStatus_t hipblasZtrmvBatched_v2_64(hipblasHandle_t               handle,
                                           hipblasFillMode_t             uplo,
                                           hipblasOperation_t            transA,
                                           hipblasDiagType_t             diag,
-                                          c_int64_t                     n,
+                                          int64_t                       n,
                                           const hipDoubleComplex* const A[],
-                                          c_int64_t                     lda,
+                                          int64_t                       lda,
                                           hipDoubleComplex* const       x[],
-                                          c_int64_t                     incx,
-                                          c_int64_t                     batch_count)
+                                          int64_t                       incx,
+                                          int64_t                       batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16914,14 +16914,14 @@ hipblasStatus_t hipblasStrmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
+                                              int64_t            n,
                                               const float*       A,
-                                              c_int64_t          lda,
+                                              int64_t            lda,
                                               hipblasStride      stride_a,
                                               float*             x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stride_x,
-                                              c_int64_t          batch_count)
+                                              int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16930,14 +16930,14 @@ hipblasStatus_t hipblasDtrmvStridedBatched_64(hipblasHandle_t    handle,
                                               hipblasFillMode_t  uplo,
                                               hipblasOperation_t transA,
                                               hipblasDiagType_t  diag,
-                                              c_int64_t          n,
+                                              int64_t            n,
                                               const double*      A,
-                                              c_int64_t          lda,
+                                              int64_t            lda,
                                               hipblasStride      stride_a,
                                               double*            x,
-                                              c_int64_t          incx,
+                                              int64_t            incx,
                                               hipblasStride      stride_x,
-                                              c_int64_t          batch_count)
+                                              int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16946,14 +16946,14 @@ hipblasStatus_t hipblasCtrmvStridedBatched_64(hipblasHandle_t       handle,
                                               hipblasFillMode_t     uplo,
                                               hipblasOperation_t    transA,
                                               hipblasDiagType_t     diag,
-                                              c_int64_t             n,
+                                              int64_t               n,
                                               const hipblasComplex* A,
-                                              c_int64_t             lda,
+                                              int64_t               lda,
                                               hipblasStride         stride_a,
                                               hipblasComplex*       x,
-                                              c_int64_t             incx,
+                                              int64_t               incx,
                                               hipblasStride         stride_x,
-                                              c_int64_t             batch_count)
+                                              int64_t               batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16962,14 +16962,14 @@ hipblasStatus_t hipblasZtrmvStridedBatched_64(hipblasHandle_t             handle
                                               hipblasFillMode_t           uplo,
                                               hipblasOperation_t          transA,
                                               hipblasDiagType_t           diag,
-                                              c_int64_t                   n,
+                                              int64_t                     n,
                                               const hipblasDoubleComplex* A,
-                                              c_int64_t                   lda,
+                                              int64_t                     lda,
                                               hipblasStride               stride_a,
                                               hipblasDoubleComplex*       x,
-                                              c_int64_t                   incx,
+                                              int64_t                     incx,
                                               hipblasStride               stride_x,
-                                              c_int64_t                   batch_count)
+                                              int64_t                     batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16978,14 +16978,14 @@ hipblasStatus_t hipblasCtrmvStridedBatched_v2_64(hipblasHandle_t    handle,
                                                  hipblasFillMode_t  uplo,
                                                  hipblasOperation_t transA,
                                                  hipblasDiagType_t  diag,
-                                                 c_int64_t          n,
+                                                 int64_t            n,
                                                  const hipComplex*  A,
-                                                 c_int64_t          lda,
+                                                 int64_t            lda,
                                                  hipblasStride      stride_a,
                                                  hipComplex*        x,
-                                                 c_int64_t          incx,
+                                                 int64_t            incx,
                                                  hipblasStride      stride_x,
-                                                 c_int64_t          batch_count)
+                                                 int64_t            batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
@@ -16994,14 +16994,14 @@ hipblasStatus_t hipblasZtrmvStridedBatched_v2_64(hipblasHandle_t         handle,
                                                  hipblasFillMode_t       uplo,
                                                  hipblasOperation_t      transA,
                                                  hipblasDiagType_t       diag,
-                                                 c_int64_t               n,
+                                                 int64_t                 n,
                                                  const hipDoubleComplex* A,
-                                                 c_int64_t               lda,
+                                                 int64_t                 lda,
                                                  hipblasStride           stride_a,
                                                  hipDoubleComplex*       x,
-                                                 c_int64_t               incx,
+                                                 int64_t                 incx,
                                                  hipblasStride           stride_x,
-                                                 c_int64_t               batch_count)
+                                                 int64_t                 batch_count)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
