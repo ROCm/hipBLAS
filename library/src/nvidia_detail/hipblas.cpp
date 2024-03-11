@@ -12723,12 +12723,8 @@ hipblasStatus_t hipblasSspr2(hipblasHandle_t   handle,
                              float*            AP)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasSspr2(
         (cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, y, incy, AP));
-#else
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -12746,12 +12742,8 @@ hipblasStatus_t hipblasDspr2(hipblasHandle_t   handle,
                              double*           AP)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasDspr2(
         (cublasHandle_t)handle, hipFillToCudaFill(uplo), n, alpha, x, incx, y, incy, AP));
-#else
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
