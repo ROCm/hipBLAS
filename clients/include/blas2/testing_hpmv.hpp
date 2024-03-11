@@ -118,7 +118,18 @@ void testing_hpmv_bad_arg(const Arguments& arg)
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasHpmvFn,
                             (handle, uplo, N, alpha, dA, dx, incx, beta, nullptr, incy));
+
+                int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
+
+                // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+                // this should fail with invalid-value
+                // Note: that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+                DAPI_EXPECT(arg.api & c_API_64 ? HIPBLAS_STATUS_SUCCESS
+                                               : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasHpmvFn,
+                            (handle, uplo, n_64, zero, nullptr, nullptr, incx, beta, dy, incy));
             }
+
             // With alpha == 0 can have A and x nullptr
             DAPI_CHECK(hipblasHpmvFn,
                        (handle, uplo, N, zero, nullptr, nullptr, incx, beta, dy, incy));
