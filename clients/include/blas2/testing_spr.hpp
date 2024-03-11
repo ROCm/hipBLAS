@@ -40,9 +40,8 @@ inline void testname_spr(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_spr_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSprFn    = FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
-    auto hipblasSprFn_64 = FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
+    auto hipblasSprFn    = arg.api == FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
+    auto hipblasSprFn_64 = arg.api == FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
 
     const T           h_alpha(1), h_zero(0);
     const T*          alpha = &h_alpha;
@@ -118,9 +117,8 @@ void testing_spr_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_spr(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSprFn    = FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
-    auto hipblasSprFn_64 = FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
+    auto hipblasSprFn    = arg.api == FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
+    auto hipblasSprFn_64 = arg.api == FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
     int64_t           N    = arg.N;

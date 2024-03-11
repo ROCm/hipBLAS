@@ -41,11 +41,11 @@ inline void testname_spr_strided_batched(const Arguments& arg, std::string& name
 template <typename T>
 void testing_spr_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSprStridedBatchedFn
-        = FORTRAN ? hipblasSprStridedBatched<T, true> : hipblasSprStridedBatched<T, false>;
-    auto hipblasSprStridedBatchedFn_64
-        = FORTRAN_64 ? hipblasSprStridedBatched_64<T, true> : hipblasSprStridedBatched_64<T, false>;
+    auto hipblasSprStridedBatchedFn    = arg.api == FORTRAN ? hipblasSprStridedBatched<T, true>
+                                                            : hipblasSprStridedBatched<T, false>;
+    auto hipblasSprStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasSprStridedBatched_64<T, true>
+                                             : hipblasSprStridedBatched_64<T, false>;
 
     const T           h_alpha(1), h_zero(0);
     const T*          alpha = &h_alpha;
@@ -146,11 +146,11 @@ void testing_spr_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_spr_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSprStridedBatchedFn
-        = FORTRAN ? hipblasSprStridedBatched<T, true> : hipblasSprStridedBatched<T, false>;
-    auto hipblasSprStridedBatchedFn_64
-        = FORTRAN_64 ? hipblasSprStridedBatched_64<T, true> : hipblasSprStridedBatched_64<T, false>;
+    auto hipblasSprStridedBatchedFn    = arg.api == FORTRAN ? hipblasSprStridedBatched<T, true>
+                                                            : hipblasSprStridedBatched<T, false>;
+    auto hipblasSprStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                             ? hipblasSprStridedBatched_64<T, true>
+                                             : hipblasSprStridedBatched_64<T, false>;
 
     hipblasFillMode_t uplo         = char2hipblas_fill(arg.uplo);
     int64_t           N            = arg.N;
