@@ -16492,15 +16492,15 @@ catch(...)
     return exception_to_hipblas_status();
 }
 
-hipblasStatus_t hipblasDtrmv(hipblasHandle_t    handle,
-                             hipblasFillMode_t  uplo,
-                             hipblasOperation_t transA,
-                             hipblasDiagType_t  diag,
-                             int64_t            n,
-                             const double*      A,
-                             int64_t            lda,
-                             double*            x,
-                             int64_t            incx)
+hipblasStatus_t hipblasDtrmv_64(hipblasHandle_t    handle,
+                                hipblasFillMode_t  uplo,
+                                hipblasOperation_t transA,
+                                hipblasDiagType_t  diag,
+                                int64_t            n,
+                                const double*      A,
+                                int64_t            lda,
+                                double*            x,
+                                int64_t            incx)
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
