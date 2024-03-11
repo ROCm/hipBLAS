@@ -3492,7 +3492,6 @@ end function hipblasZher2StridedBatched_64Fortran
 
 ! hprStridedBatched
 
-
 ! hbmv
 function hipblasChbmv_64Fortran(handle, uplo, n, k, alpha, A, lda, &
                                 x, incx, beta, y, incy) &
@@ -4157,6 +4156,10 @@ function hipblasDspr2StridedBatched_64Fortran(handle, uplo, n, alpha, x, incx, s
     use hipblas_enums
     implicit none
     integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspr2StridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
     type(c_ptr), value :: x
     integer(c_int64_t), value :: incx
     integer(c_int64_t), value :: stride_x

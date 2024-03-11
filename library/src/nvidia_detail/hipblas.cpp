@@ -12373,7 +12373,7 @@ hipblasStatus_t hipblasZspr_64(hipblasHandle_t             handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCspr_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCspr_v2_64(hipblasHandle_t   handle,
                                   hipblasFillMode_t uplo,
                                   int64_t           n,
                                   const hipComplex* alpha,
@@ -12384,7 +12384,7 @@ hipblasStatus_t hipblasCspr_64_v2(hipblasHandle_t   handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZspr_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZspr_v2_64(hipblasHandle_t         handle,
                                   hipblasFillMode_t       uplo,
                                   int64_t                 n,
                                   const hipDoubleComplex* alpha,
@@ -12517,7 +12517,7 @@ hipblasStatus_t hipblasZsprBatched_64(hipblasHandle_t                   handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCsprBatched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasCsprBatched_v2_64(hipblasHandle_t         handle,
                                          hipblasFillMode_t       uplo,
                                          int64_t                 n,
                                          const hipComplex*       alpha,
@@ -12529,7 +12529,7 @@ hipblasStatus_t hipblasCsprBatched_64_v2(hipblasHandle_t         handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZsprBatched_64_v2(hipblasHandle_t               handle,
+hipblasStatus_t hipblasZsprBatched_v2_64(hipblasHandle_t               handle,
                                          hipblasFillMode_t             uplo,
                                          int64_t                       n,
                                          const hipDoubleComplex*       alpha,
@@ -12683,7 +12683,7 @@ hipblasStatus_t hipblasZsprStridedBatched_64(hipblasHandle_t             handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCsprStridedBatched_64_v2(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCsprStridedBatched_v2_64(hipblasHandle_t   handle,
                                                 hipblasFillMode_t uplo,
                                                 int64_t           n,
                                                 const hipComplex* alpha,
@@ -12697,7 +12697,7 @@ hipblasStatus_t hipblasCsprStridedBatched_64_v2(hipblasHandle_t   handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasZsprStridedBatched_64_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZsprStridedBatched_v2_64(hipblasHandle_t         handle,
                                                 hipblasFillMode_t       uplo,
                                                 int64_t                 n,
                                                 const hipDoubleComplex* alpha,
