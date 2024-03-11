@@ -6413,14 +6413,61 @@ namespace
                                                  hipblasStride     stridey,
                                                  int               batchCount);
 
-    MAP2CF(hipblasSbmv, float, hipblasSsbmv);
-    MAP2CF(hipblasSbmv, double, hipblasDsbmv);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSbmv_64)(hipblasHandle_t   handle,
+                                      hipblasFillMode_t uplo,
+                                      int64_t           n,
+                                      int64_t           k,
+                                      const T*          alpha,
+                                      const T*          A,
+                                      int64_t           lda,
+                                      const T*          x,
+                                      int64_t           incx,
+                                      const T*          beta,
+                                      T*                y,
+                                      int64_t           incy);
 
-    MAP2CF(hipblasSbmvBatched, float, hipblasSsbmvBatched);
-    MAP2CF(hipblasSbmvBatched, double, hipblasDsbmvBatched);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSbmvBatched_64)(hipblasHandle_t   handle,
+                                             hipblasFillMode_t uplo,
+                                             int64_t           n,
+                                             int64_t           k,
+                                             const T*          alpha,
+                                             const T* const    A[],
+                                             int64_t           lda,
+                                             const T* const    x[],
+                                             int64_t           incx,
+                                             const T*          beta,
+                                             T* const          y[],
+                                             int64_t           incy,
+                                             int64_t           batchCount);
 
-    MAP2CF(hipblasSbmvStridedBatched, float, hipblasSsbmvStridedBatched);
-    MAP2CF(hipblasSbmvStridedBatched, double, hipblasDsbmvStridedBatched);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSbmvStridedBatched_64)(hipblasHandle_t   handle,
+                                                    hipblasFillMode_t uplo,
+                                                    int64_t           n,
+                                                    int64_t           k,
+                                                    const T*          alpha,
+                                                    const T*          A,
+                                                    int64_t           lda,
+                                                    hipblasStride     strideA,
+                                                    const T*          x,
+                                                    int64_t           incx,
+                                                    hipblasStride     stridex,
+                                                    const T*          beta,
+                                                    T*                y,
+                                                    int64_t           incy,
+                                                    hipblasStride     stridey,
+                                                    int64_t           batchCount);
+
+    MAP2CF_D64(hipblasSbmv, float, hipblasSsbmv);
+    MAP2CF_D64(hipblasSbmv, double, hipblasDsbmv);
+
+    MAP2CF_D64(hipblasSbmvBatched, float, hipblasSsbmvBatched);
+    MAP2CF_D64(hipblasSbmvBatched, double, hipblasDsbmvBatched);
+
+    MAP2CF_D64(hipblasSbmvStridedBatched, float, hipblasSsbmvStridedBatched);
+    MAP2CF_D64(hipblasSbmvStridedBatched, double, hipblasDsbmvStridedBatched);
 
     // spmv
     template <typename T, bool FORTRAN = false>
@@ -6464,14 +6511,55 @@ namespace
                                                  hipblasStride     stridey,
                                                  int               batchCount);
 
-    MAP2CF(hipblasSpmv, float, hipblasSspmv);
-    MAP2CF(hipblasSpmv, double, hipblasDspmv);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSpmv_64)(hipblasHandle_t   handle,
+                                      hipblasFillMode_t uplo,
+                                      int64_t           n,
+                                      const T*          alpha,
+                                      const T*          AP,
+                                      const T*          x,
+                                      int64_t           incx,
+                                      const T*          beta,
+                                      T*                y,
+                                      int64_t           incy);
 
-    MAP2CF(hipblasSpmvBatched, float, hipblasSspmvBatched);
-    MAP2CF(hipblasSpmvBatched, double, hipblasDspmvBatched);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSpmvBatched_64)(hipblasHandle_t   handle,
+                                             hipblasFillMode_t uplo,
+                                             int64_t           n,
+                                             const T*          alpha,
+                                             const T* const    AP[],
+                                             const T* const    x[],
+                                             int64_t           incx,
+                                             const T*          beta,
+                                             T* const          y[],
+                                             int64_t           incy,
+                                             int64_t           batchCount);
 
-    MAP2CF(hipblasSpmvStridedBatched, float, hipblasSspmvStridedBatched);
-    MAP2CF(hipblasSpmvStridedBatched, double, hipblasDspmvStridedBatched);
+    template <typename T, bool FORTRAN = false>
+    hipblasStatus_t (*hipblasSpmvStridedBatched_64)(hipblasHandle_t   handle,
+                                                    hipblasFillMode_t uplo,
+                                                    int64_t           n,
+                                                    const T*          alpha,
+                                                    const T*          AP,
+                                                    hipblasStride     strideAP,
+                                                    const T*          x,
+                                                    int64_t           incx,
+                                                    hipblasStride     stridex,
+                                                    const T*          beta,
+                                                    T*                y,
+                                                    int64_t           incy,
+                                                    hipblasStride     stridey,
+                                                    int64_t           batchCount);
+
+    MAP2CF_D64(hipblasSpmv, float, hipblasSspmv);
+    MAP2CF_D64(hipblasSpmv, double, hipblasDspmv);
+
+    MAP2CF_D64(hipblasSpmvBatched, float, hipblasSspmvBatched);
+    MAP2CF_D64(hipblasSpmvBatched, double, hipblasDspmvBatched);
+
+    MAP2CF_D64(hipblasSpmvStridedBatched, float, hipblasSspmvStridedBatched);
+    MAP2CF_D64(hipblasSpmvStridedBatched, double, hipblasDspmvStridedBatched);
 
     // spr
     template <typename T, bool FORTRAN = false>

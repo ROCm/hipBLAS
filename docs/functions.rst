@@ -80,7 +80,7 @@ which gives slightly more functionality, including conversion to and from a 32-b
 ``HIPBLAS_BFLOAT16_CLASS`` before including the header file `hipblas.h`.
 
 There is also an option to interpret the API as using the ``hip_bfloat16`` datatype. This is provided to avoid casting when using the ``hip_bfloat16`` datatype. To expose the API
-using ``hip_bfloat16``, define ``HIPBLAS_USE_HIP_BFLOAT16`` before including the header file `hipblas.h`. 
+using ``hip_bfloat16``, define ``HIPBLAS_USE_HIP_BFLOAT16`` before including the header file `hipblas.h`.
 
 .. note::
     The ``hip_bfloat16`` datatype is only supported on AMD platforms.
@@ -99,7 +99,7 @@ users can use either a compiler define or inline ``#define ROCM_MATHLIBS_API_USE
 API is compatible with both forms, but recompilation is required to avoid casting if switching to pass in the hip complex types.
 
 .. note::
-    ``hipblasComplex``, ``hipblasDoubleComplex``, and the use of ``ROCM_MATHLIBS_API_USE_HIP_COMPLEX`` are now deprecated. The API will provide interfaces 
+    ``hipblasComplex``, ``hipblasDoubleComplex``, and the use of ``ROCM_MATHLIBS_API_USE_HIP_COMPLEX`` are now deprecated. The API will provide interfaces
     using only ``hipComplex`` and ``hipDoubleComplex`` in the future. See :ref:`HIPBLASV2 DEP` for more information.
 
 Atomic Operations
@@ -846,13 +846,19 @@ hipblasXsbmv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmv
 
+The sbmv functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsbmvBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmvBatched
 
+The sbmvBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsbmvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmvStridedBatched
+
+The sbmvStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXspmv + Batched, StridedBatched
 ----------------------------------------
@@ -860,14 +866,19 @@ hipblasXspmv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspmv
 
+The spmv functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSspmvBatched
     :outline:
 .. doxygenfunction:: hipblasDspmvBatched
+
+The spmvBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSspmvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspmvStridedBatched
 
+The spmvStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXspr + Batched, StridedBatched
 ----------------------------------------
