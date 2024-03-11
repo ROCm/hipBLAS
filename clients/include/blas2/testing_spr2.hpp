@@ -101,6 +101,15 @@ void testing_spr2_bad_arg(const Arguments& arg)
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasSpr2Fn,
                             (handle, uplo, N, alpha, dx, incx, dy, incy, nullptr));
+
+                int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
+                // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+                // this should fail with invalid-value
+                // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSpr2Fn,
+                            (handle, uplo, n_64, zero, nullptr, 1, nullptr, 1, nullptr));
             }
 
             // With alpha == 0, can have all nullptrs
@@ -111,18 +120,6 @@ void testing_spr2_bad_arg(const Arguments& arg)
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasSpr2Fn,
                    (handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr));
-    }
-
-    if(arg.bad_arg_all && arg.api & c_API_64)
-    {
-        hipblasLocalHandle handle(arg);
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-
-        int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
-        // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
-        // this should fail with invalid-value
-        // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
-        DAPI_CHECK(hipblasSpr2Fn, (handle, uplo, n_64, &h_zero, nullptr, 1, nullptr, 1, nullptr));
     }
 }
 

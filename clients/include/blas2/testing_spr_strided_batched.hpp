@@ -119,6 +119,15 @@ void testing_spr_strided_batched_bad_arg(const Arguments& arg)
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasSprStridedBatchedFn,
                         (handle, uplo, N, alpha, dx, incx, stridex, nullptr, strideA, batch_count));
+
+            int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
+            // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+            // this should fail with invalid-value
+            // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSprStridedBatchedFn,
+                        (handle, uplo, n_64, zero, nullptr, 1, 0, nullptr, 0, n_64));
         }
 
         // With N == 0, can have all nullptrs
@@ -131,19 +140,6 @@ void testing_spr_strided_batched_bad_arg(const Arguments& arg)
         // With alpha == 0, can have all nullptrs
         DAPI_CHECK(hipblasSprStridedBatchedFn,
                    (handle, uplo, N, zero, nullptr, incx, stridex, nullptr, strideA, batch_count));
-    }
-
-    if(arg.bad_arg_all && arg.api & c_API_64)
-    {
-        hipblasLocalHandle handle(arg);
-        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-
-        int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
-        // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
-        // this should fail with invalid-value
-        // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
-        DAPI_CHECK(hipblasSprStridedBatchedFn,
-                   (handle, uplo, n_64, &h_zero, nullptr, 1, 0, nullptr, 0, n_64));
     }
 }
 
