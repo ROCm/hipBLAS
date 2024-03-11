@@ -3201,6 +3201,61 @@ hipblasStatus_t hipblasZhbmvCast(hipblasHandle_t             handle,
                         incy);
 }
 
+// hbmv_64
+hipblasStatus_t hipblasChbmvCast_64(hipblasHandle_t       handle,
+                                    hipblasFillMode_t     uplo,
+                                    int64_t               n,
+                                    int64_t               k,
+                                    const hipblasComplex* alpha,
+                                    const hipblasComplex* A,
+                                    int64_t               lda,
+                                    const hipblasComplex* x,
+                                    int64_t               incx,
+                                    const hipblasComplex* beta,
+                                    hipblasComplex*       y,
+                                    int64_t               incy)
+{
+    return hipblasChbmv_64(handle,
+                           uplo,
+                           n,
+                           k,
+                           (const hipComplex*)alpha,
+                           (const hipComplex*)A,
+                           lda,
+                           (const hipComplex*)x,
+                           incx,
+                           (const hipComplex*)beta,
+                           (hipComplex*)y,
+                           incy);
+}
+
+hipblasStatus_t hipblasZhbmvCast_64(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int64_t                     n,
+                                    int64_t                     k,
+                                    const hipblasDoubleComplex* alpha,
+                                    const hipblasDoubleComplex* A,
+                                    int64_t                     lda,
+                                    const hipblasDoubleComplex* x,
+                                    int64_t                     incx,
+                                    const hipblasDoubleComplex* beta,
+                                    hipblasDoubleComplex*       y,
+                                    int64_t                     incy)
+{
+    return hipblasZhbmv_64(handle,
+                           uplo,
+                           n,
+                           k,
+                           (const hipDoubleComplex*)alpha,
+                           (const hipDoubleComplex*)A,
+                           lda,
+                           (const hipDoubleComplex*)x,
+                           incx,
+                           (const hipDoubleComplex*)beta,
+                           (hipDoubleComplex*)y,
+                           incy);
+}
+
 // hbmv_batched
 hipblasStatus_t hipblasChbmvBatchedCast(hipblasHandle_t             handle,
                                         hipblasFillMode_t           uplo,
@@ -3258,6 +3313,65 @@ hipblasStatus_t hipblasZhbmvBatchedCast(hipblasHandle_t                   handle
                                (hipDoubleComplex* const*)y,
                                incy,
                                batchCount);
+}
+
+// hbmv_batched_64
+hipblasStatus_t hipblasChbmvBatchedCast_64(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int64_t                     n,
+                                           int64_t                     k,
+                                           const hipblasComplex*       alpha,
+                                           const hipblasComplex* const A[],
+                                           int64_t                     lda,
+                                           const hipblasComplex* const x[],
+                                           int64_t                     incx,
+                                           const hipblasComplex*       beta,
+                                           hipblasComplex* const       y[],
+                                           int64_t                     incy,
+                                           int64_t                     batchCount)
+{
+    return hipblasChbmvBatched_64(handle,
+                                  uplo,
+                                  n,
+                                  k,
+                                  (const hipComplex*)alpha,
+                                  (const hipComplex* const*)A,
+                                  lda,
+                                  (const hipComplex* const*)x,
+                                  incx,
+                                  (const hipComplex*)beta,
+                                  (hipComplex* const*)y,
+                                  incy,
+                                  batchCount);
+}
+
+hipblasStatus_t hipblasZhbmvBatchedCast_64(hipblasHandle_t                   handle,
+                                           hipblasFillMode_t                 uplo,
+                                           int64_t                           n,
+                                           int64_t                           k,
+                                           const hipblasDoubleComplex*       alpha,
+                                           const hipblasDoubleComplex* const A[],
+                                           int64_t                           lda,
+                                           const hipblasDoubleComplex* const x[],
+                                           int64_t                           incx,
+                                           const hipblasDoubleComplex*       beta,
+                                           hipblasDoubleComplex* const       y[],
+                                           int64_t                           incy,
+                                           int64_t                           batchCount)
+{
+    return hipblasZhbmvBatched_64(handle,
+                                  uplo,
+                                  n,
+                                  k,
+                                  (const hipDoubleComplex*)alpha,
+                                  (const hipDoubleComplex* const*)A,
+                                  lda,
+                                  (const hipDoubleComplex* const*)x,
+                                  incx,
+                                  (const hipDoubleComplex*)beta,
+                                  (hipDoubleComplex* const*)y,
+                                  incy,
+                                  batchCount);
 }
 
 // hbmv_strided_batched
@@ -3331,6 +3445,77 @@ hipblasStatus_t hipblasZhbmvStridedBatchedCast(hipblasHandle_t             handl
                                       batchCount);
 }
 
+// hbmv_strided_batched_64
+hipblasStatus_t hipblasChbmvStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                  hipblasFillMode_t     uplo,
+                                                  int64_t               n,
+                                                  int64_t               k,
+                                                  const hipblasComplex* alpha,
+                                                  const hipblasComplex* A,
+                                                  int64_t               lda,
+                                                  hipblasStride         strideA,
+                                                  const hipblasComplex* x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stridex,
+                                                  const hipblasComplex* beta,
+                                                  hipblasComplex*       y,
+                                                  int64_t               incy,
+                                                  hipblasStride         stridey,
+                                                  int64_t               batchCount)
+{
+    return hipblasChbmvStridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         k,
+                                         (const hipComplex*)alpha,
+                                         (const hipComplex*)A,
+                                         lda,
+                                         strideA,
+                                         (const hipComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (const hipComplex*)beta,
+                                         (hipComplex*)y,
+                                         incy,
+                                         stridey,
+                                         batchCount);
+}
+
+hipblasStatus_t hipblasZhbmvStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                  hipblasFillMode_t           uplo,
+                                                  int64_t                     n,
+                                                  int64_t                     k,
+                                                  const hipblasDoubleComplex* alpha,
+                                                  const hipblasDoubleComplex* A,
+                                                  int64_t                     lda,
+                                                  hipblasStride               strideA,
+                                                  const hipblasDoubleComplex* x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stridex,
+                                                  const hipblasDoubleComplex* beta,
+                                                  hipblasDoubleComplex*       y,
+                                                  int64_t                     incy,
+                                                  hipblasStride               stridey,
+                                                  int64_t                     batchCount)
+{
+    return hipblasZhbmvStridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         k,
+                                         (const hipDoubleComplex*)alpha,
+                                         (const hipDoubleComplex*)A,
+                                         lda,
+                                         strideA,
+                                         (const hipDoubleComplex*)x,
+                                         incx,
+                                         stridex,
+                                         (const hipDoubleComplex*)beta,
+                                         (hipDoubleComplex*)y,
+                                         incy,
+                                         stridey,
+                                         batchCount);
+}
+
 // hemv
 hipblasStatus_t hipblasChemvCast(hipblasHandle_t       handle,
                                  hipblasFillMode_t     uplo,
@@ -3380,6 +3565,57 @@ hipblasStatus_t hipblasZhemvCast(hipblasHandle_t             handle,
                         (const hipDoubleComplex*)beta,
                         (hipDoubleComplex*)y,
                         incy);
+}
+
+// hemv_64
+hipblasStatus_t hipblasChemvCast_64(hipblasHandle_t       handle,
+                                    hipblasFillMode_t     uplo,
+                                    int64_t               n,
+                                    const hipblasComplex* alpha,
+                                    const hipblasComplex* A,
+                                    int64_t               lda,
+                                    const hipblasComplex* x,
+                                    int64_t               incx,
+                                    const hipblasComplex* beta,
+                                    hipblasComplex*       y,
+                                    int64_t               incy)
+{
+    return hipblasChemv_64(handle,
+                           uplo,
+                           n,
+                           (const hipComplex*)alpha,
+                           (const hipComplex*)A,
+                           lda,
+                           (const hipComplex*)x,
+                           incx,
+                           (const hipComplex*)beta,
+                           (hipComplex*)y,
+                           incy);
+}
+
+hipblasStatus_t hipblasZhemvCast_64(hipblasHandle_t             handle,
+                                    hipblasFillMode_t           uplo,
+                                    int64_t                     n,
+                                    const hipblasDoubleComplex* alpha,
+                                    const hipblasDoubleComplex* A,
+                                    int64_t                     lda,
+                                    const hipblasDoubleComplex* x,
+                                    int64_t                     incx,
+                                    const hipblasDoubleComplex* beta,
+                                    hipblasDoubleComplex*       y,
+                                    int64_t                     incy)
+{
+    return hipblasZhemv_64(handle,
+                           uplo,
+                           n,
+                           (const hipDoubleComplex*)alpha,
+                           (const hipDoubleComplex*)A,
+                           lda,
+                           (const hipDoubleComplex*)x,
+                           incx,
+                           (const hipDoubleComplex*)beta,
+                           (hipDoubleComplex*)y,
+                           incy);
 }
 
 // hemv_batched
@@ -3435,6 +3671,61 @@ hipblasStatus_t hipblasZhemvBatchedCast(hipblasHandle_t                   handle
                                (hipDoubleComplex* const*)y,
                                incy,
                                batch_count);
+}
+
+// hemv_batched_64
+hipblasStatus_t hipblasChemvBatchedCast_64(hipblasHandle_t             handle,
+                                           hipblasFillMode_t           uplo,
+                                           int64_t                     n,
+                                           const hipblasComplex*       alpha,
+                                           const hipblasComplex* const A[],
+                                           int64_t                     lda,
+                                           const hipblasComplex* const x[],
+                                           int64_t                     incx,
+                                           const hipblasComplex*       beta,
+                                           hipblasComplex* const       y[],
+                                           int64_t                     incy,
+                                           int64_t                     batch_count)
+{
+    return hipblasChemvBatched_64(handle,
+                                  uplo,
+                                  n,
+                                  (const hipComplex*)alpha,
+                                  (const hipComplex* const*)A,
+                                  lda,
+                                  (const hipComplex* const*)x,
+                                  incx,
+                                  (const hipComplex*)beta,
+                                  (hipComplex* const*)y,
+                                  incy,
+                                  batch_count);
+}
+
+hipblasStatus_t hipblasZhemvBatchedCast_64(hipblasHandle_t                   handle,
+                                           hipblasFillMode_t                 uplo,
+                                           int64_t                           n,
+                                           const hipblasDoubleComplex*       alpha,
+                                           const hipblasDoubleComplex* const A[],
+                                           int64_t                           lda,
+                                           const hipblasDoubleComplex* const x[],
+                                           int64_t                           incx,
+                                           const hipblasDoubleComplex*       beta,
+                                           hipblasDoubleComplex* const       y[],
+                                           int64_t                           incy,
+                                           int64_t                           batch_count)
+{
+    return hipblasZhemvBatched_64(handle,
+                                  uplo,
+                                  n,
+                                  (const hipDoubleComplex*)alpha,
+                                  (const hipDoubleComplex* const*)A,
+                                  lda,
+                                  (const hipDoubleComplex* const*)x,
+                                  incx,
+                                  (const hipDoubleComplex*)beta,
+                                  (hipDoubleComplex* const*)y,
+                                  incy,
+                                  batch_count);
 }
 
 // hemv_strided_batched
@@ -3502,6 +3793,73 @@ hipblasStatus_t hipblasZhemvStridedBatchedCast(hipblasHandle_t             handl
                                       incy,
                                       stride_y,
                                       batch_count);
+}
+
+// hemv_strided_batched_64
+hipblasStatus_t hipblasChemvStridedBatchedCast_64(hipblasHandle_t       handle,
+                                                  hipblasFillMode_t     uplo,
+                                                  int64_t               n,
+                                                  const hipblasComplex* alpha,
+                                                  const hipblasComplex* A,
+                                                  int64_t               lda,
+                                                  hipblasStride         stride_a,
+                                                  const hipblasComplex* x,
+                                                  int64_t               incx,
+                                                  hipblasStride         stride_x,
+                                                  const hipblasComplex* beta,
+                                                  hipblasComplex*       y,
+                                                  int64_t               incy,
+                                                  hipblasStride         stride_y,
+                                                  int64_t               batch_count)
+{
+    return hipblasChemvStridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         (const hipComplex*)alpha,
+                                         (const hipComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (const hipComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         (const hipComplex*)beta,
+                                         (hipComplex*)y,
+                                         incy,
+                                         stride_y,
+                                         batch_count);
+}
+
+hipblasStatus_t hipblasZhemvStridedBatchedCast_64(hipblasHandle_t             handle,
+                                                  hipblasFillMode_t           uplo,
+                                                  int64_t                     n,
+                                                  const hipblasDoubleComplex* alpha,
+                                                  const hipblasDoubleComplex* A,
+                                                  int64_t                     lda,
+                                                  hipblasStride               stride_a,
+                                                  const hipblasDoubleComplex* x,
+                                                  int64_t                     incx,
+                                                  hipblasStride               stride_x,
+                                                  const hipblasDoubleComplex* beta,
+                                                  hipblasDoubleComplex*       y,
+                                                  int64_t                     incy,
+                                                  hipblasStride               stride_y,
+                                                  int64_t                     batch_count)
+{
+    return hipblasZhemvStridedBatched_64(handle,
+                                         uplo,
+                                         n,
+                                         (const hipDoubleComplex*)alpha,
+                                         (const hipDoubleComplex*)A,
+                                         lda,
+                                         stride_a,
+                                         (const hipDoubleComplex*)x,
+                                         incx,
+                                         stride_x,
+                                         (const hipDoubleComplex*)beta,
+                                         (hipDoubleComplex*)y,
+                                         incy,
+                                         stride_y,
+                                         batch_count);
 }
 
 // her
