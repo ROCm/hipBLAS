@@ -94,8 +94,8 @@ target_compile_options( hipblas_v2-bench PRIVATE -mf16c ) # -Wno-deprecated-decl
 target_compile_options(hipblas-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
 target_compile_options(hipblas_v2-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
 
-target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES})
-target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} HIPBLAS_V2)
+target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} ${BLIS_DEFINES} )
+target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} ${BLIS_DEFINES} HIPBLAS_V2 )
 
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )

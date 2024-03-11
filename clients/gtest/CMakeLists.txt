@@ -139,8 +139,8 @@ target_include_directories( hipblas_v2-test
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
 
-target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
-target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST )
+target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST ${BLIS_DEFINES} )
+target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST ${BLIS_DEFINES} )
 
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
