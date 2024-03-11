@@ -804,13 +804,19 @@ hipblasXhpmv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhpmv
 
+The hpmv functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChpmvBatched
     :outline:
 .. doxygenfunction:: hipblasZhpmvBatched
 
+The hpmvBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChpmvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhpmvStridedBatched
+
+The hpmvStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXhpr + Batched, StridedBatched
 ---------------------------------------
@@ -818,13 +824,19 @@ hipblasXhpr + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhpr
 
+The hpr functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChprBatched
     :outline:
 .. doxygenfunction:: hipblasZhprBatched
 
+The hprBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChprStridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhprStridedBatched
+
+The hprStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXhpr2 + Batched, StridedBatched
 ----------------------------------------
@@ -832,13 +844,19 @@ hipblasXhpr2 + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhpr2
 
+The hpr2 functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChpr2Batched
     :outline:
 .. doxygenfunction:: hipblasZhpr2Batched
 
+The hpr2Batched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasChpr2StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZhpr2StridedBatched
+
+The hpr2StridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXsbmv + Batched, StridedBatched
 ----------------------------------------
