@@ -191,14 +191,25 @@ void testing_spr2_strided_batched_bad_arg(const Arguments& arg)
                          strideA,
                          batch_count));
 
-            int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
             // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
             // this should fail with invalid-value
             // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
             DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasSpr2StridedBatchedFn,
-                        (handle, uplo, n_64, zero, nullptr, 1, 0, nullptr, 1, 0, nullptr, 0, n_64));
+                        (handle,
+                         uplo,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         1,
+                         0,
+                         nullptr,
+                         1,
+                         0,
+                         nullptr,
+                         0,
+                         c_i32_overflow));
         }
 
         // With N == 0, can have all nullptrs
