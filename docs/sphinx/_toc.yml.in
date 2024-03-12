@@ -2,13 +2,18 @@ defaults:
   numbered: False
 root: index
 subtrees:
-- entries: 
+- caption: Installation
+  entries:
     - file: install
+- caption: How to
+  entries:
     - file: orga
     - file: clients
+    - file: contributing
+- caption: API Reference
+  entries:
     - file: functions
     - file: deprecation
-    - file: contributing
 - caption: About
   entries:
     - file: license
