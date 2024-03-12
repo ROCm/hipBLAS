@@ -192,12 +192,21 @@ void testing_spmv_batched_bad_arg(const Arguments& arg)
                          incy,
                          batch_count));
 
-            int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
             // testing the 64-bit interface for n and batch_count
-            DAPI_EXPECT(
-                (arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
-                hipblasSpmvBatchedFn,
-                (handle, uplo, n_64, zero, nullptr, nullptr, incx, one, nullptr, incy, n_64));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSpmvBatchedFn,
+                        (handle,
+                         uplo,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         nullptr,
+                         incx,
+                         one,
+                         nullptr,
+                         incy,
+                         c_i32_overflow));
         }
 
         // With N == 0, can have all nullptrs

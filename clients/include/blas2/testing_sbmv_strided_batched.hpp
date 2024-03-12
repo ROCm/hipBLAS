@@ -246,18 +246,17 @@ void testing_sbmv_strided_batched_bad_arg(const Arguments& arg)
                          stridey,
                          batch_count));
 
-            int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
             // testing the 64-bit interface for n, k, lda, and batch_count
             DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasSbmvStridedBatchedFn,
                         (handle,
                          uplo,
-                         n_64,
-                         n_64,
+                         c_i32_overflow,
+                         c_i32_overflow,
                          zero,
                          nullptr,
-                         n_64 + 1,
+                         c_i32_overflow + 1,
                          strideA,
                          nullptr,
                          incx,
@@ -266,7 +265,7 @@ void testing_sbmv_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          incy,
                          stridey,
-                         n_64));
+                         c_i32_overflow));
         }
 
         // With N == 0, can have all nullptrs
