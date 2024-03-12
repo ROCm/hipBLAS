@@ -27,7 +27,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
 
   - name: spmv_batched_general
@@ -39,7 +39,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spmv_strided_batched_general
@@ -52,7 +52,7 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spmv_bad_arg
@@ -60,7 +60,7 @@ Tests:
     function:
       - spmv_bad_arg
     precision: *single_double_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spmv_bad_arg
@@ -68,7 +68,7 @@ Tests:
     function:
       - spmv_bad_arg
     precision: *single_double_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -78,6 +78,6 @@ Tests:
       - spmv_batched_bad_arg
       - spmv_strided_batched_bad_arg
     precision: *single_double_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
