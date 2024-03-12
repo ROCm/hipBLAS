@@ -1584,6 +1584,213 @@ hipblasStatus_t HIPBLAS_FAPI(hipblasZher2StridedBatched)(hipblasHandle_t        
                                                          hipblas_int                 lda,
                                                          hipblasStride               strideA,
                                                          hipblas_int                 batchCount);
+// hpmv
+
+// hpmv_batched
+
+// hpmv_strided_batched
+
+// hpr
+
+// hpr_batched
+
+// hpr_strided_batched
+
+// hpr2
+
+// hpr2_batched
+
+// hpr2_strided_batched
+
+// spr
+hipblasStatus_t HIPBLAS_FAPI(hipblasSspr)(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          hipblas_int       n,
+                                          const float*      alpha,
+                                          const float*      x,
+                                          hipblas_int       incx,
+                                          float*            AP);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDspr)(hipblasHandle_t   handle,
+                                          hipblasFillMode_t uplo,
+                                          hipblas_int       n,
+                                          const double*     alpha,
+                                          const double*     x,
+                                          hipblas_int       incx,
+                                          double*           AP);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCspr)(hipblasHandle_t       handle,
+                                          hipblasFillMode_t     uplo,
+                                          hipblas_int           n,
+                                          const hipblasComplex* alpha,
+                                          const hipblasComplex* x,
+                                          hipblas_int           incx,
+                                          hipblasComplex*       AP);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZspr)(hipblasHandle_t             handle,
+                                          hipblasFillMode_t           uplo,
+                                          hipblas_int                 n,
+                                          const hipblasDoubleComplex* alpha,
+                                          const hipblasDoubleComplex* x,
+                                          hipblas_int                 incx,
+                                          hipblasDoubleComplex*       AP);
+
+// spr_batched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSsprBatched)(hipblasHandle_t    handle,
+                                                 hipblasFillMode_t  uplo,
+                                                 hipblas_int        n,
+                                                 const float*       alpha,
+                                                 const float* const x[],
+                                                 hipblas_int        incx,
+                                                 float* const       AP[],
+                                                 hipblas_int        batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDsprBatched)(hipblasHandle_t     handle,
+                                                 hipblasFillMode_t   uplo,
+                                                 hipblas_int         n,
+                                                 const double*       alpha,
+                                                 const double* const x[],
+                                                 hipblas_int         incx,
+                                                 double* const       AP[],
+                                                 hipblas_int         batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCsprBatched)(hipblasHandle_t             handle,
+                                                 hipblasFillMode_t           uplo,
+                                                 hipblas_int                 n,
+                                                 const hipblasComplex*       alpha,
+                                                 const hipblasComplex* const x[],
+                                                 hipblas_int                 incx,
+                                                 hipblasComplex* const       AP[],
+                                                 hipblas_int                 batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZsprBatched)(hipblasHandle_t                   handle,
+                                                 hipblasFillMode_t                 uplo,
+                                                 hipblas_int                       n,
+                                                 const hipblasDoubleComplex*       alpha,
+                                                 const hipblasDoubleComplex* const x[],
+                                                 hipblas_int                       incx,
+                                                 hipblasDoubleComplex* const       AP[],
+                                                 hipblas_int                       batchCount);
+
+// spr_strided_batched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSsprStridedBatched)(hipblasHandle_t   handle,
+                                                        hipblasFillMode_t uplo,
+                                                        hipblas_int       n,
+                                                        const float*      alpha,
+                                                        const float*      x,
+                                                        hipblas_int       incx,
+                                                        hipblasStride     stridex,
+                                                        float*            AP,
+                                                        hipblasStride     strideAP,
+                                                        hipblas_int       batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDsprStridedBatched)(hipblasHandle_t   handle,
+                                                        hipblasFillMode_t uplo,
+                                                        hipblas_int       n,
+                                                        const double*     alpha,
+                                                        const double*     x,
+                                                        hipblas_int       incx,
+                                                        hipblasStride     stridex,
+                                                        double*           AP,
+                                                        hipblasStride     strideAP,
+                                                        hipblas_int       batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasCsprStridedBatched)(hipblasHandle_t       handle,
+                                                        hipblasFillMode_t     uplo,
+                                                        hipblas_int           n,
+                                                        const hipblasComplex* alpha,
+                                                        const hipblasComplex* x,
+                                                        hipblas_int           incx,
+                                                        hipblasStride         stridex,
+                                                        hipblasComplex*       AP,
+                                                        hipblasStride         strideAP,
+                                                        hipblas_int           batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasZsprStridedBatched)(hipblasHandle_t             handle,
+                                                        hipblasFillMode_t           uplo,
+                                                        hipblas_int                 n,
+                                                        const hipblasDoubleComplex* alpha,
+                                                        const hipblasDoubleComplex* x,
+                                                        hipblas_int                 incx,
+                                                        hipblasStride               stridex,
+                                                        hipblasDoubleComplex*       AP,
+                                                        hipblasStride               strideAP,
+                                                        hipblas_int                 batchCount);
+
+// spr2
+hipblasStatus_t HIPBLAS_FAPI(hipblasSspr2)(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           hipblas_int       n,
+                                           const float*      alpha,
+                                           const float*      x,
+                                           hipblas_int       incx,
+                                           const float*      y,
+                                           hipblas_int       incy,
+                                           float*            AP);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDspr2)(hipblasHandle_t   handle,
+                                           hipblasFillMode_t uplo,
+                                           hipblas_int       n,
+                                           const double*     alpha,
+                                           const double*     x,
+                                           hipblas_int       incx,
+                                           const double*     y,
+                                           hipblas_int       incy,
+                                           double*           AP);
+
+// spr2_batched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSspr2Batched)(hipblasHandle_t    handle,
+                                                  hipblasFillMode_t  uplo,
+                                                  hipblas_int        n,
+                                                  const float*       alpha,
+                                                  const float* const x[],
+                                                  hipblas_int        incx,
+                                                  const float* const y[],
+                                                  hipblas_int        incy,
+                                                  float* const       AP[],
+                                                  hipblas_int        batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDspr2Batched)(hipblasHandle_t     handle,
+                                                  hipblasFillMode_t   uplo,
+                                                  hipblas_int         n,
+                                                  const double*       alpha,
+                                                  const double* const x[],
+                                                  hipblas_int         incx,
+                                                  const double* const y[],
+                                                  hipblas_int         incy,
+                                                  double* const       AP[],
+                                                  hipblas_int         batchCount);
+
+// spr2_strided_batched
+hipblasStatus_t HIPBLAS_FAPI(hipblasSspr2StridedBatched)(hipblasHandle_t   handle,
+                                                         hipblasFillMode_t uplo,
+                                                         hipblas_int       n,
+                                                         const float*      alpha,
+                                                         const float*      x,
+                                                         hipblas_int       incx,
+                                                         hipblasStride     stridex,
+                                                         const float*      y,
+                                                         hipblas_int       incy,
+                                                         hipblasStride     stridey,
+                                                         float*            AP,
+                                                         hipblasStride     strideAP,
+                                                         hipblas_int       batchCount);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDspr2StridedBatched)(hipblasHandle_t   handle,
+                                                         hipblasFillMode_t uplo,
+                                                         hipblas_int       n,
+                                                         const double*     alpha,
+                                                         const double*     x,
+                                                         hipblas_int       incx,
+                                                         hipblasStride     stridex,
+                                                         const double*     y,
+                                                         hipblas_int       incy,
+                                                         hipblasStride     stridey,
+                                                         double*           AP,
+                                                         hipblasStride     strideAP,
+                                                         hipblas_int       batchCount);
+
+// spr2
 
 // hbmv
 hipblasStatus_t HIPBLAS_FAPI(hipblasChbmv)(hipblasHandle_t       handle,
