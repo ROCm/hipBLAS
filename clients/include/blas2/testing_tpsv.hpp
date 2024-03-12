@@ -63,7 +63,8 @@ void testing_tpsv_bad_arg(const Arguments& arg)
                     hipblasTpsvFn,
                     (nullptr, uplo, transA, diag, N, dA, dx, incx));
 
-        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE hipblasTpsvFn,
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTpsvFn,
                     (handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, dx, incx));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
