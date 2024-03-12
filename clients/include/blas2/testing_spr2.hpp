@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,25 +40,26 @@ inline void testname_spr2(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_spr2_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSpr2Fn = FORTRAN ? hipblasSpr2<T, true> : hipblasSpr2<T, false>;
+    auto hipblasSpr2Fn = arg.api == FORTRAN ? hipblasSpr2<T, true> : hipblasSpr2<T, false>;
+    auto hipblasSpr2Fn_64
+        = arg.api == FORTRAN_64 ? hipblasSpr2_64<T, true> : hipblasSpr2_64<T, false>;
+
+    const T           h_alpha(1), h_zero(0);
+    const T*          alpha = &h_alpha;
+    const T*          zero  = &h_zero;
+    hipblasFillMode_t uplo  = HIPBLAS_FILL_MODE_UPPER;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasFillMode_t uplo   = HIPBLAS_FILL_MODE_UPPER;
-        int64_t           N      = 100;
-        int64_t           incx   = 1;
-        int64_t           incy   = 1;
-        int64_t           A_size = N * (N + 1) / 2;
+        int64_t N      = 100;
+        int64_t incx   = 1;
+        int64_t incy   = 1;
+        int64_t A_size = N * (N + 1) / 2;
 
         device_vector<T> d_alpha(1), d_zero(1);
-
-        const T  h_alpha(1), h_zero(0);
-        const T* alpha = &h_alpha;
-        const T* zero  = &h_zero;
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_DEVICE)
         {
@@ -72,62 +73,73 @@ void testing_spr2_bad_arg(const Arguments& arg)
         device_vector<T> dx(N * incx);
         device_vector<T> dy(N * incy);
 
-        EXPECT_HIPBLAS_STATUS(hipblasSpr2Fn(nullptr, uplo, N, alpha, dx, incx, dy, incy, dA),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasSpr2Fn(handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dy, incy, dA),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasSpr2Fn(
-                handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dy, incy, dA),
-            HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasSpr2Fn,
+                    (nullptr, uplo, N, alpha, dx, incx, dy, incy, dA));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasSpr2Fn,
+                    (handle, HIPBLAS_FILL_MODE_FULL, N, alpha, dx, incx, dy, incy, dA));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasSpr2Fn,
+                    (handle, (hipblasFillMode_t)HIPBLAS_OP_N, N, alpha, dx, incx, dy, incy, dA));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasSpr2Fn(handle, uplo, N, nullptr, dx, incx, dy, incy, dA),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSpr2Fn,
+                        (handle, uplo, N, nullptr, dx, incx, dy, incy, dA));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
                 // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasSpr2Fn(handle, uplo, N, alpha, nullptr, incx, dy, incy, dA),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasSpr2Fn(handle, uplo, N, alpha, dx, incx, nullptr, incy, dA),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasSpr2Fn(handle, uplo, N, alpha, dx, incx, dy, incy, nullptr),
-                    HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSpr2Fn,
+                            (handle, uplo, N, alpha, nullptr, incx, dy, incy, dA));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSpr2Fn,
+                            (handle, uplo, N, alpha, dx, incx, nullptr, incy, dA));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSpr2Fn,
+                            (handle, uplo, N, alpha, dx, incx, dy, incy, nullptr));
+
+                int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
+                // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+                // this should fail with invalid-value
+                // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSpr2Fn,
+                            (handle, uplo, n_64, zero, nullptr, 1, nullptr, 1, nullptr));
             }
 
             // With alpha == 0, can have all nullptrs
-            CHECK_HIPBLAS_ERROR(
-                hipblasSpr2Fn(handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr));
+            DAPI_CHECK(hipblasSpr2Fn,
+                       (handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr));
         }
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(
-            hipblasSpr2Fn(handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr));
+        DAPI_CHECK(hipblasSpr2Fn,
+                   (handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr));
     }
 }
 
 template <typename T>
 void testing_spr2(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasSpr2Fn = FORTRAN ? hipblasSpr2<T, true> : hipblasSpr2<T, false>;
+    auto hipblasSpr2Fn = arg.api == FORTRAN ? hipblasSpr2<T, true> : hipblasSpr2<T, false>;
+    auto hipblasSpr2Fn_64
+        = arg.api == FORTRAN_64 ? hipblasSpr2_64<T, true> : hipblasSpr2_64<T, false>;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
-    int               N    = arg.N;
-    int               incx = arg.incx;
-    int               incy = arg.incy;
+    int64_t           N    = arg.N;
+    int64_t           incx = arg.incx;
+    int64_t           incy = arg.incy;
 
-    int    abs_incx = incx < 0 ? -incx : incx;
-    int    abs_incy = incy < 0 ? -incy : incy;
-    size_t A_size   = size_t(N) * (N + 1) / 2;
-    size_t x_size   = abs_incx * size_t(N);
-    size_t y_size   = abs_incy * size_t(N);
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
+    size_t  A_size   = size_t(N) * (N + 1) / 2;
+    size_t  x_size   = abs_incx * size_t(N);
+    size_t  y_size   = abs_incy * size_t(N);
 
     hipblasLocalHandle handle(arg);
 
@@ -136,10 +148,9 @@ void testing_spr2(const Arguments& arg)
     bool invalid_size = N < 0 || !incx || !incy;
     if(invalid_size || !N)
     {
-        hipblasStatus_t actual
-            = hipblasSpr2Fn(handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasSpr2Fn,
+                    (handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr));
         return;
     }
 
@@ -178,13 +189,13 @@ void testing_spr2(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasSpr2Fn(handle, uplo, N, &h_alpha, dx, incx, dy, incy, dA));
+        DAPI_CHECK(hipblasSpr2Fn, (handle, uplo, N, &h_alpha, dx, incx, dy, incy, dA));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasSpr2Fn(handle, uplo, N, d_alpha, dx, incx, dy, incy, dA));
+        DAPI_CHECK(hipblasSpr2Fn, (handle, uplo, N, d_alpha, dx, incx, dy, incy, dA));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
@@ -222,7 +233,7 @@ void testing_spr2(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasSpr2Fn(handle, uplo, N, d_alpha, dx, incx, dy, incy, dA));
+            DAPI_DISPATCH(hipblasSpr2Fn, (handle, uplo, N, d_alpha, dx, incx, dy, incy, dA));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
