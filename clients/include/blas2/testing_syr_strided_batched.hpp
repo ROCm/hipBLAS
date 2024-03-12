@@ -77,10 +77,9 @@ void testing_syr_strided_batched_bad_arg(const Arguments& arg)
         device_vector<T> dA(strideA * batch_count);
         device_vector<T> dx(stridex * batch_count);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasSyrStridedBatchedFn(
-                nullptr, uplo, N, alpha, dx, incx, stridex, dA, lda, strideA, batch_count),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasSyrStridedBatchedFn,
+                    (nullptr, uplo, N, alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasSyrStridedBatchedFn,
                     (handle,
@@ -225,16 +224,15 @@ void testing_syr_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_DISPATCH(
-            hipblasSyrStridedBatchedFn,
-            (handle, uplo, N, &h_alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
+        DAPI_CHECK(hipblasSyrStridedBatchedFn,
+                   (handle, uplo, N, &h_alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        DAPI_DISPATCH(hipblasSyrStridedBatchedFn,
-                      (handle, uplo, N, d_alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
+        DAPI_CHECK(hipblasSyrStridedBatchedFn,
+                   (handle, uplo, N, d_alpha, dx, incx, stridex, dA, lda, strideA, batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
