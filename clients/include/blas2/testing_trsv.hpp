@@ -108,9 +108,10 @@ void testing_trsv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsv(const Arguments& arg)
 {
-    bool FORTRAN          = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTrsvFn    = FORTRAN ? hipblasTrsv<T, true> : hipblasTrsv<T, false>;
-    auto hipblasTrsvFn_64 = FORTRAN_64 ? hipblasTrsv_64<T, true> : hipblasTrsv_64<T, false>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTrsvFn = FORTRAN ? hipblasTrsv<T, true> : hipblasTrsv<T, false>;
+    auto hipblasTrsvFn_64
+        = arg.api == FORTRAN_64 ? hipblasTrsv_64<T, true> : hipblasTrsv_64<T, false>;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);

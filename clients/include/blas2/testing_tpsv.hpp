@@ -40,9 +40,10 @@ inline void testname_tpsv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_tpsv_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN          = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTpsvFn    = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
-    auto hipblasTpsvFn_64 = FORTRAN_64 ? hipblasTpsv_64<T, true> : hipblasTpsv_64<T, false>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTpsvFn = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
+    auto hipblasTpsvFn_64
+        = arg.api == FORTRAN_64 ? hipblasTpsv_64<T, true> : hipblasTpsv_64<T, false>;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -100,9 +101,10 @@ void testing_tpsv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_tpsv(const Arguments& arg)
 {
-    bool FORTRAN          = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTpsvFn    = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
-    auto hipblasTpsvFn_64 = FORTRAN_64 ? hipblasTpsv_64<T, true> : hipblasTpsv_64<T, false>;
+    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
+    auto hipblasTpsvFn = FORTRAN ? hipblasTpsv<T, true> : hipblasTpsv<T, false>;
+    auto hipblasTpsvFn_64
+        = arg.api == FORTRAN_64 ? hipblasTpsv_64<T, true> : hipblasTpsv_64<T, false>;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
