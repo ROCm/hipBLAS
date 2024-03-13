@@ -212,26 +212,6 @@ void testing_her2_strided_batched_bad_arg(const Arguments& arg)
                          batch_count));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHer2StridedBatchedFn,
-                       (handle,
-                        uplo,
-                        N,
-                        zero,
-                        dx,
-                        incx,
-                        stridex,
-                        dy,
-                        incy,
-                        stridey,
-                        dA,
-                        lda,
-                        strideA,
-                        batch_count));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasHer2StridedBatchedFn,
                    (handle,
