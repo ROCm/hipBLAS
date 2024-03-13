@@ -17478,19 +17478,19 @@ hipblasStatus_t hipblasDtbsvStridedBatched_64(hipblasHandle_t    handle,
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
 
-hipblasStatus_t hipblasCtbsvStridedBatched(hipblasHandle_t       handle,
-                                           hipblasFillMode_t     uplo,
-                                           hipblasOperation_t    transA,
-                                           hipblasDiagType_t     diag,
-                                           int64_t               n,
-                                           int64_t               k,
-                                           const hipblasComplex* A,
-                                           int64_t               lda,
-                                           hipblasStride         strideA,
-                                           hipblasComplex*       x,
-                                           int64_t               incx,
-                                           hipblasStride         stridex,
-                                           int64_t               batchCount)
+hipblasStatus_t hipblasCtbsvStridedBatched_64(hipblasHandle_t       handle,
+                                              hipblasFillMode_t     uplo,
+                                              hipblasOperation_t    transA,
+                                              hipblasDiagType_t     diag,
+                                              int64_t               n,
+                                              int64_t               k,
+                                              const hipblasComplex* A,
+                                              int64_t               lda,
+                                              hipblasStride         strideA,
+                                              hipblasComplex*       x,
+                                              int64_t               incx,
+                                              hipblasStride         stridex,
+                                              int64_t               batchCount)
 {
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 }
