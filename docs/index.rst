@@ -16,6 +16,7 @@ The code is open and hosted at: https://github.com/ROCm/hipBLAS
 The hipBLAS documentation is structured as follows:
 
 .. grid:: 2
+  :gutter: 3
 
   .. grid-item-card:: Installation
 
