@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,6 +45,9 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
     auto hipblasHpr2BatchedFn
         = FORTRAN ? hipblasHpr2Batched<T, true> : hipblasHpr2Batched<T, false>;
 
+    auto hipblasHpr2BatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasHpr2Batched_64<T, true> : hipblasHpr2Batched_64<T, false>;
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -75,99 +78,136 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(N, incy, batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(nullptr,
-                                                   uplo,
-                                                   N,
-                                                   alpha,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   dA.ptr_on_device(),
-                                                   batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                   HIPBLAS_FILL_MODE_FULL,
-                                                   N,
-                                                   alpha,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   dA.ptr_on_device(),
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
-                                                   N,
-                                                   alpha,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   dA.ptr_on_device(),
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasHpr2BatchedFn,
+                    (nullptr,
+                     uplo,
+                     N,
+                     alpha,
+                     dx.ptr_on_device(),
+                     incx,
+                     dy.ptr_on_device(),
+                     incy,
+                     dA.ptr_on_device(),
+                     batch_count));
 
-        EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                   uplo,
-                                                   N,
-                                                   nullptr,
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   dy.ptr_on_device(),
-                                                   incy,
-                                                   dA.ptr_on_device(),
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHpr2BatchedFn,
+                    (handle,
+                     HIPBLAS_FILL_MODE_FULL,
+                     N,
+                     alpha,
+                     dx.ptr_on_device(),
+                     incx,
+                     dy.ptr_on_device(),
+                     incy,
+                     dA.ptr_on_device(),
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasHpr2BatchedFn,
+                    (handle,
+                     (hipblasFillMode_t)HIPBLAS_OP_N,
+                     N,
+                     alpha,
+                     dx.ptr_on_device(),
+                     incx,
+                     dy.ptr_on_device(),
+                     incy,
+                     dA.ptr_on_device(),
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHpr2BatchedFn,
+                    (handle,
+                     uplo,
+                     N,
+                     nullptr,
+                     dx.ptr_on_device(),
+                     incx,
+                     dy.ptr_on_device(),
+                     incy,
+                     dA.ptr_on_device(),
+                     batch_count));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
             // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                       uplo,
-                                                       N,
-                                                       alpha,
-                                                       nullptr,
-                                                       incx,
-                                                       dy.ptr_on_device(),
-                                                       incy,
-                                                       dA.ptr_on_device(),
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                       uplo,
-                                                       N,
-                                                       alpha,
-                                                       dx.ptr_on_device(),
-                                                       incx,
-                                                       nullptr,
-                                                       incy,
-                                                       dA.ptr_on_device(),
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasHpr2BatchedFn(handle,
-                                                       uplo,
-                                                       N,
-                                                       alpha,
-                                                       dx.ptr_on_device(),
-                                                       incx,
-                                                       dy.ptr_on_device(),
-                                                       incy,
-                                                       nullptr,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHpr2BatchedFn,
+                        (handle,
+                         uplo,
+                         N,
+                         alpha,
+                         nullptr,
+                         incx,
+                         dy.ptr_on_device(),
+                         incy,
+                         dA.ptr_on_device(),
+                         batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHpr2BatchedFn,
+                        (handle,
+                         uplo,
+                         N,
+                         alpha,
+                         dx.ptr_on_device(),
+                         incx,
+                         nullptr,
+                         incy,
+                         dA.ptr_on_device(),
+                         batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHpr2BatchedFn,
+                        (handle,
+                         uplo,
+                         N,
+                         alpha,
+                         dx.ptr_on_device(),
+                         incx,
+                         dy.ptr_on_device(),
+                         incy,
+                         nullptr,
+                         batch_count));
+
+            int64_t n_64 = 2147483648; // will rollover to -2147483648 if using 32-bit interface
+
+            // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+            // this should fail with invalid-value
+            // Note that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+            DAPI_EXPECT(
+                (arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasHpr2BatchedFn,
+                (handle, uplo, n_64, zero, nullptr, incx, nullptr, incy, nullptr, batch_count));
+        }
+
+        // Check 64-bit API with quick return
+        if(arg.api & c_API_64)
+        {
+            DAPI_CHECK(hipblasHpr2BatchedFn,
+                       (handle,
+                        uplo,
+                        N,
+                        zero,
+                        dx.ptr_on_device(),
+                        incx,
+                        dy.ptr_on_device(),
+                        incy,
+                        dA.ptr_on_device(),
+                        batch_count));
         }
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(
-            handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(
-            handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr, 0));
+        DAPI_CHECK(hipblasHpr2BatchedFn,
+                   (handle, uplo, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, batch_count));
+        DAPI_CHECK(hipblasHpr2BatchedFn,
+                   (handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr, 0));
 
         // With alpha == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(
-            handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr, batch_count));
+        DAPI_CHECK(hipblasHpr2BatchedFn,
+                   (handle, uplo, N, zero, nullptr, incx, nullptr, incy, nullptr, batch_count));
     }
 }
 
@@ -178,15 +218,18 @@ void testing_hpr2_batched(const Arguments& arg)
     auto hipblasHpr2BatchedFn
         = FORTRAN ? hipblasHpr2Batched<T, true> : hipblasHpr2Batched<T, false>;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
+    auto hipblasHpr2BatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasHpr2Batched_64<T, true> : hipblasHpr2Batched_64<T, false>;
 
-    size_t            A_size = size_t(N) * (N + 1) / 2;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
+
+    size_t            A_size = N * (N + 1) / 2;
     hipblasFillMode_t uplo   = char2hipblas_fill(arg.uplo);
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
 
@@ -197,10 +240,9 @@ void testing_hpr2_batched(const Arguments& arg)
     bool invalid_size = N < 0 || !incx || !incy || batch_count < 0;
     if(invalid_size || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasHpr2BatchedFn(
-            handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr, batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasHpr2BatchedFn,
+                    (handle, uplo, N, nullptr, nullptr, incx, nullptr, incy, nullptr, batch_count));
         return;
     }
 
@@ -238,38 +280,40 @@ void testing_hpr2_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(handle,
-                                                 uplo,
-                                                 N,
-                                                 (T*)&h_alpha,
-                                                 dx.ptr_on_device(),
-                                                 incx,
-                                                 dy.ptr_on_device(),
-                                                 incy,
-                                                 dA.ptr_on_device(),
-                                                 batch_count));
+        DAPI_CHECK(hipblasHpr2BatchedFn,
+                   (handle,
+                    uplo,
+                    N,
+                    (T*)&h_alpha,
+                    dx.ptr_on_device(),
+                    incx,
+                    dy.ptr_on_device(),
+                    incy,
+                    dA.ptr_on_device(),
+                    batch_count));
 
         CHECK_HIP_ERROR(hA_host.transfer_from(dA));
         CHECK_HIP_ERROR(dA.transfer_from(hA));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(handle,
-                                                 uplo,
-                                                 N,
-                                                 d_alpha,
-                                                 dx.ptr_on_device(),
-                                                 incx,
-                                                 dy.ptr_on_device(),
-                                                 incy,
-                                                 dA.ptr_on_device(),
-                                                 batch_count));
+        DAPI_CHECK(hipblasHpr2BatchedFn,
+                   (handle,
+                    uplo,
+                    N,
+                    d_alpha,
+                    dx.ptr_on_device(),
+                    incx,
+                    dy.ptr_on_device(),
+                    incy,
+                    dA.ptr_on_device(),
+                    batch_count));
 
         CHECK_HIP_ERROR(hA_device.transfer_from(dA));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(size_t b = 0; b < batch_count; b++)
         {
             ref_hpr2<T>(uplo, N, h_alpha, hx[b], incx, hy[b], incy, hA_cpu[b]);
         }
@@ -292,6 +336,7 @@ void testing_hpr2_batched(const Arguments& arg)
 
     if(arg.timing)
     {
+        double gpu_time_used;
         CHECK_HIP_ERROR(dA.transfer_from(hA));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -303,16 +348,17 @@ void testing_hpr2_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasHpr2BatchedFn(handle,
-                                                     uplo,
-                                                     N,
-                                                     d_alpha,
-                                                     dx.ptr_on_device(),
-                                                     incx,
-                                                     dy.ptr_on_device(),
-                                                     incy,
-                                                     dA.ptr_on_device(),
-                                                     batch_count));
+            DAPI_DISPATCH(hipblasHpr2BatchedFn,
+                          (handle,
+                           uplo,
+                           N,
+                           d_alpha,
+                           dx.ptr_on_device(),
+                           incx,
+                           dy.ptr_on_device(),
+                           incy,
+                           dA.ptr_on_device(),
+                           batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

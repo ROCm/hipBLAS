@@ -180,23 +180,6 @@ void testing_her2_batched_bad_arg(const Arguments& arg)
                          batch_count));
         }
 
-        // Check 64-bit API with quick return
-        if(arg.api & c_API_64)
-        {
-            DAPI_CHECK(hipblasHer2BatchedFn,
-                       (handle,
-                        uplo,
-                        N,
-                        zero,
-                        dx.ptr_on_device(),
-                        incx,
-                        dy.ptr_on_device(),
-                        incy,
-                        dA.ptr_on_device(),
-                        lda,
-                        batch_count));
-        }
-
         // With N == 0, can have all nullptrs
         DAPI_CHECK(
             hipblasHer2BatchedFn,
