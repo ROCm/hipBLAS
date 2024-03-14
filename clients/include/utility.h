@@ -96,7 +96,7 @@ HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
 
 /* =============================================================================================== */
 /* 64-bit value which will overflow 32-bit integers                                                */
-constexpr int64_t c_i32_overflow = int64_t(std::numeric_limits<int32_t>::max()) + 1; // 2147483648
+extern int64_t c_i32_overflow;
 
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */

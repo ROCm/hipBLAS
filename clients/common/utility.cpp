@@ -58,6 +58,8 @@ namespace fs = std::experimental::filesystem;
 hipblas_rng_t hipblas_rng(69069);
 hipblas_rng_t hipblas_seed(hipblas_rng);
 
+int64_t c_i32_overflow = int64_t(std::numeric_limits<int32_t>::max()) + 1; // 2147483648
+
 template <>
 char type2char<float>()
 {
