@@ -888,19 +888,19 @@ hipblasXsbmv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmv
 
-The sbmv functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The sbmv functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSsbmvBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmvBatched
 
-The sbmvBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The sbmvBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSsbmvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsbmvStridedBatched
 
-The sbmvStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The sbmvStridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXspmv + Batched, StridedBatched
 ----------------------------------------
@@ -908,19 +908,19 @@ hipblasXspmv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspmv
 
-The spmv functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spmv functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSspmvBatched
     :outline:
 .. doxygenfunction:: hipblasDspmvBatched
 
-The spmvBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spmvBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSspmvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspmvStridedBatched
 
-The spmvStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spmvStridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXspr + Batched, StridedBatched
 ----------------------------------------
@@ -932,7 +932,7 @@ hipblasXspr + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZspr
 
-The spr functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spr functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSsprBatched
     :outline:
@@ -942,7 +942,7 @@ The spr functions supports the 64-bit integer interface. Refer to section :ref:`
     :outline:
 .. doxygenfunction:: hipblasZsprBatched
 
-The sprBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The sprBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSsprStridedBatched
     :outline:
@@ -952,7 +952,7 @@ The sprBatched functions supports the 64-bit integer interface. Refer to section
     :outline:
 .. doxygenfunction:: hipblasZsprStridedBatched
 
-The sprStridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The sprStridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXspr2 + Batched, StridedBatched
 ----------------------------------------
@@ -960,19 +960,19 @@ hipblasXspr2 + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspr2
 
-The spr2 functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spr2 functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSspr2Batched
     :outline:
 .. doxygenfunction:: hipblasDspr2Batched
 
-The spr2Batched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spr2Batched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 .. doxygenfunction:: hipblasSspr2StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDspr2StridedBatched
 
-The spr2StridedBatched functions supports the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+The spr2StridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXsymv + Batched, StridedBatched
 ----------------------------------------
@@ -984,6 +984,8 @@ hipblasXsymv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsymv
 
+The symv functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsymvBatched
     :outline:
 .. doxygenfunction:: hipblasDsymvBatched
@@ -992,6 +994,8 @@ hipblasXsymv + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsymvBatched
 
+The symvBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsymvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsymvStridedBatched
@@ -999,6 +1003,8 @@ hipblasXsymv + Batched, StridedBatched
 .. doxygenfunction:: hipblasCsymvStridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsymvStridedBatched
+
+The symvStridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXsyr + Batched, StridedBatched
 ----------------------------------------
@@ -1010,6 +1016,8 @@ hipblasXsyr + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyr
 
+The syr functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsyrBatched
     :outline:
 .. doxygenfunction:: hipblasDsyrBatched
@@ -1018,6 +1026,8 @@ hipblasXsyr + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyrBatched
 
+The syrBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsyrStridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsyrStridedBatched
@@ -1025,6 +1035,8 @@ hipblasXsyr + Batched, StridedBatched
 .. doxygenfunction:: hipblasCsyrStridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyrStridedBatched
+
+The syrStridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXsyr2 + Batched, StridedBatched
 ----------------------------------------
@@ -1036,6 +1048,8 @@ hipblasXsyr2 + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyr2
 
+The syr2 functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsyr2Batched
     :outline:
 .. doxygenfunction:: hipblasDsyr2Batched
@@ -1044,6 +1058,8 @@ hipblasXsyr2 + Batched, StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyr2Batched
 
+The syr2Batched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
+
 .. doxygenfunction:: hipblasSsyr2StridedBatched
     :outline:
 .. doxygenfunction:: hipblasDsyr2StridedBatched
@@ -1051,6 +1067,8 @@ hipblasXsyr2 + Batched, StridedBatched
 .. doxygenfunction:: hipblasCsyr2StridedBatched
     :outline:
 .. doxygenfunction:: hipblasZsyr2StridedBatched
+
+The syr2StridedBatched functions support the 64-bit integer interface. Refer to section :ref:`ILP64 API`.
 
 hipblasXtbmv + Batched, StridedBatched
 ----------------------------------------
