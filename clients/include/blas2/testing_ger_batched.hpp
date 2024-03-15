@@ -46,6 +46,10 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
         = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)
                   : (CONJ ? hipblasGerBatched<T, true, false> : hipblasGerBatched<T, false, false>);
 
+    auto hipblasGerBatchedFn_64
+        = arg.api == FORTRAN_64 ? (CONJ ? hipblasGerBatched_64<T, true, true> : hipblasGerBatched_64<T, false, true>)
+                  : (CONJ ? hipblasGerBatched_64<T, true, false> : hipblasGerBatched_64<T, false, false>);
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -76,7 +80,7 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(M, incy, batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGerBatchedFn(nullptr,
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasGerBatchedFn, (nullptr,
                                                   M,
                                                   N,
                                                   alpha,
@@ -86,9 +90,9 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
                                                   incy,
                                                   dA.ptr_on_device(),
                                                   lda,
-                                                  batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasGerBatchedFn(handle,
+                                                  batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerBatchedFn, (handle,
                                                   M,
                                                   N,
                                                   nullptr,
@@ -98,13 +102,12 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
                                                   incy,
                                                   dA.ptr_on_device(),
                                                   lda,
-                                                  batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+                                                  batch_count));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
             // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasGerBatchedFn(handle,
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerBatchedFn, (handle,
                                                       M,
                                                       N,
                                                       alpha,
@@ -114,9 +117,9 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
                                                       incy,
                                                       dA.ptr_on_device(),
                                                       lda,
-                                                      batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGerBatchedFn(handle,
+                                                      batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerBatchedFn, (handle,
                                                       M,
                                                       N,
                                                       alpha,
@@ -126,9 +129,9 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
                                                       incy,
                                                       dA.ptr_on_device(),
                                                       lda,
-                                                      batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGerBatchedFn(handle,
+                                                      batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerBatchedFn, (handle,
                                                       M,
                                                       N,
                                                       alpha,
@@ -138,16 +141,15 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
                                                       incy,
                                                       nullptr,
                                                       lda,
-                                                      batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+                                                      batch_count));
         }
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(
+        DAPI_CHECK(hipblasGerBatchedFn, (
             handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda, batch_count));
 
         // With alpha == 0 can have x nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(
+        DAPI_CHECK(hipblasGerBatchedFn, (
             handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda, batch_count));
     }
 }
@@ -160,16 +162,20 @@ void testing_ger_batched(const Arguments& arg)
         = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)
                   : (CONJ ? hipblasGerBatched<T, true, false> : hipblasGerBatched<T, false, false>);
 
-    int M           = arg.M;
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int lda         = arg.lda;
-    int batch_count = arg.batch_count;
+    auto hipblasGerBatchedFn_64
+        = arg.api == FORTRAN_64 ? (CONJ ? hipblasGerBatched_64<T, true, true> : hipblasGerBatched_64<T, false, true>)
+                  : (CONJ ? hipblasGerBatched_64<T, true, false> : hipblasGerBatched_64<T, false, false>);
 
-    size_t A_size = size_t(lda) * N;
+    int64_t M           = arg.M;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t lda         = arg.lda;
+    int64_t batch_count = arg.batch_count;
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    size_t A_size = lda * N;
+
+    double hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
 
@@ -180,10 +186,8 @@ void testing_ger_batched(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || !incx || !incy || lda < M || lda < 1 || batch_count < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasGerBatchedFn(
-            handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda, batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS, hipblasGerBatchedFn, (
+            handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda, batch_count));
         return;
     }
 
@@ -219,11 +223,11 @@ void testing_ger_batched(const Arguments& arg)
 
     if(arg.unit_check || arg.norm_check)
     {
-        /* =====================================================================
+        /*=====================================================================
             HIPBLAS
-        =================================================================== */
+        ======================================================================= */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
+        DAPI_CHECK(hipblasGerBatchedFn, (handle,
                                                 M,
                                                 N,
                                                 (T*)&h_alpha,
@@ -239,7 +243,7 @@ void testing_ger_batched(const Arguments& arg)
         CHECK_HIP_ERROR(dA.transfer_from(hA));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
+        DAPI_CHECK(hipblasGerBatchedFn, (handle,
                                                 M,
                                                 N,
                                                 d_alpha,
@@ -256,7 +260,7 @@ void testing_ger_batched(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(size_t b = 0; b < batch_count; b++)
         {
             ref_ger<T, CONJ>(M, N, h_alpha, hx[b], incx, hy[b], incy, hA_cpu[b], lda);
         }
@@ -279,6 +283,7 @@ void testing_ger_batched(const Arguments& arg)
 
     if(arg.timing)
     {
+        double gpu_time_used;
         CHECK_HIP_ERROR(dA.transfer_from(hA));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -290,7 +295,7 @@ void testing_ger_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGerBatchedFn(handle,
+            DAPI_DISPATCH(hipblasGerBatchedFn, (handle,
                                                     M,
                                                     N,
                                                     d_alpha,

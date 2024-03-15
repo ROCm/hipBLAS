@@ -44,6 +44,9 @@ void testing_ger_bad_arg(const Arguments& arg)
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
 
+    auto hipblasGerFn_64 = arg.api == FORTRAN_64 ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
+                                : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -73,36 +76,31 @@ void testing_ger_bad_arg(const Arguments& arg)
         device_vector<T> dx(N * incx);
         device_vector<T> dy(M * incy);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGerFn(nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasGerFn, (nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
                 // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGerFn(handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGerFn(handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGerFn(handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda),
-                    HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasGerFn, (handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, 
+                    hipblasGerFn, (handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, 
+                    hipblasGerFn, (handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda));
             }
 
             // With alpha == 0 can have all nullptrs
-            CHECK_HIPBLAS_ERROR(
-                hipblasGerFn(handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
+            DAPI_CHECK(
+                hipblasGerFn, (handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
         }
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(
-            hipblasGerFn(handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
+        DAPI_CHECK(
+            hipblasGerFn, (handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
     }
 }
 
@@ -113,17 +111,20 @@ void testing_ger(const Arguments& arg)
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
 
-    int M    = arg.M;
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
-    int lda  = arg.lda;
+    auto hipblasGerFn_64 = FORTRAN_64 ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
+                                : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t x_size   = size_t(M) * abs_incx;
-    size_t y_size   = size_t(M) * abs_incy;
-    size_t A_size   = size_t(lda) * N;
+    int64_t M    = arg.M;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
+    int64_t lda  = arg.lda;
+
+    size_t    abs_incx = incx >= 0 ? incx : -incx;
+    size_t    abs_incy = incy >= 0 ? incy : -incy;
+    size_t x_size   = M * abs_incx;
+    size_t y_size   = M * abs_incy;
+    size_t A_size   = lda * N;
 
     hipblasLocalHandle handle(arg);
 
@@ -132,10 +133,10 @@ void testing_ger(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || !incx || !incy || lda < M || lda < 1;
     if(invalid_size || !M || !N)
     {
-        hipblasStatus_t actual
-            = hipblasGerFn(handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS, 
+            hipblasGerFn, (
+                handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
+
         return;
     }
 
@@ -152,7 +153,7 @@ void testing_ger(const Arguments& arg)
     device_vector<T> dy(y_size);
     device_vector<T> d_alpha(1);
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
 
@@ -176,13 +177,13 @@ void testing_ger(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGerFn(handle, M, N, (T*)&h_alpha, dx, incx, dy, incy, dA, lda));
+        DAPI_CHECK(hipblasGerFn, (handle, M, N, (T*)&h_alpha, dx, incx, dy, incy, dA, lda));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGerFn(handle, M, N, d_alpha, dx, incx, dy, incy, dA, lda));
+        DAPI_CHECK(hipblasGerFn, (handle, M, N, d_alpha, dx, incx, dy, incy, dA, lda));
 
         CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
 
@@ -209,6 +210,7 @@ void testing_ger(const Arguments& arg)
 
     if(arg.timing)
     {
+        double gpu_time_used;
         CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -220,7 +222,7 @@ void testing_ger(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGerFn(handle, M, N, d_alpha, dx, incx, dy, incy, dA, lda));
+            DAPI_DISPATCH(hipblasGerFn, (handle, M, N, d_alpha, dx, incx, dy, incy, dA, lda));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

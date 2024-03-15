@@ -55,6 +55,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
     auto hipblasGbmvBatchedFn
         = FORTRAN ? hipblasGbmvBatched<T, true> : hipblasGbmvBatched<T, false>;
 
+    auto hipblasGbmvBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasGbmvBatched_64<T, true> : hipblasGbmvBatched_64<T, false>;
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -94,7 +97,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(M, incy, batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(nullptr,
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasGbmvBatchedFn(nullptr,
                                                    transA,
                                                    M,
                                                    N,
@@ -108,9 +111,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                    beta,
                                                    dy.ptr_on_device(),
                                                    incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                   batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM, hipblasGbmvBatchedFn(handle,
                                                    (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                                                    M,
                                                    N,
@@ -124,10 +127,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                    beta,
                                                    dy,
                                                    incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+                                                   batch_count));
 
-        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGbmvBatchedFn(handle,
                                                    transA,
                                                    M,
                                                    N,
@@ -141,9 +143,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                    beta,
                                                    dy.ptr_on_device(),
                                                    incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                   batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGbmvBatchedFn, (handle,
                                                    transA,
                                                    M,
                                                    N,
@@ -157,13 +159,12 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                    nullptr,
                                                    dy.ptr_on_device(),
                                                    incy,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+                                                   batch_count));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
             // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGbmvBatchedFn, (handle,
                                                        transA,
                                                        M,
                                                        N,
@@ -177,9 +178,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                        beta,
                                                        dy.ptr_on_device(),
                                                        incy,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                       batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGbmvBatchedFn, (handle,
                                                        transA,
                                                        M,
                                                        N,
@@ -193,9 +194,9 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                        beta,
                                                        dy.ptr_on_device(),
                                                        incy,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasGbmvBatchedFn(handle,
+                                                       batch_count));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGbmvBatchedFn, (handle,
                                                        transA,
                                                        M,
                                                        N,
@@ -209,12 +210,11 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                        beta,
                                                        nullptr,
                                                        incy,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+                                                       batch_count));
         }
 
         // With M == 0 || N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  0,
                                                  N,
@@ -229,7 +229,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                  nullptr,
                                                  incy,
                                                  batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  0,
@@ -244,7 +244,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                  nullptr,
                                                  incy,
                                                  batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  N,
@@ -261,7 +261,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                  0));
 
         // With alpha == 0 can have x nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  N,
@@ -278,7 +278,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
                                                  batch_count));
 
         // With alpha == 0 && beta == 1, all other ptrs can be nullptr
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  N,
@@ -303,18 +303,21 @@ void testing_gbmv_batched(const Arguments& arg)
     auto hipblasGbmvBatchedFn
         = FORTRAN ? hipblasGbmvBatched<T, true> : hipblasGbmvBatched<T, false>;
 
-    int M           = arg.M;
-    int N           = arg.N;
-    int KL          = arg.KL;
-    int KU          = arg.KU;
-    int lda         = arg.lda;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
+    auto hipblasGbmvBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasGbmvBatched_64<T, true> : hipblasGbmvBatched_64<T, false>;
 
-    size_t A_size = size_t(lda) * N;
-    int    dim_x;
-    int    dim_y;
+    int64_t M           = arg.M;
+    int64_t N           = arg.N;
+    int64_t KL          = arg.KL;
+    int64_t KU          = arg.KU;
+    int64_t lda         = arg.lda;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
+
+    size_t A_size = lda * N;
+    size_t    dim_x;
+    size_t    dim_y;
 
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
 
@@ -337,7 +340,7 @@ void testing_gbmv_batched(const Arguments& arg)
                         || KL < 0 || KU < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasGbmvBatchedFn(handle,
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS, hipblasGbmvBatchedFn, (handle,
                                                       transA,
                                                       M,
                                                       N,
@@ -351,16 +354,14 @@ void testing_gbmv_batched(const Arguments& arg)
                                                       nullptr,
                                                       nullptr,
                                                       incy,
-                                                      batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+                                                      batch_count));
         return;
     }
 
-    int abs_incx = incx >= 0 ? incx : -incx;
-    int abs_incy = incy >= 0 ? incy : -incy;
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
@@ -403,7 +404,7 @@ void testing_gbmv_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  N,
@@ -423,7 +424,7 @@ void testing_gbmv_batched(const Arguments& arg)
         CHECK_HIP_ERROR(dy.transfer_from(hy));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+        DAPI_CHECK(hipblasGbmvBatchedFn, (handle,
                                                  transA,
                                                  M,
                                                  N,
@@ -445,7 +446,7 @@ void testing_gbmv_batched(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        for(int b = 0; b < batch_count; b++)
+        for(size_t b = 0; b < batch_count; b++)
         {
             ref_gbmv<T>(
                 transA, M, N, KL, KU, h_alpha, hA[b], lda, hx[b], incx, h_beta, hy_cpu[b], incy);
@@ -469,6 +470,7 @@ void testing_gbmv_batched(const Arguments& arg)
 
     if(arg.timing)
     {
+        double gpu_time_used;
         CHECK_HIP_ERROR(dy.transfer_from(hy));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -480,7 +482,7 @@ void testing_gbmv_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasGbmvBatchedFn(handle,
+            DAPI_DISPATCH(hipblasGbmvBatchedFn, (handle,
                                                      transA,
                                                      M,
                                                      N,
