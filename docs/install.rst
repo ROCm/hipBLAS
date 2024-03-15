@@ -14,8 +14,8 @@ Prerequisites
 * If using the rocBLAS backend on an AMD machine:
 
   * A ROCm enabled platform. Find more information on the :doc:`System requirements (Linux) <rocm-install-on-linux:reference/system-requirements>` page, or the :doc:`System requirements (Windows) <rocm-install-on-windows:reference/system-requirements>` page.
-  * A compatible version of rocBLAS
-  * A compatible version of rocSOLVER for full functionality
+  * A compatible version of rocBLAS.
+  * A compatible version of rocSOLVER and it's dependencies rocSPARSE and rocPRIM for full functionality.
 
 * If using the cuBLAS backend on a Nvidia machine:
 
@@ -30,15 +30,17 @@ Download pre-built packages either from `ROCm's native package manager <https://
 .. code-block::bash
    sudo apt update && sudo apt install hipblas
 
-hipBLAS build
-========================
+Building hipBLAS from source
+============================
 
 Build library dependencies + library
 ------------------------------------
-The root of this repository has a helper bash script ``install.sh`` to build and install hipBLAS with a single command.  It does take a lot of options and hard-codes configuration that can be specified through invoking ``cmake`` directly, but it's a great way to get started quickly and can serve as an example of how to build/install.
-A few commands in the script need sudo access so that it may prompt you for a password.
+The root of this repository has a helper python script ``rmake.py`` to build and install hipBLAS with a single command.  It does take a lot of options and hard-coded configuration that can be specified through invoking ``cmake`` directly, but it's a great way to get started quickly and can serve as an example of how to build/install.
+A few commands in the script need sudo access so it may prompt you for a password.
 
-Typical uses of ``install.sh`` to build (library dependencies + library) are
+The install script will determine the build platform by querying ``hipconfig --platform``. This can be explicitly set via environment variable ``HIP_PLATFORM=amd`` or ``HIP_PLATFORM=nvidia``.
+
+Typical uses of ``rmake.py`` to build (library dependencies + library) are
 in the table below.
 
 .. tabularcolumns::
@@ -47,24 +49,24 @@ in the table below.
 +-------------------------------------------+--------------------------+
 |  Command                                  | Description              |
 +===========================================+==========================+
-| ``./install.sh -h``                       | Help information.        |
+| ``python3 rmake.py -h``                   | Help information.        |
 +-------------------------------------------+--------------------------+
-| ``./install.sh -d``                       | Build library            |
+| ``python3 rmake.py -d``                   | Build library            |
 |                                           | dependencies and library |
 |                                           | in your local directory. |
 |                                           | The -d flag only needs   |
 |                                           | to be used once. For     |
 |                                           | subsequent invocations   |
-|                                           | of install.sh it is not  |
+|                                           | of rmake.py it is not    |
 |                                           | necessary to rebuild the |
 |                                           | dependencies.            |
 +-------------------------------------------+--------------------------+
-| ``./install.sh``                          | Build library in your    |
+| ``python3 rmake.py``                      | Build library in your    |
 |                                           | local directory. It is   |
 |                                           | assumed dependencies     |
 |                                           | have been built.         |
 +-------------------------------------------+--------------------------+
-| ``./install.sh -i``                       | Build library, then      |
+| ``python3 rmake.py -i``                   | Build library, then      |
 |                                           | build and install        |
 |                                           | hipBLAS package in       |
 |                                           | `/opt/rocm/hipblas`. You |
@@ -76,6 +78,16 @@ in the table below.
 |                                           | directory, you do not    |
 |                                           | need the -i flag.        |
 +-------------------------------------------+--------------------------+
+| ``python3 rmake.py -n``                   | Build library without    |
+|                                           | functionality provided   |
+|                                           | by rocSOLVER.            |
+|                                           | rocSOLVER, rocSPARSE,    |
+|                                           | and rocPRIM dependencies |
+|                                           | will not be needed.      |
+|                                           | This flag has no effect  |
+|                                           | when building with cuda  |
+|                                           | backend.                 |
++-------------------------------------------+--------------------------+
 
 
 Build library dependencies + client dependencies + library + client
@@ -83,15 +95,15 @@ Build library dependencies + client dependencies + library + client
 
 The client contains executables in the table below.
 
-=============== ====================================================
-executable name description
-=============== ====================================================
-hipblas-test    runs Google Tests to test the library
-hipblas-bench   executable to benchmark or test individual functions
-example-sscal   example C code calling hipblas_sscal function
-=============== ====================================================
+================= ====================================================
+executable name   description
+================= ====================================================
+hipblas-test      runs Google Tests to test the library
+hipblas-bench     executable to benchmark or test individual functions
+hipblas-example-* various examples showing hipblas usage
+================= ====================================================
 
-Common uses of ``install.sh`` to build (dependencies + library + client) are
+Common uses of ``rmake.py`` to build (dependencies + library + client) are
 in the table below.
 
 .. tabularcolumns::
@@ -100,9 +112,7 @@ in the table below.
 +-------------------------------------------+--------------------------+
 | Command                                   | Description              |
 +===========================================+==========================+
-| ``./install.sh -h``                       | Help information.        |
-+-------------------------------------------+--------------------------+
-| ``./install.sh -dc``                      | Build library            |
+| ``python3 rmake.py -dc``                  | Build library            |
 |                                           | dependencies, client     |
 |                                           | dependencies, library,   |
 |                                           | and client in your local |
@@ -110,17 +120,17 @@ in the table below.
 |                                           | only needs to be used    |
 |                                           | once. For subsequent     |
 |                                           | invocations of           |
-|                                           | install.sh it is not     |
+|                                           | rmake.py it is not       |
 |                                           | necessary to rebuild the |
 |                                           | dependencies.            |
 +-------------------------------------------+--------------------------+
-| ``./install.sh -c``                       | Build library and client |
+| ``python3 rmake.py -c``                   | Build library and client |
 |                                           | in your local directory. |
 |                                           | It is assumed the        |
 |                                           | dependencies have been   |
 |                                           | built.                   |
 +-------------------------------------------+--------------------------+
-| ``./install.sh -idc``                     | Build library            |
+| ``python3 rmake.py -idc``                 | Build library            |
 |                                           | dependencies, client     |
 |                                           | dependencies, library,   |
 |                                           | client, then build and   |
@@ -136,7 +146,7 @@ in the table below.
 |                                           | you do not need the -i   |
 |                                           | flag.                    |
 +-------------------------------------------+--------------------------+
-| ``./install.sh -ic``                      | Build and install        |
+| ``python3 rmake.py -ic``                  | Build and install        |
 |                                           | hipBLAS package, and     |
 |                                           | build the client. You    |
 |                                           | will be prompted for     |
@@ -151,13 +161,17 @@ in the table below.
 Dependencies For Building Library
 ==================================
 
-Dependencies are listed in the script ``install.sh``. Use ``install.sh`` with ``-d`` option to install dependencies.
-CMake has a minimum version requirement listed in the file ``install.sh``. See ``--cmake_install`` flag in ``install.sh`` to upgrade automatically.
+Use ``rmake.py`` with ``-d`` option to install dependencies required to build the library. This will not install the rocBLAS, rocSOLVER, rocSPARSE, and rocPRIM dependencies.
+When building hipBLAS it is important to note version dependencies of other libraries. The rocBLAS and rocSOLVER versions needed for an AMD backend build are listed in the top level CMakeLists.txt file.
+rocSPARSE and rocPRIM are currently dependencies of rocSOLVER. To build these libraries from source, please visit the :doc:`rocBLAS Documentation <rocBLAS:index>`,
+:doc:`rocSOLVER Documentation <rocSOLVER:index>`, :doc:`rocSPARSE Documentation <rocSPARSE:index>`, and :doc:`rocPRIM Documentation <rocPRIM:index>`.
 
-However, for the test and benchmark clients' host reference functions you must manually download and install AMD's ILP64 version of the AOCL libraries, version 4.1 or 4.0, from https://www.amd.com/en/developer/aocl.html.
+CMake has a minimum version requirement which is currently 3.16.8. See ``--cmake_install`` flag in ``rmake.py`` to upgrade automatically.
+
+For the test and benchmark clients' host reference functions you must manually download and install AMD's ILP64 version of the AOCL libraries, version 4.2, from https://www.amd.com/en/developer/aocl.html.
 The `aocl-linux-*` packages include AOCL-BLAS and AOCL-LAPACK.
 If you download and install the full AOCL packages into their default locations then this reference LAPACK and BLAS should be found by the clients ``CMakeLists.txt``.
-Note, if you only use the ``install.sh -d`` dependency script and change the default CMake option ``LINK_BLIS=ON``, you may experience `hipblas-test` stress test failures due to 32-bit integer overflow
+Note, if you only use the ``rmake.py -d`` dependency script and change the default CMake option ``LINK_BLIS=ON``, you may experience `hipblas-test` stress test failures due to 32-bit integer overflow
 on the host unless you exclude the stress tests via command line argument ``--gtest_filter=-*stress*``.
 
 
