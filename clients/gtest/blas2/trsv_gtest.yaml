@@ -25,7 +25,7 @@ Tests:
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
 
   - name: trsv_batched_general
@@ -38,7 +38,7 @@ Tests:
     matrix_size: *size_range
     incx: *incx_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: trsv_strided_batched_general
@@ -52,7 +52,7 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: trsv_bad_arg
@@ -60,7 +60,7 @@ Tests:
     function:
       - trsv_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: trsv_bad_arg
@@ -68,7 +68,7 @@ Tests:
     function:
       - trsv_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -78,6 +78,6 @@ Tests:
       - trsv_batched_bad_arg
       - trsv_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
