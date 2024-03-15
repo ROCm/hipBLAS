@@ -21,7 +21,7 @@ if( NOT BUILD_CLIENTS_SAMPLES )
   option( BUILD_CLIENTS_SAMPLES "Build hipBLAS samples" OFF )
 endif( )
 
-if( WIN32 OR HIP_PLATFORM STREQUAL nvidia )
+if( HIP_PLATFORM STREQUAL nvidia )
   option( LINK_BLIS "Link AOCL Blis reference library" OFF )
 else()
   option( LINK_BLIS "Link AOCL Blis reference library" ON )

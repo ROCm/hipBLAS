@@ -107,10 +107,6 @@ if( BUILD_WITH_SOLVER )
   )
 endif( )
 
-if(LINK_BLIS)
-  set( BLIS_CPP ../common/blis_interface.cpp )
-endif()
-
 set( hipblas_test_common
   ../common/utility.cpp
   ../common/cblas_interface.cpp
@@ -139,8 +135,8 @@ target_include_directories( hipblas_v2-test
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
 
-target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST )
-target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST )
+target_compile_definitions( hipblas-test PRIVATE GOOGLE_TEST ${BLIS_DEFINES} )
+target_compile_definitions( hipblas_v2-test PRIVATE GOOGLE_TEST ${BLIS_DEFINES} )
 
 # External header includes included as SYSTEM files
 target_include_directories( hipblas-test
@@ -149,6 +145,7 @@ target_include_directories( hipblas-test
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${FLAME_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     ${ROCM_PATH}/include
 )
@@ -158,6 +155,7 @@ target_include_directories( hipblas_v2-test
     $<BUILD_INTERFACE:${CBLAS_INCLUDE_DIRS}>
     $<BUILD_INTERFACE:${BLAS_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${BLIS_INCLUDE_DIR}>
+    $<BUILD_INTERFACE:${FLAME_INCLUDE_DIR}>
     $<BUILD_INTERFACE:${GTEST_INCLUDE_DIRS}>
     ${ROCM_PATH}/include
 )
