@@ -169,7 +169,7 @@ rocSPARSE and rocPRIM are currently dependencies of rocSOLVER. To build these li
 CMake has a minimum version requirement which is currently 3.16.8. See ``--cmake_install`` flag in ``rmake.py`` to upgrade automatically.
 
 For the test and benchmark clients' host reference functions you must manually download and install AMD's ILP64 version of the AOCL libraries, version 4.2, from https://www.amd.com/en/developer/aocl.html.
-The `aocl-linux-*` packages include AOCL-BLAS and AOCL-LAPACK.
+The `aocl-linux-*` packages include AOCL-BLAS (aocl-blis) and AOCL-LAPACK (aocl-libflame).
 If you download and install the full AOCL packages into their default locations then this reference LAPACK and BLAS should be found by the clients ``CMakeLists.txt``.
 Note, if you only use the ``rmake.py -d`` dependency script and change the default CMake option ``LINK_BLIS=ON``, you may experience `hipblas-test` stress test failures due to 32-bit integer overflow
 on the host unless you exclude the stress tests via command line argument ``--gtest_filter=-*stress*``.
