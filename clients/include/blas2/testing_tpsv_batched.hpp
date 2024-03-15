@@ -45,6 +45,9 @@ void testing_tpsv_batched_bad_arg(const Arguments& arg)
     auto hipblasTpsvBatchedFn
         = FORTRAN ? hipblasTpsvBatched<T, true> : hipblasTpsvBatched<T, false>;
 
+    auto hipblasTpsvBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasTpsvBatched_64<T, true> : hipblasTpsvBatched_64<T, false>;
+
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
         hipblasLocalHandle handle(arg);
@@ -61,71 +64,81 @@ void testing_tpsv_batched_bad_arg(const Arguments& arg)
         device_batch_vector<T> dA(A_size, 1, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
 
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvBatchedFn(nullptr,
-                                                   uplo,
-                                                   transA,
-                                                   diag,
-                                                   N,
-                                                   dA.ptr_on_device(),
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvBatchedFn(handle,
-                                                   HIPBLAS_FILL_MODE_FULL,
-                                                   transA,
-                                                   diag,
-                                                   N,
-                                                   dA.ptr_on_device(),
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvBatchedFn(handle,
-                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
-                                                   transA,
-                                                   diag,
-                                                   N,
-                                                   dA.ptr_on_device(),
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvBatchedFn(handle,
-                                                   uplo,
-                                                   (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
-                                                   diag,
-                                                   N,
-                                                   dA.ptr_on_device(),
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
-        EXPECT_HIPBLAS_STATUS(hipblasTpsvBatchedFn(handle,
-                                                   uplo,
-                                                   transA,
-                                                   (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
-                                                   N,
-                                                   dA.ptr_on_device(),
-                                                   dx.ptr_on_device(),
-                                                   incx,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasTpsvBatchedFn,
+                    (nullptr,
+                     uplo,
+                     transA,
+                     diag,
+                     N,
+                     dA.ptr_on_device(),
+                     dx.ptr_on_device(),
+                     incx,
+                     batch_count));
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTpsvBatchedFn(
-                handle, uplo, transA, diag, N, nullptr, dx.ptr_on_device(), incx, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTpsvBatchedFn(
-                handle, uplo, transA, diag, N, dA.ptr_on_device(), nullptr, incx, batch_count),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTpsvBatchedFn,
+                    (handle,
+                     HIPBLAS_FILL_MODE_FULL,
+                     transA,
+                     diag,
+                     N,
+                     dA.ptr_on_device(),
+                     dx.ptr_on_device(),
+                     incx,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTpsvBatchedFn,
+                    (handle,
+                     (hipblasFillMode_t)HIPBLAS_OP_N,
+                     transA,
+                     diag,
+                     N,
+                     dA.ptr_on_device(),
+                     dx.ptr_on_device(),
+                     incx,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTpsvBatchedFn,
+                    (handle,
+                     uplo,
+                     (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                     diag,
+                     N,
+                     dA.ptr_on_device(),
+                     dx.ptr_on_device(),
+                     incx,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTpsvBatchedFn,
+                    (handle,
+                     uplo,
+                     transA,
+                     (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                     N,
+                     dA.ptr_on_device(),
+                     dx.ptr_on_device(),
+                     incx,
+                     batch_count));
+
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasTpsvBatchedFn,
+            (handle, uplo, transA, diag, N, nullptr, dx.ptr_on_device(), incx, batch_count));
+
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasTpsvBatchedFn,
+            (handle, uplo, transA, diag, N, dA.ptr_on_device(), nullptr, incx, batch_count));
 
         // With N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasTpsvBatchedFn(
-            handle, uplo, transA, diag, 0, nullptr, nullptr, incx, batch_count));
-        CHECK_HIPBLAS_ERROR(
-            hipblasTpsvBatchedFn(handle, uplo, transA, diag, N, nullptr, nullptr, incx, 0));
+        DAPI_CHECK(hipblasTpsvBatchedFn,
+                   (handle, uplo, transA, diag, 0, nullptr, nullptr, incx, batch_count));
+        DAPI_CHECK(hipblasTpsvBatchedFn,
+                   (handle, uplo, transA, diag, N, nullptr, nullptr, incx, 0));
     }
 }
 
@@ -135,18 +148,20 @@ void testing_tpsv_batched(const Arguments& arg)
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTpsvBatchedFn
         = FORTRAN ? hipblasTpsvBatched<T, true> : hipblasTpsvBatched<T, false>;
+    auto hipblasTpsvBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasTpsvBatched_64<T, true> : hipblasTpsvBatched_64<T, false>;
 
     hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
-    int                N           = arg.N;
-    int                incx        = arg.incx;
-    int                batch_count = arg.batch_count;
+    int64_t            N           = arg.N;
+    int64_t            incx        = arg.incx;
+    int64_t            batch_count = arg.batch_count;
 
-    int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(N) * N;
-    size_t size_AP  = size_t(N) * (N + 1) / 2;
-    size_t size_x   = abs_incx * size_t(N);
+    size_t abs_incx = incx < 0 ? -incx : incx;
+    size_t size_A   = N * N;
+    size_t size_AP  = N * (N + 1) / 2;
+    size_t size_x   = abs_incx * N;
 
     hipblasLocalHandle handle(arg);
 
@@ -155,10 +170,9 @@ void testing_tpsv_batched(const Arguments& arg)
     bool invalid_size = N < 0 || !incx || batch_count < 0;
     if(invalid_size || !N || !batch_count)
     {
-        hipblasStatus_t actual = hipblasTpsvBatchedFn(
-            handle, uplo, transA, diag, N, nullptr, nullptr, incx, batch_count);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasTpsvBatchedFn,
+                    (handle, uplo, transA, diag, N, nullptr, nullptr, incx, batch_count));
         return;
     }
 
@@ -184,7 +198,7 @@ void testing_tpsv_batched(const Arguments& arg)
 
     hb.copy_from(hx);
 
-    for(int b = 0; b < batch_count; b++)
+    for(size_t b = 0; b < batch_count; b++)
     {
         hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
                                  (T*)hA[b],
@@ -220,22 +234,23 @@ void testing_tpsv_batched(const Arguments& arg)
     =================================================================== */
     if(arg.unit_check || arg.norm_check)
     {
-        CHECK_HIPBLAS_ERROR(hipblasTpsvBatchedFn(handle,
-                                                 uplo,
-                                                 transA,
-                                                 diag,
-                                                 N,
-                                                 dAP.ptr_on_device(),
-                                                 dx_or_b.ptr_on_device(),
-                                                 incx,
-                                                 batch_count));
+        DAPI_CHECK(hipblasTpsvBatchedFn,
+                   (handle,
+                    uplo,
+                    transA,
+                    diag,
+                    N,
+                    dAP.ptr_on_device(),
+                    dx_or_b.ptr_on_device(),
+                    incx,
+                    batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx_or_b_1.transfer_from(dx_or_b));
 
         // Calculating error
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
-        for(int b = 0; b < batch_count; b++)
+        for(size_t b = 0; b < batch_count; b++)
         {
             hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b_1[b]));
             if(arg.unit_check)
@@ -250,6 +265,7 @@ void testing_tpsv_batched(const Arguments& arg)
 
     if(arg.timing)
     {
+        double      gpu_time_used;
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
@@ -260,15 +276,16 @@ void testing_tpsv_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasTpsvBatchedFn(handle,
-                                                     uplo,
-                                                     transA,
-                                                     diag,
-                                                     N,
-                                                     dAP.ptr_on_device(),
-                                                     dx_or_b.ptr_on_device(),
-                                                     incx,
-                                                     batch_count));
+            DAPI_DISPATCH(hipblasTpsvBatchedFn,
+                          (handle,
+                           uplo,
+                           transA,
+                           diag,
+                           N,
+                           dAP.ptr_on_device(),
+                           dx_or_b.ptr_on_device(),
+                           incx,
+                           batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
