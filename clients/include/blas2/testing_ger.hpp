@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,8 +44,10 @@ void testing_ger_bad_arg(const Arguments& arg)
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
 
-    auto hipblasGerFn_64 = arg.api == FORTRAN_64 ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
-                                : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
+    auto hipblasGerFn_64
+        = arg.api == FORTRAN_64
+              ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
+              : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -76,31 +78,55 @@ void testing_ger_bad_arg(const Arguments& arg)
         device_vector<T> dx(N * incx);
         device_vector<T> dy(M * incy);
 
-        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasGerFn, (nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda));
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasGerFn,
+                    (nullptr, M, N, alpha, dx, incx, dy, incy, dA, lda));
 
         if(arg.bad_arg_all)
         {
-            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGerFn(handle, M, N, nullptr, dx, incx, dy, incy, dA, lda));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGerFn,
+                        (handle, M, N, nullptr, dx, incx, dy, incy, dA, lda));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
                 // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasGerFn, (handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda));
-                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, 
-                    hipblasGerFn, (handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda));
-                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, 
-                    hipblasGerFn, (handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda));
+                            hipblasGerFn,
+                            (handle, M, N, alpha, nullptr, incx, dy, incy, dA, lda));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGerFn,
+                            (handle, M, N, alpha, dx, incx, nullptr, incy, dA, lda));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGerFn,
+                            (handle, M, N, alpha, dx, incx, dy, incy, nullptr, lda));
+
+                // rocBLAS implementation has alpha == 0 quick return after arg checks, so if we're using 32-bit params,
+                // this should fail with invalid-value as c_i32_overflow will rollover to -2147483648
+                // Note: that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGerFn,
+                            (handle,
+                             c_i32_overflow,
+                             c_i32_overflow,
+                             zero,
+                             nullptr,
+                             incx,
+                             nullptr,
+                             incy,
+                             nullptr,
+                             c_i32_overflow + 1));
             }
 
             // With alpha == 0 can have all nullptrs
-            DAPI_CHECK(
-                hipblasGerFn, (handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
+            DAPI_CHECK(hipblasGerFn,
+                       (handle, M, N, zero, nullptr, incx, nullptr, incy, nullptr, lda));
         }
 
         // With N == 0, can have all nullptrs
-        DAPI_CHECK(
-            hipblasGerFn, (handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
+        DAPI_CHECK(hipblasGerFn,
+                   (handle, M, 0, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
     }
 }
 
@@ -111,8 +137,9 @@ void testing_ger(const Arguments& arg)
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
 
-    auto hipblasGerFn_64 = FORTRAN_64 ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
-                                : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
+    auto hipblasGerFn_64
+        = FORTRAN_64 ? (CONJ ? hipblasGer_64<T, true, true> : hipblasGer_64<T, false, true>)
+                     : (CONJ ? hipblasGer_64<T, true, false> : hipblasGer_64<T, false, false>);
 
     int64_t M    = arg.M;
     int64_t N    = arg.N;
@@ -120,8 +147,8 @@ void testing_ger(const Arguments& arg)
     int64_t incy = arg.incy;
     int64_t lda  = arg.lda;
 
-    size_t    abs_incx = incx >= 0 ? incx : -incx;
-    size_t    abs_incy = incy >= 0 ? incy : -incy;
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
     size_t x_size   = M * abs_incx;
     size_t y_size   = M * abs_incy;
     size_t A_size   = lda * N;
@@ -133,9 +160,9 @@ void testing_ger(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || !incx || !incy || lda < M || lda < 1;
     if(invalid_size || !M || !N)
     {
-        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS, 
-            hipblasGerFn, (
-                handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasGerFn,
+                    (handle, M, N, nullptr, nullptr, incx, nullptr, incy, nullptr, lda));
 
         return;
     }
