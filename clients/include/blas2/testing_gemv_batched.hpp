@@ -228,7 +228,7 @@ void testing_gemv_batched_bad_arg(const Arguments& arg)
                              one,
                              nullptr,
                              incy,
-                             batch_count));
+                             c_i32_overflow));
             }
 
             // With alpha == 0 can have x nullptr
