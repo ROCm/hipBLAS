@@ -9102,7 +9102,7 @@ hipblasStatus_t hipblasSgemvBatched_64(hipblasHandle_t    handle,
                                        int64_t            batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasSgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9141,7 +9141,7 @@ hipblasStatus_t hipblasDgemvBatched_64(hipblasHandle_t     handle,
                                        int64_t             batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasDgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9179,7 +9179,7 @@ hipblasStatus_t hipblasCgemvBatched_64(hipblasHandle_t             handle,
                                        int64_t                     batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9217,7 +9217,7 @@ hipblasStatus_t hipblasZgemvBatched_64(hipblasHandle_t                   handle,
                                        int64_t                           batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9255,7 +9255,7 @@ hipblasStatus_t hipblasCgemvBatched_v2_64(hipblasHandle_t         handle,
                                           int64_t                 batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9293,7 +9293,7 @@ hipblasStatus_t hipblasZgemvBatched_v2_64(hipblasHandle_t               handle,
                                           int64_t                       batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgemvBatched_64((cublasHandle_t)handle,
                                                             hipOperationToCudaOperation(trans),
                                                             m,
@@ -9600,7 +9600,7 @@ hipblasStatus_t hipblasSgemvStridedBatched_64(hipblasHandle_t    handle,
                                               int64_t            batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasSgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -9645,7 +9645,7 @@ hipblasStatus_t hipblasDgemvStridedBatched_64(hipblasHandle_t    handle,
                                               int64_t            batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasDgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -9690,7 +9690,7 @@ hipblasStatus_t hipblasCgemvStridedBatched_64(hipblasHandle_t       handle,
                                               int64_t               batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasCgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -9735,7 +9735,7 @@ hipblasStatus_t hipblasZgemvStridedBatched_64(hipblasHandle_t             handle
                                               int64_t                     batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasZgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -9780,7 +9780,7 @@ hipblasStatus_t hipblasCgemvStridedBatched_v2_64(hipblasHandle_t    handle,
                                                  int64_t            batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasCgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -9825,7 +9825,7 @@ hipblasStatus_t hipblasZgemvStridedBatched_v2_64(hipblasHandle_t         handle,
                                                  int64_t                 batchCount)
 try
 {
-#if CUBLAS_VERSION >= 12
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasZgemvStridedBatched_64((cublasHandle_t)handle,
                                      hipOperationToCudaOperation(trans),
@@ -10130,8 +10130,12 @@ hipblasStatus_t hipblasSger_64(hipblasHandle_t handle,
                                int64_t         lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasSger_64((cublasHandle_t)handle, m, n, alpha, x, incx, y, incy, A, lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10150,8 +10154,12 @@ hipblasStatus_t hipblasDger_64(hipblasHandle_t handle,
                                int64_t         lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(
         cublasDger_64((cublasHandle_t)handle, m, n, alpha, x, incx, y, incy, A, lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10170,6 +10178,7 @@ hipblasStatus_t hipblasCgeru_64(hipblasHandle_t       handle,
                                 int64_t               lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgeru_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10180,6 +10189,9 @@ try
                                                      incy,
                                                      (cuComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10198,6 +10210,7 @@ hipblasStatus_t hipblasCgerc_64(hipblasHandle_t       handle,
                                 int64_t               lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgerc((cublasHandle_t)handle,
                                                   m,
                                                   n,
@@ -10208,6 +10221,9 @@ try
                                                   incy,
                                                   (cuComplex*)A,
                                                   lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10226,6 +10242,7 @@ hipblasStatus_t hipblasZgeru_64(hipblasHandle_t             handle,
                                 int64_t                     lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgeru_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10236,6 +10253,9 @@ try
                                                      incy,
                                                      (cuDoubleComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10254,6 +10274,7 @@ hipblasStatus_t hipblasZgerc_64(hipblasHandle_t             handle,
                                 int64_t                     lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgerc_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10264,6 +10285,9 @@ try
                                                      incy,
                                                      (cuDoubleComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10282,6 +10306,7 @@ hipblasStatus_t hipblasCgeru_v2_64(hipblasHandle_t   handle,
                                    int64_t           lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgeru_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10292,6 +10317,9 @@ try
                                                      incy,
                                                      (cuComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10310,6 +10338,7 @@ hipblasStatus_t hipblasCgerc_v2_64(hipblasHandle_t   handle,
                                    int64_t           lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasCgerc_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10320,6 +10349,9 @@ try
                                                      incy,
                                                      (cuComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10338,6 +10370,7 @@ hipblasStatus_t hipblasZgeru_v2_64(hipblasHandle_t         handle,
                                    int64_t                 lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgeru_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10348,6 +10381,9 @@ try
                                                      incy,
                                                      (cuDoubleComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -10366,6 +10402,7 @@ hipblasStatus_t hipblasZgerc_v2_64(hipblasHandle_t         handle,
                                    int64_t                 lda)
 try
 {
+#if CUBLAS_VER_MAJOR >= 12
     return hipCUBLASStatusToHIPStatus(cublasZgerc_64((cublasHandle_t)handle,
                                                      m,
                                                      n,
@@ -10376,6 +10413,9 @@ try
                                                      incy,
                                                      (cuDoubleComplex*)A,
                                                      lda));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
