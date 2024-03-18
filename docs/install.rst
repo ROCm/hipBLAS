@@ -15,7 +15,7 @@ Prerequisites
 
   * A ROCm enabled platform. Find more information on the :doc:`System requirements (Linux) <rocm-install-on-linux:reference/system-requirements>` page, or the :doc:`System requirements (Windows) <rocm-install-on-windows:reference/system-requirements>` page.
   * A compatible version of rocBLAS.
-  * A compatible version of rocSOLVER and it's dependencies rocSPARSE and rocPRIM for full functionality.
+  * A compatible version of rocSOLVER and its dependencies, rocSPARSE and rocPRIM, for full functionality.
 
 * If using the cuBLAS backend on a Nvidia machine:
 
@@ -96,7 +96,7 @@ Build library dependencies + client dependencies + library + client
 The client contains executables in the table below.
 
 ================= ====================================================
-executable name   description
+Executable name   Description
 ================= ====================================================
 hipblas-test      runs Google Tests to test the library
 hipblas-bench     executable to benchmark or test individual functions
@@ -158,7 +158,7 @@ in the table below.
 |                                           | need the -i flag.        |
 +-------------------------------------------+--------------------------+
 
-Dependencies For Building Library
+Dependencies for building library
 ==================================
 
 Use ``rmake.py`` with ``-d`` option to install dependencies required to build the library. This will not install the rocBLAS, rocSOLVER, rocSPARSE, and rocPRIM dependencies.
