@@ -420,6 +420,53 @@ fi
 # The following function exits script if an unsupported distro is detected
 supported_distro
 
+function display_help()
+{
+cat <<EOF
+
+  hipBLAS library build & installation helper script.
+
+  Usage:
+    $0 (build hipblas and put library files at ./build/hipblas-install)
+    $0 <options> (modify default behavior according to the following flags)
+
+  Options:
+
+    -b, --rocblas <version>       Specify rocblas version (e.g. 2.42.0).
+
+    -c, --clients                 Build the library clients benchmark and gtest.
+                                  (Generated binaries will be located at builddir/clients/staging)
+
+    --cmake_install               Install minimum cmake version if required.
+
+    --cuda, --use-cuda            Build library for CUDA backend (deprecated).
+                                  The target HIP platform is determined by `hipconfig --platform`.
+                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
+
+    -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
+                                  This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
+
+    --installcuda                 Install cuda package.
+
+    --installcudaversion <version> Used with --installcuda, optionally specify cuda version to install.
+
+    -g, --debug                   Build in Debug mode, equivalent to set CMAKE_BUILD_TYPE=Debug. (Default build type is Release)
+
+    -h, --help                    Print this help message.
+
+    -i, -install                  Generate and install library package after build.
+
+    -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo. (Default build type is Release)
+
+    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
+
+    --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
+
+    --rocsolver-path <solverdir>  Specify path to an existing rocSOLVER install directory (e.g. /src/rocSOLVER/build/release/rocsolver-install).
+
+EOF
+}
+
 # #################################################
 # global variables
 # #################################################

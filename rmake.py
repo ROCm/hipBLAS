@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Copyright (C) 2020-2023 Advanced Micro Devices, Inc. All rights reserved.
+"""Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -55,6 +55,9 @@ def parse_args():
 
     parser.add_argument(      '--cmake-darg', required=False, dest='cmake_dargs', action='append', default=[],
                         help='List of additional cmake defines for builds (optional, e.g. CMAKE)')
+
+    parser.add_argument(      '--cmake_install', required=False, default=False, action='store_true',
+                        help='Linux only: Handled by install.sh')
 
     parser.add_argument(      '--codecoverage', required=False, default=False, action='store_true',
                         help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
