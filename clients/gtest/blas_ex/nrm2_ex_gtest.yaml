@@ -18,7 +18,7 @@ Tests:
     precision: *nrm2_ex_precisions
     N: *N_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: nrm2_batched_ex_general
     category: quick
@@ -27,7 +27,7 @@ Tests:
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: nrm2_strided_batched_ex_general
@@ -38,7 +38,7 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: nrm2_ex_bad_arg
@@ -47,14 +47,14 @@ Tests:
       - nrm2_ex_bad_arg: *nrm2_ex_precisions
       - nrm2_batched_ex_bad_arg: *nrm2_ex_precisions
       - nrm2_strided_batched_ex_bad_arg: *nrm2_ex_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: nrm2_ex_bad_arg
     category: pre_checkin
     function:
       - nrm2_ex_bad_arg: *nrm2_ex_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 ...

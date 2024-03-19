@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,9 +47,11 @@ inline void testname_rot_strided_batched_ex(const Arguments& arg, std::string& n
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotStridedBatchedExFn
-        = FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
+        = arg.api == FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
+    auto hipblasRotStridedBatchedExFn_64 = arg.api == FORTRAN_64
+                                               ? hipblasRotStridedBatchedEx_64Fortran
+                                               : hipblasRotStridedBatchedEx_64;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -71,107 +73,135 @@ void testing_rot_strided_batched_ex_bad_arg(const Arguments& arg)
     device_vector<Tcs> dc(batch_count);
     device_vector<Tcs> ds(batch_count);
 
-    EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(nullptr,
-                                                       N,
-                                                       dx,
-                                                       xType,
-                                                       incx,
-                                                       stridex,
-                                                       dy,
-                                                       yType,
-                                                       incy,
-                                                       stridey,
-                                                       dc,
-                                                       ds,
-                                                       csType,
-                                                       batch_count,
-                                                       executionType),
-                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasRotStridedBatchedExFn,
+                (nullptr,
+                 N,
+                 dx,
+                 xType,
+                 incx,
+                 stridex,
+                 dy,
+                 yType,
+                 incy,
+                 stridey,
+                 dc,
+                 ds,
+                 csType,
+                 batch_count,
+                 executionType));
 
     if(arg.bad_arg_all)
     {
-        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
-                                                           N,
-                                                           nullptr,
-                                                           xType,
-                                                           incx,
-                                                           stridex,
-                                                           dy,
-                                                           yType,
-                                                           incy,
-                                                           stridey,
-                                                           dc,
-                                                           ds,
-                                                           csType,
-                                                           batch_count,
-                                                           executionType),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
-                                                           N,
-                                                           dx,
-                                                           xType,
-                                                           incx,
-                                                           stridex,
-                                                           nullptr,
-                                                           yType,
-                                                           incy,
-                                                           stridey,
-                                                           dc,
-                                                           ds,
-                                                           csType,
-                                                           batch_count,
-                                                           executionType),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
-                                                           N,
-                                                           dx,
-                                                           xType,
-                                                           incx,
-                                                           stridex,
-                                                           dy,
-                                                           yType,
-                                                           incy,
-                                                           stridey,
-                                                           nullptr,
-                                                           ds,
-                                                           csType,
-                                                           batch_count,
-                                                           executionType),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasRotStridedBatchedExFn(handle,
-                                                           N,
-                                                           dx,
-                                                           xType,
-                                                           incx,
-                                                           stridex,
-                                                           dy,
-                                                           yType,
-                                                           incy,
-                                                           stridey,
-                                                           dc,
-                                                           nullptr,
-                                                           csType,
-                                                           batch_count,
-                                                           executionType),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotStridedBatchedExFn,
+                    (handle,
+                     N,
+                     nullptr,
+                     xType,
+                     incx,
+                     stridex,
+                     dy,
+                     yType,
+                     incy,
+                     stridey,
+                     dc,
+                     ds,
+                     csType,
+                     batch_count,
+                     executionType));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotStridedBatchedExFn,
+                    (handle,
+                     N,
+                     dx,
+                     xType,
+                     incx,
+                     stridex,
+                     nullptr,
+                     yType,
+                     incy,
+                     stridey,
+                     dc,
+                     ds,
+                     csType,
+                     batch_count,
+                     executionType));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotStridedBatchedExFn,
+                    (handle,
+                     N,
+                     dx,
+                     xType,
+                     incx,
+                     stridex,
+                     dy,
+                     yType,
+                     incy,
+                     stridey,
+                     nullptr,
+                     ds,
+                     csType,
+                     batch_count,
+                     executionType));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasRotStridedBatchedExFn,
+                    (handle,
+                     N,
+                     dx,
+                     xType,
+                     incx,
+                     stridex,
+                     dy,
+                     yType,
+                     incy,
+                     stridey,
+                     dc,
+                     nullptr,
+                     csType,
+                     batch_count,
+                     executionType));
+
+        // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+        // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+        // pointers to get invalid_value returns
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasRotStridedBatchedExFn,
+                    (handle,
+                     c_i32_overflow,
+                     nullptr,
+                     xType,
+                     1,
+                     stridex,
+                     nullptr,
+                     yType,
+                     1,
+                     stridey,
+                     nullptr,
+                     nullptr,
+                     csType,
+                     c_i32_overflow,
+                     executionType));
     }
 }
 
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasRotStridedBatchedExFn
-        = FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
+        = arg.api == FORTRAN ? hipblasRotStridedBatchedExFortran : hipblasRotStridedBatchedEx;
+    auto hipblasRotStridedBatchedExFn_64 = arg.api == FORTRAN_64
+                                               ? hipblasRotStridedBatchedEx_64Fortran
+                                               : hipblasRotStridedBatchedEx_64;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int64_t incy         = arg.incy;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
-    int           abs_incx = incx >= 0 ? incx : -incx;
-    int           abs_incy = incy >= 0 ? incy : -incy;
+    int64_t       abs_incx = incx >= 0 ? incx : -incx;
+    int64_t       abs_incy = incy >= 0 ? incy : -incy;
     hipblasStride stridex  = N * abs_incx * stride_scale;
     hipblasStride stridey  = N * abs_incy * stride_scale;
 
@@ -192,21 +222,22 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                         N,
-                                                         nullptr,
-                                                         xType,
-                                                         incx,
-                                                         stridex,
-                                                         nullptr,
-                                                         yType,
-                                                         incy,
-                                                         stridey,
-                                                         nullptr,
-                                                         nullptr,
-                                                         csType,
-                                                         batch_count,
-                                                         executionType));
+        DAPI_CHECK(hipblasRotStridedBatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    xType,
+                    incx,
+                    stridex,
+                    nullptr,
+                    yType,
+                    incy,
+                    stridey,
+                    nullptr,
+                    nullptr,
+                    csType,
+                    batch_count,
+                    executionType));
 
         return;
     }
@@ -246,21 +277,22 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                         N,
-                                                         dx,
-                                                         xType,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         yType,
-                                                         incy,
-                                                         stridey,
-                                                         hc,
-                                                         hs,
-                                                         csType,
-                                                         batch_count,
-                                                         executionType));
+        DAPI_CHECK(hipblasRotStridedBatchedExFn,
+                   (handle,
+                    N,
+                    dx,
+                    xType,
+                    incx,
+                    stridex,
+                    dy,
+                    yType,
+                    incy,
+                    stridey,
+                    hc,
+                    hs,
+                    csType,
+                    batch_count,
+                    executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
@@ -268,26 +300,27 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                         N,
-                                                         dx,
-                                                         xType,
-                                                         incx,
-                                                         stridex,
-                                                         dy,
-                                                         yType,
-                                                         incy,
-                                                         stridey,
-                                                         dc,
-                                                         ds,
-                                                         csType,
-                                                         batch_count,
-                                                         executionType));
+        DAPI_CHECK(hipblasRotStridedBatchedExFn,
+                   (handle,
+                    N,
+                    dx,
+                    xType,
+                    incx,
+                    stridex,
+                    dy,
+                    yType,
+                    incy,
+                    stridey,
+                    dc,
+                    ds,
+                    csType,
+                    batch_count,
+                    executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
 
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_rot<Tx, Tcs, Tcs>(
                 N, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy, *hc, *hs);
@@ -326,21 +359,22 @@ void testing_rot_strided_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotStridedBatchedExFn(handle,
-                                                             N,
-                                                             dx,
-                                                             xType,
-                                                             incx,
-                                                             stridex,
-                                                             dy,
-                                                             yType,
-                                                             incy,
-                                                             stridey,
-                                                             dc,
-                                                             ds,
-                                                             csType,
-                                                             batch_count,
-                                                             executionType));
+            DAPI_DISPATCH(hipblasRotStridedBatchedExFn,
+                          (handle,
+                           N,
+                           dx,
+                           xType,
+                           incx,
+                           stridex,
+                           dy,
+                           yType,
+                           incy,
+                           stridey,
+                           dc,
+                           ds,
+                           csType,
+                           batch_count,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

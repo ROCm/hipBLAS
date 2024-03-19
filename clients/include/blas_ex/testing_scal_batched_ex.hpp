@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,10 @@ inline void testname_scal_batched_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
+    auto hipblasScalBatchedExFn
+        = arg.api == FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
+    auto hipblasScalBatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasScalBatchedEx_64Fortran : hipblasScalBatchedEx_64;
 
     hipblasDatatype_t alphaType     = arg.a_type;
     hipblasDatatype_t xType         = arg.b_type;
@@ -63,21 +65,36 @@ void testing_scal_batched_ex_bad_arg(const Arguments& arg)
         // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasScalBatchedExFn(
-                nullptr, N, &alpha, alphaType, dx, xType, incx, batch_count, executionType),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasScalBatchedExFn,
+                    (nullptr, N, &alpha, alphaType, dx, xType, incx, batch_count, executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasScalBatchedExFn(
-                    handle, N, nullptr, alphaType, dx, xType, incx, batch_count, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasScalBatchedExFn(
-                    handle, N, &alpha, alphaType, nullptr, xType, incx, batch_count, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasScalBatchedExFn,
+                (handle, N, nullptr, alphaType, dx, xType, incx, batch_count, executionType));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasScalBatchedExFn,
+                (handle, N, &alpha, alphaType, nullptr, xType, incx, batch_count, executionType));
+
+            // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+            // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+            // pointers to get invalid_value returns
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                             : HIPBLAS_STATUS_SUCCESS,
+                        hipblasScalBatchedExFn,
+                        (handle,
+                         c_i32_overflow,
+                         nullptr,
+                         alphaType,
+                         nullptr,
+                         xType,
+                         1,
+                         c_i32_overflow,
+                         executionType));
         }
     }
 }
@@ -85,12 +102,14 @@ void testing_scal_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasScalBatchedExFn = FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
+    auto hipblasScalBatchedExFn
+        = arg.api == FORTRAN ? hipblasScalBatchedExFortran : hipblasScalBatchedEx;
+    auto hipblasScalBatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasScalBatchedEx_64Fortran : hipblasScalBatchedEx_64;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t batch_count = arg.batch_count;
 
     int unit_check = arg.unit_check;
     int timing     = arg.timing;
@@ -108,8 +127,9 @@ void testing_scal_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(
-            handle, N, nullptr, alphaType, nullptr, xType, incx, batch_count, executionType));
+        DAPI_CHECK(
+            hipblasScalBatchedExFn,
+            (handle, N, nullptr, alphaType, nullptr, xType, incx, batch_count, executionType));
         return;
     }
 
@@ -144,36 +164,38 @@ void testing_scal_batched_ex(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
-                                                   N,
-                                                   &h_alpha,
-                                                   alphaType,
-                                                   dx.ptr_on_device(),
-                                                   xType,
-                                                   incx,
-                                                   batch_count,
-                                                   executionType));
+        DAPI_CHECK(hipblasScalBatchedExFn,
+                   (handle,
+                    N,
+                    &h_alpha,
+                    alphaType,
+                    dx.ptr_on_device(),
+                    xType,
+                    incx,
+                    batch_count,
+                    executionType));
 
         CHECK_HIP_ERROR(hx_host.transfer_from(dx));
         CHECK_HIP_ERROR(dx.transfer_from(hx_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
-                                                   N,
-                                                   d_alpha,
-                                                   alphaType,
-                                                   dx.ptr_on_device(),
-                                                   xType,
-                                                   incx,
-                                                   batch_count,
-                                                   executionType));
+        DAPI_CHECK(hipblasScalBatchedExFn,
+                   (handle,
+                    N,
+                    d_alpha,
+                    alphaType,
+                    dx.ptr_on_device(),
+                    xType,
+                    incx,
+                    batch_count,
+                    executionType));
 
         CHECK_HIP_ERROR(hx_device.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
         }
@@ -217,15 +239,16 @@ void testing_scal_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasScalBatchedExFn(handle,
-                                                       N,
-                                                       d_alpha,
-                                                       alphaType,
-                                                       dx.ptr_on_device(),
-                                                       xType,
-                                                       incx,
-                                                       batch_count,
-                                                       executionType));
+            DAPI_DISPATCH(hipblasScalBatchedExFn,
+                          (handle,
+                           N,
+                           d_alpha,
+                           alphaType,
+                           dx.ptr_on_device(),
+                           xType,
+                           incx,
+                           batch_count,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,8 @@ inline void testname_rot_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
+    auto hipblasRotExFn    = arg.api == FORTRAN ? hipblasRotExFortran : hipblasRotEx;
+    auto hipblasRotExFn_64 = arg.api == FORTRAN_64 ? hipblasRotEx_64Fortran : hipblasRotEx_64;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -59,40 +59,58 @@ void testing_rot_ex_bad_arg(const Arguments& arg)
     device_vector<Tcs> dc(1);
     device_vector<Tcs> ds(1);
 
-    EXPECT_HIPBLAS_STATUS(
-        hipblasRotExFn(nullptr, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType),
-        HIPBLAS_STATUS_NOT_INITIALIZED);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasRotExFn,
+                (nullptr, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
 
     if(arg.bad_arg_all)
     {
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotExFn(
-                handle, N, nullptr, xType, incx, dy, yType, incy, dc, ds, csType, executionType),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotExFn(
-                handle, N, dx, xType, incx, nullptr, yType, incy, dc, ds, csType, executionType),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotExFn(
-                handle, N, dx, xType, incx, dy, yType, incy, nullptr, ds, csType, executionType),
-            HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(
-            hipblasRotExFn(
-                handle, N, dx, xType, incx, dy, yType, incy, dc, nullptr, csType, executionType),
-            HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotExFn,
+            (handle, N, nullptr, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotExFn,
+            (handle, N, dx, xType, incx, nullptr, yType, incy, dc, ds, csType, executionType));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotExFn,
+            (handle, N, dx, xType, incx, dy, yType, incy, nullptr, ds, csType, executionType));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasRotExFn,
+            (handle, N, dx, xType, incx, dy, yType, incy, dc, nullptr, csType, executionType));
+
+        // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+        // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+        // pointers to get invalid_value returns
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasRotExFn,
+                    (handle,
+                     c_i32_overflow,
+                     nullptr,
+                     xType,
+                     1,
+                     nullptr,
+                     yType,
+                     1,
+                     nullptr,
+                     nullptr,
+                     csType,
+                     executionType));
     }
 }
 
 template <typename Tx, typename Ty = Tx, typename Tcs = Ty, typename Tex = Tcs>
 void testing_rot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasRotExFn = FORTRAN ? hipblasRotExFortran : hipblasRotEx;
+    auto hipblasRotExFn    = arg.api == FORTRAN ? hipblasRotExFortran : hipblasRotEx;
+    auto hipblasRotExFn_64 = arg.api == FORTRAN_64 ? hipblasRotEx_64Fortran : hipblasRotEx_64;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -104,27 +122,28 @@ void testing_rot_ex(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasRotExFn(handle,
-                                           N,
-                                           nullptr,
-                                           xType,
-                                           incx,
-                                           nullptr,
-                                           yType,
-                                           incy,
-                                           nullptr,
-                                           nullptr,
-                                           csType,
-                                           executionType));
+        DAPI_CHECK(hipblasRotExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    nullptr,
+                    nullptr,
+                    csType,
+                    executionType));
         return;
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t size_x   = N * size_t(abs_incx);
-    size_t size_y   = N * size_t(abs_incy);
+    int64_t abs_incx = incx >= 0 ? incx : -incx;
+    int64_t abs_incy = incy >= 0 ? incy : -incy;
+    size_t  size_x   = N * size_t(abs_incx);
+    size_t  size_y   = N * size_t(abs_incy);
     if(!size_x)
         size_x = 1;
     if(!size_y)
@@ -171,8 +190,8 @@ void testing_rot_ex(const Arguments& arg)
     {
         // HIPBLAS
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasRotExFn(
-            handle, N, dx, xType, incx, dy, yType, incy, hc, hs, csType, executionType));
+        DAPI_CHECK(hipblasRotExFn,
+                   (handle, N, dx, xType, incx, dy, yType, incy, hc, hs, csType, executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
@@ -180,8 +199,8 @@ void testing_rot_ex(const Arguments& arg)
         CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasRotExFn(
-            handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
+        DAPI_CHECK(hipblasRotExFn,
+                   (handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
@@ -218,8 +237,9 @@ void testing_rot_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasRotExFn(
-                handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
+            DAPI_DISPATCH(
+                hipblasRotExFn,
+                (handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
