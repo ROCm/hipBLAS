@@ -3208,6 +3208,1065 @@ end function hipblasZswapStridedBatched_64Fortran
 ! blas 2 !
 !--------!
 
+! gbmv
+function hipblasSgbmv_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+    bind(c, name='hipblasSgbmv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasSgbmv_64Fortran = &
+        hipblasSgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasSgbmv_64Fortran
+
+function hipblasDgbmv_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+    bind(c, name='hipblasDgbmv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasDgbmv_64Fortran = &
+        hipblasDgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasDgbmv_64Fortran
+
+function hipblasCgbmv_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+    bind(c, name='hipblasCgbmv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasCgbmv_64Fortran = &
+        hipblasCgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasCgbmv_64Fortran
+
+function hipblasZgbmv_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+    bind(c, name='hipblasZgbmv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasZgbmv_64Fortran = &
+        hipblasZgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasZgbmv_64Fortran
+
+! gbmvBatched
+function hipblasSgbmvBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasSgbmvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasSgbmvBatched_64Fortran = &
+        hipblasSgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, &
+                            beta, y, incy, batch_count)
+end function hipblasSgbmvBatched_64Fortran
+
+function hipblasDgbmvBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasDgbmvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasDgbmvBatched_64Fortran = &
+        hipblasDgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, &
+                            beta, y, incy, batch_count)
+end function hipblasDgbmvBatched_64Fortran
+
+function hipblasCgbmvBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasCgbmvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasCgbmvBatched_64Fortran = &
+        hipblasCgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, &
+                            beta, y, incy, batch_count)
+end function hipblasCgbmvBatched_64Fortran
+
+function hipblasZgbmvBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasZgbmvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasZgbmvBatched_64Fortran = &
+        hipblasZgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, &
+                            beta, y, incy, batch_count)
+end function hipblasZgbmvBatched_64Fortran
+
+! gbmvStridedBatched
+function hipblasSgbmvStridedBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasSgbmvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasSgbmvStridedBatched_64Fortran = &
+        hipblasSgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, x, incx, stride_x, &
+                                    beta, y, incy, stride_y, batch_count)
+end function hipblasSgbmvStridedBatched_64Fortran
+
+function hipblasDgbmvStridedBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasDgbmvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasDgbmvStridedBatched_64Fortran = &
+        hipblasDgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, x, incx, stride_x, &
+                                    beta, y, incy, stride_y, batch_count)
+end function hipblasDgbmvStridedBatched_64Fortran
+
+function hipblasCgbmvStridedBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasCgbmvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasCgbmvStridedBatched_64Fortran = &
+        hipblasCgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, x, incx, stride_x, &
+                                    beta, y, incy, stride_y, batch_count)
+end function hipblasCgbmvStridedBatched_64Fortran
+
+function hipblasZgbmvStridedBatched_64Fortran(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasZgbmvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    integer(c_int64_t), value :: kl
+    integer(c_int64_t), value :: ku
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasZgbmvStridedBatched_64Fortran = &
+        hipblasZgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, x, incx, stride_x, &
+                                    beta, y, incy, stride_y, batch_count)
+end function hipblasZgbmvStridedBatched_64Fortran
+
+! gemv
+function hipblasSgemv_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                x, incx, beta, y, incy) &
+    bind(c, name='hipblasSgemv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasSgemv_64Fortran = &
+        hipblasSgemv_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasSgemv_64Fortran
+
+function hipblasDgemv_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                x, incx, beta, y, incy) &
+    bind(c, name='hipblasDgemv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasDgemv_64Fortran = &
+        hipblasDgemv_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasDgemv_64Fortran
+
+function hipblasCgemv_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                x, incx, beta, y, incy) &
+    bind(c, name='hipblasCgemv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasCgemv_64Fortran = &
+        hipblasCgemv_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasCgemv_64Fortran
+
+function hipblasZgemv_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                x, incx, beta, y, incy) &
+    bind(c, name='hipblasZgemv_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemv_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+            hipblasZgemv_64Fortran = &
+        hipblasZgemv_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy)
+end function hipblasZgemv_64Fortran
+
+! gemvBatched
+function hipblasSgemvBatched_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasSgemvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasSgemvBatched_64Fortran = &
+        hipblasSgemvBatched_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count)
+end function hipblasSgemvBatched_64Fortran
+
+function hipblasDgemvBatched_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasDgemvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasDgemvBatched_64Fortran = &
+        hipblasDgemvBatched_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count)
+end function hipblasDgemvBatched_64Fortran
+
+function hipblasCgemvBatched_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasCgemvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasCgemvBatched_64Fortran = &
+        hipblasCgemvBatched_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count)
+end function hipblasCgemvBatched_64Fortran
+
+function hipblasZgemvBatched_64Fortran(handle, trans, m, n, alpha, A, lda, &
+                                    x, incx, beta, y, incy, batch_count) &
+    bind(c, name='hipblasZgemvBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemvBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: batch_count
+            hipblasZgemvBatched_64Fortran = &
+        hipblasZgemvBatched_64(handle, trans, m, n, alpha, A, lda, x, incx, beta, y, incy, batch_count)
+end function hipblasZgemvBatched_64Fortran
+
+! gemvStridedBatched
+function hipblasSgemvStridedBatched_64Fortran(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasSgemvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasSgemvStridedBatched_64Fortran = &
+        hipblasSgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                    x, incx, stride_x, beta, y, incy, stride_y, batch_count)
+end function hipblasSgemvStridedBatched_64Fortran
+
+function hipblasDgemvStridedBatched_64Fortran(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasDgemvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasDgemvStridedBatched_64Fortran = &
+        hipblasDgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                    x, incx, stride_x, beta, y, incy, stride_y, batch_count)
+end function hipblasDgemvStridedBatched_64Fortran
+
+function hipblasCgemvStridedBatched_64Fortran(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasCgemvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasCgemvStridedBatched_64Fortran = &
+        hipblasCgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                    x, incx, stride_x, beta, y, incy, stride_y, batch_count)
+end function hipblasCgemvStridedBatched_64Fortran
+
+function hipblasZgemvStridedBatched_64Fortran(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+    bind(c, name='hipblasZgemvStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemvStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(kind(HIPBLAS_OP_N)), value :: trans
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: beta
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    integer(c_int64_t), value :: batch_count
+            hipblasZgemvStridedBatched_64Fortran = &
+        hipblasZgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                    x, incx, stride_x, beta, y, incy, stride_y, batch_count)
+end function hipblasZgemvStridedBatched_64Fortran
+
+! ger
+function hipblasSger_64Fortran(handle, m, n, alpha, x, incx, &
+                            y, incy, A, lda) &
+    bind(c, name='hipblasSger_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSger_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasSger_64Fortran = &
+        hipblasSger_64(handle, m, n, alpha, &
+                    x, incx, y, incy, A, lda)
+end function hipblasSger_64Fortran
+
+function hipblasDger_64Fortran(handle, m, n, alpha, x, incx, &
+                            y, incy, A, lda) &
+    bind(c, name='hipblasDger_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDger_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasDger_64Fortran = &
+        hipblasDger_64(handle, m, n, alpha, &
+                    x, incx, y, incy, A, lda)
+end function hipblasDger_64Fortran
+
+function hipblasCgeru_64Fortran(handle, m, n, alpha, x, incx, &
+                                y, incy, A, lda) &
+    bind(c, name='hipblasCgeru_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeru_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasCgeru_64Fortran = &
+        hipblasCgeru_64(handle, m, n, alpha, &
+                        x, incx, y, incy, A, lda)
+end function hipblasCgeru_64Fortran
+
+function hipblasCgerc_64Fortran(handle, m, n, alpha, x, incx, &
+                                y, incy, A, lda) &
+    bind(c, name='hipblasCgerc_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgerc_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasCgerc_64Fortran = &
+        hipblasCgerc_64(handle, m, n, alpha, &
+                        x, incx, y, incy, A, lda)
+end function hipblasCgerc_64Fortran
+
+function hipblasZgeru_64Fortran(handle, m, n, alpha, x, incx, &
+                                y, incy, A, lda) &
+    bind(c, name='hipblasZgeru_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeru_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasZgeru_64Fortran = &
+        hipblasZgeru_64(handle, m, n, alpha, &
+                        x, incx, y, incy, A, lda)
+end function hipblasZgeru_64Fortran
+
+function hipblasZgerc_64Fortran(handle, m, n, alpha, x, incx, &
+                                y, incy, A, lda) &
+    bind(c, name='hipblasZgerc_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgerc_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+            hipblasZgerc_64Fortran = &
+        hipblasZgerc_64(handle, m, n, alpha, &
+                        x, incx, y, incy, A, lda)
+end function hipblasZgerc_64Fortran
+
+! gerBatched
+function hipblasSgerBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasSgerBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgerBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasSgerBatched_64Fortran = &
+        hipblasSgerBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasSgerBatched_64Fortran
+
+function hipblasDgerBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasDgerBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgerBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasDgerBatched_64Fortran = &
+        hipblasDgerBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasDgerBatched_64Fortran
+
+function hipblasCgeruBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasCgeruBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeruBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasCgeruBatched_64Fortran = &
+        hipblasCgeruBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasCgeruBatched_64Fortran
+
+function hipblasCgercBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasCgercBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgercBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasCgercBatched_64Fortran = &
+        hipblasCgercBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasCgercBatched_64Fortran
+
+function hipblasZgeruBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasZgeruBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeruBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasZgeruBatched_64Fortran = &
+        hipblasZgeruBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasZgeruBatched_64Fortran
+
+function hipblasZgercBatched_64Fortran(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+    bind(c, name='hipblasZgercBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgercBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: batch_count
+            hipblasZgercBatched_64Fortran = &
+        hipblasZgercBatched_64(handle, m, n, alpha, &
+                            x, incx, y, incy, A, lda, batch_count)
+end function hipblasZgercBatched_64Fortran
+
+! gerStridedBatched
+function hipblasSgerStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasSgerStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgerStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasSgerStridedBatched_64Fortran = &
+        hipblasSgerStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasSgerStridedBatched_64Fortran
+
+function hipblasDgerStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasDgerStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgerStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasDgerStridedBatched_64Fortran = &
+        hipblasDgerStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasDgerStridedBatched_64Fortran
+
+function hipblasCgeruStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasCgeruStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeruStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasCgeruStridedBatched_64Fortran = &
+        hipblasCgeruStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasCgeruStridedBatched_64Fortran
+
+function hipblasCgercStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasCgercStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgercStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasCgercStridedBatched_64Fortran = &
+        hipblasCgercStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasCgercStridedBatched_64Fortran
+
+function hipblasZgeruStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasZgeruStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeruStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasZgeruStridedBatched_64Fortran = &
+        hipblasZgeruStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasZgeruStridedBatched_64Fortran
+
+function hipblasZgercStridedBatched_64Fortran(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+    bind(c, name='hipblasZgercStridedBatched_64Fortran')
+    use iso_c_binding
+    use hipblas_enums
+    implicit none
+    integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgercStridedBatched_64Fortran
+    type(c_ptr), value :: handle
+    integer(c_int64_t), value :: m
+    integer(c_int64_t), value :: n
+    type(c_ptr), value :: alpha
+    type(c_ptr), value :: x
+    integer(c_int64_t), value :: incx
+    integer(c_int64_t), value :: stride_x
+    type(c_ptr), value :: y
+    integer(c_int64_t), value :: incy
+    integer(c_int64_t), value :: stride_y
+    type(c_ptr), value :: A
+    integer(c_int64_t), value :: lda
+    integer(c_int64_t), value :: stride_A
+    integer(c_int64_t), value :: batch_count
+            hipblasZgercStridedBatched_64Fortran = &
+        hipblasZgercStridedBatched_64(handle, m, n, alpha, &
+                                    x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count)
+end function hipblasZgercStridedBatched_64Fortran
+
 ! her
 function hipblasCher_64Fortran(handle, uplo, n, alpha, &
                               x, incx, A, lda) &

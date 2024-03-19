@@ -27,7 +27,7 @@ Tests:
     alpha: *alpha_range
     matrix_size: *size_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
 
   - name: ger_batched_general
@@ -40,7 +40,7 @@ Tests:
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: ger_strided_batched_general
@@ -54,7 +54,7 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: ger_bad_arg
@@ -72,7 +72,7 @@ Tests:
       - ger_bad_arg: *single_double_precisions
       - geru_bad_arg: *single_double_precisions_complex
       - gerc_bad_arg: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -85,6 +85,6 @@ Tests:
       - geru_strided_batched_bad_arg: *single_double_precisions_complex
       - gerc_batched_bad_arg: *single_double_precisions_complex
       - gerc_strided_batched_bad_arg: *single_double_precisions_complex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...
