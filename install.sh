@@ -353,6 +353,8 @@ cat <<EOF
     -c, --clients                 Build the library clients benchmark and gtest.
                                   (Generated binaries will be located at builddir/clients/staging)
 
+    --cmake_install               Install minimum cmake version if required.
+
     --cuda, --use-cuda            Build library for CUDA backend (deprecated).
                                   The target HIP platform is determined by `hipconfig --platform`.
                                   To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
