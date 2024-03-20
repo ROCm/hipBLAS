@@ -237,7 +237,7 @@ private:
                 {
                     success = (nullptr
                                != (m_data[batch_index]
-                                   = (T*)host_malloc_throw(m_nmemb * m_batch_count, sizeof(T))));
+                                   = (T*)host_calloc_throw(m_nmemb * m_batch_count, sizeof(T))));
                     if(false == success)
                     {
                         break;
