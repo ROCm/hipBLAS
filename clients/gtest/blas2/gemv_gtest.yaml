@@ -71,7 +71,6 @@ Tests:
     api: [ C_64 ]
     function:
       - gemv: *single_precision
-    stride_scale: 1
 
   - name: gemv_general
     category: quick

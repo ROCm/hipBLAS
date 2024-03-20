@@ -128,7 +128,7 @@ ptrdiff_t host_bytes_available()
 inline bool host_mem_safe(size_t n_bytes)
 {
 #if defined(HIPBLAS_BENCH)
-    return true; // roll out to rocblas-bench when CI does perf testing
+    return true; // roll out to hipblas-bench when CI does perf testing
 #else
     static auto* no_alloc_check = getenv("HIPBLAS_CLIENT_NO_ALLOC_CHECK");
     if(no_alloc_check)
@@ -191,7 +191,7 @@ void* host_malloc(size_t size)
         static auto once = false;
         if(!once)
         {
-            auto* alloc_byte_str = getenv("ROCBLAS_CLIENT_ALLOC_FILL_HEX_BYTE");
+            auto* alloc_byte_str = getenv("HIPBLAS_CLIENT_ALLOC_FILL_HEX_BYTE");
             if(alloc_byte_str)
             {
                 value = strtol(alloc_byte_str, nullptr, 16); // hex

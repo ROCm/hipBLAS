@@ -25,8 +25,8 @@
 #include <stdlib.h>
 #include <vector>
 
-//#include "utility.h"
 #include "hipblas_init.hpp"
+#include "utility.h"
 #include <hipblas/hipblas.h>
 
 #ifndef CHECK_HIP_ERROR
