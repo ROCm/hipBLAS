@@ -30,6 +30,12 @@
 #include <cstdio>
 #include <iostream>
 
+//
+// Forward declaration of hipblas_init_nan
+//
+template <typename T>
+inline void hipblas_init_nan(T* A, size_t N);
+
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */
 template <typename T, size_t PAD, typename U>
