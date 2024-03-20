@@ -68,6 +68,7 @@ void testing_dot_ex_bad_arg(const Arguments& arg)
         device_vector<Tx> dx(N * incx);
         device_vector<Ty> dy(N * incy);
         device_vector<Tr> d_res(1);
+        host_vector<Tr>   h_res(1);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
         DAPI_EXPECT(
@@ -122,7 +123,7 @@ void testing_dot_ex_bad_arg(const Arguments& arg)
                          nullptr,
                          yType,
                          incy,
-                         d_res,
+                         pointer_mode == HIPBLAS_POINTER_MODE_HOST ? h_res : d_res,
                          resultType,
                          executionType));
         }
