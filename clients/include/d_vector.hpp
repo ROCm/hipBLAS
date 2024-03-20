@@ -75,7 +75,8 @@ protected:
         if((hipMalloc)(&d, bytes) != hipSuccess)
         {
             static char* lc = setlocale(LC_NUMERIC, "");
-            fprintf(stderr, "Error allocating %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
+            fprintf(
+                stderr, "Warning: hip can't allocate %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
             d = nullptr;
         }
 #ifdef GOOGLE_TEST

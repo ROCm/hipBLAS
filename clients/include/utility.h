@@ -99,6 +99,11 @@ HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
 /* 64-bit value which will overflow 32-bit integers                                                */
 extern int64_t c_i32_overflow;
 
+/* =============================================================================================== */
+/* For GTEST_SKIP() we search for these sub-strings in listener to determine skip category         */
+#define LIMITED_RAM_STRING "skip: RAM"
+#define LIMITED_VRAM_STRING "skip: VRAM"
+
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
 

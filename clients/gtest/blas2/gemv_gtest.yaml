@@ -59,6 +59,20 @@ Tests:
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
+  #Remove this test before merge
+  - name: gemv_64
+    category: pre_checkin
+    arguments:
+      - { transA: N, M: 21474836498, N: 1, lda: 21474836498, incx: 1, incy: 1, batch_count: 1 }
+      - { transA: T, M: 21474836498, N: 1, lda: 21474836498, incx: 1, incy: 1, batch_count: 1 }
+    alpha_beta: *alpha_beta_range
+    pointer_mode_host: false
+    initialization: hpl # large reductions so ints can overflow
+    api: [ C_64 ]
+    function:
+      - gemv: *single_precision
+    stride_scale: 1
+
   - name: gemv_general
     category: quick
     function:
