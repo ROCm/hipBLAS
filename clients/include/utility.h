@@ -27,10 +27,10 @@
 #include <omp.h>
 #endif
 
-#include "type_utils.h"
 #include <hipblas/hipblas.h>
 #include <stdbool.h>
 
+#include "type_utils.h"
 #ifdef __cplusplus
 #include "hipblas_datatype2string.hpp"
 #include <cstdio>
@@ -336,22 +336,6 @@ inline hipblasHalf random_hpl_generator()
 {
     return hipblasHalf(
         float_to_half(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
-}
-
-/* ============================================================================================= */
-/*! \brief For testing purposes, to convert a regular matrix to a packed matrix.                  */
-template <typename T>
-inline void regular_to_packed(bool upper, const T* A, T* AP, int64_t n)
-{
-    int64_t index = 0;
-    if(upper)
-        for(int64_t i = 0; i < n; i++)
-            for(int64_t j = 0; j <= i; j++)
-                AP[index++] = A[j + i * n];
-    else
-        for(int64_t i = 0; i < n; i++)
-            for(int64_t j = i; j < n; j++)
-                AP[index++] = A[j + i * n];
 }
 
 /* ============================================================================================= */

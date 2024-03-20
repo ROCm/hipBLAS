@@ -1462,3 +1462,19 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
         hipblas_init<T>(hA + i * lda + i, 1, 1, 1);
     }
 }
+
+/* ============================================================================================= */
+/*! \brief For testing purposes, to convert a regular matrix to a packed matrix.                  */
+template <typename T>
+inline void regular_to_packed(bool upper, const T* A, T* AP, int64_t n)
+{
+    int64_t index = 0;
+    if(upper)
+        for(int64_t i = 0; i < n; i++)
+            for(int64_t j = 0; j <= i; j++)
+                AP[index++] = A[j + i * n];
+    else
+        for(int64_t i = 0; i < n; i++)
+            for(int64_t j = i; j < n; j++)
+                AP[index++] = A[j + i * n];
+}
