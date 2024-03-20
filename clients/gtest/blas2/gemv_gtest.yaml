@@ -71,6 +71,7 @@ Tests:
     api: [ C_64 ]
     function:
       - gemv: *single_precision
+      - gemv_batched: *single_precision
 
   - name: gemv_general
     category: quick
