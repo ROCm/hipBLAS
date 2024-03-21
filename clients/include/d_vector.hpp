@@ -78,6 +78,8 @@ protected:
             fprintf(
                 stderr, "Warning: hip can't allocate %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
             d = nullptr;
+
+            throw std::bad_alloc{}; //experimental will remome it
         }
 #ifdef GOOGLE_TEST
         else
