@@ -53,6 +53,7 @@ void testing_nrm2_ex_bad_arg(const Arguments& arg)
 
     device_vector<Tx> dx(N * incx);
     device_vector<Tr> d_res(1);
+    host_vector<Tr>   h_res(1);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -75,10 +76,17 @@ void testing_nrm2_ex_bad_arg(const Arguments& arg)
             // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
             // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
             // pointers to get invalid_value returns
-            DAPI_EXPECT(
-                (arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
-                hipblasNrm2ExFn,
-                (handle, c_i32_overflow, nullptr, xType, 1, d_res, resultType, executionType));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                             : HIPBLAS_STATUS_SUCCESS,
+                        hipblasNrm2ExFn,
+                        (handle,
+                         c_i32_overflow,
+                         nullptr,
+                         xType,
+                         1,
+                         pointer_mode == HIPBLAS_POINTER_MODE_HOST ? h_res : d_res,
+                         resultType,
+                         executionType));
         }
     }
 }
