@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dir_e3d620c6b6fdb93ed3bc6186215bde2e" kind="dir">
+    <compoundname>/home/samwu103/Documents/GitHub/hipBLAS/library</compoundname>
+    <innerdir refid="dir_9bb0cdb2fc6936e925cffa69d90b0c80">/home/samwu103/Documents/GitHub/hipBLAS/library/include</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/samwu103/Documents/GitHub/hipBLAS/library/"/>
+  </compounddef>
+</doxygen>

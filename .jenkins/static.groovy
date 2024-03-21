@@ -14,7 +14,7 @@ def runCI =
     nodeDetails, jobName->
 
     def prj  = new rocProject('hipBLAS', 'static')
-    prj.paths.build_command = './install.sh -cd --static'
+    prj.paths.build_command = './install.sh -cds'
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="structhipblas_bfloat16" kind="struct" language="C++" prot="public">
+    <compoundname>hipblasBfloat16</compoundname>
+    <includes refid="hipblas_8h" local="no">hipblas.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structhipblas_bfloat16_1adb1f43dc3c5f97ce538db2d8a307609d" prot="public" static="no" mutable="no">
+        <type>uint16_t</type>
+        <definition>uint16_t hipblasBfloat16::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/samwu103/Documents/GitHub/hipBLAS/library/include/hipblas.h" line="123" column="14" bodyfile="/home/samwu103/Documents/GitHub/hipBLAS/library/include/hipblas.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Struct to represent a 16 bit Brain floating-point number. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/samwu103/Documents/GitHub/hipBLAS/library/include/hipblas.h" line="122" column="1" bodyfile="/home/samwu103/Documents/GitHub/hipBLAS/library/include/hipblas.h" bodystart="121" bodyend="124"/>
+    <listofallmembers>
+      <member refid="structhipblas_bfloat16_1adb1f43dc3c5f97ce538db2d8a307609d" prot="public" virt="non-virtual"><scope>hipblasBfloat16</scope><name>data</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
