@@ -44797,22 +44797,21 @@ hipblasStatus_t hipblasAxpyEx_64(hipblasHandle_t   handle,
                                  hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_axpy_ex_64((rocblas_handle)handle,
-                           n,
-                           alpha,
-                           HIPDatatypeToRocblasDatatype(alphaType),
-                           x,
-                           HIPDatatypeToRocblasDatatype(xType),
-                           incx,
-                           y,
-                           HIPDatatypeToRocblasDatatype(yType),
-                           incy,
-                           HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_axpy_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   alpha,
+                                                   hipblasConvertDatatype(alphaType),
+                                                   x,
+                                                   hipblasConvertDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   hipblasConvertDatatype(yType),
+                                                   incy,
+                                                   hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyEx_v2_64(hipblasHandle_t handle,
@@ -44828,22 +44827,21 @@ hipblasStatus_t hipblasAxpyEx_v2_64(hipblasHandle_t handle,
                                     hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_axpy_ex_64((rocblas_handle)handle,
-                           n,
-                           alpha,
-                           HIPDatatypeToRocblasDatatype_v2(alphaType),
-                           x,
-                           HIPDatatypeToRocblasDatatype_v2(xType),
-                           incx,
-                           y,
-                           HIPDatatypeToRocblasDatatype_v2(yType),
-                           incy,
-                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_axpy_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   alpha,
+                                                   hipblasConvertDatatype_v2(alphaType),
+                                                   x,
+                                                   hipblasConvertDatatype_v2(xType),
+                                                   incx,
+                                                   y,
+                                                   hipblasConvertDatatype_v2(yType),
+                                                   incy,
+                                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyBatchedEx_64(hipblasHandle_t   handle,
@@ -44860,23 +44858,22 @@ hipblasStatus_t hipblasAxpyBatchedEx_64(hipblasHandle_t   handle,
                                         hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_axpy_batched_ex_64((rocblas_handle)handle,
-                                   n,
-                                   alpha,
-                                   HIPDatatypeToRocblasDatatype(alphaType),
-                                   x,
-                                   HIPDatatypeToRocblasDatatype(xType),
-                                   incx,
-                                   y,
-                                   HIPDatatypeToRocblasDatatype(yType),
-                                   incy,
-                                   batch_count,
-                                   HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_axpy_batched_ex_64((rocblas_handle)handle,
+                                                           n,
+                                                           alpha,
+                                                           hipblasConvertDatatype(alphaType),
+                                                           x,
+                                                           hipblasConvertDatatype(xType),
+                                                           incx,
+                                                           y,
+                                                           hipblasConvertDatatype(yType),
+                                                           incy,
+                                                           batch_count,
+                                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyBatchedEx_v2_64(hipblasHandle_t handle,
@@ -44893,23 +44890,23 @@ hipblasStatus_t hipblasAxpyBatchedEx_v2_64(hipblasHandle_t handle,
                                            hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_axpy_batched_ex_64((rocblas_handle)handle,
                                    n,
                                    alpha,
-                                   HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                   hipblasConvertDatatype_v2(alphaType),
                                    x,
-                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                   hipblasConvertDatatype_v2(xType),
                                    incx,
                                    y,
-                                   HIPDatatypeToRocblasDatatype_v2(yType),
+                                   hipblasConvertDatatype_v2(yType),
                                    incy,
                                    batch_count,
-                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -44928,25 +44925,25 @@ hipblasStatus_t hipblasAxpyStridedBatchedEx_64(hipblasHandle_t   handle,
                                                hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_axpy_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            alpha,
-                                           HIPDatatypeToRocblasDatatype(alphaType),
+                                           hipblasConvertDatatype(alphaType),
                                            x,
-                                           HIPDatatypeToRocblasDatatype(xType),
+                                           hipblasConvertDatatype(xType),
                                            incx,
                                            stridex,
                                            y,
-                                           HIPDatatypeToRocblasDatatype(yType),
+                                           hipblasConvertDatatype(yType),
                                            incy,
                                            stridey,
                                            batch_count,
-                                           HIPDatatypeToRocblasDatatype(executionType)));
+                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -44965,25 +44962,25 @@ hipblasStatus_t hipblasAxpyStridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                   hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_axpy_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            alpha,
-                                           HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                           hipblasConvertDatatype_v2(alphaType),
                                            x,
-                                           HIPDatatypeToRocblasDatatype_v2(xType),
+                                           hipblasConvertDatatype_v2(xType),
                                            incx,
                                            stridex,
                                            y,
-                                           HIPDatatypeToRocblasDatatype_v2(yType),
+                                           hipblasConvertDatatype_v2(yType),
                                            incy,
                                            stridey,
                                            batch_count,
-                                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                           hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // dot_ex
@@ -45397,21 +45394,21 @@ hipblasStatus_t hipblasDotEx_64(hipblasHandle_t   handle,
                                 hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(rocblas_dot_ex_64((rocblas_handle)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToRocblasDatatype(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToRocblasDatatype(yType),
-                                                      incy,
-                                                      result,
-                                                      HIPDatatypeToRocblasDatatype(resultType),
-                                                      HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_dot_ex_64((rocblas_handle)handle,
+                                                  n,
+                                                  x,
+                                                  hipblasConvertDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  hipblasConvertDatatype(yType),
+                                                  incy,
+                                                  result,
+                                                  hipblasConvertDatatype(resultType),
+                                                  hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotEx_v2_64(hipblasHandle_t handle,
@@ -45427,22 +45424,21 @@ hipblasStatus_t hipblasDotEx_v2_64(hipblasHandle_t handle,
                                    hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_dot_ex_64((rocblas_handle)handle,
-                          n,
-                          x,
-                          HIPDatatypeToRocblasDatatype_v2(xType),
-                          incx,
-                          y,
-                          HIPDatatypeToRocblasDatatype_v2(yType),
-                          incy,
-                          result,
-                          HIPDatatypeToRocblasDatatype_v2(resultType),
-                          HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_dot_ex_64((rocblas_handle)handle,
+                                                  n,
+                                                  x,
+                                                  hipblasConvertDatatype_v2(xType),
+                                                  incx,
+                                                  y,
+                                                  hipblasConvertDatatype_v2(yType),
+                                                  incy,
+                                                  result,
+                                                  hipblasConvertDatatype_v2(resultType),
+                                                  hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcEx_64(hipblasHandle_t   handle,
@@ -45458,22 +45454,21 @@ hipblasStatus_t hipblasDotcEx_64(hipblasHandle_t   handle,
                                  hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_dotc_ex_64((rocblas_handle)handle,
-                           n,
-                           x,
-                           HIPDatatypeToRocblasDatatype(xType),
-                           incx,
-                           y,
-                           HIPDatatypeToRocblasDatatype(yType),
-                           incy,
-                           result,
-                           HIPDatatypeToRocblasDatatype(resultType),
-                           HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_dotc_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   hipblasConvertDatatype(xType),
+                                                   incx,
+                                                   y,
+                                                   hipblasConvertDatatype(yType),
+                                                   incy,
+                                                   result,
+                                                   hipblasConvertDatatype(resultType),
+                                                   hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcEx_v2_64(hipblasHandle_t handle,
@@ -45489,22 +45484,21 @@ hipblasStatus_t hipblasDotcEx_v2_64(hipblasHandle_t handle,
                                     hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_dotc_ex_64((rocblas_handle)handle,
-                           n,
-                           x,
-                           HIPDatatypeToRocblasDatatype_v2(xType),
-                           incx,
-                           y,
-                           HIPDatatypeToRocblasDatatype_v2(yType),
-                           incy,
-                           result,
-                           HIPDatatypeToRocblasDatatype_v2(resultType),
-                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_dotc_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   hipblasConvertDatatype_v2(xType),
+                                                   incx,
+                                                   y,
+                                                   hipblasConvertDatatype_v2(yType),
+                                                   incy,
+                                                   result,
+                                                   hipblasConvertDatatype_v2(resultType),
+                                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotBatchedEx_64(hipblasHandle_t   handle,
@@ -45521,23 +45515,22 @@ hipblasStatus_t hipblasDotBatchedEx_64(hipblasHandle_t   handle,
                                        hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_dot_batched_ex_64((rocblas_handle)handle,
-                                  n,
-                                  x,
-                                  HIPDatatypeToRocblasDatatype(xType),
-                                  incx,
-                                  y,
-                                  HIPDatatypeToRocblasDatatype(yType),
-                                  incy,
-                                  batch_count,
-                                  result,
-                                  HIPDatatypeToRocblasDatatype(resultType),
-                                  HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_dot_batched_ex_64((rocblas_handle)handle,
+                                                          n,
+                                                          x,
+                                                          hipblasConvertDatatype(xType),
+                                                          incx,
+                                                          y,
+                                                          hipblasConvertDatatype(yType),
+                                                          incy,
+                                                          batch_count,
+                                                          result,
+                                                          hipblasConvertDatatype(resultType),
+                                                          hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45554,23 +45547,23 @@ hipblasStatus_t hipblasDotBatchedEx_v2_64(hipblasHandle_t handle,
                                           hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dot_batched_ex_64((rocblas_handle)handle,
                                   n,
                                   x,
-                                  HIPDatatypeToRocblasDatatype_v2(xType),
+                                  hipblasConvertDatatype_v2(xType),
                                   incx,
                                   y,
-                                  HIPDatatypeToRocblasDatatype_v2(yType),
+                                  hipblasConvertDatatype_v2(yType),
                                   incy,
                                   batch_count,
                                   result,
-                                  HIPDatatypeToRocblasDatatype_v2(resultType),
-                                  HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                  hipblasConvertDatatype_v2(resultType),
+                                  hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcBatchedEx_64(hipblasHandle_t   handle,
@@ -45587,23 +45580,22 @@ hipblasStatus_t hipblasDotcBatchedEx_64(hipblasHandle_t   handle,
                                         hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_dotc_batched_ex_64((rocblas_handle)handle,
-                                   n,
-                                   x,
-                                   HIPDatatypeToRocblasDatatype(xType),
-                                   incx,
-                                   y,
-                                   HIPDatatypeToRocblasDatatype(yType),
-                                   incy,
-                                   batch_count,
-                                   result,
-                                   HIPDatatypeToRocblasDatatype(resultType),
-                                   HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_dotc_batched_ex_64((rocblas_handle)handle,
+                                                           n,
+                                                           x,
+                                                           hipblasConvertDatatype(xType),
+                                                           incx,
+                                                           y,
+                                                           hipblasConvertDatatype(yType),
+                                                           incy,
+                                                           batch_count,
+                                                           result,
+                                                           hipblasConvertDatatype(resultType),
+                                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45620,23 +45612,23 @@ hipblasStatus_t hipblasDotcBatchedEx_v2_64(hipblasHandle_t handle,
                                            hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dotc_batched_ex_64((rocblas_handle)handle,
                                    n,
                                    x,
-                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                   hipblasConvertDatatype_v2(xType),
                                    incx,
                                    y,
-                                   HIPDatatypeToRocblasDatatype_v2(yType),
+                                   hipblasConvertDatatype_v2(yType),
                                    incy,
                                    batch_count,
                                    result,
-                                   HIPDatatypeToRocblasDatatype_v2(resultType),
-                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                   hipblasConvertDatatype_v2(resultType),
+                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -45655,25 +45647,25 @@ hipblasStatus_t hipblasDotStridedBatchedEx_64(hipblasHandle_t   handle,
                                               hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dot_strided_batched_ex_64((rocblas_handle)handle,
                                           n,
                                           x,
-                                          HIPDatatypeToRocblasDatatype(xType),
+                                          hipblasConvertDatatype(xType),
                                           incx,
                                           stridex,
                                           y,
-                                          HIPDatatypeToRocblasDatatype(yType),
+                                          hipblasConvertDatatype(yType),
                                           incy,
                                           stridey,
                                           batch_count,
                                           result,
-                                          HIPDatatypeToRocblasDatatype(resultType),
-                                          HIPDatatypeToRocblasDatatype(executionType)));
+                                          hipblasConvertDatatype(resultType),
+                                          hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45692,25 +45684,25 @@ hipblasStatus_t hipblasDotStridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                  hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dot_strided_batched_ex_64((rocblas_handle)handle,
                                           n,
                                           x,
-                                          HIPDatatypeToRocblasDatatype_v2(xType),
+                                          hipblasConvertDatatype_v2(xType),
                                           incx,
                                           stridex,
                                           y,
-                                          HIPDatatypeToRocblasDatatype_v2(yType),
+                                          hipblasConvertDatatype_v2(yType),
                                           incy,
                                           stridey,
                                           batch_count,
                                           result,
-                                          HIPDatatypeToRocblasDatatype_v2(resultType),
-                                          HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                          hipblasConvertDatatype_v2(resultType),
+                                          hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -45729,25 +45721,25 @@ hipblasStatus_t hipblasDotcStridedBatchedEx_64(hipblasHandle_t   handle,
                                                hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dotc_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            x,
-                                           HIPDatatypeToRocblasDatatype(xType),
+                                           hipblasConvertDatatype(xType),
                                            incx,
                                            stridex,
                                            y,
-                                           HIPDatatypeToRocblasDatatype(yType),
+                                           hipblasConvertDatatype(yType),
                                            incy,
                                            stridey,
                                            batch_count,
                                            result,
-                                           HIPDatatypeToRocblasDatatype(resultType),
-                                           HIPDatatypeToRocblasDatatype(executionType)));
+                                           hipblasConvertDatatype(resultType),
+                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45766,25 +45758,25 @@ hipblasStatus_t hipblasDotcStridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                   hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_dotc_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            x,
-                                           HIPDatatypeToRocblasDatatype_v2(xType),
+                                           hipblasConvertDatatype_v2(xType),
                                            incx,
                                            stridex,
                                            y,
-                                           HIPDatatypeToRocblasDatatype_v2(yType),
+                                           hipblasConvertDatatype_v2(yType),
                                            incy,
                                            stridey,
                                            batch_count,
                                            result,
-                                           HIPDatatypeToRocblasDatatype_v2(resultType),
-                                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                           hipblasConvertDatatype_v2(resultType),
+                                           hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // nrm2_ex
@@ -45957,19 +45949,18 @@ hipblasStatus_t hipblasNrm2Ex_64(hipblasHandle_t   handle,
                                  hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_nrm2_ex_64((rocblas_handle)handle,
-                           n,
-                           x,
-                           HIPDatatypeToRocblasDatatype(xType),
-                           incx,
-                           result,
-                           HIPDatatypeToRocblasDatatype(resultType),
-                           HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_nrm2_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   hipblasConvertDatatype(xType),
+                                                   incx,
+                                                   result,
+                                                   hipblasConvertDatatype(resultType),
+                                                   hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2Ex_v2_64(hipblasHandle_t handle,
@@ -45982,19 +45973,18 @@ hipblasStatus_t hipblasNrm2Ex_v2_64(hipblasHandle_t handle,
                                     hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_nrm2_ex_64((rocblas_handle)handle,
-                           n,
-                           x,
-                           HIPDatatypeToRocblasDatatype_v2(xType),
-                           incx,
-                           result,
-                           HIPDatatypeToRocblasDatatype_v2(resultType),
-                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_nrm2_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   x,
+                                                   hipblasConvertDatatype_v2(xType),
+                                                   incx,
+                                                   result,
+                                                   hipblasConvertDatatype_v2(resultType),
+                                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2BatchedEx_64(hipblasHandle_t   handle,
@@ -46008,20 +45998,19 @@ hipblasStatus_t hipblasNrm2BatchedEx_64(hipblasHandle_t   handle,
                                         hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_nrm2_batched_ex_64((rocblas_handle)handle,
-                                   n,
-                                   x,
-                                   HIPDatatypeToRocblasDatatype(xType),
-                                   incx,
-                                   batch_count,
-                                   result,
-                                   HIPDatatypeToRocblasDatatype(resultType),
-                                   HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_nrm2_batched_ex_64((rocblas_handle)handle,
+                                                           n,
+                                                           x,
+                                                           hipblasConvertDatatype(xType),
+                                                           incx,
+                                                           batch_count,
+                                                           result,
+                                                           hipblasConvertDatatype(resultType),
+                                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2BatchedEx_v2_64(hipblasHandle_t handle,
@@ -46035,20 +46024,20 @@ hipblasStatus_t hipblasNrm2BatchedEx_v2_64(hipblasHandle_t handle,
                                            hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_nrm2_batched_ex_64((rocblas_handle)handle,
                                    n,
                                    x,
-                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                   hipblasConvertDatatype_v2(xType),
                                    incx,
                                    batch_count,
                                    result,
-                                   HIPDatatypeToRocblasDatatype_v2(resultType),
-                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                   hipblasConvertDatatype_v2(resultType),
+                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2StridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46063,21 +46052,21 @@ hipblasStatus_t hipblasNrm2StridedBatchedEx_64(hipblasHandle_t   handle,
                                                hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_nrm2_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            x,
-                                           HIPDatatypeToRocblasDatatype(xType),
+                                           hipblasConvertDatatype(xType),
                                            incx,
                                            stridex,
                                            batch_count,
                                            result,
-                                           HIPDatatypeToRocblasDatatype(resultType),
-                                           HIPDatatypeToRocblasDatatype(executionType)));
+                                           hipblasConvertDatatype(resultType),
+                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2StridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46092,21 +46081,21 @@ hipblasStatus_t hipblasNrm2StridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                   hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_nrm2_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            x,
-                                           HIPDatatypeToRocblasDatatype_v2(xType),
+                                           hipblasConvertDatatype_v2(xType),
                                            incx,
                                            stridex,
                                            batch_count,
                                            result,
-                                           HIPDatatypeToRocblasDatatype_v2(resultType),
-                                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                           hipblasConvertDatatype_v2(resultType),
+                                           hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // rot_ex
@@ -46335,22 +46324,22 @@ hipblasStatus_t hipblasRotEx_64(hipblasHandle_t   handle,
                                 hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(rocblas_rot_ex_64((rocblas_handle)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToRocblasDatatype(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToRocblasDatatype(yType),
-                                                      incy,
-                                                      c,
-                                                      s,
-                                                      HIPDatatypeToRocblasDatatype(csType),
-                                                      HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_rot_ex_64((rocblas_handle)handle,
+                                                  n,
+                                                  x,
+                                                  hipblasConvertDatatype(xType),
+                                                  incx,
+                                                  y,
+                                                  hipblasConvertDatatype(yType),
+                                                  incy,
+                                                  c,
+                                                  s,
+                                                  hipblasConvertDatatype(csType),
+                                                  hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotEx_v2_64(hipblasHandle_t handle,
@@ -46367,23 +46356,22 @@ hipblasStatus_t hipblasRotEx_v2_64(hipblasHandle_t handle,
                                    hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_rot_ex_64((rocblas_handle)handle,
-                          n,
-                          x,
-                          HIPDatatypeToRocblasDatatype_v2(xType),
-                          incx,
-                          y,
-                          HIPDatatypeToRocblasDatatype_v2(yType),
-                          incy,
-                          c,
-                          s,
-                          HIPDatatypeToRocblasDatatype_v2(csType),
-                          HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_rot_ex_64((rocblas_handle)handle,
+                                                  n,
+                                                  x,
+                                                  hipblasConvertDatatype_v2(xType),
+                                                  incx,
+                                                  y,
+                                                  hipblasConvertDatatype_v2(yType),
+                                                  incy,
+                                                  c,
+                                                  s,
+                                                  hipblasConvertDatatype_v2(csType),
+                                                  hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotBatchedEx_64(hipblasHandle_t   handle,
@@ -46401,24 +46389,23 @@ hipblasStatus_t hipblasRotBatchedEx_64(hipblasHandle_t   handle,
                                        hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_rot_batched_ex_64((rocblas_handle)handle,
-                                  n,
-                                  x,
-                                  HIPDatatypeToRocblasDatatype(xType),
-                                  incx,
-                                  y,
-                                  HIPDatatypeToRocblasDatatype(yType),
-                                  incy,
-                                  c,
-                                  s,
-                                  HIPDatatypeToRocblasDatatype(csType),
-                                  batch_count,
-                                  HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_rot_batched_ex_64((rocblas_handle)handle,
+                                                          n,
+                                                          x,
+                                                          hipblasConvertDatatype(xType),
+                                                          incx,
+                                                          y,
+                                                          hipblasConvertDatatype(yType),
+                                                          incy,
+                                                          c,
+                                                          s,
+                                                          hipblasConvertDatatype(csType),
+                                                          batch_count,
+                                                          hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46436,24 +46423,24 @@ hipblasStatus_t hipblasRotBatchedEx_v2_64(hipblasHandle_t handle,
                                           hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_rot_batched_ex_64((rocblas_handle)handle,
                                   n,
                                   x,
-                                  HIPDatatypeToRocblasDatatype_v2(xType),
+                                  hipblasConvertDatatype_v2(xType),
                                   incx,
                                   y,
-                                  HIPDatatypeToRocblasDatatype_v2(yType),
+                                  hipblasConvertDatatype_v2(yType),
                                   incy,
                                   c,
                                   s,
-                                  HIPDatatypeToRocblasDatatype_v2(csType),
+                                  hipblasConvertDatatype_v2(csType),
                                   batch_count,
-                                  HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                  hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46473,26 +46460,26 @@ hipblasStatus_t hipblasRotStridedBatchedEx_64(hipblasHandle_t   handle,
                                               hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_rot_strided_batched_ex_64((rocblas_handle)handle,
                                           n,
                                           x,
-                                          HIPDatatypeToRocblasDatatype(xType),
+                                          hipblasConvertDatatype(xType),
                                           incx,
                                           stridex,
                                           y,
-                                          HIPDatatypeToRocblasDatatype(yType),
+                                          hipblasConvertDatatype(yType),
                                           incy,
                                           stridey,
                                           c,
                                           s,
-                                          HIPDatatypeToRocblasDatatype(csType),
+                                          hipblasConvertDatatype(csType),
                                           batch_count,
-                                          HIPDatatypeToRocblasDatatype(executionType)));
+                                          hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46512,26 +46499,26 @@ hipblasStatus_t hipblasRotStridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                  hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_rot_strided_batched_ex_64((rocblas_handle)handle,
                                           n,
                                           x,
-                                          HIPDatatypeToRocblasDatatype_v2(xType),
+                                          hipblasConvertDatatype_v2(xType),
                                           incx,
                                           stridex,
                                           y,
-                                          HIPDatatypeToRocblasDatatype_v2(yType),
+                                          hipblasConvertDatatype_v2(yType),
                                           incy,
                                           stridey,
                                           c,
                                           s,
-                                          HIPDatatypeToRocblasDatatype_v2(csType),
+                                          hipblasConvertDatatype_v2(csType),
                                           batch_count,
-                                          HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                          hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // scal_ex
@@ -46704,19 +46691,18 @@ hipblasStatus_t hipblasScalEx_64(hipblasHandle_t   handle,
                                  hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_scal_ex_64((rocblas_handle)handle,
-                           n,
-                           alpha,
-                           HIPDatatypeToRocblasDatatype(alphaType),
-                           x,
-                           HIPDatatypeToRocblasDatatype(xType),
-                           incx,
-                           HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_scal_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   alpha,
+                                                   hipblasConvertDatatype(alphaType),
+                                                   x,
+                                                   hipblasConvertDatatype(xType),
+                                                   incx,
+                                                   hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalEx_v2_64(hipblasHandle_t handle,
@@ -46729,19 +46715,18 @@ hipblasStatus_t hipblasScalEx_v2_64(hipblasHandle_t handle,
                                     hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_scal_ex_64((rocblas_handle)handle,
-                           n,
-                           alpha,
-                           HIPDatatypeToRocblasDatatype_v2(alphaType),
-                           x,
-                           HIPDatatypeToRocblasDatatype_v2(xType),
-                           incx,
-                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+    return hipblasConvertStatus(rocblas_scal_ex_64((rocblas_handle)handle,
+                                                   n,
+                                                   alpha,
+                                                   hipblasConvertDatatype_v2(alphaType),
+                                                   x,
+                                                   hipblasConvertDatatype_v2(xType),
+                                                   incx,
+                                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalBatchedEx_64(hipblasHandle_t   handle,
@@ -46755,20 +46740,19 @@ hipblasStatus_t hipblasScalBatchedEx_64(hipblasHandle_t   handle,
                                         hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
-        rocblas_scal_batched_ex_64((rocblas_handle)handle,
-                                   n,
-                                   alpha,
-                                   HIPDatatypeToRocblasDatatype(alphaType),
-                                   x,
-                                   HIPDatatypeToRocblasDatatype(xType),
-                                   incx,
-                                   batch_count,
-                                   HIPDatatypeToRocblasDatatype(executionType)));
+    return hipblasConvertStatus(rocblas_scal_batched_ex_64((rocblas_handle)handle,
+                                                           n,
+                                                           alpha,
+                                                           hipblasConvertDatatype(alphaType),
+                                                           x,
+                                                           hipblasConvertDatatype(xType),
+                                                           incx,
+                                                           batch_count,
+                                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46782,20 +46766,20 @@ hipblasStatus_t hipblasScalBatchedEx_v2_64(hipblasHandle_t handle,
                                            hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_scal_batched_ex_64((rocblas_handle)handle,
                                    n,
                                    alpha,
-                                   HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                   hipblasConvertDatatype_v2(alphaType),
                                    x,
-                                   HIPDatatypeToRocblasDatatype_v2(xType),
+                                   hipblasConvertDatatype_v2(xType),
                                    incx,
                                    batch_count,
-                                   HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                   hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46810,21 +46794,21 @@ hipblasStatus_t hipblasScalStridedBatchedEx_64(hipblasHandle_t   handle,
                                                hipblasDatatype_t executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_scal_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            alpha,
-                                           HIPDatatypeToRocblasDatatype(alphaType),
+                                           hipblasConvertDatatype(alphaType),
                                            x,
-                                           HIPDatatypeToRocblasDatatype(xType),
+                                           hipblasConvertDatatype(xType),
                                            incx,
                                            stridex,
                                            batch_count,
-                                           HIPDatatypeToRocblasDatatype(executionType)));
+                                           hipblasConvertDatatype(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46839,21 +46823,21 @@ hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t handle,
                                                   hipDataType     executionType)
 try
 {
-    return rocBLASStatusToHIPStatus(
+    return hipblasConvertStatus(
         rocblas_scal_strided_batched_ex_64((rocblas_handle)handle,
                                            n,
                                            alpha,
-                                           HIPDatatypeToRocblasDatatype_v2(alphaType),
+                                           hipblasConvertDatatype_v2(alphaType),
                                            x,
-                                           HIPDatatypeToRocblasDatatype_v2(xType),
+                                           hipblasConvertDatatype_v2(xType),
                                            incx,
                                            stridex,
                                            batch_count,
-                                           HIPDatatypeToRocblasDatatype_v2(executionType)));
+                                           hipblasConvertDatatype_v2(executionType)));
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 } // extern "C"

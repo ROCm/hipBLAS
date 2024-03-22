@@ -30104,17 +30104,17 @@ hipblasStatus_t hipblasAxpyEx_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasAxpyEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      alpha,
-                                                      HIPDatatypeToCudaDatatype(alphaType),
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToCudaDatatype(yType),
-                                                      incy,
-                                                      HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasAxpyEx_64((cublasHandle_t)handle,
+                                                n,
+                                                alpha,
+                                                hipblasConvertDatatype(alphaType),
+                                                x,
+                                                hipblasConvertDatatype(xType),
+                                                incx,
+                                                y,
+                                                hipblasConvertDatatype(yType),
+                                                incy,
+                                                hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30138,17 +30138,17 @@ hipblasStatus_t hipblasAxpyEx_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasAxpyEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      alpha,
-                                                      HIPDatatypeToCudaDatatype_v2(alphaType),
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype_v2(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToCudaDatatype_v2(yType),
-                                                      incy,
-                                                      HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasAxpyEx_64((cublasHandle_t)handle,
+                                                n,
+                                                alpha,
+                                                hipblasConvertDatatype_v2(alphaType),
+                                                x,
+                                                hipblasConvertDatatype_v2(xType),
+                                                incx,
+                                                y,
+                                                hipblasConvertDatatype_v2(yType),
+                                                incy,
+                                                hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30498,17 +30498,17 @@ hipblasStatus_t hipblasDotEx_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasDotEx_64((cublasHandle_t)handle,
-                                                     n,
-                                                     x,
-                                                     HIPDatatypeToCudaDatatype(xType),
-                                                     incx,
-                                                     y,
-                                                     HIPDatatypeToCudaDatatype(yType),
-                                                     incy,
-                                                     result,
-                                                     HIPDatatypeToCudaDatatype(resultType),
-                                                     HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasDotEx_64((cublasHandle_t)handle,
+                                               n,
+                                               x,
+                                               hipblasConvertDatatype(xType),
+                                               incx,
+                                               y,
+                                               hipblasConvertDatatype(yType),
+                                               incy,
+                                               result,
+                                               hipblasConvertDatatype(resultType),
+                                               hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30532,17 +30532,17 @@ hipblasStatus_t hipblasDotEx_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasDotEx_64((cublasHandle_t)handle,
-                                                     n,
-                                                     x,
-                                                     HIPDatatypeToCudaDatatype_v2(xType),
-                                                     incx,
-                                                     y,
-                                                     HIPDatatypeToCudaDatatype_v2(yType),
-                                                     incy,
-                                                     result,
-                                                     HIPDatatypeToCudaDatatype_v2(resultType),
-                                                     HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasDotEx_64((cublasHandle_t)handle,
+                                               n,
+                                               x,
+                                               hipblasConvertDatatype_v2(xType),
+                                               incx,
+                                               y,
+                                               hipblasConvertDatatype_v2(yType),
+                                               incy,
+                                               result,
+                                               hipblasConvertDatatype_v2(resultType),
+                                               hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30566,17 +30566,17 @@ hipblasStatus_t hipblasDotcEx_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasDotcEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToCudaDatatype(yType),
-                                                      incy,
-                                                      result,
-                                                      HIPDatatypeToCudaDatatype(resultType),
-                                                      HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasDotcEx_64((cublasHandle_t)handle,
+                                                n,
+                                                x,
+                                                hipblasConvertDatatype(xType),
+                                                incx,
+                                                y,
+                                                hipblasConvertDatatype(yType),
+                                                incy,
+                                                result,
+                                                hipblasConvertDatatype(resultType),
+                                                hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30600,17 +30600,17 @@ hipblasStatus_t hipblasDotcEx_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasDotcEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype_v2(xType),
-                                                      incx,
-                                                      y,
-                                                      HIPDatatypeToCudaDatatype_v2(yType),
-                                                      incy,
-                                                      result,
-                                                      HIPDatatypeToCudaDatatype_v2(resultType),
-                                                      HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasDotcEx_64((cublasHandle_t)handle,
+                                                n,
+                                                x,
+                                                hipblasConvertDatatype_v2(xType),
+                                                incx,
+                                                y,
+                                                hipblasConvertDatatype_v2(yType),
+                                                incy,
+                                                result,
+                                                hipblasConvertDatatype_v2(resultType),
+                                                hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30871,14 +30871,14 @@ hipblasStatus_t hipblasNrm2Ex_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex_64((cublasHandle_t)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype(xType),
-                                                      incx,
-                                                      result,
-                                                      HIPDatatypeToCudaDatatype(resultType),
-                                                      HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasNrm2Ex_64((cublasHandle_t)handle,
+                                                n,
+                                                x,
+                                                hipblasConvertDatatype(xType),
+                                                incx,
+                                                result,
+                                                hipblasConvertDatatype(resultType),
+                                                hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -30899,14 +30899,14 @@ hipblasStatus_t hipblasNrm2Ex_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasNrm2Ex_64((cublasHandle_t)handle,
-                                                      n,
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype_v2(xType),
-                                                      incx,
-                                                      result,
-                                                      HIPDatatypeToCudaDatatype_v2(resultType),
-                                                      HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasNrm2Ex_64((cublasHandle_t)handle,
+                                                n,
+                                                x,
+                                                hipblasConvertDatatype_v2(xType),
+                                                incx,
+                                                result,
+                                                hipblasConvertDatatype_v2(resultType),
+                                                hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -31123,18 +31123,18 @@ hipblasStatus_t hipblasRotEx_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasRotEx_64((cublasHandle_t)handle,
-                                                     n,
-                                                     x,
-                                                     HIPDatatypeToCudaDatatype(xType),
-                                                     incx,
-                                                     y,
-                                                     HIPDatatypeToCudaDatatype(yType),
-                                                     incy,
-                                                     c,
-                                                     s,
-                                                     HIPDatatypeToCudaDatatype(csType),
-                                                     HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasRotEx_64((cublasHandle_t)handle,
+                                               n,
+                                               x,
+                                               hipblasConvertDatatype(xType),
+                                               incx,
+                                               y,
+                                               hipblasConvertDatatype(yType),
+                                               incy,
+                                               c,
+                                               s,
+                                               hipblasConvertDatatype(csType),
+                                               hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -31159,18 +31159,18 @@ hipblasStatus_t hipblasRotEx_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasRotEx_64((cublasHandle_t)handle,
-                                                     n,
-                                                     x,
-                                                     HIPDatatypeToCudaDatatype_v2(xType),
-                                                     incx,
-                                                     y,
-                                                     HIPDatatypeToCudaDatatype_v2(yType),
-                                                     incy,
-                                                     c,
-                                                     s,
-                                                     HIPDatatypeToCudaDatatype_v2(csType),
-                                                     HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasRotEx_64((cublasHandle_t)handle,
+                                               n,
+                                               x,
+                                               hipblasConvertDatatype_v2(xType),
+                                               incx,
+                                               y,
+                                               hipblasConvertDatatype_v2(yType),
+                                               incy,
+                                               c,
+                                               s,
+                                               hipblasConvertDatatype_v2(csType),
+                                               hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -31367,14 +31367,14 @@ hipblasStatus_t hipblasScalEx_64(hipblasHandle_t   handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasScalEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      alpha,
-                                                      HIPDatatypeToCudaDatatype(alphaType),
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype(xType),
-                                                      incx,
-                                                      HIPDatatypeToCudaDatatype(executionType)));
+    return hipblasConvertStatus(cublasScalEx_64((cublasHandle_t)handle,
+                                                n,
+                                                alpha,
+                                                hipblasConvertDatatype(alphaType),
+                                                x,
+                                                hipblasConvertDatatype(xType),
+                                                incx,
+                                                hipblasConvertDatatype(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
@@ -31395,14 +31395,14 @@ hipblasStatus_t hipblasScalEx_v2_64(hipblasHandle_t handle,
 try
 {
 #if CUBLAS_VER_MAJOR >= 12
-    return hipCUBLASStatusToHIPStatus(cublasScalEx_64((cublasHandle_t)handle,
-                                                      n,
-                                                      alpha,
-                                                      HIPDatatypeToCudaDatatype_v2(alphaType),
-                                                      x,
-                                                      HIPDatatypeToCudaDatatype_v2(xType),
-                                                      incx,
-                                                      HIPDatatypeToCudaDatatype_v2(executionType)));
+    return hipblasConvertStatus(cublasScalEx_64((cublasHandle_t)handle,
+                                                n,
+                                                alpha,
+                                                hipblasConvertDatatype_v2(alphaType),
+                                                x,
+                                                hipblasConvertDatatype_v2(xType),
+                                                incx,
+                                                hipblasConvertDatatype_v2(executionType)));
 #else
     return HIPBLAS_STATUS_NOT_SUPPORTED;
 #endif
