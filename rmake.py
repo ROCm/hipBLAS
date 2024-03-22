@@ -108,7 +108,7 @@ def parse_args():
     parser.add_argument(      '--skip_ld_conf_entry', action='store_true', required=False, default = False,
                         help='Linux only: Skip ld.so.conf entry.')
 
-    parser.add_argument(      '--static', required=False, default = False, dest='static_lib', action='store_true',
+    parser.add_argument('-s', '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
 
     parser.add_argument(      '--src_path', type=str, required=False, default="",
