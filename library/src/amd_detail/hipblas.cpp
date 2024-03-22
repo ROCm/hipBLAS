@@ -44812,7 +44812,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyEx_v2_64(hipblasHandle_t handle,
@@ -44843,7 +44843,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyBatchedEx_64(hipblasHandle_t   handle,
@@ -44876,7 +44876,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyBatchedEx_v2_64(hipblasHandle_t handle,
@@ -44909,7 +44909,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -44946,7 +44946,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasAxpyStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -44983,7 +44983,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // dot_ex
@@ -45411,7 +45411,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotEx_v2_64(hipblasHandle_t handle,
@@ -45442,7 +45442,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcEx_64(hipblasHandle_t   handle,
@@ -45473,7 +45473,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcEx_v2_64(hipblasHandle_t handle,
@@ -45504,7 +45504,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotBatchedEx_64(hipblasHandle_t   handle,
@@ -45537,7 +45537,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45570,7 +45570,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcBatchedEx_64(hipblasHandle_t   handle,
@@ -45603,7 +45603,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45636,7 +45636,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -45673,7 +45673,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45710,7 +45710,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -45747,7 +45747,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasDotcStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -45784,7 +45784,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // nrm2_ex
@@ -45969,7 +45969,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2Ex_v2_64(hipblasHandle_t handle,
@@ -45994,7 +45994,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2BatchedEx_64(hipblasHandle_t   handle,
@@ -46021,7 +46021,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2BatchedEx_v2_64(hipblasHandle_t handle,
@@ -46048,7 +46048,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2StridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46077,7 +46077,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasNrm2StridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46106,7 +46106,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // rot_ex
@@ -46350,7 +46350,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotEx_v2_64(hipblasHandle_t handle,
@@ -46383,7 +46383,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotBatchedEx_64(hipblasHandle_t   handle,
@@ -46418,7 +46418,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46453,7 +46453,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46492,7 +46492,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasRotStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46531,7 +46531,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 // scal_ex
@@ -46716,7 +46716,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalEx_v2_64(hipblasHandle_t handle,
@@ -46741,7 +46741,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalBatchedEx_64(hipblasHandle_t   handle,
@@ -46768,7 +46768,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46795,7 +46795,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalStridedBatchedEx_64(hipblasHandle_t   handle,
@@ -46824,7 +46824,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t handle,
@@ -46853,7 +46853,7 @@ try
 }
 catch(...)
 {
-    return exception_to_hipblas_status();
+    return hipblas_exception_to_status();
 }
 
 } // extern "C"
