@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,9 +45,11 @@ inline void testname_dotc_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
-                                  : (CONJ ? hipblasDotcEx : hipblasDotEx);
+    auto hipblasDotExFn = arg.api == FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
+                                             : (CONJ ? hipblasDotcEx : hipblasDotEx);
+    auto hipblasDotExFn_64 = arg.api == FORTRAN_64
+                                 ? (CONJ ? hipblasDotcEx_64Fortran : hipblasDotEx_64Fortran)
+                                 : (CONJ ? hipblasDotcEx_64 : hipblasDotEx_64);
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -66,51 +68,64 @@ void testing_dot_ex_bad_arg(const Arguments& arg)
         device_vector<Tx> dx(N * incx);
         device_vector<Ty> dy(N * incy);
         device_vector<Tr> d_res(1);
+        host_vector<Tr>   h_res(1);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasDotExFn(
-                nullptr, N, dx, xType, incx, dy, yType, incy, d_res, resultType, executionType),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED,
+            hipblasDotExFn,
+            (nullptr, N, dx, xType, incx, dy, yType, incy, d_res, resultType, executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
-                                                 N,
-                                                 nullptr,
-                                                 xType,
-                                                 incx,
-                                                 dy,
-                                                 yType,
-                                                 incy,
-                                                 d_res,
-                                                 resultType,
-                                                 executionType),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
-                                                 N,
-                                                 dx,
-                                                 xType,
-                                                 incx,
-                                                 nullptr,
-                                                 yType,
-                                                 incy,
-                                                 d_res,
-                                                 resultType,
-                                                 executionType),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasDotExFn(handle,
-                                                 N,
-                                                 dx,
-                                                 xType,
-                                                 incx,
-                                                 dy,
-                                                 yType,
-                                                 incy,
-                                                 nullptr,
-                                                 resultType,
-                                                 executionType),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasDotExFn,
+                        (handle,
+                         N,
+                         nullptr,
+                         xType,
+                         incx,
+                         dy,
+                         yType,
+                         incy,
+                         d_res,
+                         resultType,
+                         executionType));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasDotExFn,
+                        (handle,
+                         N,
+                         dx,
+                         xType,
+                         incx,
+                         nullptr,
+                         yType,
+                         incy,
+                         d_res,
+                         resultType,
+                         executionType));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasDotExFn,
+                (handle, N, dx, xType, incx, dy, yType, incy, nullptr, resultType, executionType));
+
+            // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+            // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+            // pointers to get invalid_value returns. Note that result has to be valid as quick-return sets the result
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                             : HIPBLAS_STATUS_SUCCESS,
+                        hipblasDotExFn,
+                        (handle,
+                         c_i32_overflow,
+                         nullptr,
+                         xType,
+                         1,
+                         nullptr,
+                         yType,
+                         incy,
+                         pointer_mode == HIPBLAS_POINTER_MODE_HOST ? h_res : d_res,
+                         resultType,
+                         executionType));
         }
     }
 }
@@ -124,13 +139,15 @@ void testing_dotc_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Ty = Tx, typename Tr = Ty, typename Tex = Tr, bool CONJ = false>
 void testing_dot_ex(const Arguments& arg)
 {
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDotExFn = FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
-                                  : (CONJ ? hipblasDotcEx : hipblasDotEx);
+    auto hipblasDotExFn = arg.api == FORTRAN ? (CONJ ? hipblasDotcExFortran : hipblasDotExFortran)
+                                             : (CONJ ? hipblasDotcEx : hipblasDotEx);
+    auto hipblasDotExFn_64 = arg.api == FORTRAN_64
+                                 ? (CONJ ? hipblasDotcEx_64Fortran : hipblasDotEx_64Fortran)
+                                 : (CONJ ? hipblasDotcEx_64 : hipblasDotEx_64);
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t yType         = arg.b_type;
@@ -150,17 +167,18 @@ void testing_dot_ex(const Arguments& arg)
             hipMemcpy(d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr), hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
-                                           N,
-                                           nullptr,
-                                           xType,
-                                           incx,
-                                           nullptr,
-                                           yType,
-                                           incy,
-                                           d_hipblas_result_0,
-                                           resultType,
-                                           executionType));
+        DAPI_CHECK(hipblasDotExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    d_hipblas_result_0,
+                    resultType,
+                    executionType));
 
         host_vector<Tr> cpu_0(1);
         host_vector<Tr> gpu_0(1);
@@ -204,30 +222,32 @@ void testing_dot_ex(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
-                                           N,
-                                           dx,
-                                           xType,
-                                           incx,
-                                           dy,
-                                           yType,
-                                           incy,
-                                           &hipblas_result_host,
-                                           resultType,
-                                           executionType));
+        DAPI_CHECK(hipblasDotExFn,
+                   (handle,
+                    N,
+                    dx,
+                    xType,
+                    incx,
+                    dy,
+                    yType,
+                    incy,
+                    &hipblas_result_host,
+                    resultType,
+                    executionType));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
-                                           N,
-                                           dx,
-                                           xType,
-                                           incx,
-                                           dy,
-                                           yType,
-                                           incy,
-                                           d_hipblas_result,
-                                           resultType,
-                                           executionType));
+        DAPI_CHECK(hipblasDotExFn,
+                   (handle,
+                    N,
+                    dx,
+                    xType,
+                    incx,
+                    dy,
+                    yType,
+                    incy,
+                    d_hipblas_result,
+                    resultType,
+                    executionType));
 
         CHECK_HIP_ERROR(
             hipMemcpy(&hipblas_result_device, d_hipblas_result, sizeof(Tr), hipMemcpyDeviceToHost));
@@ -273,17 +293,18 @@ void testing_dot_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasDotExFn(handle,
-                                               N,
-                                               dx,
-                                               xType,
-                                               incx,
-                                               dy,
-                                               yType,
-                                               incy,
-                                               d_hipblas_result,
-                                               resultType,
-                                               executionType));
+            DAPI_DISPATCH(hipblasDotExFn,
+                          (handle,
+                           N,
+                           dx,
+                           xType,
+                           incx,
+                           dy,
+                           yType,
+                           incy,
+                           d_hipblas_result,
+                           resultType,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,8 +39,8 @@ inline void testname_scal_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasScalExFn = FORTRAN ? hipblasScalExFortran : hipblasScalEx;
+    auto hipblasScalExFn    = arg.api == FORTRAN ? hipblasScalExFortran : hipblasScalEx;
+    auto hipblasScalExFn_64 = arg.api == FORTRAN_64 ? hipblasScalEx_64Fortran : hipblasScalEx_64;
 
     hipblasDatatype_t alphaType     = arg.a_type;
     hipblasDatatype_t xType         = arg.b_type;
@@ -61,18 +61,26 @@ void testing_scal_ex_bad_arg(const Arguments& arg)
         // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasScalExFn(nullptr, N, &alpha, alphaType, dx, xType, incx, executionType),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasScalExFn,
+                    (nullptr, N, &alpha, alphaType, dx, xType, incx, executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasScalExFn(handle, N, nullptr, alphaType, dx, xType, incx, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasScalExFn(handle, N, &alpha, alphaType, nullptr, xType, incx, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasScalExFn,
+                        (handle, N, nullptr, alphaType, dx, xType, incx, executionType));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasScalExFn,
+                        (handle, N, &alpha, alphaType, nullptr, xType, incx, executionType));
+
+            // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+            // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+            // pointers to get invalid_value returns
+            DAPI_EXPECT(
+                (arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                hipblasScalExFn,
+                (handle, c_i32_overflow, nullptr, alphaType, nullptr, xType, 1, executionType));
         }
     }
 }
@@ -80,11 +88,11 @@ void testing_scal_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasScalExFn = FORTRAN ? hipblasScalExFortran : hipblasScalEx;
+    auto hipblasScalExFn    = arg.api == FORTRAN ? hipblasScalExFortran : hipblasScalEx;
+    auto hipblasScalExFn_64 = arg.api == FORTRAN_64 ? hipblasScalEx_64Fortran : hipblasScalEx_64;
 
-    int N    = arg.N;
-    int incx = arg.incx;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
 
     int unit_check = arg.unit_check;
     int timing     = arg.timing;
@@ -103,8 +111,8 @@ void testing_scal_ex(const Arguments& arg)
     // memory
     if(N <= 0 || incx <= 0)
     {
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalExFn(handle, N, nullptr, alphaType, nullptr, xType, incx, executionType));
+        DAPI_CHECK(hipblasScalExFn,
+                   (handle, N, nullptr, alphaType, nullptr, xType, incx, executionType));
         return;
     }
 
@@ -138,16 +146,16 @@ void testing_scal_ex(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalExFn(handle, N, &h_alpha, alphaType, dx, xType, incx, executionType));
+        DAPI_CHECK(hipblasScalExFn,
+                   (handle, N, &h_alpha, alphaType, dx, xType, incx, executionType));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
-            hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
+        DAPI_CHECK(hipblasScalExFn,
+                   (handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
 
@@ -191,8 +199,8 @@ void testing_scal_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasScalExFn(handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
+            DAPI_DISPATCH(hipblasScalExFn,
+                          (handle, N, d_alpha, alphaType, dx, xType, incx, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

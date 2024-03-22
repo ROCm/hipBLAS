@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,10 @@ inline void testname_nrm2_batched_ex(const Arguments& arg, std::string& name)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasNrm2BatchedExFn = FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
+    auto hipblasNrm2BatchedExFn
+        = arg.api == FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
+    auto hipblasNrm2BatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasNrm2BatchedEx_64Fortran : hipblasNrm2BatchedEx_64;
 
     int64_t N           = 100;
     int64_t incx        = 1;
@@ -61,21 +63,36 @@ void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        EXPECT_HIPBLAS_STATUS(
-            hipblasNrm2BatchedExFn(
-                nullptr, N, dx, xType, incx, batch_count, d_res, resultType, executionType),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasNrm2BatchedExFn,
+                    (nullptr, N, dx, xType, incx, batch_count, d_res, resultType, executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasNrm2BatchedExFn(
-                    handle, N, nullptr, xType, incx, batch_count, d_res, resultType, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasNrm2BatchedExFn(
-                    handle, N, dx, xType, incx, batch_count, nullptr, resultType, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasNrm2BatchedExFn,
+                (handle, N, nullptr, xType, incx, batch_count, d_res, resultType, executionType));
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasNrm2BatchedExFn,
+                (handle, N, dx, xType, incx, batch_count, nullptr, resultType, executionType));
+
+            // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+            // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+            // pointers to get invalid_value returns
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                             : HIPBLAS_STATUS_SUCCESS,
+                        hipblasNrm2BatchedExFn,
+                        (handle,
+                         c_i32_overflow,
+                         nullptr,
+                         xType,
+                         1,
+                         c_i32_overflow,
+                         d_res,
+                         resultType,
+                         executionType));
         }
     }
 }
@@ -83,12 +100,14 @@ void testing_nrm2_batched_ex_bad_arg(const Arguments& arg)
 template <typename Tx, typename Tr = Tx, typename Tex = Tr>
 void testing_nrm2_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasNrm2BatchedExFn = FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
+    auto hipblasNrm2BatchedExFn
+        = arg.api == FORTRAN ? hipblasNrm2BatchedExFortran : hipblasNrm2BatchedEx;
+    auto hipblasNrm2BatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasNrm2BatchedEx_64Fortran : hipblasNrm2BatchedEx_64;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t batch_count = arg.batch_count;
 
     hipblasDatatype_t xType         = arg.a_type;
     hipblasDatatype_t resultType    = arg.b_type;
@@ -99,33 +118,32 @@ void testing_nrm2_batched_ex(const Arguments& arg)
     // check to prevent undefined memory allocation error
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
-        device_vector<Tr> d_hipblas_result_0(std::max(batch_count, 1));
-        host_vector<Tr>   h_hipblas_result_0(std::max(1, batch_count));
-        hipblas_init_nan(h_hipblas_result_0.data(), std::max(1, batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(d_hipblas_result_0,
-                                  h_hipblas_result_0,
-                                  sizeof(Tr) * std::max(1, batch_count),
-                                  hipMemcpyHostToDevice));
+        int64_t           batches = std::max(batch_count, int64_t(1));
+        device_vector<Tr> d_hipblas_result_0(batches);
+        host_vector<Tr>   h_hipblas_result_0(batches);
+        hipblas_init_nan(h_hipblas_result_0.data(), batches);
+        CHECK_HIP_ERROR(hipMemcpy(
+            d_hipblas_result_0, h_hipblas_result_0, sizeof(Tr) * batches, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                                   N,
-                                                   nullptr,
-                                                   xType,
-                                                   incx,
-                                                   batch_count,
-                                                   d_hipblas_result_0,
-                                                   resultType,
-                                                   executionType));
+        DAPI_CHECK(hipblasNrm2BatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    xType,
+                    incx,
+                    batch_count,
+                    d_hipblas_result_0,
+                    resultType,
+                    executionType));
 
         if(batch_count > 0)
         {
-            // TODO: error in rocBLAS - only setting the first element to 0, not for all batches
-            // host_vector<Tr> cpu_0(batch_count);
-            // host_vector<Tr> gpu_0(batch_count);
-            // CHECK_HIP_ERROR(hipMemcpy(
-            //     gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
-            // unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
+            host_vector<Tr> cpu_0(batch_count);
+            host_vector<Tr> gpu_0(batch_count);
+            CHECK_HIP_ERROR(hipMemcpy(
+                gpu_0, d_hipblas_result_0, sizeof(Tr) * batch_count, hipMemcpyDeviceToHost));
+            unit_check_general<Tr>(1, batch_count, 1, cpu_0, gpu_0);
         }
         return;
     }
@@ -151,26 +169,28 @@ void testing_nrm2_batched_ex(const Arguments& arg)
     {
         // hipblasNrm2 accept both dev/host pointer for the scalar
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                                   N,
-                                                   dx.ptr_on_device(),
-                                                   xType,
-                                                   incx,
-                                                   batch_count,
-                                                   d_hipblas_result,
-                                                   resultType,
-                                                   executionType));
+        DAPI_CHECK(hipblasNrm2BatchedExFn,
+                   (handle,
+                    N,
+                    dx.ptr_on_device(),
+                    xType,
+                    incx,
+                    batch_count,
+                    d_hipblas_result,
+                    resultType,
+                    executionType));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                                   N,
-                                                   dx.ptr_on_device(),
-                                                   xType,
-                                                   incx,
-                                                   batch_count,
-                                                   h_hipblas_result_host,
-                                                   resultType,
-                                                   executionType));
+        DAPI_CHECK(hipblasNrm2BatchedExFn,
+                   (handle,
+                    N,
+                    dx.ptr_on_device(),
+                    xType,
+                    incx,
+                    batch_count,
+                    h_hipblas_result_host,
+                    resultType,
+                    executionType));
 
         CHECK_HIP_ERROR(hipMemcpy(h_hipblas_result_device,
                                   d_hipblas_result,
@@ -181,7 +201,7 @@ void testing_nrm2_batched_ex(const Arguments& arg)
                     CPU BLAS
         =================================================================== */
 
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_nrm2<Tx, Tr>(N, hx[b], incx, &(h_cpu_result[b]));
         }
@@ -230,15 +250,16 @@ void testing_nrm2_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasNrm2BatchedExFn(handle,
-                                                       N,
-                                                       dx.ptr_on_device(),
-                                                       xType,
-                                                       incx,
-                                                       batch_count,
-                                                       d_hipblas_result,
-                                                       resultType,
-                                                       executionType));
+            DAPI_DISPATCH(hipblasNrm2BatchedExFn,
+                          (handle,
+                           N,
+                           dx.ptr_on_device(),
+                           xType,
+                           incx,
+                           batch_count,
+                           d_hipblas_result,
+                           resultType,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

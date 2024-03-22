@@ -29328,6 +29328,31 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2(hipblasHandle_t handle,
                                                 int             incy,
                                                 hipDataType     executionType);
 
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_64(hipblasHandle_t   handle,
+                                                int64_t           n,
+                                                const void*       alpha,
+                                                hipblasDatatype_t alphaType,
+                                                const void*       x,
+                                                hipblasDatatype_t xType,
+                                                int64_t           incx,
+                                                void*             y,
+                                                hipblasDatatype_t yType,
+                                                int64_t           incy,
+                                                hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyEx_v2_64(hipblasHandle_t handle,
+                                                   int64_t         n,
+                                                   const void*     alpha,
+                                                   hipDataType     alphaType,
+                                                   const void*     x,
+                                                   hipDataType     xType,
+                                                   int64_t         incx,
+                                                   void*           y,
+                                                   hipDataType     yType,
+                                                   int64_t         incy,
+                                                   hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -29446,6 +29471,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2(hipblasHandle_t handle,
                                                        int             incy,
                                                        int             batchCount,
                                                        hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_64(hipblasHandle_t   handle,
+                                                       int64_t           n,
+                                                       const void*       alpha,
+                                                       hipblasDatatype_t alphaType,
+                                                       const void*       x,
+                                                       hipblasDatatype_t xType,
+                                                       int64_t           incx,
+                                                       void*             y,
+                                                       hipblasDatatype_t yType,
+                                                       int64_t           incy,
+                                                       int64_t           batchCount,
+                                                       hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyBatchedEx_v2_64(hipblasHandle_t handle,
+                                                          int64_t         n,
+                                                          const void*     alpha,
+                                                          hipDataType     alphaType,
+                                                          const void*     x,
+                                                          hipDataType     xType,
+                                                          int64_t         incx,
+                                                          void*           y,
+                                                          hipDataType     yType,
+                                                          int64_t         incy,
+                                                          int64_t         batchCount,
+                                                          hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -29585,6 +29637,37 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2(hipblasHandle_t ha
                                                               hipblasStride   stridey,
                                                               int             batchCount,
                                                               hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_64(hipblasHandle_t   handle,
+                                                              int64_t           n,
+                                                              const void*       alpha,
+                                                              hipblasDatatype_t alphaType,
+                                                              const void*       x,
+                                                              hipblasDatatype_t xType,
+                                                              int64_t           incx,
+                                                              hipblasStride     stridex,
+                                                              void*             y,
+                                                              hipblasDatatype_t yType,
+                                                              int64_t           incy,
+                                                              hipblasStride     stridey,
+                                                              int64_t           batchCount,
+                                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasAxpyStridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                 int64_t         n,
+                                                                 const void*     alpha,
+                                                                 hipDataType     alphaType,
+                                                                 const void*     x,
+                                                                 hipDataType     xType,
+                                                                 int64_t         incx,
+                                                                 hipblasStride   stridex,
+                                                                 void*           y,
+                                                                 hipDataType     yType,
+                                                                 int64_t         incy,
+                                                                 hipblasStride   stridey,
+                                                                 int64_t         batchCount,
+                                                                 hipDataType     executionType);
 
 /*! @{
     \brief BLAS EX API
@@ -29729,6 +29812,55 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2(hipblasHandle_t handle,
                                                 void*           result,
                                                 hipDataType     resultType,
                                                 hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx_64(hipblasHandle_t   handle,
+                                               int64_t           n,
+                                               const void*       x,
+                                               hipblasDatatype_t xType,
+                                               int64_t           incx,
+                                               const void*       y,
+                                               hipblasDatatype_t yType,
+                                               int64_t           incy,
+                                               void*             result,
+                                               hipblasDatatype_t resultType,
+                                               hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_64(hipblasHandle_t   handle,
+                                                int64_t           n,
+                                                const void*       x,
+                                                hipblasDatatype_t xType,
+                                                int64_t           incx,
+                                                const void*       y,
+                                                hipblasDatatype_t yType,
+                                                int64_t           incy,
+                                                void*             result,
+                                                hipblasDatatype_t resultType,
+                                                hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotEx_v2_64(hipblasHandle_t handle,
+                                                  int64_t         n,
+                                                  const void*     x,
+                                                  hipDataType     xType,
+                                                  int64_t         incx,
+                                                  const void*     y,
+                                                  hipDataType     yType,
+                                                  int64_t         incy,
+                                                  void*           result,
+                                                  hipDataType     resultType,
+                                                  hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcEx_v2_64(hipblasHandle_t handle,
+                                                   int64_t         n,
+                                                   const void*     x,
+                                                   hipDataType     xType,
+                                                   int64_t         incx,
+                                                   const void*     y,
+                                                   hipDataType     yType,
+                                                   int64_t         incy,
+                                                   void*           result,
+                                                   hipDataType     resultType,
+                                                   hipDataType     executionType);
 
 /*! @{
     \brief BLAS EX API
@@ -29885,6 +30017,59 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2(hipblasHandle_t handle,
                                                        void*           result,
                                                        hipDataType     resultType,
                                                        hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx_64(hipblasHandle_t   handle,
+                                                      int64_t           n,
+                                                      const void*       x,
+                                                      hipblasDatatype_t xType,
+                                                      int64_t           incx,
+                                                      const void*       y,
+                                                      hipblasDatatype_t yType,
+                                                      int64_t           incy,
+                                                      int64_t           batchCount,
+                                                      void*             result,
+                                                      hipblasDatatype_t resultType,
+                                                      hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_64(hipblasHandle_t   handle,
+                                                       int64_t           n,
+                                                       const void*       x,
+                                                       hipblasDatatype_t xType,
+                                                       int64_t           incx,
+                                                       const void*       y,
+                                                       hipblasDatatype_t yType,
+                                                       int64_t           incy,
+                                                       int64_t           batchCount,
+                                                       void*             result,
+                                                       hipblasDatatype_t resultType,
+                                                       hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotBatchedEx_v2_64(hipblasHandle_t handle,
+                                                         int64_t         n,
+                                                         const void*     x,
+                                                         hipDataType     xType,
+                                                         int64_t         incx,
+                                                         const void*     y,
+                                                         hipDataType     yType,
+                                                         int64_t         incy,
+                                                         int64_t         batchCount,
+                                                         void*           result,
+                                                         hipDataType     resultType,
+                                                         hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcBatchedEx_v2_64(hipblasHandle_t handle,
+                                                          int64_t         n,
+                                                          const void*     x,
+                                                          hipDataType     xType,
+                                                          int64_t         incx,
+                                                          const void*     y,
+                                                          hipDataType     yType,
+                                                          int64_t         incy,
+                                                          int64_t         batchCount,
+                                                          void*           result,
+                                                          hipDataType     resultType,
+                                                          hipDataType     executionType);
 
 /*! @{
     \brief BLAS EX API
@@ -30060,6 +30245,67 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2(hipblasHandle_t ha
                                                               hipDataType     resultType,
                                                               hipDataType     executionType);
 
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx_64(hipblasHandle_t   handle,
+                                                             int64_t           n,
+                                                             const void*       x,
+                                                             hipblasDatatype_t xType,
+                                                             int64_t           incx,
+                                                             hipblasStride     stridex,
+                                                             const void*       y,
+                                                             hipblasDatatype_t yType,
+                                                             int64_t           incy,
+                                                             hipblasStride     stridey,
+                                                             int64_t           batchCount,
+                                                             void*             result,
+                                                             hipblasDatatype_t resultType,
+                                                             hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_64(hipblasHandle_t   handle,
+                                                              int64_t           n,
+                                                              const void*       x,
+                                                              hipblasDatatype_t xType,
+                                                              int64_t           incx,
+                                                              hipblasStride     stridex,
+                                                              const void*       y,
+                                                              hipblasDatatype_t yType,
+                                                              int64_t           incy,
+                                                              hipblasStride     stridey,
+                                                              int64_t           batchCount,
+                                                              void*             result,
+                                                              hipblasDatatype_t resultType,
+                                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotStridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                int64_t         n,
+                                                                const void*     x,
+                                                                hipDataType     xType,
+                                                                int64_t         incx,
+                                                                hipblasStride   stridex,
+                                                                const void*     y,
+                                                                hipDataType     yType,
+                                                                int64_t         incy,
+                                                                hipblasStride   stridey,
+                                                                int64_t         batchCount,
+                                                                void*           result,
+                                                                hipDataType     resultType,
+                                                                hipDataType     executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasDotcStridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                 int64_t         n,
+                                                                 const void*     x,
+                                                                 hipDataType     xType,
+                                                                 int64_t         incx,
+                                                                 hipblasStride   stridex,
+                                                                 const void*     y,
+                                                                 hipDataType     yType,
+                                                                 int64_t         incy,
+                                                                 hipblasStride   stridey,
+                                                                 int64_t         batchCount,
+                                                                 void*           result,
+                                                                 hipDataType     resultType,
+                                                                 hipDataType     executionType);
+
 /*! \brief BLAS_EX API
 
     \details
@@ -30149,6 +30395,25 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2(hipblasHandle_t handle,
                                                 void*           result,
                                                 hipDataType     resultType,
                                                 hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_64(hipblasHandle_t   handle,
+                                                int64_t           n,
+                                                const void*       x,
+                                                hipblasDatatype_t xType,
+                                                int64_t           incx,
+                                                void*             result,
+                                                hipblasDatatype_t resultType,
+                                                hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2Ex_v2_64(hipblasHandle_t handle,
+                                                   int64_t         n,
+                                                   const void*     x,
+                                                   hipDataType     xType,
+                                                   int64_t         incx,
+                                                   void*           result,
+                                                   hipDataType     resultType,
+                                                   hipDataType     executionType);
 
 /*! \brief BLAS_EX API
 
@@ -30247,6 +30512,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2(hipblasHandle_t handle,
                                                        void*           result,
                                                        hipDataType     resultType,
                                                        hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_64(hipblasHandle_t   handle,
+                                                       int64_t           n,
+                                                       const void*       x,
+                                                       hipblasDatatype_t xType,
+                                                       int64_t           incx,
+                                                       int64_t           batchCount,
+                                                       void*             result,
+                                                       hipblasDatatype_t resultType,
+                                                       hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2BatchedEx_v2_64(hipblasHandle_t handle,
+                                                          int64_t         n,
+                                                          const void*     x,
+                                                          hipDataType     xType,
+                                                          int64_t         incx,
+                                                          int64_t         batchCount,
+                                                          void*           result,
+                                                          hipDataType     resultType,
+                                                          hipDataType     executionType);
 
 /*! \brief BLAS_EX API
 
@@ -30355,6 +30641,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2(hipblasHandle_t ha
                                                               void*           result,
                                                               hipDataType     resultType,
                                                               hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_64(hipblasHandle_t   handle,
+                                                              int64_t           n,
+                                                              const void*       x,
+                                                              hipblasDatatype_t xType,
+                                                              int64_t           incx,
+                                                              hipblasStride     stridex,
+                                                              int64_t           batchCount,
+                                                              void*             result,
+                                                              hipblasDatatype_t resultType,
+                                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasNrm2StridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                 int64_t         n,
+                                                                 const void*     x,
+                                                                 hipDataType     xType,
+                                                                 int64_t         incx,
+                                                                 hipblasStride   stridex,
+                                                                 int64_t         batchCount,
+                                                                 void*           result,
+                                                                 hipDataType     resultType,
+                                                                 hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -30479,6 +30788,33 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2(hipblasHandle_t handle,
                                                const void*     s,
                                                hipDataType     csType,
                                                hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_64(hipblasHandle_t   handle,
+                                               int64_t           n,
+                                               void*             x,
+                                               hipblasDatatype_t xType,
+                                               int64_t           incx,
+                                               void*             y,
+                                               hipblasDatatype_t yType,
+                                               int64_t           incy,
+                                               const void*       c,
+                                               const void*       s,
+                                               hipblasDatatype_t csType,
+                                               hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotEx_v2_64(hipblasHandle_t handle,
+                                                  int64_t         n,
+                                                  void*           x,
+                                                  hipDataType     xType,
+                                                  int64_t         incx,
+                                                  void*           y,
+                                                  hipDataType     yType,
+                                                  int64_t         incy,
+                                                  const void*     c,
+                                                  const void*     s,
+                                                  hipDataType     csType,
+                                                  hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -30610,6 +30946,35 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2(hipblasHandle_t handle,
                                                       hipDataType     csType,
                                                       int             batchCount,
                                                       hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_64(hipblasHandle_t   handle,
+                                                      int64_t           n,
+                                                      void*             x,
+                                                      hipblasDatatype_t xType,
+                                                      int64_t           incx,
+                                                      void*             y,
+                                                      hipblasDatatype_t yType,
+                                                      int64_t           incy,
+                                                      const void*       c,
+                                                      const void*       s,
+                                                      hipblasDatatype_t csType,
+                                                      int64_t           batchCount,
+                                                      hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotBatchedEx_v2_64(hipblasHandle_t handle,
+                                                         int64_t         n,
+                                                         void*           x,
+                                                         hipDataType     xType,
+                                                         int64_t         incx,
+                                                         void*           y,
+                                                         hipDataType     yType,
+                                                         int64_t         incy,
+                                                         const void*     c,
+                                                         const void*     s,
+                                                         hipDataType     csType,
+                                                         int64_t         batchCount,
+                                                         hipDataType     executionType);
 
 /*! \brief BLAS Level 1 API
 
@@ -30756,6 +31121,39 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2(hipblasHandle_t han
                                                              int             batchCount,
                                                              hipDataType     executionType);
 
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_64(hipblasHandle_t   handle,
+                                                             int64_t           n,
+                                                             void*             x,
+                                                             hipblasDatatype_t xType,
+                                                             int64_t           incx,
+                                                             hipblasStride     stridex,
+                                                             void*             y,
+                                                             hipblasDatatype_t yType,
+                                                             int64_t           incy,
+                                                             hipblasStride     stridey,
+                                                             const void*       c,
+                                                             const void*       s,
+                                                             hipblasDatatype_t csType,
+                                                             int64_t           batchCount,
+                                                             hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasRotStridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                int64_t         n,
+                                                                void*           x,
+                                                                hipDataType     xType,
+                                                                int64_t         incx,
+                                                                hipblasStride   stridex,
+                                                                void*           y,
+                                                                hipDataType     yType,
+                                                                int64_t         incy,
+                                                                hipblasStride   stridey,
+                                                                const void*     c,
+                                                                const void*     s,
+                                                                hipDataType     csType,
+                                                                int64_t         batchCount,
+                                                                hipDataType     executionType);
+
 /*! \brief BLAS EX API
 
     \details
@@ -30843,6 +31241,25 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2(hipblasHandle_t handle,
                                                 hipDataType     xType,
                                                 int             incx,
                                                 hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_64(hipblasHandle_t   handle,
+                                                int64_t           n,
+                                                const void*       alpha,
+                                                hipblasDatatype_t alphaType,
+                                                void*             x,
+                                                hipblasDatatype_t xType,
+                                                int64_t           incx,
+                                                hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalEx_v2_64(hipblasHandle_t handle,
+                                                   int64_t         n,
+                                                   const void*     alpha,
+                                                   hipDataType     alphaType,
+                                                   void*           x,
+                                                   hipDataType     xType,
+                                                   int64_t         incx,
+                                                   hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -30938,6 +31355,27 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2(hipblasHandle_t handle,
                                                        int             incx,
                                                        int             batchCount,
                                                        hipDataType     executionType);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_64(hipblasHandle_t   handle,
+                                                       int64_t           n,
+                                                       const void*       alpha,
+                                                       hipblasDatatype_t alphaType,
+                                                       void*             x,
+                                                       hipblasDatatype_t xType,
+                                                       int64_t           incx,
+                                                       int64_t           batchCount,
+                                                       hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalBatchedEx_v2_64(hipblasHandle_t handle,
+                                                          int64_t         n,
+                                                          const void*     alpha,
+                                                          hipDataType     alphaType,
+                                                          void*           x,
+                                                          hipDataType     xType,
+                                                          int64_t         incx,
+                                                          int64_t         batchCount,
+                                                          hipDataType     executionType);
 
 /*! \brief BLAS EX API
 
@@ -31045,6 +31483,29 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
                                                               int             batchCount,
                                                               hipDataType     executionType);
 
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_64(hipblasHandle_t   handle,
+                                                              int64_t           n,
+                                                              const void*       alpha,
+                                                              hipblasDatatype_t alphaType,
+                                                              void*             x,
+                                                              hipblasDatatype_t xType,
+                                                              int64_t           incx,
+                                                              hipblasStride     stridex,
+                                                              int64_t           batchCount,
+                                                              hipblasDatatype_t executionType);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t handle,
+                                                                 int64_t         n,
+                                                                 const void*     alpha,
+                                                                 hipDataType     alphaType,
+                                                                 void*           x,
+                                                                 hipDataType     xType,
+                                                                 int64_t         incx,
+                                                                 hipblasStride   stridex,
+                                                                 int64_t         batchCount,
+                                                                 hipDataType     executionType);
+
 #ifdef HIPBLAS_V2
 
 // HIPBLAS_V2 Ex functions using hipDataType
@@ -31064,6 +31525,10 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2
 #define hipblasAxpyStridedBatchedEx hipblasAxpyStridedBatchedEx_v2
 
+#define hipblasAxpyEx_64 hipblasAxpyEx_v2_64
+#define hipblasAxpyBatchedEx_64 hipblasAxpyBatchedEx_v2_64
+#define hipblasAxpyStridedBatchedEx_64 hipblasAxpyStridedBatchedEx_v2_64
+
 #define hipblasDotEx hipblasDotEx_v2
 #define hipblasDotcEx hipblasDotcEx_v2
 #define hipblasDotBatchedEx hipblasDotBatchedEx_v2
@@ -31071,17 +31536,36 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2(hipblasHandle_t ha
 #define hipblasDotStridedBatchedEx hipblasDotStridedBatchedEx_v2
 #define hipblasDotcStridedBatchedEx hipblasDotcStridedBatchedEx_v2
 
+#define hipblasDotEx_64 hipblasDotEx_v2_64
+#define hipblasDotcEx_64 hipblasDotcEx_v2_64
+#define hipblasDotBatchedEx_64 hipblasDotBatchedEx_v2_64
+#define hipblasDotcBatchedEx_64 hipblasDotcBatchedEx_v2_64
+#define hipblasDotStridedBatchedEx_64 hipblasDotStridedBatchedEx_v2_64
+#define hipblasDotcStridedBatchedEx_64 hipblasDotcStridedBatchedEx_v2_64
+
 #define hipblasNrm2Ex hipblasNrm2Ex_v2
 #define hipblasNrm2BatchedEx hipblasNrm2BatchedEx_v2
 #define hipblasNrm2StridedBatchedEx hipblasNrm2StridedBatchedEx_v2
+
+#define hipblasNrm2Ex_64 hipblasNrm2Ex_v2_64
+#define hipblasNrm2BatchedEx_64 hipblasNrm2BatchedEx_v2_64
+#define hipblasNrm2StridedBatchedEx_64 hipblasNrm2StridedBatchedEx_v2_64
 
 #define hipblasRotEx hipblasRotEx_v2
 #define hipblasRotBatchedEx hipblasRotBatchedEx_v2
 #define hipblasRotStridedBatchedEx hipblasRotStridedBatchedEx_v2
 
+#define hipblasRotEx_64 hipblasRotEx_v2_64
+#define hipblasRotBatchedEx_64 hipblasRotBatchedEx_v2_64
+#define hipblasRotStridedBatchedEx_64 hipblasRotStridedBatchedEx_v2_64
+
 #define hipblasScalEx hipblasScalEx_v2
 #define hipblasScalBatchedEx hipblasScalBatchedEx_v2
 #define hipblasScalStridedBatchedEx hipblasScalStridedBatchedEx_v2
+
+#define hipblasScalEx_64 hipblasScalEx_v2_64
+#define hipblasScalBatchedEx_64 hipblasScalBatchedEx_v2_64
+#define hipblasScalStridedBatchedEx_64 hipblasScalStridedBatchedEx_v2_64
 
 // HIPBLAS_V2 Complex functions using hipComplex
 #define hipblasIcamax hipblasIcamax_v2

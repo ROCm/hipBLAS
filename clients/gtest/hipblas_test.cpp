@@ -276,7 +276,7 @@ bool hipblas_client_global_filters(const Arguments& args)
 
 #ifdef HIPBLAS_V2
     // no fortran tests for new API while in transition period
-    if(args.api == hipblas_client_api::FORTRAN)
+    if(args.api == hipblas_client_api::FORTRAN || args.api == hipblas_client_api::FORTRAN_64)
         return false;
 #endif
 

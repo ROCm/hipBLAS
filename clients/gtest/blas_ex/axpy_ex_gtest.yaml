@@ -24,7 +24,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: axpy_ex_general_amd
     category: quick
@@ -33,7 +33,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: axpy_batched_ex_general
@@ -45,7 +45,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: axpy_strided_batched_ex_general
@@ -58,7 +58,7 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: axpy_ex_bad_arg
@@ -70,14 +70,14 @@ Tests:
       - axpy_ex_bad_arg: *axpy_ex_precision_amd
       - axpy_batched_ex_bad_arg: *axpy_ex_precision_amd
       - axpy_strided_batched_ex_bad_arg: *axpy_ex_precision_amd
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: axpy_ex_bad_arg
     category: pre_checkin
     function:
       - axpy_ex_bad_arg: *axpy_ex_precision_all
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 ...

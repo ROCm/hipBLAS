@@ -1083,24 +1083,52 @@
 #define hipblasTrsmExFortran hipblasTrsmEx
 #define hipblasTrsmBatchedExFortran hipblasTrsmBatchedEx
 #define hipblasTrsmStridedBatchedExFortran hipblasTrsmStridedBatchedEx
+
 #define hipblasAxpyExFortran hipblasAxpyEx
 #define hipblasAxpyBatchedExFortran hipblasAxpyBatchedEx
 #define hipblasAxpyStridedBatchedExFortran hipblasAxpyStridedBatchedEx
+
+#define hipblasAxpyEx_64Fortran hipblasAxpyEx_64
+#define hipblasAxpyBatchedEx_64Fortran hipblasAxpyBatchedEx_64
+#define hipblasAxpyStridedBatchedEx_64Fortran hipblasAxpyStridedBatchedEx_64
+
 #define hipblasDotExFortran hipblasDotEx
 #define hipblasDotBatchedExFortran hipblasDotBatchedEx
 #define hipblasDotStridedBatchedExFortran hipblasDotStridedBatchedEx
 #define hipblasDotcExFortran hipblasDotcEx
 #define hipblasDotcBatchedExFortran hipblasDotcBatchedEx
 #define hipblasDotcStridedBatchedExFortran hipblasDotcStridedBatchedEx
+
+#define hipblasDotEx_64Fortran hipblasDotEx_64
+#define hipblasDotBatchedEx_64Fortran hipblasDotBatchedEx_64
+#define hipblasDotStridedBatchedEx_64Fortran hipblasDotStridedBatchedEx_64
+#define hipblasDotcEx_64Fortran hipblasDotcEx_64
+#define hipblasDotcBatchedEx_64Fortran hipblasDotcBatchedEx_64
+#define hipblasDotcStridedBatchedEx_64Fortran hipblasDotcStridedBatchedEx_64
+
 #define hipblasNrm2ExFortran hipblasNrm2Ex
 #define hipblasNrm2BatchedExFortran hipblasNrm2BatchedEx
 #define hipblasNrm2StridedBatchedExFortran hipblasNrm2StridedBatchedEx
+
+#define hipblasNrm2Ex_64Fortran hipblasNrm2Ex_64
+#define hipblasNrm2BatchedEx_64Fortran hipblasNrm2BatchedEx_64
+#define hipblasNrm2StridedBatchedEx_64Fortran hipblasNrm2StridedBatchedEx_64
+
 #define hipblasRotExFortran hipblasRotEx
 #define hipblasRotBatchedExFortran hipblasRotBatchedEx
 #define hipblasRotStridedBatchedExFortran hipblasRotStridedBatchedEx
+
+#define hipblasRotEx_64Fortran hipblasRotEx_64
+#define hipblasRotBatchedEx_64Fortran hipblasRotBatchedEx_64
+#define hipblasRotStridedBatchedEx_64Fortran hipblasRotStridedBatchedEx_64
+
 #define hipblasScalExFortran hipblasScalEx
 #define hipblasScalBatchedExFortran hipblasScalBatchedEx
 #define hipblasScalStridedBatchedExFortran hipblasScalStridedBatchedEx
+
+#define hipblasScalEx_64Fortran hipblasScalEx_64
+#define hipblasScalBatchedEx_64Fortran hipblasScalBatchedEx_64
+#define hipblasScalStridedBatchedEx_64Fortran hipblasScalStridedBatchedEx_64
 
 /* ==========
  *    Solver

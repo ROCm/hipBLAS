@@ -4435,6 +4435,238 @@ hipblasStatus_t HIPBLAS_FAPI(hipblasZtrsvStridedBatched)(hipblasHandle_t        
                                                          hipblas_int                 incx,
                                                          hipblasStride               stridex,
                                                          hipblas_int                 batch_count);
+
+/* ==========
+ *    _Ex
+ * ========== */
+
+// axpy_ex
+hipblasStatus_t HIPBLAS_FAPI(hipblasAxpyEx)(hipblasHandle_t   handle,
+                                            hipblas_int       n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            hipblas_int       incx,
+                                            void*             y,
+                                            hipblasDatatype_t yType,
+                                            hipblas_int       incy,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasAxpyBatchedEx)(hipblasHandle_t   handle,
+                                                   hipblas_int       n,
+                                                   const void*       alpha,
+                                                   hipblasDatatype_t alphaType,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   hipblas_int       incx,
+                                                   void*             y,
+                                                   hipblasDatatype_t yType,
+                                                   hipblas_int       incy,
+                                                   hipblas_int       batch_count,
+                                                   hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasAxpyStridedBatchedEx)(hipblasHandle_t   handle,
+                                                          hipblas_int       n,
+                                                          const void*       alpha,
+                                                          hipblasDatatype_t alphaType,
+                                                          const void*       x,
+                                                          hipblasDatatype_t xType,
+                                                          hipblas_int       incx,
+                                                          hipblasStride     stridex,
+                                                          void*             y,
+                                                          hipblasDatatype_t yType,
+                                                          hipblas_int       incy,
+                                                          hipblasStride     stridey,
+                                                          hipblas_int       batch_count,
+                                                          hipblasDatatype_t executionType);
+
+// dot_ex
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotEx)(hipblasHandle_t   handle,
+                                           hipblas_int       n,
+                                           const void*       x,
+                                           hipblasDatatype_t xType,
+                                           hipblas_int       incx,
+                                           const void*       y,
+                                           hipblasDatatype_t yType,
+                                           hipblas_int       incy,
+                                           void*             result,
+                                           hipblasDatatype_t resultType,
+                                           hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotcEx)(hipblasHandle_t   handle,
+                                            hipblas_int       n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            hipblas_int       incx,
+                                            const void*       y,
+                                            hipblasDatatype_t yType,
+                                            hipblas_int       incy,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotBatchedEx)(hipblasHandle_t   handle,
+                                                  hipblas_int       n,
+                                                  const void*       x,
+                                                  hipblasDatatype_t xType,
+                                                  hipblas_int       incx,
+                                                  const void*       y,
+                                                  hipblasDatatype_t yType,
+                                                  hipblas_int       incy,
+                                                  hipblas_int       batch_count,
+                                                  void*             result,
+                                                  hipblasDatatype_t resultType,
+                                                  hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotcBatchedEx)(hipblasHandle_t   handle,
+                                                   hipblas_int       n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   hipblas_int       incx,
+                                                   const void*       y,
+                                                   hipblasDatatype_t yType,
+                                                   hipblas_int       incy,
+                                                   hipblas_int       batch_count,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotStridedBatchedEx)(hipblasHandle_t   handle,
+                                                         hipblas_int       n,
+                                                         const void*       x,
+                                                         hipblasDatatype_t xType,
+                                                         hipblas_int       incx,
+                                                         hipblasStride     stridex,
+                                                         const void*       y,
+                                                         hipblasDatatype_t yType,
+                                                         hipblas_int       incy,
+                                                         hipblasStride     stridey,
+                                                         hipblas_int       batch_count,
+                                                         void*             result,
+                                                         hipblasDatatype_t resultType,
+                                                         hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasDotcStridedBatchedEx)(hipblasHandle_t   handle,
+                                                          hipblas_int       n,
+                                                          const void*       x,
+                                                          hipblasDatatype_t xType,
+                                                          hipblas_int       incx,
+                                                          hipblasStride     stridex,
+                                                          const void*       y,
+                                                          hipblasDatatype_t yType,
+                                                          hipblas_int       incy,
+                                                          hipblasStride     stridey,
+                                                          hipblas_int       batch_count,
+                                                          void*             result,
+                                                          hipblasDatatype_t resultType,
+                                                          hipblasDatatype_t executionType);
+
+// nrm2_ex
+hipblasStatus_t HIPBLAS_FAPI(hipblasNrm2Ex)(hipblasHandle_t   handle,
+                                            hipblas_int       n,
+                                            const void*       x,
+                                            hipblasDatatype_t xType,
+                                            hipblas_int       incx,
+                                            void*             result,
+                                            hipblasDatatype_t resultType,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasNrm2BatchedEx)(hipblasHandle_t   handle,
+                                                   hipblas_int       n,
+                                                   const void*       x,
+                                                   hipblasDatatype_t xType,
+                                                   hipblas_int       incx,
+                                                   hipblas_int       batch_count,
+                                                   void*             result,
+                                                   hipblasDatatype_t resultType,
+                                                   hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasNrm2StridedBatchedEx)(hipblasHandle_t   handle,
+                                                          hipblas_int       n,
+                                                          const void*       x,
+                                                          hipblasDatatype_t xType,
+                                                          hipblas_int       incx,
+                                                          hipblasStride     stridex,
+                                                          hipblas_int       batch_count,
+                                                          void*             result,
+                                                          hipblasDatatype_t resultType,
+                                                          hipblasDatatype_t executionType);
+
+// rot_ex
+hipblasStatus_t HIPBLAS_FAPI(hipblasRotEx)(hipblasHandle_t   handle,
+                                           hipblas_int       n,
+                                           void*             x,
+                                           hipblasDatatype_t xType,
+                                           hipblas_int       incx,
+                                           void*             y,
+                                           hipblasDatatype_t yType,
+                                           hipblas_int       incy,
+                                           const void*       c,
+                                           const void*       s,
+                                           hipblasDatatype_t csType,
+                                           hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasRotBatchedEx)(hipblasHandle_t   handle,
+                                                  hipblas_int       n,
+                                                  void*             x,
+                                                  hipblasDatatype_t xType,
+                                                  hipblas_int       incx,
+                                                  void*             y,
+                                                  hipblasDatatype_t yType,
+                                                  hipblas_int       incy,
+                                                  const void*       c,
+                                                  const void*       s,
+                                                  hipblasDatatype_t csType,
+                                                  hipblas_int       batch_count,
+                                                  hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasRotStridedBatchedEx)(hipblasHandle_t   handle,
+                                                         hipblas_int       n,
+                                                         void*             x,
+                                                         hipblasDatatype_t xType,
+                                                         hipblas_int       incx,
+                                                         hipblasStride     stridex,
+                                                         void*             y,
+                                                         hipblasDatatype_t yType,
+                                                         hipblas_int       incy,
+                                                         hipblasStride     stridey,
+                                                         const void*       c,
+                                                         const void*       s,
+                                                         hipblasDatatype_t csType,
+                                                         hipblas_int       batch_count,
+                                                         hipblasDatatype_t executionType);
+
+// scal_ex
+hipblasStatus_t HIPBLAS_FAPI(hipblasScalEx)(hipblasHandle_t   handle,
+                                            hipblas_int       n,
+                                            const void*       alpha,
+                                            hipblasDatatype_t alphaType,
+                                            void*             x,
+                                            hipblasDatatype_t xType,
+                                            hipblas_int       incx,
+                                            hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScalBatchedEx)(hipblasHandle_t   handle,
+                                                   hipblas_int       n,
+                                                   const void*       alpha,
+                                                   hipblasDatatype_t alphaType,
+                                                   void*             x,
+                                                   hipblasDatatype_t xType,
+                                                   hipblas_int       incx,
+                                                   hipblas_int       batch_count,
+                                                   hipblasDatatype_t executionType);
+
+hipblasStatus_t HIPBLAS_FAPI(hipblasScalStridedBatchedEx)(hipblasHandle_t   handle,
+                                                          hipblas_int       n,
+                                                          const void*       alpha,
+                                                          hipblasDatatype_t alphaType,
+                                                          void*             x,
+                                                          hipblasDatatype_t xType,
+                                                          hipblas_int       incx,
+                                                          hipblasStride     stridex,
+                                                          hipblas_int       batch_count,
+                                                          hipblasDatatype_t executionType);
 #ifdef HIPBLAS_V2
 #undef hipblasComplex
 #undef hipblasDoubleComplex
