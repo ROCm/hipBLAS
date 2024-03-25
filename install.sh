@@ -426,6 +426,10 @@ while true; do
   case "${1}" in
     -h|--help)
         display_help
+        rmake_cmd="python3 ./rmake.py --help"
+        echo "Options provied by rmake.py script:"
+        echo $rmake_cmd
+        $rmake_cmd
         exit 0
         ;;
     -i|--install)
@@ -483,6 +487,8 @@ while true; do
         ;;
   esac
 done
+
+set -x
 
 build_dir=$(readlink -m ./build)
 printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
