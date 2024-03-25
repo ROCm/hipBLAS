@@ -94,6 +94,10 @@ template <>
 HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
     hipblasBfloat16> = 0.0078125; // in bf16 diff between 0x3F80 (1.0) and bf16 0x3F81 in double precision
 
+/* =============================================================================================== */
+/* 64-bit value which will overflow 32-bit integers                                                */
+extern int64_t c_i32_overflow;
+
 /* ============================================================================================ */
 /*! \brief  Random number generator which generates NaN values */
 

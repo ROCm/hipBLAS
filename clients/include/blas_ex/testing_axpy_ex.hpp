@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,8 +40,8 @@ inline void testname_axpy_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasAxpyExFn = FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
+    auto hipblasAxpyExFn    = arg.api == FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
+    auto hipblasAxpyExFn_64 = arg.api == FORTRAN_64 ? hipblasAxpyEx_64Fortran : hipblasAxpyEx_64;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -73,74 +73,105 @@ void testing_axpy_ex_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasAxpyExFn(
-                nullptr, N, alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED,
+            hipblasAxpyExFn,
+            (nullptr, N, alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasAxpyExFn(
-                    handle, N, nullptr, alphaType, dx, xType, incx, dy, yType, incy, executionType),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasAxpyExFn,
+                (handle, N, nullptr, alphaType, dx, xType, incx, dy, yType, incy, executionType));
 
             // Can only check for nullptr for dx/dy with host mode because
             // device mode may not check as it could be quick-return success
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyExFn(handle,
-                                                      N,
-                                                      alpha,
-                                                      alphaType,
-                                                      nullptr,
-                                                      xType,
-                                                      incx,
-                                                      dy,
-                                                      yType,
-                                                      incy,
-                                                      executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyExFn(handle,
-                                                      N,
-                                                      alpha,
-                                                      alphaType,
-                                                      dx,
-                                                      xType,
-                                                      incx,
-                                                      nullptr,
-                                                      yType,
-                                                      incy,
-                                                      executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             incx,
+                             dy,
+                             yType,
+                             incy,
+                             executionType));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             dx,
+                             xType,
+                             incx,
+                             nullptr,
+                             yType,
+                             incy,
+                             executionType));
+
+                // This is a little different than the checks for L2. In rocBLAS implementation n <= 0 is a quick-return success before other arg checks.
+                // Here, for 32-bit API, I'm counting on the rollover to return success, and for the 64-bit API I'm passing in invalid
+                // pointers to get invalid_value returns
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                                 : HIPBLAS_STATUS_SUCCESS,
+                            hipblasAxpyExFn,
+                            (handle,
+                             c_i32_overflow,
+                             nullptr,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             1,
+                             nullptr,
+                             yType,
+                             incy,
+                             executionType));
             }
         }
 
-        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(handle,
-                                            0,
-                                            nullptr,
-                                            alphaType,
-                                            nullptr,
-                                            xType,
-                                            incx,
-                                            nullptr,
-                                            yType,
-                                            incy,
-                                            executionType));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
-            handle, N, zero, alphaType, nullptr, xType, incx, nullptr, yType, incy, executionType));
+        DAPI_CHECK(hipblasAxpyExFn,
+                   (handle,
+                    0,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    executionType));
+        DAPI_CHECK(hipblasAxpyExFn,
+                   (handle,
+                    N,
+                    zero,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    executionType));
     }
 }
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_ex(const Arguments& arg)
 {
-    bool FORTRAN         = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasAxpyExFn = FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
+    auto hipblasAxpyExFn    = arg.api == FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
+    auto hipblasAxpyExFn_64 = arg.api == FORTRAN_64 ? hipblasAxpyEx_64Fortran : hipblasAxpyEx_64;
 
-    int N    = arg.N;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t N    = arg.N;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
     hipblasLocalHandle handle(arg);
 
@@ -153,22 +184,23 @@ void testing_axpy_ex(const Arguments& arg)
     // memory
     if(N <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(handle,
-                                            N,
-                                            nullptr,
-                                            alphaType,
-                                            nullptr,
-                                            xType,
-                                            incx,
-                                            nullptr,
-                                            yType,
-                                            incy,
-                                            executionType));
+        DAPI_CHECK(hipblasAxpyExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    executionType));
         return;
     }
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
 
     size_t sizeX = size_t(N) * abs_incx;
     size_t sizeY = size_t(N) * abs_incy;
@@ -208,16 +240,16 @@ void testing_axpy_ex(const Arguments& arg)
          HIPBLAS
     =================================================================== */
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
-        handle, N, &h_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
+    DAPI_CHECK(hipblasAxpyExFn,
+               (handle, N, &h_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
-        handle, N, d_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
+    DAPI_CHECK(hipblasAxpyExFn,
+               (handle, N, d_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
     CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
 
     if(arg.unit_check || arg.norm_check)
@@ -254,8 +286,9 @@ void testing_axpy_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyExFn(
-                handle, N, d_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
+            DAPI_DISPATCH(
+                hipblasAxpyExFn,
+                (handle, N, d_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

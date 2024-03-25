@@ -54,6 +54,9 @@ def parse_args():
     parser.add_argument(      '--cmake-darg', required=False, dest='cmake_dargs', action='append', default=[],
                         help='List of additional cmake defines for builds (optional, e.g. CMAKE)')
 
+    parser.add_argument(      '--cmake_install', required=False, default=False, action='store_true',
+                        help='Linux only: Handled by install.sh')
+
     parser.add_argument(      '--codecoverage', required=False, default=False, action='store_true',
                         help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
 
@@ -105,7 +108,7 @@ def parse_args():
     parser.add_argument(      '--skip_ld_conf_entry', action='store_true', required=False, default = False,
                         help='Linux only: Skip ld.so.conf entry.')
 
-    parser.add_argument( '-s', '--static', required=False, default = False, dest='static_lib', action='store_true',
+    parser.add_argument('-s', '--static', required=False, default = False, dest='static_lib', action='store_true',
                         help='Build hipblas as a static library.(optional, default: False). hipblas must be built statically when the used companion rocblas is also static')
 
     parser.add_argument(      '--src_path', type=str, required=False, default="",
@@ -289,7 +292,7 @@ def config_cmd():
     if args.build_clients:
         cmake_build_dir = cmake_path(build_dir)
         cmake_options.append( f"-DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON -DBUILD_CLIENTS_SAMPLES=ON -DBUILD_DIR={cmake_build_dir} " )
-        if os.name != "nt" and os.environ['HIP_PLATFORM'] == 'amd':
+        if os.environ['HIP_PLATFORM'] == 'amd':
             cmake_options.append( f"-DLINK_BLIS=ON")
 
 

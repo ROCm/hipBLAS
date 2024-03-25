@@ -21,7 +21,7 @@ Tests:
       - dotc_ex: *dot_ex_precision_all
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: dot_ex_general_amd
     category: quick
@@ -30,7 +30,7 @@ Tests:
       - dotc_ex: *half_precision
     N: *N_range
     incx_incy: *incx_incy_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_batched_ex_general
@@ -41,7 +41,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_strided_batched_ex_general
@@ -53,7 +53,7 @@ Tests:
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_ex_bad_arg
@@ -65,7 +65,7 @@ Tests:
       - dot_strided_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
       - dotc_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
       - dotc_strided_batched_ex_bad_arg: *half_bfloat_single_double_complex_real_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: dot_ex_bad_arg
@@ -73,7 +73,7 @@ Tests:
     function:
       - dot_ex_bad_arg: *dot_ex_precision_all
       - dotc_ex_bad_arg: *dot_ex_precision_all
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 ...

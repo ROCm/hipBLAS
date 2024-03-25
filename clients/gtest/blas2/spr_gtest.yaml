@@ -23,7 +23,7 @@ Tests:
     alpha: *alpha_range
     N: *N_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: spr_complex_general
     category: quick
@@ -33,7 +33,7 @@ Tests:
     alpha: *alpha_range
     N: *N_range
     incx: *incx_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spr_batched_general
@@ -45,7 +45,7 @@ Tests:
     N: *N_range
     incx: *incx_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spr_strided_batched_general
@@ -58,7 +58,7 @@ Tests:
     incx: *incx_range
     batch_count: *batch_count_range
     stride_scale: [ 1.0, 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spr_bad_arg
@@ -66,7 +66,7 @@ Tests:
     function:
       - spr_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: spr_bad_arg
@@ -74,7 +74,7 @@ Tests:
     function:
       - spr_bad_arg
     precision: *single_double_precisions
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 
@@ -84,6 +84,6 @@ Tests:
       - spr_batched_bad_arg
       - spr_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 ...

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,8 @@ void testing_gemv_bad_arg(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
+    auto hipblasGemvFn_64
+        = arg.api == FORTRAN_64 ? hipblasGemv_64<T, true> : hipblasGemv_64<T, false>;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -80,63 +82,88 @@ void testing_gemv_bad_arg(const Arguments& arg)
         device_vector<T> dx(N * incx);
         device_vector<T> dy(M * incy);
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasGemvFn(nullptr, transA, M, N, alpha, dA, lda, dx, incx, beta, dy, incy),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
-        EXPECT_HIPBLAS_STATUS(hipblasGemvFn(handle,
-                                            (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dx,
-                                            incx,
-                                            beta,
-                                            dy,
-                                            incy),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasGemvFn,
+                    (nullptr, transA, M, N, alpha, dA, lda, dx, incx, beta, dy, incy));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasGemvFn,
+                    (handle,
+                     (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     dx,
+                     incx,
+                     beta,
+                     dy,
+                     incy));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasGemvFn(handle, transA, M, N, nullptr, dA, lda, dx, incx, beta, dy, incy),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasGemvFn(handle, transA, M, N, alpha, dA, lda, dx, incx, nullptr, dy, incy),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGemvFn,
+                        (handle, transA, M, N, nullptr, dA, lda, dx, incx, beta, dy, incy));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGemvFn,
+                        (handle, transA, M, N, alpha, dA, lda, dx, incx, nullptr, dy, incy));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
                 // For device mode in rocBLAS we don't have checks for dA, dx, dy as we may be able to quick return
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGemvFn(
-                        handle, transA, M, N, alpha, nullptr, lda, dx, incx, beta, dy, incy),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGemvFn(
-                        handle, transA, M, N, alpha, dA, lda, nullptr, incx, beta, dy, incy),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasGemvFn(
-                        handle, transA, M, N, alpha, dA, lda, dx, incx, beta, nullptr, incy),
-                    HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGemvFn,
+                            (handle, transA, M, N, alpha, nullptr, lda, dx, incx, beta, dy, incy));
+
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGemvFn,
+                            (handle, transA, M, N, alpha, dA, lda, nullptr, incx, beta, dy, incy));
+
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGemvFn,
+                            (handle, transA, M, N, alpha, dA, lda, dx, incx, beta, nullptr, incy));
+
+                // rocBLAS implementation has alpha == 0 and beta == 1 quick return after arg checks, so if we're using 32-bit params,
+                // this should fail with invalid-value as c_i32_overflow will rollover to -2147483648
+                // Note: that this strategy can't check incx as rocBLAS supports negative. Also depends on implementation so not testing cuBLAS for now
+
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasGemvFn,
+                            (handle,
+                             transA,
+                             c_i32_overflow,
+                             c_i32_overflow,
+                             zero,
+                             nullptr,
+                             c_i32_overflow + 1,
+                             nullptr,
+                             incx,
+                             one,
+                             nullptr,
+                             incy));
             }
 
             // With alpha == 0 can have x nullptr
-            CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-                handle, transA, M, N, zero, nullptr, lda, nullptr, incx, beta, dy, incy));
+            DAPI_CHECK(hipblasGemvFn,
+                       (handle, transA, M, N, zero, nullptr, lda, nullptr, incx, beta, dy, incy));
 
             // With alpha == 0 && beta == 1, all other ptrs can be nullptr
-            CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-                handle, transA, M, N, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
+            DAPI_CHECK(
+                hipblasGemvFn,
+                (handle, transA, M, N, zero, nullptr, lda, nullptr, incx, one, nullptr, incy));
         }
 
         // With M == 0 || N == 0, can have all nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-            handle, transA, 0, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
-        CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-            handle, transA, M, 0, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
+        DAPI_CHECK(
+            hipblasGemvFn,
+            (handle, transA, 0, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
+        DAPI_CHECK(
+            hipblasGemvFn,
+            (handle, transA, M, 0, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy));
     }
 }
 
@@ -145,14 +172,16 @@ void testing_gemv(const Arguments& arg)
 {
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
+    auto hipblasGemvFn_64
+        = arg.api == FORTRAN_64 ? hipblasGemv_64<T, true> : hipblasGemv_64<T, false>;
 
-    int M    = arg.M;
-    int N    = arg.N;
-    int lda  = arg.lda;
-    int incx = arg.incx;
-    int incy = arg.incy;
+    int64_t M    = arg.M;
+    int64_t N    = arg.N;
+    int64_t lda  = arg.lda;
+    int64_t incx = arg.incx;
+    int64_t incy = arg.incy;
 
-    size_t A_size = size_t(lda) * N;
+    size_t A_size = lda * N;
     size_t X_size, dim_x;
     size_t Y_size, dim_y;
 
@@ -179,19 +208,28 @@ void testing_gemv(const Arguments& arg)
         if(!invalid_size || arg.bad_arg_all)
         {
             // cublas backend doesn't support nullptrs with bad input sizes
-            hipblasStatus_t actual = hipblasGemvFn(
-                handle, transA, M, N, nullptr, nullptr, lda, nullptr, incx, nullptr, nullptr, incy);
-            EXPECT_HIPBLAS_STATUS(
-                actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+            DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                        hipblasGemvFn,
+                        (handle,
+                         transA,
+                         M,
+                         N,
+                         nullptr,
+                         nullptr,
+                         lda,
+                         nullptr,
+                         incx,
+                         nullptr,
+                         nullptr,
+                         incy));
         }
-
         return;
     }
 
-    int abs_incx = incx >= 0 ? incx : -incx;
-    int abs_incy = incy >= 0 ? incy : -incy;
-    X_size       = dim_x * abs_incx;
-    Y_size       = dim_y * abs_incy;
+    size_t abs_incx = incx >= 0 ? incx : -incx;
+    size_t abs_incy = incy >= 0 ? incy : -incy;
+    X_size          = dim_x * abs_incx;
+    Y_size          = dim_y * abs_incy;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
@@ -207,7 +245,7 @@ void testing_gemv(const Arguments& arg)
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
@@ -234,15 +272,15 @@ void testing_gemv(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasGemvFn(
-            handle, transA, M, N, (T*)&h_alpha, dA, lda, dx, incx, (T*)&h_beta, dy, incy));
+        DAPI_CHECK(hipblasGemvFn,
+                   (handle, transA, M, N, (T*)&h_alpha, dA, lda, dx, incx, (T*)&h_beta, dy, incy));
 
         CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
-            hipblasGemvFn(handle, transA, M, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+        DAPI_CHECK(hipblasGemvFn,
+                   (handle, transA, M, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
         CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
 
@@ -270,6 +308,7 @@ void testing_gemv(const Arguments& arg)
 
     if(arg.timing)
     {
+        double      gpu_time_used;
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -283,8 +322,8 @@ void testing_gemv(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
             }
 
-            CHECK_HIPBLAS_ERROR(
-                hipblasGemvFn(handle, transA, M, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
+            DAPI_DISPATCH(hipblasGemvFn,
+                          (handle, transA, M, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

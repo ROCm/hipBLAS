@@ -6454,6 +6454,103 @@ module hipblas
         end function hipblasZgbmv
     end interface
 
+    ! gbmv_64
+    interface
+        function hipblasSgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+            bind(c, name='hipblasSgbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasSgbmv_64
+    end interface
+
+    interface
+        function hipblasDgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+            bind(c, name='hipblasDgbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasDgbmv_64
+    end interface
+
+    interface
+        function hipblasCgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+            bind(c, name='hipblasCgbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasCgbmv_64
+    end interface
+
+    interface
+        function hipblasZgbmv_64(handle, trans, m, n, kl, ku, alpha, A, lda, x, incx, beta, y, incy) &
+            bind(c, name='hipblasZgbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZgbmv_64
+    end interface
+
     ! gbmvBatched
     interface
         function hipblasSgbmvBatched(handle, trans, m, n, kl, ku, alpha, A, lda, &
@@ -6557,6 +6654,111 @@ module hipblas
             integer(c_int), value :: incy
             integer(c_int), value :: batch_count
         end function hipblasZgbmvBatched
+    end interface
+
+    ! gbmvBatched_64
+    interface
+        function hipblasSgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasSgbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgbmvBatched_64
+    end interface
+
+    interface
+        function hipblasDgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasDgbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgbmvBatched_64
+    end interface
+
+    interface
+        function hipblasCgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasCgbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgbmvBatched_64
+    end interface
+
+    interface
+        function hipblasZgbmvBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZgbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgbmvBatched_64
     end interface
 
     ! gbmvStridedBatched
@@ -6676,6 +6878,123 @@ module hipblas
         end function hipblasZgbmvStridedBatched
     end interface
 
+    ! gbmvStridedBatched_64
+    interface
+        function hipblasSgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasSgbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasDgbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasCgbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZgbmvStridedBatched_64(handle, trans, m, n, kl, ku, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZgbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: kl
+            integer(c_int64_t), value :: ku
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgbmvStridedBatched_64
+    end interface
+
     ! gemv
     interface
         function hipblasSgemv(handle, trans, m, n, alpha, A, lda, &
@@ -6767,6 +7086,99 @@ module hipblas
             type(c_ptr), value :: y
             integer(c_int), value :: incy
         end function hipblasZgemv
+    end interface
+
+    ! gemv_64
+    interface
+        function hipblasSgemv_64(handle, trans, m, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasSgemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasSgemv_64
+    end interface
+
+    interface
+        function hipblasDgemv_64(handle, trans, m, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasDgemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasDgemv_64
+    end interface
+
+    interface
+        function hipblasCgemv_64(handle, trans, m, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasCgemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasCgemv_64
+    end interface
+
+    interface
+        function hipblasZgemv_64(handle, trans, m, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasZgemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZgemv_64
     end interface
 
     ! gemvBatched
@@ -6864,6 +7276,103 @@ module hipblas
             integer(c_int), value :: incy
             integer(c_int), value :: batch_count
         end function hipblasZgemvBatched
+    end interface
+
+    ! gemvBatched_64
+    interface
+        function hipblasSgemvBatched_64(handle, trans, m, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasSgemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgemvBatched_64
+    end interface
+
+    interface
+        function hipblasDgemvBatched_64(handle, trans, m, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasDgemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgemvBatched_64
+    end interface
+
+    interface
+        function hipblasCgemvBatched_64(handle, trans, m, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasCgemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgemvBatched_64
+    end interface
+
+    interface
+        function hipblasZgemvBatched_64(handle, trans, m, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZgemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgemvBatched_64
     end interface
 
     ! gemvStridedBatched
@@ -6973,6 +7482,115 @@ module hipblas
             integer(c_int64_t), value :: stride_y
             integer(c_int), value :: batch_count
         end function hipblasZgemvStridedBatched
+    end interface
+
+    ! gemvStridedBatched_64
+    interface
+        function hipblasSgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasSgemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgemvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasDgemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgemvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasCgemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgemvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZgemvStridedBatched_64(handle, trans, m, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZgemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: trans
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgemvStridedBatched_64
     end interface
 
     ! hbmv
@@ -7126,6 +7744,157 @@ module hipblas
         end function hipblasZhbmvStridedBatched
     end interface
 
+    ! hbmv_64
+    interface
+        function hipblasChbmv_64(handle, uplo, n, k, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasChbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasChbmv_64
+    end interface
+
+    interface
+        function hipblasZhbmv_64(handle, uplo, n, k, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasZhbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZhbmv_64
+    end interface
+
+    ! hbmvBatched_64
+    interface
+        function hipblasChbmvBatched_64(handle, uplo, n, k, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasChbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChbmvBatched_64
+    end interface
+
+    interface
+        function hipblasZhbmvBatched_64(handle, uplo, n, k, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZhbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhbmvBatched_64
+    end interface
+
+    ! hbmvStridedBatched_64
+    interface
+        function hipblasChbmvStridedBatched_64(handle, uplo, n, k, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasChbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZhbmvStridedBatched_64(handle, uplo, n, k, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZhbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhbmvStridedBatched_64
+    end interface
+
     ! hemv
     interface
         function hipblasChemv(handle, uplo, n, alpha, A, lda, &
@@ -7271,6 +8040,151 @@ module hipblas
         end function hipblasZhemvStridedBatched
     end interface
 
+    ! hemv_64
+    interface
+        function hipblasChemv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasChemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasChemv_64
+    end interface
+
+    interface
+        function hipblasZhemv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasZhemv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhemv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZhemv_64
+    end interface
+
+    ! hemvBatched
+    interface
+        function hipblasChemvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasChemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChemvBatched_64
+    end interface
+
+    interface
+        function hipblasZhemvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZhemvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhemvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhemvBatched_64
+    end interface
+
+    ! hemvStridedBatched_64
+    interface
+        function hipblasChemvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasChemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChemvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZhemvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZhemvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhemvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhemvStridedBatched_64
+    end interface
+
     ! her
     interface
         function hipblasCher(handle, uplo, n, alpha, &
@@ -7308,6 +8222,45 @@ module hipblas
             type(c_ptr), value :: A
             integer(c_int), value :: lda
         end function hipblasZher
+    end interface
+
+    ! her_64
+    interface
+        function hipblasCher_64(handle, uplo, n, alpha, &
+                             x, incx, A, lda) &
+            bind(c, name='hipblasCher_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCher_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCher_64
+    end interface
+
+    interface
+        function hipblasZher_64(handle, uplo, n, alpha, &
+                             x, incx, A, lda) &
+            bind(c, name='hipblasZher_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZher_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZher_64
     end interface
 
     ! herBatched
@@ -7349,6 +8302,47 @@ module hipblas
             integer(c_int), value :: lda
             integer(c_int), value :: batch_count
         end function hipblasZherBatched
+    end interface
+
+    ! herBatched_64
+    interface
+        function hipblasCherBatched_64(handle, uplo, n, alpha, &
+                                    x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasCherBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCherBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCherBatched_64
+    end interface
+
+    interface
+        function hipblasZherBatched_64(handle, uplo, n, alpha, &
+                                    x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasZherBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZherBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZherBatched_64
     end interface
 
     ! herStridedBatched
@@ -7396,6 +8390,51 @@ module hipblas
         end function hipblasZherStridedBatched
     end interface
 
+    ! herStridedBatched_64
+    interface
+        function hipblasCherStridedBatched_64(handle, uplo, n, alpha, &
+                                           x, incx, stride_x, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCherStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCherStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCherStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZherStridedBatched_64(handle, uplo, n, alpha, &
+                                           x, incx, stride_x, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZherStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZherStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZherStridedBatched_64
+    end interface
+
     ! her2
     interface
         function hipblasCher2(handle, uplo, n, alpha, &
@@ -7437,6 +8476,49 @@ module hipblas
             type(c_ptr), value :: A
             integer(c_int), value :: lda
         end function hipblasZher2
+    end interface
+
+    ! her2_64
+    interface
+        function hipblasCher2_64(handle, uplo, n, alpha, &
+                              x, incx, y, incy, A, lda) &
+            bind(c, name='hipblasCher2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCher2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCher2_64
+    end interface
+
+    interface
+        function hipblasZher2_64(handle, uplo, n, alpha, &
+                              x, incx, y, incy, A, lda) &
+            bind(c, name='hipblasZher2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZher2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZher2_64
     end interface
 
     ! her2Batched
@@ -7482,6 +8564,51 @@ module hipblas
             integer(c_int), value :: lda
             integer(c_int), value :: batch_count
         end function hipblasZher2Batched
+    end interface
+
+    ! her2Batched_64
+    interface
+        function hipblasCher2Batched_64(handle, uplo, n, alpha, &
+                                     x, incx, y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasCher2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCher2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCher2Batched_64
+    end interface
+
+    interface
+        function hipblasZher2Batched_64(handle, uplo, n, alpha, &
+                                     x, incx, y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasZher2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZher2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZher2Batched_64
     end interface
 
     ! her2StridedBatched
@@ -7533,6 +8660,57 @@ module hipblas
             integer(c_int64_t), value :: stride_A
             integer(c_int), value :: batch_count
         end function hipblasZher2StridedBatched
+    end interface
+
+    ! her2StridedBatched_64
+    interface
+        function hipblasCher2StridedBatched_64(handle, uplo, n, alpha, &
+                                            x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCher2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCher2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCher2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasZher2StridedBatched_64(handle, uplo, n, alpha, &
+                                            x, incx, stride_x, y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZher2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZher2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZher2StridedBatched_64
     end interface
 
     ! hpmv
@@ -7674,6 +8852,145 @@ module hipblas
         end function hipblasZhpmvStridedBatched
     end interface
 
+    ! hpmv_64
+    interface
+        function hipblasChpmv_64(handle, uplo, n, alpha, AP, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasChpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasChpmv_64
+    end interface
+
+    interface
+        function hipblasZhpmv_64(handle, uplo, n, alpha, AP, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasZhpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZhpmv_64
+    end interface
+
+    ! hpmvBatched_64
+    interface
+        function hipblasChpmvBatched_64(handle, uplo, n, alpha, AP, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasChpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChpmvBatched_64
+    end interface
+
+    interface
+        function hipblasZhpmvBatched_64(handle, uplo, n, alpha, AP, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZhpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhpmvBatched_64
+    end interface
+
+    ! hpmvStridedBatched_64
+    interface
+        function hipblasChpmvStridedBatched_64(handle, uplo, n, alpha, AP, stride_AP, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasChpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChpmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZhpmvStridedBatched_64(handle, uplo, n, alpha, AP, stride_AP, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZhpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhpmvStridedBatched_64
+    end interface
+
     ! hpr
     interface
         function hipblasChpr(handle, uplo, n, alpha, &
@@ -7791,6 +9108,125 @@ module hipblas
             integer(c_int64_t), value :: stride_AP
             integer(c_int), value :: batch_count
         end function hipblasZhprStridedBatched
+    end interface
+
+    ! hpr_64
+    interface
+        function hipblasChpr_64(handle, uplo, n, alpha, &
+                             x, incx, AP) &
+            bind(c, name='hipblasChpr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasChpr_64
+    end interface
+
+    interface
+        function hipblasZhpr_64(handle, uplo, n, alpha, &
+                             x, incx, AP) &
+            bind(c, name='hipblasZhpr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasZhpr_64
+    end interface
+
+    ! hprBatched_64
+    interface
+        function hipblasChprBatched_64(handle, uplo, n, alpha, &
+                                    x, incx, AP, batch_count) &
+            bind(c, name='hipblasChprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChprBatched_64
+    end interface
+
+    interface
+        function hipblasZhprBatched_64(handle, uplo, n, alpha, &
+                                    x, incx, AP, batch_count) &
+            bind(c, name='hipblasZhprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhprBatched_64
+    end interface
+
+    ! hprStridedBatched_64
+    interface
+        function hipblasChprStridedBatched_64(handle, uplo, n, alpha, &
+                                           x, incx, stride_x, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasChprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChprStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZhprStridedBatched_64(handle, uplo, n, alpha, &
+                                           x, incx, stride_x, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasZhprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhprStridedBatched_64
     end interface
 
     ! hpr2
@@ -7926,6 +9362,139 @@ module hipblas
         end function hipblasZhpr2StridedBatched
     end interface
 
+    ! hpr2_64
+    interface
+        function hipblasChpr2_64(handle, uplo, n, alpha, &
+                              x, incx, y, incy, AP) &
+            bind(c, name='hipblasChpr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+        end function hipblasChpr2_64
+    end interface
+
+    interface
+        function hipblasZhpr2_64(handle, uplo, n, alpha, &
+                              x, incx, y, incy, AP) &
+            bind(c, name='hipblasZhpr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+        end function hipblasZhpr2_64
+    end interface
+
+    ! hpr2Batched_64
+    interface
+        function hipblasChpr2Batched_64(handle, uplo, n, alpha, &
+                                     x, incx, y, incy, AP, batch_count) &
+            bind(c, name='hipblasChpr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChpr2Batched_64
+    end interface
+
+    interface
+        function hipblasZhpr2Batched_64(handle, uplo, n, alpha, &
+                                     x, incx, y, incy, AP, batch_count) &
+            bind(c, name='hipblasZhpr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhpr2Batched_64
+    end interface
+
+    ! hpr2StridedBatched_64
+    interface
+        function hipblasChpr2StridedBatched_64(handle, uplo, n, alpha, &
+                                            x, incx, stride_x, y, incy, stride_y, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasChpr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasChpr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasChpr2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasZhpr2StridedBatched_64(handle, uplo, n, alpha, &
+                                            x, incx, stride_x, y, incy, stride_y, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasZhpr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZhpr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZhpr2StridedBatched_64
+    end interface
+
     ! trmv
     interface
         function hipblasStrmv(handle, uplo, transA, diag, m, &
@@ -8005,6 +9574,87 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtrmv
+    end interface
+
+    ! trmv_64
+    interface
+        function hipblasStrmv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasStrmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStrmv_64
+    end interface
+
+    interface
+        function hipblasDtrmv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasDtrmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtrmv_64
+    end interface
+
+    interface
+        function hipblasCtrmv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasCtrmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtrmv_64
+    end interface
+
+    interface
+        function hipblasZtrmv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasZtrmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtrmv_64
     end interface
 
     ! trmvBatched
@@ -8090,6 +9740,91 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtrmvBatched
+    end interface
+
+    ! trmvBatched_64
+    interface
+        function hipblasStrmvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasStrmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStrmvBatched_64
+    end interface
+
+    interface
+        function hipblasDtrmvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasDtrmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtrmvBatched_64
+    end interface
+
+    interface
+        function hipblasCtrmvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasCtrmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtrmvBatched_64
+    end interface
+
+    interface
+        function hipblasZtrmvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasZtrmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtrmvBatched_64
     end interface
 
     ! trmvStridedBatched
@@ -8185,6 +9920,99 @@ module hipblas
         end function hipblasZtrmvStridedBatched
     end interface
 
+    ! trmvStridedBatched_64
+    interface
+        function hipblasStrmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStrmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStrmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtrmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtrmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtrmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtrmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtrmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtrmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtrmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtrmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtrmvStridedBatched_64
+    end interface
+
     ! tpmv
     interface
         function hipblasStpmv(handle, uplo, transA, diag, m, &
@@ -8260,6 +10088,83 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtpmv
+    end interface
+
+    ! tpmv_64
+    interface
+        function hipblasStpmv_64(handle, uplo, transA, diag, m, &
+                              AP, x, incx) &
+            bind(c, name='hipblasStpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStpmv_64
+    end interface
+
+    interface
+        function hipblasDtpmv_64(handle, uplo, transA, diag, m, &
+                              AP, x, incx) &
+            bind(c, name='hipblasDtpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtpmv_64
+    end interface
+
+    interface
+        function hipblasCtpmv_64(handle, uplo, transA, diag, m, &
+                              AP, x, incx) &
+            bind(c, name='hipblasCtpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtpmv_64
+    end interface
+
+    interface
+        function hipblasZtpmv_64(handle, uplo, transA, diag, m, &
+                              AP, x, incx) &
+            bind(c, name='hipblasZtpmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtpmv_64
     end interface
 
     ! tpmvBatched
@@ -8341,6 +10246,87 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtpmvBatched
+    end interface
+
+    ! tpmvBatched_64
+    interface
+        function hipblasStpmvBatched_64(handle, uplo, transA, diag, m, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasStpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStpmvBatched_64
+    end interface
+
+    interface
+        function hipblasDtpmvBatched_64(handle, uplo, transA, diag, m, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasDtpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtpmvBatched_64
+    end interface
+
+    interface
+        function hipblasCtpmvBatched_64(handle, uplo, transA, diag, m, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasCtpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtpmvBatched_64
+    end interface
+
+    interface
+        function hipblasZtpmvBatched_64(handle, uplo, transA, diag, m, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasZtpmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtpmvBatched_64
     end interface
 
     ! tpmvStridedBatched
@@ -8432,6 +10418,95 @@ module hipblas
         end function hipblasZtpmvStridedBatched
     end interface
 
+    ! tpmvStridedBatched_64
+    interface
+        function hipblasStpmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStpmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtpmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtpmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtpmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtpmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtpmvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtpmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtpmvStridedBatched_64
+    end interface
+
     ! tbmv
     interface
         function hipblasStbmv(handle, uplo, transA, diag, m, k, &
@@ -8515,6 +10590,91 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtbmv
+    end interface
+
+    ! tbmv_64
+    interface
+        function hipblasStbmv_64(handle, uplo, transA, diag, m, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasStbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStbmv_64
+    end interface
+
+    interface
+        function hipblasDtbmv_64(handle, uplo, transA, diag, m, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasDtbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtbmv_64
+    end interface
+
+    interface
+        function hipblasCtbmv_64(handle, uplo, transA, diag, m, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasCtbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtbmv_64
+    end interface
+
+    interface
+        function hipblasZtbmv_64(handle, uplo, transA, diag, m, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasZtbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtbmv_64
     end interface
 
     ! tbmvBatched
@@ -8604,6 +10764,95 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtbmvBatched
+    end interface
+
+    ! tbmvBatched_64
+    interface
+        function hipblasStbmvBatched_64(handle, uplo, transA, diag, m, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasStbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStbmvBatched_64
+    end interface
+
+    interface
+        function hipblasDtbmvBatched_64(handle, uplo, transA, diag, m, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasDtbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtbmvBatched_64
+    end interface
+
+    interface
+        function hipblasCtbmvBatched_64(handle, uplo, transA, diag, m, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasCtbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtbmvBatched_64
+    end interface
+
+    interface
+        function hipblasZtbmvBatched_64(handle, uplo, transA, diag, m, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasZtbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtbmvBatched_64
     end interface
 
     ! tbmvStridedBatched
@@ -8703,6 +10952,103 @@ module hipblas
         end function hipblasZtbmvStridedBatched
     end interface
 
+    ! tbmvStridedBatched_64
+    interface
+        function hipblasStbmvStridedBatched_64(handle, uplo, transA, diag, m, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtbmvStridedBatched_64(handle, uplo, transA, diag, m, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtbmvStridedBatched_64(handle, uplo, transA, diag, m, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtbmvStridedBatched_64(handle, uplo, transA, diag, m, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtbmvStridedBatched_64
+    end interface
+
     ! tbsv
     interface
         function hipblasStbsv(handle, uplo, transA, diag, n, k, &
@@ -8786,6 +11132,91 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtbsv
+    end interface
+
+    ! tbsv_64
+    interface
+        function hipblasStbsv_64(handle, uplo, transA, diag, n, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasStbsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStbsv_64
+    end interface
+
+    interface
+        function hipblasDtbsv_64(handle, uplo, transA, diag, n, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasDtbsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtbsv_64
+    end interface
+
+    interface
+        function hipblasCtbsv_64(handle, uplo, transA, diag, n, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasCtbsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtbsv_64
+    end interface
+
+    interface
+        function hipblasZtbsv_64(handle, uplo, transA, diag, n, k, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasZtbsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtbsv_64
     end interface
 
     ! tbsvBatched
@@ -8875,6 +11306,95 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtbsvBatched
+    end interface
+
+    ! tbsvBatched_64
+    interface
+        function hipblasStbsvBatched_64(handle, uplo, transA, diag, n, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasStbsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStbsvBatched_64
+    end interface
+
+    interface
+        function hipblasDtbsvBatched_64(handle, uplo, transA, diag, n, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasDtbsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtbsvBatched_64
+    end interface
+
+    interface
+        function hipblasCtbsvBatched_64(handle, uplo, transA, diag, n, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasCtbsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtbsvBatched_64
+    end interface
+
+    interface
+        function hipblasZtbsvBatched_64(handle, uplo, transA, diag, n, k, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasZtbsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtbsvBatched_64
     end interface
 
     ! tbsvStridedBatched
@@ -8974,6 +11494,103 @@ module hipblas
         end function hipblasZtbsvStridedBatched
     end interface
 
+    ! tbsvStridedBatched_64
+    interface
+        function hipblasStbsvStridedBatched_64(handle, uplo, transA, diag, n, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStbsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStbsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStbsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtbsvStridedBatched_64(handle, uplo, transA, diag, n, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtbsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtbsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtbsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtbsvStridedBatched_64(handle, uplo, transA, diag, n, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtbsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtbsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtbsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtbsvStridedBatched_64(handle, uplo, transA, diag, n, k, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtbsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtbsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtbsvStridedBatched_64
+    end interface
+
     ! trsv
     interface
         function hipblasStrsv(handle, uplo, transA, diag, m, &
@@ -9053,6 +11670,87 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtrsv
+    end interface
+
+    ! trsv_64
+    interface
+        function hipblasStrsv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasStrsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStrsv_64
+    end interface
+
+    interface
+        function hipblasDtrsv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasDtrsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtrsv_64
+    end interface
+
+    interface
+        function hipblasCtrsv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasCtrsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtrsv_64
+    end interface
+
+    interface
+        function hipblasZtrsv_64(handle, uplo, transA, diag, m, &
+                              A, lda, x, incx) &
+            bind(c, name='hipblasZtrsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtrsv_64
     end interface
 
     ! trsvBatched
@@ -9138,6 +11836,91 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtrsvBatched
+    end interface
+
+    ! trsvBatched_64
+    interface
+        function hipblasStrsvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasStrsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStrsvBatched_64
+    end interface
+
+    interface
+        function hipblasDtrsvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasDtrsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtrsvBatched_64
+    end interface
+
+    interface
+        function hipblasCtrsvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasCtrsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtrsvBatched_64
+    end interface
+
+    interface
+        function hipblasZtrsvBatched_64(handle, uplo, transA, diag, m, &
+                                     A, lda, x, incx, batch_count) &
+            bind(c, name='hipblasZtrsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtrsvBatched_64
     end interface
 
     ! trsvStridedBatched
@@ -9233,6 +12016,99 @@ module hipblas
         end function hipblasZtrsvStridedBatched
     end interface
 
+    ! trsvStridedBatched_64
+    interface
+        function hipblasStrsvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStrsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStrsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStrsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtrsvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtrsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtrsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtrsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtrsvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtrsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtrsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtrsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtrsvStridedBatched_64(handle, uplo, transA, diag, m, &
+                                            A, lda, stride_A, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtrsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtrsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: m
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtrsvStridedBatched_64
+    end interface
+
     ! tpsv
     interface
         function hipblasStpsv(handle, uplo, transA, diag, n, &
@@ -9308,6 +12184,83 @@ module hipblas
             type(c_ptr), value :: x
             integer(c_int), value :: incx
         end function hipblasZtpsv
+    end interface
+
+    ! tpsv_64
+    interface
+        function hipblasStpsv_64(handle, uplo, transA, diag, n, &
+                              AP, x, incx) &
+            bind(c, name='hipblasStpsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasStpsv_64
+    end interface
+
+    interface
+        function hipblasDtpsv_64(handle, uplo, transA, diag, n, &
+                              AP, x, incx) &
+            bind(c, name='hipblasDtpsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasDtpsv_64
+    end interface
+
+    interface
+        function hipblasCtpsv_64(handle, uplo, transA, diag, n, &
+                              AP, x, incx) &
+            bind(c, name='hipblasCtpsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasCtpsv_64
+    end interface
+
+    interface
+        function hipblasZtpsv_64(handle, uplo, transA, diag, n, &
+                              AP, x, incx) &
+            bind(c, name='hipblasZtpsv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpsv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+        end function hipblasZtpsv_64
     end interface
 
     ! tpsvBatched
@@ -9389,6 +12342,87 @@ module hipblas
             integer(c_int), value :: incx
             integer(c_int), value :: batch_count
         end function hipblasZtpsvBatched
+    end interface
+
+    ! tpsvBatched_64
+    interface
+        function hipblasStpsvBatched_64(handle, uplo, transA, diag, n, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasStpsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStpsvBatched_64
+    end interface
+
+    interface
+        function hipblasDtpsvBatched_64(handle, uplo, transA, diag, n, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasDtpsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtpsvBatched_64
+    end interface
+
+    interface
+        function hipblasCtpsvBatched_64(handle, uplo, transA, diag, n, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasCtpsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtpsvBatched_64
+    end interface
+
+    interface
+        function hipblasZtpsvBatched_64(handle, uplo, transA, diag, n, &
+                                     AP, x, incx, batch_count) &
+            bind(c, name='hipblasZtpsvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpsvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtpsvBatched_64
     end interface
 
     ! tpsvStridedBatched
@@ -9480,6 +12514,95 @@ module hipblas
         end function hipblasZtpsvStridedBatched
     end interface
 
+    ! tpsvStridedBatched_64
+    interface
+        function hipblasStpsvStridedBatched_64(handle, uplo, transA, diag, n, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasStpsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasStpsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasStpsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDtpsvStridedBatched_64(handle, uplo, transA, diag, n, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasDtpsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDtpsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDtpsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCtpsvStridedBatched_64(handle, uplo, transA, diag, n, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasCtpsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCtpsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCtpsvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZtpsvStridedBatched_64(handle, uplo, transA, diag, n, &
+                                            AP, stride_AP, x, incx, stride_x, batch_count) &
+            bind(c, name='hipblasZtpsvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZtpsvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_DIAG_NON_UNIT)), value :: diag
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZtpsvStridedBatched_64
+    end interface
+
     ! symv
     interface
         function hipblasSsymv(handle, uplo, n, alpha, A, lda, &
@@ -9567,6 +12690,95 @@ module hipblas
             type(c_ptr), value :: y
             integer(c_int), value :: incy
         end function hipblasZsymv
+    end interface
+
+    ! symv_64
+    interface
+        function hipblasSsymv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasSsymv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsymv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasSsymv_64
+    end interface
+
+    interface
+        function hipblasDsymv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasDsymv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsymv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasDsymv_64
+    end interface
+
+    interface
+        function hipblasCsymv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasCsymv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsymv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasCsymv_64
+    end interface
+
+    interface
+        function hipblasZsymv_64(handle, uplo, n, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasZsymv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsymv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasZsymv_64
     end interface
 
     ! symvBatched
@@ -9660,6 +12872,99 @@ module hipblas
             integer(c_int), value :: incy
             integer(c_int), value :: batch_count
         end function hipblasZsymvBatched
+    end interface
+
+    ! symvBatched_64
+    interface
+        function hipblasSsymvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasSsymvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsymvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsymvBatched_64
+    end interface
+
+    interface
+        function hipblasDsymvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasDsymvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsymvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsymvBatched_64
+    end interface
+
+    interface
+        function hipblasCsymvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasCsymvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsymvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsymvBatched_64
+    end interface
+
+    interface
+        function hipblasZsymvBatched_64(handle, uplo, n, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasZsymvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsymvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsymvBatched_64
     end interface
 
     ! symvStridedBatched
@@ -9767,6 +13072,111 @@ module hipblas
         end function hipblasZsymvStridedBatched
     end interface
 
+    ! symvStridedBatched_64
+    interface
+        function hipblasSsymvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasSsymvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsymvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsymvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDsymvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasDsymvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsymvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsymvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCsymvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasCsymvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsymvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsymvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZsymvStridedBatched_64(handle, uplo, n, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasZsymvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsymvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsymvStridedBatched_64
+    end interface
+
     ! spmv
     interface
         function hipblasSspmv(handle, uplo, n, alpha, AP, &
@@ -9808,6 +13218,49 @@ module hipblas
             type(c_ptr), value :: y
             integer(c_int), value :: incy
         end function hipblasDspmv
+    end interface
+
+    ! spmv_64
+    interface
+        function hipblasSspmv_64(handle, uplo, n, alpha, AP, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasSspmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasSspmv_64
+    end interface
+
+    interface
+        function hipblasDspmv_64(handle, uplo, n, alpha, AP, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasDspmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasDspmv_64
     end interface
 
     ! spmvBatched
@@ -9853,6 +13306,51 @@ module hipblas
             integer(c_int), value :: incy
             integer(c_int), value :: batch_count
         end function hipblasDspmvBatched
+    end interface
+
+    ! spmvBatched_64
+    interface
+        function hipblasSspmvBatched_64(handle, uplo, n, alpha, AP, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasSspmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSspmvBatched_64
+    end interface
+
+    interface
+        function hipblasDspmvBatched_64(handle, uplo, n, alpha, AP, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasDspmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDspmvBatched_64
     end interface
 
     ! spmvStridedBatched
@@ -9906,6 +13404,57 @@ module hipblas
         end function hipblasDspmvStridedBatched
     end interface
 
+    ! spmvStridedBatched_64
+    interface
+        function hipblasSspmvStridedBatched_64(handle, uplo, n, alpha, AP, stride_AP, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasSspmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSspmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDspmvStridedBatched_64(handle, uplo, n, alpha, AP, stride_AP, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasDspmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDspmvStridedBatched_64
+    end interface
+
     ! sbmv
     interface
         function hipblasSsbmv(handle, uplo, n, k, alpha, A, lda, &
@@ -9951,6 +13500,53 @@ module hipblas
             type(c_ptr), value :: y
             integer(c_int), value :: incy
         end function hipblasDsbmv
+    end interface
+
+    ! sbmv_64
+    interface
+        function hipblasSsbmv_64(handle, uplo, n, k, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasSsbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasSsbmv_64
+    end interface
+
+    interface
+        function hipblasDsbmv_64(handle, uplo, n, k, alpha, A, lda, &
+                              x, incx, beta, y, incy) &
+            bind(c, name='hipblasDsbmv_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsbmv_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+        end function hipblasDsbmv_64
     end interface
 
     ! sbmvBatched
@@ -10000,6 +13596,55 @@ module hipblas
             integer(c_int), value :: incy
             integer(c_int), value :: batch_count
         end function hipblasDsbmvBatched
+    end interface
+
+    ! sbmvBatched_64
+    interface
+        function hipblasSsbmvBatched_64(handle, uplo, n, k, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasSsbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsbmvBatched_64
+    end interface
+
+    interface
+        function hipblasDsbmvBatched_64(handle, uplo, n, k, alpha, A, lda, &
+                                     x, incx, beta, y, incy, batch_count) &
+            bind(c, name='hipblasDsbmvBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsbmvBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsbmvBatched_64
     end interface
 
     ! sbmvStridedBatched
@@ -10055,6 +13700,61 @@ module hipblas
             integer(c_int64_t), value :: stride_y
             integer(c_int), value :: batch_count
         end function hipblasDsbmvStridedBatched
+    end interface
+
+    ! sbmvStridedBatched_64
+    interface
+        function hipblasSsbmvStridedBatched_64(handle, uplo, n, k, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasSsbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsbmvStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDsbmvStridedBatched_64(handle, uplo, n, k, alpha, A, lda, stride_A, &
+                                            x, incx, stride_x, beta, y, incy, stride_y, batch_count) &
+            bind(c, name='hipblasDsbmvStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsbmvStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsbmvStridedBatched_64
     end interface
 
     ! ger
@@ -10182,6 +13882,133 @@ module hipblas
             type(c_ptr), value :: A
             integer(c_int), value :: lda
         end function hipblasZgerc
+    end interface
+
+    ! ger_64
+    interface
+        function hipblasSger_64(handle, m, n, alpha, x, incx, &
+                             y, incy, A, lda) &
+            bind(c, name='hipblasSger_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSger_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasSger_64
+    end interface
+
+    interface
+        function hipblasDger_64(handle, m, n, alpha, x, incx, &
+                             y, incy, A, lda) &
+            bind(c, name='hipblasDger_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDger_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasDger_64
+    end interface
+
+    interface
+        function hipblasCgeru_64(handle, m, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasCgeru_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeru_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCgeru_64
+    end interface
+
+    interface
+        function hipblasCgerc_64(handle, m, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasCgerc_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgerc_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCgerc_64
+    end interface
+
+    interface
+        function hipblasZgeru_64(handle, m, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasZgeru_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeru_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZgeru_64
+    end interface
+
+    interface
+        function hipblasZgerc_64(handle, m, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasZgerc_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgerc_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZgerc_64
     end interface
 
     ! gerBatched
@@ -10315,6 +14142,139 @@ module hipblas
             integer(c_int), value :: lda
             integer(c_int), value :: batch_count
         end function hipblasZgercBatched
+    end interface
+
+    ! gerBatched_64
+    interface
+        function hipblasSgerBatched_64(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasSgerBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgerBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgerBatched_64
+    end interface
+
+    interface
+        function hipblasDgerBatched_64(handle, m, n, alpha, x, incx, &
+                                    y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasDgerBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgerBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgerBatched_64
+    end interface
+
+    interface
+        function hipblasCgeruBatched_64(handle, m, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasCgeruBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeruBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgeruBatched_64
+    end interface
+
+    interface
+        function hipblasCgercBatched_64(handle, m, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasCgercBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgercBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgercBatched_64
+    end interface
+
+    interface
+        function hipblasZgeruBatched_64(handle, m, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasZgeruBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeruBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgeruBatched_64
+    end interface
+
+    interface
+        function hipblasZgercBatched_64(handle, m, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasZgercBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgercBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgercBatched_64
     end interface
 
     ! gerStridedBatched
@@ -10468,6 +14428,157 @@ module hipblas
         end function hipblasZgercStridedBatched
     end interface
 
+    ! gerStridedBatched_64
+    interface
+        function hipblasSgerStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                           y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasSgerStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSgerStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSgerStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDgerStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                           y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasDgerStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDgerStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDgerStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCgeruStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCgeruStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgeruStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgeruStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCgercStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCgercStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCgercStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCgercStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZgeruStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZgeruStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgeruStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgeruStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZgercStridedBatched_64(handle, m, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZgercStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZgercStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZgercStridedBatched_64
+    end interface
+
     ! spr
     interface
         function hipblasSspr(handle, uplo, n, alpha, x, incx, AP) &
@@ -10535,6 +14646,75 @@ module hipblas
             integer(c_int), value :: incx
             type(c_ptr), value :: AP
         end function hipblasZspr
+    end interface
+
+    ! spr_64
+    interface
+        function hipblasSspr_64(handle, uplo, n, alpha, x, incx, AP) &
+            bind(c, name='hipblasSspr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasSspr_64
+    end interface
+
+    interface
+        function hipblasDspr_64(handle, uplo, n, alpha, x, incx, AP) &
+            bind(c, name='hipblasDspr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasDspr_64
+    end interface
+
+    interface
+        function hipblasCspr_64(handle, uplo, n, alpha, x, incx, AP) &
+            bind(c, name='hipblasCspr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCspr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasCspr_64
+    end interface
+
+    interface
+        function hipblasZspr_64(handle, uplo, n, alpha, x, incx, AP) &
+            bind(c, name='hipblasZspr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZspr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+        end function hipblasZspr_64
     end interface
 
     ! sprBatched
@@ -10608,6 +14788,79 @@ module hipblas
             type(c_ptr), value :: AP
             integer(c_int), value :: batch_count
         end function hipblasZsprBatched
+    end interface
+
+    ! sprBatched_64
+    interface
+        function hipblasSsprBatched_64(handle, uplo, n, alpha, x, incx, AP, batch_count) &
+            bind(c, name='hipblasSsprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsprBatched_64
+    end interface
+
+    interface
+        function hipblasDsprBatched_64(handle, uplo, n, alpha, x, incx, AP, batch_count) &
+            bind(c, name='hipblasDsprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsprBatched_64
+    end interface
+
+    interface
+        function hipblasCsprBatched_64(handle, uplo, n, alpha, x, incx, AP, batch_count) &
+            bind(c, name='hipblasCsprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsprBatched_64
+    end interface
+
+    interface
+        function hipblasZsprBatched_64(handle, uplo, n, alpha, x, incx, AP, batch_count) &
+            bind(c, name='hipblasZsprBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsprBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsprBatched_64
     end interface
 
     ! sprStridedBatched
@@ -10695,6 +14948,91 @@ module hipblas
         end function hipblasZsprStridedBatched
     end interface
 
+    ! sprStridedBatched_64
+    interface
+        function hipblasSsprStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           AP, stride_AP, batch_count) &
+            bind(c, name='hipblasSsprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsprStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDsprStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           AP, stride_AP, batch_count) &
+            bind(c, name='hipblasDsprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsprStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCsprStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           AP, stride_AP, batch_count) &
+            bind(c, name='hipblasCsprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsprStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZsprStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           AP, stride_AP, batch_count) &
+            bind(c, name='hipblasZsprStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsprStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsprStridedBatched_64
+    end interface
+
     ! spr2
     interface
         function hipblasSspr2(handle, uplo, n, alpha, x, incx, &
@@ -10734,6 +15072,47 @@ module hipblas
             integer(c_int), value :: incy
             type(c_ptr), value :: AP
         end function hipblasDspr2
+    end interface
+
+    ! spr2_64
+    interface
+        function hipblasSspr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, AP) &
+            bind(c, name='hipblasSspr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+        end function hipblasSspr2_64
+    end interface
+
+    interface
+        function hipblasDspr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, AP) &
+            bind(c, name='hipblasDspr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+        end function hipblasDspr2_64
     end interface
 
     ! spr2Batched
@@ -10777,6 +15156,49 @@ module hipblas
             type(c_ptr), value :: AP
             integer(c_int), value :: batch_count
         end function hipblasDspr2Batched
+    end interface
+
+    ! spr2Batched_64
+    interface
+        function hipblasSspr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, AP, batch_count) &
+            bind(c, name='hipblasSspr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSspr2Batched_64
+    end interface
+
+    interface
+        function hipblasDspr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, AP, batch_count) &
+            bind(c, name='hipblasDspr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDspr2Batched_64
     end interface
 
     ! spr2StridedBatched
@@ -10826,6 +15248,55 @@ module hipblas
             integer(c_int64_t), value :: stride_AP
             integer(c_int), value :: batch_count
         end function hipblasDspr2StridedBatched
+    end interface
+
+    ! spr2StridedBatched_64
+    interface
+        function hipblasSspr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasSspr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSspr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSspr2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasDspr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, AP, stride_AP, batch_count) &
+            bind(c, name='hipblasDspr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDspr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: AP
+            integer(c_int64_t), value :: stride_AP
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDspr2StridedBatched_64
     end interface
 
     ! syr
@@ -10899,6 +15370,79 @@ module hipblas
             type(c_ptr), value :: A
             integer(c_int), value :: lda
         end function hipblasZsyr
+    end interface
+
+    ! syr_64
+    interface
+        function hipblasSsyr_64(handle, uplo, n, alpha, x, incx, A, lda) &
+            bind(c, name='hipblasSsyr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasSsyr_64
+    end interface
+
+    interface
+        function hipblasDsyr_64(handle, uplo, n, alpha, x, incx, A, lda) &
+            bind(c, name='hipblasDsyr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasDsyr_64
+    end interface
+
+    interface
+        function hipblasCsyr_64(handle, uplo, n, alpha, x, incx, A, lda) &
+            bind(c, name='hipblasCsyr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCsyr_64
+    end interface
+
+    interface
+        function hipblasZsyr_64(handle, uplo, n, alpha, x, incx, A, lda) &
+            bind(c, name='hipblasZsyr_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyr_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZsyr_64
     end interface
 
     ! syrBatched
@@ -10976,6 +15520,83 @@ module hipblas
             integer(c_int), value :: lda
             integer(c_int), value :: batch_count
         end function hipblasZsyrBatched
+    end interface
+
+    ! syrBatched_64
+    interface
+        function hipblasSsyrBatched_64(handle, uplo, n, alpha, x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasSsyrBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyrBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsyrBatched_64
+    end interface
+
+    interface
+        function hipblasDsyrBatched_64(handle, uplo, n, alpha, x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasDsyrBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyrBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsyrBatched_64
+    end interface
+
+    interface
+        function hipblasCsyrBatched_64(handle, uplo, n, alpha, x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasCsyrBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyrBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsyrBatched_64
+    end interface
+
+    interface
+        function hipblasZsyrBatched_64(handle, uplo, n, alpha, x, incx, A, lda, batch_count) &
+            bind(c, name='hipblasZsyrBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyrBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsyrBatched_64
     end interface
 
     ! syrStridedBatched
@@ -11067,6 +15688,95 @@ module hipblas
         end function hipblasZsyrStridedBatched
     end interface
 
+    ! syrStridedBatched_64
+    interface
+        function hipblasSsyrStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasSsyrStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyrStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsyrStridedBatched_64
+    end interface
+
+    interface
+        function hipblasDsyrStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasDsyrStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyrStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsyrStridedBatched_64
+    end interface
+
+    interface
+        function hipblasCsyrStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCsyrStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyrStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsyrStridedBatched_64
+    end interface
+
+    interface
+        function hipblasZsyrStridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                           A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZsyrStridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyrStridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsyrStridedBatched_64
+    end interface
+
     ! syr2
     interface
         function hipblasSsyr2(handle, uplo, n, alpha, x, incx, &
@@ -11150,6 +15860,91 @@ module hipblas
             type(c_ptr), value :: A
             integer(c_int), value :: lda
         end function hipblasZsyr2
+    end interface
+
+    ! syr2_64
+    interface
+        function hipblasSsyr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasSsyr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasSsyr2_64
+    end interface
+
+    interface
+        function hipblasDsyr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasDsyr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasDsyr2_64
+    end interface
+
+    interface
+        function hipblasCsyr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasCsyr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasCsyr2_64
+    end interface
+
+    interface
+        function hipblasZsyr2_64(handle, uplo, n, alpha, x, incx, &
+                              y, incy, A, lda) &
+            bind(c, name='hipblasZsyr2_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyr2_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+        end function hipblasZsyr2_64
     end interface
 
     ! syr2Batched
@@ -11239,6 +16034,95 @@ module hipblas
             integer(c_int), value :: lda
             integer(c_int), value :: batch_count
         end function hipblasZsyr2Batched
+    end interface
+
+    ! syr2Batched_64
+    interface
+        function hipblasSsyr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasSsyr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsyr2Batched_64
+    end interface
+
+    interface
+        function hipblasDsyr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasDsyr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsyr2Batched_64
+    end interface
+
+    interface
+        function hipblasCsyr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasCsyr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsyr2Batched_64
+    end interface
+
+    interface
+        function hipblasZsyr2Batched_64(handle, uplo, n, alpha, x, incx, &
+                                     y, incy, A, lda, batch_count) &
+            bind(c, name='hipblasZsyr2Batched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyr2Batched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsyr2Batched_64
     end interface
 
     ! syr2StridedBatched
@@ -11340,6 +16224,107 @@ module hipblas
             integer(c_int64_t), value :: stride_A
             integer(c_int), value :: batch_count
         end function hipblasZsyr2StridedBatched
+    end interface
+
+    ! syr2StridedBatched_64
+    interface
+        function hipblasSsyr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasSsyr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasSsyr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasSsyr2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasDsyr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasDsyr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDsyr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasDsyr2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasCsyr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasCsyr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasCsyr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasCsyr2StridedBatched_64
+    end interface
+
+    interface
+        function hipblasZsyr2StridedBatched_64(handle, uplo, n, alpha, x, incx, stride_x, &
+                                            y, incy, stride_y, A, lda, stride_A, batch_count) &
+            bind(c, name='hipblasZsyr2StridedBatched_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasZsyr2StridedBatched_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_FILL_MODE_FULL)), value :: uplo
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: x
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stride_x
+            type(c_ptr), value :: y
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stride_y
+            type(c_ptr), value :: A
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_A
+            integer(c_int64_t), value :: batch_count
+        end function hipblasZsyr2StridedBatched_64
     end interface
 
     !--------!
@@ -15436,6 +20421,76 @@ module hipblas
         end function hipblasAxpyStridedBatchedEx
     end interface
 
+    ! axpyEx_64
+    interface
+        function hipblasAxpyEx_64(handle, n, alpha, alphaType, x, xType, incx, y, yType, incy, executionType) &
+            bind(c, name='hipblasAxpyEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasAxpyEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyEx_64
+    end interface
+
+    interface
+        function hipblasAxpyBatchedEx_64(handle, n, alpha, alphaType, x, xType, incx, &
+                                      y, yType, incy, batch_count, executionType) &
+            bind(c, name='hipblasAxpyBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasAxpyBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyBatchedEx_64
+    end interface
+
+    interface
+        function hipblasAxpyStridedBatchedEx_64(handle, n, alpha, alphaType, x, xType, incx, stridex, &
+                                             y, yType, incy, stridey, batch_count, executionType) &
+            bind(c, name='hipblasAxpyStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasAxpyStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasAxpyStridedBatchedEx_64
+    end interface
+
     ! dotEx
     interface
         function hipblasDotEx(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType) &
@@ -15575,6 +20630,145 @@ module hipblas
         end function hipblasDotcStridedBatchedEx
     end interface
 
+    ! dotEx_64
+    interface
+        function hipblasDotEx_64(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType) &
+            bind(c, name='hipblasDotEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotEx_64
+    end interface
+
+    interface
+        function hipblasDotcEx_64(handle, n, x, xType, incx, y, yType, incy, result, resultType, executionType) &
+            bind(c, name='hipblasDotcEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotcEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcEx_64
+    end interface
+
+    interface
+        function hipblasDotBatchedEx_64(handle, n, x, xType, incx, &
+                                     y, yType, incy, batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasDotBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotBatchedEx_64
+    end interface
+
+    interface
+        function hipblasDotcBatchedEx_64(handle, n, x, xType, incx, &
+                                      y, yType, incy, batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasDotcBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotcBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcBatchedEx_64
+    end interface
+
+    interface
+        function hipblasDotStridedBatchedEx_64(handle, n, x, xType, incx, stridex, &
+                                            y, yType, incy, stridey, batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasDotStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotStridedBatchedEx_64
+    end interface
+
+    interface
+        function hipblasDotcStridedBatchedEx_64(handle, n, x, xType, incx, stridex, &
+                                             y, yType, incy, stridey, batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasDotcStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasDotcStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stridey
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasDotcStridedBatchedEx_64
+    end interface
+
     ! nrm2Ex
     interface
         function hipblasNrm2Ex(handle, n, x, xType, incx, result, resultType, executionType) &
@@ -15633,6 +20827,66 @@ module hipblas
             integer(kind(HIPBLAS_R_16F)), value :: resultType
             integer(kind(HIPBLAS_R_16F)), value :: executionType
         end function hipblasNrm2StridedBatchedEx
+    end interface
+
+    ! nrm2Ex_64
+    interface
+        function hipblasNrm2Ex_64(handle, n, x, xType, incx, result, resultType, executionType) &
+            bind(c, name='hipblasNrm2Ex_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasNrm2Ex_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2Ex_64
+    end interface
+
+    interface
+        function hipblasNrm2BatchedEx_64(handle, n, x, xType, incx, &
+                                      batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasNrm2BatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasNrm2BatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2BatchedEx_64
+    end interface
+
+    interface
+        function hipblasNrm2StridedBatchedEx_64(handle, n, x, xType, incx, stridex, &
+                                             batch_count, result, resultType, executionType) &
+            bind(c, name='hipblasNrm2StridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasNrm2StridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            integer(c_int64_t), value :: batch_count
+            type(c_ptr), value :: result
+            integer(kind(HIPBLAS_R_16F)), value :: resultType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasNrm2StridedBatchedEx_64
     end interface
 
     ! rotEx
@@ -15708,6 +20962,79 @@ module hipblas
         end function hipblasRotStridedBatchedEx
     end interface
 
+    ! rotEx_64
+    interface
+        function hipblasRotEx_64(handle, n, x, xType, incx, y, yType, incy, c, s, csType, executionType) &
+            bind(c, name='hipblasRotEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasRotEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotEx_64
+    end interface
+
+    interface
+        function hipblasRotBatchedEx_64(handle, n, x, xType, incx, &
+                                     y, yType, incy, c, s, csType, batch_count, executionType) &
+            bind(c, name='hipblasRotBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasRotBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotBatchedEx_64
+    end interface
+
+    interface
+        function hipblasRotStridedBatchedEx_64(handle, n, x, xType, incx, stridex, &
+                                            y, yType, incy, stridey, c, s, csType, batch_count, executionType) &
+            bind(c, name='hipblasRotStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasRotStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            type(c_ptr), value :: y
+            integer(kind(HIPBLAS_R_16F)), value :: yType
+            integer(c_int64_t), value :: incy
+            integer(c_int64_t), value :: stridey
+            type(c_ptr), value :: c
+            type(c_ptr), value :: s
+            integer(kind(HIPBLAS_R_16F)), value :: csType
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasRotStridedBatchedEx_64
+    end interface
+
     ! scalEx
     interface
         function hipblasScalEx(handle, n, alpha, alphaType, x, xType, incx, executionType) &
@@ -15766,6 +21093,66 @@ module hipblas
             integer(c_int), value :: batch_count
             integer(kind(HIPBLAS_R_16F)), value :: executionType
         end function hipblasScalStridedBatchedEx
+    end interface
+
+    ! scalEx_64
+    interface
+        function hipblasScalEx_64(handle, n, alpha, alphaType, x, xType, incx, executionType) &
+            bind(c, name='hipblasScalEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScalEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalEx_64
+    end interface
+
+    interface
+        function hipblasScalBatchedEx_64(handle, n, alpha, alphaType, x, xType, incx, &
+                                      batch_count, executionType) &
+            bind(c, name='hipblasScalBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScalBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalBatchedEx_64
+    end interface
+
+    interface
+        function hipblasScalStridedBatchedEx_64(handle, n, alpha, alphaType, x, xType, incx, stridex, &
+                                             batch_count, executionType) &
+            bind(c, name='hipblasScalStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasScalStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(c_int64_t), value :: n
+            type(c_ptr), value :: alpha
+            integer(kind(HIPBLAS_R_16F)), value :: alphaType
+            type(c_ptr), value :: x
+            integer(kind(HIPBLAS_R_16F)), value :: xType
+            integer(c_int64_t), value :: incx
+            integer(c_int64_t), value :: stridex
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: executionType
+        end function hipblasScalStridedBatchedEx_64
     end interface
 
     !--------!

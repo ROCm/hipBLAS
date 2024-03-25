@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,9 +48,11 @@ inline void testname_axpy_strided_batched_ex(const Arguments& arg, std::string& 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_strided_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyStridedBatchedExFn
-        = FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
+        = arg.api == FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
+    auto hipblasAxpyStridedBatchedExFn_64 = arg.api == FORTRAN_64
+                                                ? hipblasAxpyStridedBatchedEx_64Fortran
+                                                : hipblasAxpyStridedBatchedEx_64;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -86,138 +88,164 @@ void testing_axpy_strided_batched_ex_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(nullptr,
-                                                            N,
-                                                            alpha,
-                                                            alphaType,
-                                                            dx,
-                                                            xType,
-                                                            incx,
-                                                            stridex,
-                                                            dy,
-                                                            yType,
-                                                            incy,
-                                                            stridey,
-                                                            batch_count,
-                                                            executionType),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasAxpyStridedBatchedExFn,
+                    (nullptr,
+                     N,
+                     alpha,
+                     alphaType,
+                     dx,
+                     xType,
+                     incx,
+                     stridex,
+                     dy,
+                     yType,
+                     incy,
+                     stridey,
+                     batch_count,
+                     executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
-                                                                N,
-                                                                nullptr,
-                                                                alphaType,
-                                                                dx,
-                                                                xType,
-                                                                incx,
-                                                                stridex,
-                                                                dy,
-                                                                yType,
-                                                                incy,
-                                                                stridey,
-                                                                batch_count,
-                                                                executionType),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasAxpyStridedBatchedExFn,
+                        (handle,
+                         N,
+                         nullptr,
+                         alphaType,
+                         dx,
+                         xType,
+                         incx,
+                         stridex,
+                         dy,
+                         yType,
+                         incy,
+                         stridey,
+                         batch_count,
+                         executionType));
 
             // Can only check for nullptr for dx/dy with host mode because
             // device mode may not check as it could be quick-return success
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
-                                                                    N,
-                                                                    alpha,
-                                                                    alphaType,
-                                                                    nullptr,
-                                                                    xType,
-                                                                    incx,
-                                                                    stridex,
-                                                                    dy,
-                                                                    yType,
-                                                                    incy,
-                                                                    stridey,
-                                                                    batch_count,
-                                                                    executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyStridedBatchedExFn(handle,
-                                                                    N,
-                                                                    alpha,
-                                                                    alphaType,
-                                                                    dx,
-                                                                    xType,
-                                                                    incx,
-                                                                    stridex,
-                                                                    nullptr,
-                                                                    yType,
-                                                                    incy,
-                                                                    stridey,
-                                                                    batch_count,
-                                                                    executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyStridedBatchedExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             incx,
+                             stridex,
+                             dy,
+                             yType,
+                             incy,
+                             stridey,
+                             batch_count,
+                             executionType));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyStridedBatchedExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             dx,
+                             xType,
+                             incx,
+                             stridex,
+                             nullptr,
+                             yType,
+                             incy,
+                             stridey,
+                             batch_count,
+                             executionType));
+
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                                 : HIPBLAS_STATUS_SUCCESS,
+                            hipblasAxpyStridedBatchedExFn,
+                            (handle,
+                             c_i32_overflow,
+                             nullptr,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             1,
+                             stridex,
+                             nullptr,
+                             yType,
+                             incy,
+                             stridey,
+                             c_i32_overflow,
+                             executionType));
             }
         }
 
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                          0,
-                                                          nullptr,
-                                                          alphaType,
-                                                          nullptr,
-                                                          xType,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          yType,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count,
-                                                          executionType));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                          N,
-                                                          zero,
-                                                          alphaType,
-                                                          nullptr,
-                                                          xType,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          yType,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count,
-                                                          executionType));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                          N,
-                                                          nullptr,
-                                                          alphaType,
-                                                          nullptr,
-                                                          xType,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          yType,
-                                                          incy,
-                                                          stridey,
-                                                          0,
-                                                          executionType));
+        DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+                   (handle,
+                    0,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    stridex,
+                    nullptr,
+                    yType,
+                    incy,
+                    stridey,
+                    batch_count,
+                    executionType));
+        DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+                   (handle,
+                    N,
+                    zero,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    stridex,
+                    nullptr,
+                    yType,
+                    incy,
+                    stridey,
+                    batch_count,
+                    executionType));
+        DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    stridex,
+                    nullptr,
+                    yType,
+                    incy,
+                    stridey,
+                    0,
+                    executionType));
     }
 }
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_strided_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyStridedBatchedExFn
-        = FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
-    hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+        = arg.api == FORTRAN ? hipblasAxpyStridedBatchedExFortran : hipblasAxpyStridedBatchedEx;
+    auto hipblasAxpyStridedBatchedExFn_64 = arg.api == FORTRAN_64
+                                                ? hipblasAxpyStridedBatchedEx_64Fortran
+                                                : hipblasAxpyStridedBatchedEx_64;
 
-    int    N            = arg.N;
-    int    incx         = arg.incx;
-    int    incy         = arg.incy;
-    double stride_scale = arg.stride_scale;
-    int    batch_count  = arg.batch_count;
+    int64_t N            = arg.N;
+    int64_t incx         = arg.incx;
+    int64_t incy         = arg.incy;
+    double  stride_scale = arg.stride_scale;
+    int64_t batch_count  = arg.batch_count;
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
 
     hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
     hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
@@ -233,20 +261,21 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                          N,
-                                                          nullptr,
-                                                          alphaType,
-                                                          nullptr,
-                                                          xType,
-                                                          incx,
-                                                          stridex,
-                                                          nullptr,
-                                                          yType,
-                                                          incy,
-                                                          stridey,
-                                                          batch_count,
-                                                          executionType));
+        DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    stridex,
+                    nullptr,
+                    yType,
+                    incy,
+                    stridey,
+                    batch_count,
+                    executionType));
         return;
     }
 
@@ -288,39 +317,41 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
          HIPBLAS
     =================================================================== */
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                      N,
-                                                      &h_alpha,
-                                                      alphaType,
-                                                      dx,
-                                                      xType,
-                                                      incx,
-                                                      stridex,
-                                                      dy,
-                                                      yType,
-                                                      incy,
-                                                      stridey,
-                                                      batch_count,
-                                                      executionType));
+    DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+               (handle,
+                N,
+                &h_alpha,
+                alphaType,
+                dx,
+                xType,
+                incx,
+                stridex,
+                dy,
+                yType,
+                incy,
+                stridey,
+                batch_count,
+                executionType));
 
     CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
     CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                      N,
-                                                      d_alpha,
-                                                      alphaType,
-                                                      dx,
-                                                      xType,
-                                                      incx,
-                                                      stridex,
-                                                      dy,
-                                                      yType,
-                                                      incy,
-                                                      stridey,
-                                                      batch_count,
-                                                      executionType));
+    DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
+               (handle,
+                N,
+                d_alpha,
+                alphaType,
+                dx,
+                xType,
+                incx,
+                stridex,
+                dy,
+                yType,
+                incy,
+                stridey,
+                batch_count,
+                executionType));
 
     CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
 
@@ -329,7 +360,7 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_axpy(N, h_alpha, hx + b * stridex, incx, hy_cpu + b * stridey, incy);
         }
@@ -363,20 +394,21 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyStridedBatchedExFn(handle,
-                                                              N,
-                                                              d_alpha,
-                                                              alphaType,
-                                                              dx,
-                                                              xType,
-                                                              incx,
-                                                              stridex,
-                                                              dy,
-                                                              yType,
-                                                              incy,
-                                                              stridey,
-                                                              batch_count,
-                                                              executionType));
+            DAPI_DISPATCH(hipblasAxpyStridedBatchedExFn,
+                          (handle,
+                           N,
+                           d_alpha,
+                           alphaType,
+                           dx,
+                           xType,
+                           incx,
+                           stridex,
+                           dy,
+                           yType,
+                           incy,
+                           stridey,
+                           batch_count,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

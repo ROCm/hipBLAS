@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,10 @@ inline void testname_axpy_batched_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_batched_ex_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasAxpyBatchedExFn = FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
+    auto hipblasAxpyBatchedExFn
+        = arg.api == FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
+    auto hipblasAxpyBatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpyBatchedEx_64Fortran : hipblasAxpyBatchedEx_64;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -81,118 +83,143 @@ void testing_axpy_batched_ex_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(hipblasAxpyBatchedExFn(nullptr,
-                                                     N,
-                                                     alpha,
-                                                     alphaType,
-                                                     dx,
-                                                     xType,
-                                                     incx,
-                                                     dy,
-                                                     yType,
-                                                     incy,
-                                                     batch_count,
-                                                     executionType),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasAxpyBatchedExFn,
+                    (nullptr,
+                     N,
+                     alpha,
+                     alphaType,
+                     dx,
+                     xType,
+                     incx,
+                     dy,
+                     yType,
+                     incy,
+                     batch_count,
+                     executionType));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasAxpyBatchedExFn(handle,
-                                                         N,
-                                                         nullptr,
-                                                         alphaType,
-                                                         dx,
-                                                         xType,
-                                                         incx,
-                                                         dy,
-                                                         yType,
-                                                         incy,
-                                                         batch_count,
-                                                         executionType),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasAxpyBatchedExFn,
+                        (handle,
+                         N,
+                         nullptr,
+                         alphaType,
+                         dx,
+                         xType,
+                         incx,
+                         dy,
+                         yType,
+                         incy,
+                         batch_count,
+                         executionType));
 
             // Can only check for nullptr for dx/dy with host mode because
             // device mode may not check as it could be quick-return success
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyBatchedExFn(handle,
-                                                             N,
-                                                             alpha,
-                                                             alphaType,
-                                                             nullptr,
-                                                             xType,
-                                                             incx,
-                                                             dy,
-                                                             yType,
-                                                             incy,
-                                                             batch_count,
-                                                             executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasAxpyBatchedExFn(handle,
-                                                             N,
-                                                             alpha,
-                                                             alphaType,
-                                                             dx,
-                                                             xType,
-                                                             incx,
-                                                             nullptr,
-                                                             yType,
-                                                             incy,
-                                                             batch_count,
-                                                             executionType),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyBatchedExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             incx,
+                             dy,
+                             yType,
+                             incy,
+                             batch_count,
+                             executionType));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasAxpyBatchedExFn,
+                            (handle,
+                             N,
+                             alpha,
+                             alphaType,
+                             dx,
+                             xType,
+                             incx,
+                             nullptr,
+                             yType,
+                             incy,
+                             batch_count,
+                             executionType));
+
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_INVALID_VALUE
+                                                 : HIPBLAS_STATUS_SUCCESS,
+                            hipblasAxpyBatchedExFn,
+                            (handle,
+                             c_i32_overflow,
+                             nullptr,
+                             alphaType,
+                             nullptr,
+                             xType,
+                             1,
+                             nullptr,
+                             yType,
+                             incy,
+                             c_i32_overflow,
+                             executionType));
             }
         }
 
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                                   0,
-                                                   nullptr,
-                                                   alphaType,
-                                                   nullptr,
-                                                   xType,
-                                                   incx,
-                                                   nullptr,
-                                                   yType,
-                                                   incy,
-                                                   batch_count,
-                                                   executionType));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                                   N,
-                                                   zero,
-                                                   alphaType,
-                                                   nullptr,
-                                                   xType,
-                                                   incx,
-                                                   nullptr,
-                                                   yType,
-                                                   incy,
-                                                   batch_count,
-                                                   executionType));
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                                   N,
-                                                   nullptr,
-                                                   alphaType,
-                                                   nullptr,
-                                                   xType,
-                                                   incx,
-                                                   nullptr,
-                                                   yType,
-                                                   incy,
-                                                   0,
-                                                   executionType));
+        DAPI_CHECK(hipblasAxpyBatchedExFn,
+                   (handle,
+                    0,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    batch_count,
+                    executionType));
+        DAPI_CHECK(hipblasAxpyBatchedExFn,
+                   (handle,
+                    N,
+                    zero,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    batch_count,
+                    executionType));
+        DAPI_CHECK(hipblasAxpyBatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    0,
+                    executionType));
     }
 }
 
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_batched_ex(const Arguments& arg)
 {
-    bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasAxpyBatchedExFn = FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
+    auto hipblasAxpyBatchedExFn
+        = arg.api == FORTRAN ? hipblasAxpyBatchedExFortran : hipblasAxpyBatchedEx;
+    auto hipblasAxpyBatchedExFn_64
+        = arg.api == FORTRAN_64 ? hipblasAxpyBatchedEx_64Fortran : hipblasAxpyBatchedEx_64;
 
-    int N           = arg.N;
-    int incx        = arg.incx;
-    int incy        = arg.incy;
-    int batch_count = arg.batch_count;
+    int64_t N           = arg.N;
+    int64_t incx        = arg.incx;
+    int64_t incy        = arg.incy;
+    int64_t batch_count = arg.batch_count;
 
     hipblasDatatype_t alphaType     = arg.a_type;
     hipblasDatatype_t xType         = arg.b_type;
@@ -205,23 +232,24 @@ void testing_axpy_batched_ex(const Arguments& arg)
     // memory
     if(N <= 0 || batch_count <= 0)
     {
-        CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                                   N,
-                                                   nullptr,
-                                                   alphaType,
-                                                   nullptr,
-                                                   xType,
-                                                   incx,
-                                                   nullptr,
-                                                   yType,
-                                                   incy,
-                                                   batch_count,
-                                                   executionType));
+        DAPI_CHECK(hipblasAxpyBatchedExFn,
+                   (handle,
+                    N,
+                    nullptr,
+                    alphaType,
+                    nullptr,
+                    xType,
+                    incx,
+                    nullptr,
+                    yType,
+                    incy,
+                    batch_count,
+                    executionType));
         return;
     }
 
-    int abs_incx = incx < 0 ? -incx : incx;
-    int abs_incy = incy < 0 ? -incy : incy;
+    int64_t abs_incx = incx < 0 ? -incx : incx;
+    int64_t abs_incy = incy < 0 ? -incy : incy;
 
     Ta h_alpha = arg.get_alpha<Ta>();
 
@@ -255,35 +283,37 @@ void testing_axpy_batched_ex(const Arguments& arg)
          HIPBLAS
     =================================================================== */
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                               N,
-                                               &h_alpha,
-                                               alphaType,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               dy.ptr_on_device(),
-                                               yType,
-                                               incy,
-                                               batch_count,
-                                               executionType));
+    DAPI_CHECK(hipblasAxpyBatchedExFn,
+               (handle,
+                N,
+                &h_alpha,
+                alphaType,
+                dx.ptr_on_device(),
+                xType,
+                incx,
+                dy.ptr_on_device(),
+                yType,
+                incy,
+                batch_count,
+                executionType));
 
     CHECK_HIP_ERROR(hy_host.transfer_from(dy));
     CHECK_HIP_ERROR(dy.transfer_from(hy_device));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-    CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                               N,
-                                               d_alpha,
-                                               alphaType,
-                                               dx.ptr_on_device(),
-                                               xType,
-                                               incx,
-                                               dy.ptr_on_device(),
-                                               yType,
-                                               incy,
-                                               batch_count,
-                                               executionType));
+    DAPI_CHECK(hipblasAxpyBatchedExFn,
+               (handle,
+                N,
+                d_alpha,
+                alphaType,
+                dx.ptr_on_device(),
+                xType,
+                incx,
+                dy.ptr_on_device(),
+                yType,
+                incy,
+                batch_count,
+                executionType));
 
     CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
@@ -292,7 +322,7 @@ void testing_axpy_batched_ex(const Arguments& arg)
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_axpy(N, h_alpha, hx[b], incx, hy_cpu[b], incy);
         }
@@ -326,18 +356,19 @@ void testing_axpy_batched_ex(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasAxpyBatchedExFn(handle,
-                                                       N,
-                                                       d_alpha,
-                                                       alphaType,
-                                                       dx.ptr_on_device(),
-                                                       xType,
-                                                       incx,
-                                                       dy.ptr_on_device(),
-                                                       yType,
-                                                       incy,
-                                                       batch_count,
-                                                       executionType));
+            DAPI_DISPATCH(hipblasAxpyBatchedExFn,
+                          (handle,
+                           N,
+                           d_alpha,
+                           alphaType,
+                           dx.ptr_on_device(),
+                           xType,
+                           incx,
+                           dy.ptr_on_device(),
+                           yType,
+                           incy,
+                           batch_count,
+                           executionType));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 
