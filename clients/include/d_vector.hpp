@@ -32,12 +32,7 @@
 
 #define MEM_MAX_GUARD_PAD 8192
 
-<<<<<<< HEAD
 // global for device memory padding
-=======
-// global for device memory padding see d_vector.hpp
-
->>>>>>> memory allocators for vector and matrix variants
 extern size_t g_DVEC_PAD;
 void          d_vector_set_pad_length(size_t pad);
 
@@ -56,15 +51,9 @@ private:
     size_t m_size;
     size_t m_pad, m_guard_len;
     size_t m_bytes;
-<<<<<<< HEAD
 
     static bool m_init_guard;
 
-=======
-
-    static bool m_init_guard;
-
->>>>>>> memory allocators for vector and matrix variants
 public:
     inline size_t nmemb() const noexcept
     {
