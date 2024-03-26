@@ -368,6 +368,7 @@ def run_cmd(exe, opts):
 
 def main():
     global args
+    print("OS Info:")
     os_detect()
     args = parse_args()
 
