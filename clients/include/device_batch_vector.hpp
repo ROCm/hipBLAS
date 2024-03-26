@@ -21,78 +21,64 @@
  *
  * ************************************************************************ */
 
-#pragma once
-
 #include "d_vector.hpp"
 
 //
-// Local declaration of the host batch matrix.
+// Local declaration of the host strided batch vector.
 //
 template <typename T>
-class host_batch_matrix;
+class host_batch_vector;
 
 //!
-//! @brief  pseudo-matrix subclass which uses a batch of device memory pointers and
+//! @brief  pseudo-vector subclass which uses a batch of device memory pointers and
 //!  - an array of pointers in host memory
 //!  - an array of pointers in device memory
 //!
 template <typename T>
-class device_batch_matrix : public d_vector<T>
+class device_batch_vector : public d_vector<T>
 {
 public:
     //!
     //! @brief Disallow copying.
     //!
-    device_batch_matrix(const device_batch_matrix&) = delete;
+    device_batch_vector(const device_batch_vector&) = delete;
 
     //!
     //! @brief Disallow assigning.
     //!
-    device_batch_matrix& operator=(const device_batch_matrix&) = delete;
+    device_batch_vector& operator=(const device_batch_vector&) = delete;
 
     //!
     //! @brief Constructor.
-    //! @param m           The number of rows of the Matrix.
-    //! @param n           The number of cols of the Matrix.
-    //! @param lda         The leading dimension of the Matrix.
+    //! @param n           The length of the vector.
+    //! @param inc         The increment.
     //! @param batch_count The batch count.
     //! @param HMM         HipManagedMemory Flag.
-    //! @param offset      The offset to the memory of each Matrix as held by device_data.
     //!
-    explicit device_batch_matrix(
-        size_t m, size_t n, size_t lda, int64_t batch_count, bool HMM = false, size_t offset = 0)
-        : d_vector<T>(n * lda * batch_count, HMM) // d_vector is single block for all batches
-        , m_m(m)
+    explicit device_batch_vector(size_t n, int64_t inc, int64_t batch_count, bool HMM = false)
+        : d_vector<T>(calculate_nmemb(n, inc) * batch_count, HMM)
+        // d_vector is a single contiguous block for performance
         , m_n(n)
-        , m_lda(lda)
-        , m_nmemb(n * lda)
+        , m_inc(inc ? inc : 1)
+        , m_nmemb(calculate_nmemb(n, inc))
         , m_batch_count(batch_count)
-        , m_offset(HMM ? 0 : offset)
     {
-        if(false == this->try_initialize_memory())
+        if(false == try_initialize_memory())
         {
-            this->free_memory();
+            free_memory();
         }
     }
 
     //!
     //! @brief Destructor.
     //!
-    ~device_batch_matrix()
+    ~device_batch_vector()
     {
-        this->free_memory();
+        free_memory();
     }
 
     //!
-    //! @brief Returns the rows of the Matrix.
-    //!
-    size_t m() const
-    {
-        return m_m;
-    }
-
-    //!
-    //! @brief Returns the cols of the Matrix.
+    //! @brief Returns the length of the vector.
     //!
     size_t n() const
     {
@@ -100,11 +86,11 @@ public:
     }
 
     //!
-    //! @brief Returns the leading dimension of the Matrix.
+    //! @brief Returns the increment of the vector.
     //!
-    size_t lda() const
+    int64_t inc() const
     {
-        return m_lda;
+        return m_inc;
     }
 
     //!
@@ -116,11 +102,11 @@ public:
     }
 
     //!
-    //! @brief Returns the value of offset.
+    //! @brief Returns the stride value.
     //!
-    int64_t offset() const
+    hipblasStride stride() const
     {
-        return m_offset;
+        return 0;
     }
 
     //!
@@ -175,7 +161,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const *() const
+    operator const T* const*() const
     {
         return m_data;
     }
@@ -199,14 +185,14 @@ public:
     }
 
     //!
-    //! @brief Copy from a host batched matrix.
-    //! @param that The host_batch_matrix to copy.
+    //! @brief Copy from a host batched vector.
+    //! @param that The host_batch_vector to copy.
     //!
-    hipError_t transfer_from(const host_batch_matrix<T>& that)
+    hipError_t transfer_from(const host_batch_vector<T>& that)
     {
         hipError_t hip_err;
         //
-        // Copy each matrix.
+        // Copy each vector.
         //
         hipMemcpyKind kind = this->use_HMM ? hipMemcpyHostToHost : hipMemcpyHostToDevice;
         if(m_batch_count > 0)
@@ -235,14 +221,18 @@ public:
     }
 
 private:
-    size_t  m_m{};
     size_t  m_n{};
-    size_t  m_lda{};
-    size_t  m_nmemb{};
+    int64_t m_inc{};
+    size_t  m_nmemb{}; // in one batch
     int64_t m_batch_count{};
-    size_t  m_offset{};
     T**     m_data{};
     T**     m_device_data{};
+
+    static size_t calculate_nmemb(size_t n, int64_t inc)
+    {
+        // allocate even for zero n
+        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
+    }
 
     //!
     //! @brief Try to allocate the resources.
@@ -281,24 +271,11 @@ private:
 
                 if(success && !this->use_HMM)
                 {
-                    if(m_offset)
-                    {
-                        for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
-                            m_data[batch_index] += m_offset;
-                    }
-
                     success = (hipSuccess
                                == hipMemcpy(m_device_data,
                                             m_data,
                                             sizeof(T*) * m_batch_count,
                                             hipMemcpyHostToDevice));
-
-                    if(m_offset)
-                    {
-                        // don't want to deal with offset with m_data, just m_device_data.
-                        for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
-                            m_data[batch_index] -= m_offset;
-                    }
                 }
             }
         }

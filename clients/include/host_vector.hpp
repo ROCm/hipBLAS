@@ -21,11 +21,11 @@
  *
  * ************************************************************************ */
 
-#ifndef HIPBLAS_VECTOR_H_
-#define HIPBLAS_VECTOR_H_
+#ifndef HOST_VECTOR_H_
+#define HOST_VECTOR_H_
 
 #include "hipblas.h"
-#include "host_batched_vector.hpp"
+#include "host_batch_vector.hpp"
 #include "utility.h"
 #include <cinttypes>
 #include <cstdio>
