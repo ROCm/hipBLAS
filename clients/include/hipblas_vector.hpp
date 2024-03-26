@@ -81,18 +81,19 @@ private:
 //! @brief  Pseudo-vector subclass which uses host memory.
 //!
 template <typename T>
-struct host_vector : std::vector<T>
+struct host_vector : std::vector<T, host_memory_allocator<T>>
 {
     // Inherit constructors
-    using std::vector<T>::vector;
+    using std::vector<T, host_memory_allocator<T>>::vector;
 
     //!
     //! @brief Constructor.
+    //! @param  inc Element index increment. If zero treated as one
     //!
-    host_vector(size_t n, int64_t inc)
-        : std::vector<T>(n * std::abs(inc))
+    host_vector(size_t n, int64_t inc = 1)
+        : std::vector<T, host_memory_allocator<T>>(calculate_nmemb(n, inc))
         , m_n(n)
-        , m_inc(inc)
+        , m_inc(inc ? inc : 1)
     {
     }
 
@@ -101,7 +102,7 @@ struct host_vector : std::vector<T>
     //!
     template <typename U, std::enable_if_t<std::is_convertible<U, T>{}, int> = 0>
     host_vector(const host_vector<U>& x)
-        : std::vector<T>(x.size())
+        : std::vector<T, host_memory_allocator<T>>(x.size())
         , m_n(x.size())
         , m_inc(1)
     {
@@ -130,12 +131,12 @@ struct host_vector : std::vector<T>
     //!
     inline T& operator[](int64_t idx)
     {
-        return std::vector<T>::operator[]((size_t)idx);
+        return std::vector<T, host_memory_allocator<T>>::operator[]((size_t)idx);
     }
 
     inline const T& operator[](int64_t idx) const
     {
-        return std::vector<T>::operator[]((size_t)idx);
+        return std::vector<T, host_memory_allocator<T>>::operator[]((size_t)idx);
     }
 
     //!
@@ -197,8 +198,12 @@ struct host_vector : std::vector<T>
     }
 
 private:
-    size_t  m_n   = 0;
-    int64_t m_inc = 0;
+    size_t        m_n   = 0;
+    int64_t       m_inc = 0;
+    static size_t calculate_nmemb(size_t n, int64_t inc)
+    {
+        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
+    }
 };
 
 #endif

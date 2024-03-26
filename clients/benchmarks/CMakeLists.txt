@@ -44,6 +44,7 @@ set( hipblas_benchmark_common
       ../common/arg_check.cpp
       ../common/argument_model.cpp
       ../common/hipblas_template_specialization.cpp
+      ../common/host_alloc.cpp
       ${BLIS_CPP}
     )
 
