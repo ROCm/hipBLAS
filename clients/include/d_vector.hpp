@@ -30,6 +30,12 @@
 #include <cstdio>
 #include <iostream>
 
+//
+// Forward declaration of hipblas_init_nan
+//
+template <typename T>
+inline void hipblas_init_nan(T* A, size_t N);
+
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */
 template <typename T, size_t PAD, typename U>
@@ -69,8 +75,11 @@ protected:
         if((hipMalloc)(&d, bytes) != hipSuccess)
         {
             static char* lc = setlocale(LC_NUMERIC, "");
-            fprintf(stderr, "Error allocating %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
+            fprintf(
+                stderr, "Warning: hip can't allocate %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
             d = nullptr;
+
+            throw std::bad_alloc{}; //experimental will remome
         }
 #ifdef GOOGLE_TEST
         else

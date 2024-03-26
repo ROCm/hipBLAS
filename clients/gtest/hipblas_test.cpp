@@ -170,7 +170,7 @@ void catch_signals_and_exceptions_as_failures(std::function<void()> test, bool s
         }
         catch(const std::bad_alloc& e)
         {
-            GTEST_SKIP() << "Warning: Attempting to allocate more host memory than available.";
+            GTEST_SKIP() << LIMITED_RAM_STRING;
         }
         catch(const std::exception& e)
         {

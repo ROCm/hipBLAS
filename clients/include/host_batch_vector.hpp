@@ -24,9 +24,9 @@
 //
 #pragma once
 
+#include "host_alloc.hpp"
 #include <cmath>
 #include <string.h>
-
 //
 // Local declaration of the device batch vector.
 //
@@ -226,7 +226,8 @@ private:
 
     bool try_initialize_memory()
     {
-        bool success = (nullptr != (this->m_data = (T**)calloc(this->m_batch_count, sizeof(T*))));
+        bool success
+            = (nullptr != (this->m_data = (T**)host_calloc_throw(this->m_batch_count, sizeof(T*))));
         if(success)
         {
             size_t nmemb = size_t(this->m_n) * std::abs(this->m_inc);
@@ -236,7 +237,7 @@ private:
                 {
                     success = (nullptr
                                != (m_data[batch_index]
-                                   = (T*)calloc(m_nmemb * m_batch_count, sizeof(T))));
+                                   = (T*)host_calloc_throw(m_nmemb * m_batch_count, sizeof(T))));
                     if(false == success)
                     {
                         break;
