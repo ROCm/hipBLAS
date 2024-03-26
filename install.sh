@@ -356,8 +356,8 @@ cat <<EOF
     --cmake_install               Install minimum cmake version if required.
 
     --cuda, --use-cuda            Build library for CUDA backend (deprecated).
-                                  The target HIP platform is determined by `hipconfig --platform`.
-                                  To explicitly specify a platform, set the `HIP_PLATFORM` environment variable.
+                                  The target HIP platform is determined by \`hipconfig --platform\`.
+                                  To explicitly specify a platform, set the \`HIP_PLATFORM\` environment variable.
 
     -d, --dependencies            Build and install external dependencies. Dependencies are to be installed in /usr/local.
                                   This should be done only once (this does not install rocBLAS, rocSolver, or cuda).
@@ -408,7 +408,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer, --options rhickndgb: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer, --options :rhickndgb: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -426,6 +426,10 @@ while true; do
   case "${1}" in
     -h|--help)
         display_help
+        rmake_cmd="python3 ./rmake.py --help"
+        echo "Options provied by rmake.py script:"
+        echo $rmake_cmd
+        $rmake_cmd
         exit 0
         ;;
     -i|--install)
@@ -483,6 +487,8 @@ while true; do
         ;;
   esac
 done
+
+set -x
 
 build_dir=$(readlink -m ./build)
 printf "\033[32mCreating project build directory in: \033[33m${build_dir}\033[0m\n"
