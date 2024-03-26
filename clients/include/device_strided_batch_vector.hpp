@@ -189,27 +189,6 @@ public:
     }
 
     //!
-    //! @brief Broadcast data from one vector on host to each batch_count vectors.
-    //! @param that That vector on host.
-    //! @return The hip error.
-    //!
-    hipError_t broadcast_one_vector_from(const host_vector<T>& that)
-    {
-        hipError_t status             = hipSuccess;
-        size_t     single_vector_size = 1 + ((m_n ? m_n : 1) - 1) * std::abs(m_inc ? m_inc : 1);
-        for(int64_t batch_index = 0; batch_index < m_batch_count; batch_index++)
-        {
-            status = hipMemcpy(this->data() + (batch_index * m_stride),
-                               that.data(),
-                               sizeof(T) * single_vector_size,
-                               this->use_HMM ? hipMemcpyHostToHost : hipMemcpyHostToDevice);
-            if(status != hipSuccess)
-                break;
-        }
-        return status;
-    }
-
-    //!
     //! @brief Check if memory exists.
     //! @return hipSuccess if memory exists, hipErrorOutOfMemory otherwise.
     //!
