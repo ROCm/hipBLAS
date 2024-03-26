@@ -32,8 +32,7 @@
 
 #define MEM_MAX_GUARD_PAD 8192
 
-// global for device memory padding see d_vector.hpp
-
+// global for device memory padding
 extern size_t g_DVEC_PAD;
 void          d_vector_set_pad_length(size_t pad);
 
