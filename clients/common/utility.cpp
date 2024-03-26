@@ -55,6 +55,14 @@ namespace fs = std::experimental::filesystem;
 #include <unistd.h>
 #endif
 
+// global for device memory padding see d_vector.hpp
+size_t g_DVEC_PAD = 4096;
+
+void d_vector_set_pad_length(size_t pad)
+{
+    g_DVEC_PAD = pad;
+}
+
 hipblas_rng_t hipblas_rng(69069);
 hipblas_rng_t hipblas_seed(hipblas_rng);
 
@@ -214,6 +222,9 @@ hipblasLocalHandle::hipblasLocalHandle(const Arguments& arg)
     {
         throw std::runtime_error(hipblasStatusToString(status));
     }
+
+    // memory guard control, with multi-threading should not change values across threads
+    d_vector_set_pad_length(arg.pad);
 }
 
 hipblasLocalHandle::~hipblasLocalHandle()

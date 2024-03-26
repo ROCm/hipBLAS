@@ -21,13 +21,7 @@
  *
  * ************************************************************************ */
 
-//
-#pragma once
-
 #include "d_vector.hpp"
-#include "hipblas_vector.hpp"
-
-#include <cmath>
 
 //
 // Local declaration of the host strided batch vector.
@@ -40,8 +34,8 @@ class host_batch_vector;
 //!  - an array of pointers in host memory
 //!  - an array of pointers in device memory
 //!
-template <typename T, size_t PAD = 4096, typename U = T>
-class device_batch_vector : private d_vector<T, PAD, U>
+template <typename T>
+class device_batch_vector : public d_vector<T>
 {
 public:
     //!
@@ -59,40 +53,20 @@ public:
     //! @param n           The length of the vector.
     //! @param inc         The increment.
     //! @param batch_count The batch count.
+    //! @param HMM         HipManagedMemory Flag.
     //!
-    explicit device_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
-        : m_n(n)
+    explicit device_batch_vector(size_t n, int64_t inc, int64_t batch_count, bool HMM = false)
+        : d_vector<T>(calculate_nmemb(n, inc) * batch_count, HMM)
+        // d_vector is a single contiguous block for performance
+        , m_n(n)
         , m_inc(inc ? inc : 1)
         , m_nmemb(calculate_nmemb(n, inc))
         , m_batch_count(batch_count)
-        , d_vector<T, PAD, U>(calculate_nmemb(n, inc) * batch_count)
     {
-        if(false == this->try_initialize_memory())
+        if(false == try_initialize_memory())
         {
-            this->free_memory();
+            free_memory();
         }
-    }
-
-    //!
-    //! @brief Constructor.
-    //! @param n           The length of the vector.
-    //! @param inc         The increment.
-    //! @param stride      (UNUSED) The stride.
-    //! @param batch_count The batch count.
-    //!
-    explicit device_batch_vector(int64_t n, int64_t inc, hipblasStride stride, int64_t batch_count)
-        : device_batch_vector(n, inc, batch_count)
-    {
-    }
-
-    //!
-    //! @brief Constructor (kept for backward compatibility only, to be removed).
-    //! @param batch_count The number of vectors.
-    //! @param size_vector The size of each vectors.
-    //!
-    explicit device_batch_vector(int64_t batch_count, size_t size_vector)
-        : device_batch_vector(size_vector, 1, batch_count)
-    {
     }
 
     //!
@@ -100,15 +74,15 @@ public:
     //!
     ~device_batch_vector()
     {
-        this->free_memory();
+        free_memory();
     }
 
     //!
     //! @brief Returns the length of the vector.
     //!
-    int64_t n() const
+    size_t n() const
     {
-        return this->m_n;
+        return m_n;
     }
 
     //!
@@ -116,7 +90,7 @@ public:
     //!
     int64_t inc() const
     {
-        return this->m_inc;
+        return m_inc;
     }
 
     //!
@@ -124,7 +98,7 @@ public:
     //!
     int64_t batch_count() const
     {
-        return this->m_batch_count;
+        return m_batch_count;
     }
 
     //!
@@ -141,7 +115,7 @@ public:
     //!
     T** ptr_on_device()
     {
-        return this->m_device_data;
+        return m_device_data;
     }
 
     //!
@@ -150,7 +124,7 @@ public:
     //!
     const T* const* ptr_on_device() const
     {
-        return this->m_device_data;
+        return m_device_data;
     }
 
     //!
@@ -159,7 +133,7 @@ public:
     //!
     T* const* const_batch_ptr()
     {
-        return this->m_device_data;
+        return m_device_data;
     }
 
     //!
@@ -170,7 +144,7 @@ public:
     T* operator[](int64_t batch_index)
     {
 
-        return this->m_data[batch_index];
+        return m_data[batch_index];
     }
 
     //!
@@ -181,7 +155,7 @@ public:
     const T* operator[](int64_t batch_index) const
     {
 
-        return this->m_data[batch_index];
+        return m_data[batch_index];
     }
 
     //!
@@ -189,7 +163,7 @@ public:
     //!
     operator const T* const *() const
     {
-        return this->m_data;
+        return m_data;
     }
 
     //!
@@ -199,15 +173,15 @@ public:
     operator T**()
     // clang-format on
     {
-        return this->m_data;
+        return m_data;
     }
 
     //!
-    //! @brief Tell whether ressources allocation failed.
+    //! @brief Tell whether resource allocation failed.
     //!
     explicit operator bool() const
     {
-        return nullptr != this->m_data;
+        return nullptr != m_data;
     }
 
     //!
@@ -220,13 +194,12 @@ public:
         //
         // Copy each vector.
         //
+        hipMemcpyKind kind = this->use_HMM ? hipMemcpyHostToHost : hipMemcpyHostToDevice;
         if(m_batch_count > 0)
         {
             if(hipSuccess
-               != (hip_err = hipMemcpy((*this)[0],
-                                       that[0],
-                                       sizeof(T) * m_nmemb * m_batch_count,
-                                       hipMemcpyHostToDevice)))
+               != (hip_err
+                   = hipMemcpy((*this)[0], that[0], sizeof(T) * m_nmemb * m_batch_count, kind)))
             {
                 return hip_err;
             }
@@ -248,7 +221,7 @@ public:
     }
 
 private:
-    int64_t m_n{};
+    size_t  m_n{};
     int64_t m_inc{};
     size_t  m_nmemb{}; // in one batch
     int64_t m_batch_count{};
@@ -262,7 +235,7 @@ private:
     }
 
     //!
-    //! @brief Try to allocate the ressources.
+    //! @brief Try to allocate the resources.
     //! @return true if success false otherwise.
     //!
     bool try_initialize_memory()
@@ -270,18 +243,21 @@ private:
         bool success = false;
 
         success
-            = (hipSuccess == (hipMalloc)(&this->m_device_data, this->m_batch_count * sizeof(T*)));
+            = (hipSuccess
+               == (!this->use_HMM ? (hipMalloc)(&m_device_data, m_batch_count * sizeof(T*))
+                                  : hipMallocManaged(&m_device_data, m_batch_count * sizeof(T*))));
         if(success)
         {
-            success = (nullptr != (this->m_data = (T**)calloc(this->m_batch_count, sizeof(T*))));
+            success = (nullptr
+                       != (m_data = !this->use_HMM ? (T**)calloc(m_batch_count, sizeof(T*))
+                                                   : m_device_data));
             if(success)
             {
-                for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+                for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
                 {
                     if(batch_index == 0)
                     {
-                        success = (nullptr
-                                   != (this->m_data[batch_index] = this->device_vector_setup()));
+                        success = (nullptr != (m_data[batch_index] = this->device_vector_setup()));
                         if(!success)
                         {
                             break;
@@ -293,12 +269,12 @@ private:
                     }
                 }
 
-                if(success)
+                if(success && !this->use_HMM)
                 {
                     success = (hipSuccess
-                               == hipMemcpy(this->m_device_data,
-                                            this->m_data,
-                                            sizeof(T*) * this->m_batch_count,
+                               == hipMemcpy(m_device_data,
+                                            m_data,
+                                            sizeof(T*) * m_batch_count,
                                             hipMemcpyHostToDevice));
                 }
             }
@@ -307,33 +283,38 @@ private:
     }
 
     //!
-    //! @brief Free the ressources, as much as we can.
+    //! @brief Free the resources, as much as we can.
     //!
     void free_memory()
     {
-        if(nullptr != this->m_data)
+        if(nullptr != m_data)
         {
-            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
             {
                 if(batch_index == 0 && nullptr != m_data[batch_index])
                 {
-                    this->device_vector_teardown(this->m_data[batch_index]);
-                    this->m_data[batch_index] = nullptr;
+                    this->device_vector_teardown(m_data[batch_index]);
+                    m_data[batch_index] = nullptr;
                 }
-                if(nullptr != this->m_data[batch_index])
+                else
                 {
                     m_data[batch_index] = nullptr;
                 }
             }
 
-            free(this->m_data);
-            this->m_data = nullptr;
+            if(!this->use_HMM)
+            {
+                free(m_data);
+            }
+            // else this is just a copy of m_device_data
+
+            m_data = nullptr;
         }
 
-        if(nullptr != this->m_device_data)
+        if(nullptr != m_device_data)
         {
-            auto tmp_device_data = this->m_device_data;
-            this->m_device_data  = nullptr;
+            auto tmp_device_data = m_device_data;
+            m_device_data        = nullptr;
             CHECK_HIP_ERROR((hipFree)(tmp_device_data));
         }
     }
