@@ -153,7 +153,11 @@ public:
     //!
     //! @brief Constant cast to a double pointer.
     //!
+<<<<<<< HEAD
     operator const T* const *()
+=======
+    operator const T* const*()
+>>>>>>> hipblas_vector to host_vector
     {
         return m_data;
     }
