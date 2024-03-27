@@ -13,16 +13,16 @@ def runCI =
 {
     nodeDetails, jobName->
 
-    def prj  = new rocProject('hipBLAS', 'StaticLibrary')
-    prj.paths.build_command = './install.sh -cd --static -p /opt/rocm/lib/cmake'
+    def prj  = new rocProject('hipBLAS', 'static')
+    prj.paths.build_command = './install.sh -cs --compiler=hipcc'
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
-        prj.libraryDependencies = ['rocBLAS']
+        prj.libraryDependencies = ['rocBLAS', 'rocPRIM']
     }
     else
     {
-        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
+        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER', 'rocPRIM']
     }
 
     // Define test architectures, optional rocm version argument is available
@@ -87,7 +87,7 @@ ci: {
     {
         properties(auxiliary.addCommonProperties([pipelineTriggers([cron('0 1 * * *')])]))
         stage(urlJobName) {
-            runCI([ubuntu18:['gfx900']], urlJobName)
+            runCI([ubuntu18:['gfx906']], urlJobName)
         }
     }
 }
