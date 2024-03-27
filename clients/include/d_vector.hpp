@@ -30,6 +30,12 @@
 #include <cstdio>
 #include <iostream>
 
+#define MEM_MAX_GUARD_PAD 8192
+
+// global for device memory padding
+extern size_t g_DVEC_PAD;
+void          d_vector_set_pad_length(size_t pad);
+
 //
 // Forward declaration of hipblas_init_nan
 //
@@ -38,97 +44,131 @@ inline void hipblas_init_nan(T* A, size_t N);
 
 /* ============================================================================================ */
 /*! \brief  base-class to allocate/deallocate device memory */
-template <typename T, size_t PAD, typename U>
+template <typename T>
 class d_vector
 {
-protected:
-    size_t size, bytes;
+private:
+    size_t m_size;
+    size_t m_pad, m_guard_len;
+    size_t m_bytes;
 
+    static bool m_init_guard;
+
+public:
     inline size_t nmemb() const noexcept
     {
-        return size;
+        return m_size;
     }
 
+public:
+    bool use_HMM = false;
+
+public:
+    static T m_guard[MEM_MAX_GUARD_PAD];
+
 #ifdef GOOGLE_TEST
-    U guard[PAD];
-    d_vector(size_t s)
-        : size(s)
-        , bytes((s + PAD * 2) * sizeof(T))
+    d_vector(size_t s, bool HMM = false)
+        : m_size(s)
+        , m_pad(std::min(g_DVEC_PAD, size_t(MEM_MAX_GUARD_PAD)))
+        , m_guard_len(m_pad * sizeof(T))
+        , m_bytes((s + m_pad * 2) * sizeof(T))
+        , use_HMM(HMM)
     {
-        // Initialize guard with random data
-        if(PAD > 0)
+        // Initialize m_guard with random data
+        if(!m_init_guard)
         {
-            hipblas_init_nan(guard, PAD);
+            hipblas_init_nan(m_guard, MEM_MAX_GUARD_PAD);
+            m_init_guard = true;
         }
     }
 #else
-    d_vector(size_t s)
-        : size(s)
-        , bytes(s ? s * sizeof(T) : sizeof(T))
+    d_vector(size_t s, bool HMM = false)
+        : m_size(s)
+        , m_pad(0) // save current pad length
+        , m_guard_len(0 * sizeof(T))
+        , m_bytes(s ? s * sizeof(T) : sizeof(T))
+        , use_HMM(HMM)
     {
     }
 #endif
 
     T* device_vector_setup()
     {
-        T* d;
-        if((hipMalloc)(&d, bytes) != hipSuccess)
+        T* d = nullptr;
+        if(use_HMM ? hipMallocManaged(&d, m_bytes) : (hipMalloc)(&d, m_bytes) != hipSuccess)
         {
-            static char* lc = setlocale(LC_NUMERIC, "");
-            fprintf(
-                stderr, "Warning: hip can't allocate %'zu bytes (%zu GB)\n", bytes, bytes >> 30);
-            d = nullptr;
+            std::cout << "Warning: hip can't allocate " << m_bytes << " bytes (" << (m_bytes >> 30)
+                      << " GB)" << std::endl;
 
-            throw std::bad_alloc{}; //experimental will remome
+            d = nullptr;
         }
 #ifdef GOOGLE_TEST
         else
         {
-            if(PAD > 0)
+            if(m_guard_len > 0)
             {
-                // Copy guard to device memory before allocated memory
-                if(hipMemcpy(d, guard, sizeof(guard), hipMemcpyHostToDevice))
-                    std::cerr << "Error: hipMemcpy pre-guard copy failure." << std::endl;
+                // Copy m_guard to device memory before allocated memory
+                if(hipMemcpy(d, m_guard, m_guard_len, hipMemcpyDefault) != hipSuccess)
+                    std::cout << "Error: hipMemcpy pre-guard copy failure." << std::endl;
 
                 // Point to allocated block
-                d += PAD;
+                d += m_pad;
 
-                // Copy guard to device memory after allocated memory
-                if(hipMemcpy(d + size, guard, sizeof(guard), hipMemcpyHostToDevice))
-                    std::cerr << "Error: hipMemcpy post-guard copy failure." << std::endl;
+                // Copy m_guard to device memory after allocated memory
+                if(hipMemcpy(d + m_size, m_guard, m_guard_len, hipMemcpyDefault) != hipSuccess)
+                    std::cout << "Error: hipMemcpy post-guard copy failure." << std::endl;
             }
         }
 #endif
         return d;
     }
 
+    void device_vector_check(T* d)
+    {
+#ifdef GOOGLE_TEST
+        if(m_pad > 0)
+        {
+            std::vector<T> host(m_pad);
+
+            // Copy device memory after allocated memory to host
+            if(hipMemcpy(host.data(), d + m_size, m_guard_len, hipMemcpyDefault) != hipSuccess)
+                std::cout << "Error: hipMemcpy post-guard copy failure." << std::endl;
+
+            // Make sure no corruption has occurred
+            EXPECT_EQ(memcmp(host.data(), m_guard, m_guard_len), 0);
+
+            // Point to m_guard before allocated memory
+            d -= m_pad;
+
+            // Copy device memory after allocated memory to host
+            if(hipMemcpy(host.data(), d, m_guard_len, hipMemcpyDefault) != hipSuccess)
+                std::cout << "Error: hipMemcpy pre-guard copy failure." << std::endl;
+
+            // Make sure no corruption has occurred
+            EXPECT_EQ(memcmp(host.data(), m_guard, m_guard_len), 0);
+        }
+#endif
+    }
+
     void device_vector_teardown(T* d)
     {
         if(d != nullptr)
         {
-#ifdef GOOGLE_TEST
-            if(PAD > 0)
-            {
-                U host[PAD];
+            device_vector_check(d);
 
-                // Copy device memory after allocated memory to host
-                CHECK_HIP_ERROR(hipMemcpy(host, d + size, sizeof(guard), hipMemcpyDeviceToHost));
+            if(m_pad > 0)
+                d -= m_pad; // restore to start of alloc
 
-                // Make sure no corruption has occurred
-                EXPECT_EQ(memcmp(host, guard, sizeof(guard)), 0);
-
-                // Point to guard before allocated memory
-                d -= PAD;
-
-                // Copy device memory after allocated memory to host
-                CHECK_HIP_ERROR(hipMemcpy(host, d, sizeof(guard), hipMemcpyDeviceToHost));
-
-                // Make sure no corruption has occurred
-                EXPECT_EQ(memcmp(host, guard, sizeof(guard)), 0);
-            }
-#endif
             // Free device memory
             CHECK_HIP_ERROR((hipFree)(d));
         }
     }
 };
+
+template <typename T>
+T d_vector<T>::m_guard[MEM_MAX_GUARD_PAD] = {};
+
+template <typename T>
+bool d_vector<T>::m_init_guard = false;
+
+#undef MEM_MAX_GUARD_PAD

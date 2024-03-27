@@ -522,6 +522,7 @@ Arguments:
   - gpu_arch: c_char*4
   - backend_flags: hipblas_backend
   - api: hipblas_client_api
+  - pad: c_uint32
   - initialization: hipblas_initialization
   - bad_arg_all: c_bool
   # - known_bug_platforms: c_char*64
@@ -592,6 +593,7 @@ Defaults:
   batch_count: -1
   inplace: false
   with_flags: false
+  pad: 4096
   norm_check: 0
   unit_check: 1
   timing: 0

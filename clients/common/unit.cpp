@@ -23,7 +23,7 @@
 
 #include "unit.h"
 #include "hipblas.h"
-#include "hipblas_vector.hpp"
+#include "host_vector.hpp"
 #include "utility.h"
 
 /* ========================================Gtest Unit Check

@@ -192,6 +192,9 @@ struct Arguments
     hipblas_backend    backend_flags;
     hipblas_client_api api = hipblas_client_api::C;
 
+    // memory padding for testing write out of bounds
+    uint32_t pad;
+
     hipblas_initialization initialization = hipblas_initialization::rand_int;
 
     // if true, test all bad_arg as supported by rocBLAS backend
@@ -262,6 +265,7 @@ struct Arguments
     OPER(gpu_arch) SEP               \
     OPER(backend_flags) SEP          \
     OPER(api) SEP                    \
+    OPER(pad) SEP                    \
     OPER(initialization) SEP         \
     OPER(bad_arg_all)
 
