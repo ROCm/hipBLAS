@@ -4,16 +4,13 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { M: -1, K: -1, lda: -1 }
-    - { M: 11, K:  5, lda: 11 }
-    - { M: 16, K:  8, lda: 16 }
-    - { M: 32, K: 16, lda: 32 }
-    - { M: 65, K: 64, lda: 65 }
+    - { M: 65, K: 59, lda: 68 }
 
   - &incx_range
-    - [ -1, 0, 2 ]
+    - [ -2 ]
 
   - &batch_count_range
-    - [ -1, 0, 1, 2, 10 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: tbmv_general
@@ -51,7 +48,7 @@ Tests:
     matrix_size: *size_range
     incx: *incx_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 

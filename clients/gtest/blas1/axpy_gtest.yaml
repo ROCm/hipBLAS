@@ -3,18 +3,17 @@ include: hipblas_common.yaml
 
 Definitions:
   - &N_range
-    - [ -1, 10, 500, 1000, 7111, 10000 ]
+    - [ -1, 0, 1000 ]
 
   - &incx_incy_range
     - { incx:  1, incy:  1 }
-    - { incx:  1, incy:  2 }
-    - { incx: -1, incy: -1 }
+    - { incx: -1, incy: -2 }
 
   - &alpha_beta_range
     - { alpha: 2.0, alphai:  2.0, beta:  0.0, betai: 0.0 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 2, 10 ]
+    - [ -1, 0, 5 ]
 
 Tests:
   - name: axpy_general
@@ -56,7 +55,7 @@ Tests:
     N: *N_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 

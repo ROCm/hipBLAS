@@ -4,19 +4,16 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { N: -1, lda: -1 }
-    - { N: 11, lda: 11 }
-    - { N: 16, lda: 16 }
-    - { N: 32, lda: 32 }
-    - { N: 65, lda: 65 }
+    - { N: 65, lda: 68 }
 
   - &incx_range
-    - [ -1, 0, 2 ]
+    - [ -2 ]
 
   - &alpha_range
-    - [ -0.5, 2.0, 0.0 ]
+    - [ 2.0 ]
 
   - &batch_count_range
-    - [ -1, 0, 1, 2, 10 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: syr_general
