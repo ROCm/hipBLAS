@@ -3,7 +3,7 @@ include: hipblas_common.yaml
 
 Definitions:
   - &N_range
-    - [ -1, 0, 1000 ]
+    - [ -1, 0, 999, 1000 ]
 
   - &incx_incy_range
     - { incx:  1, incy:  1 }
