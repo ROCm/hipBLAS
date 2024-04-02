@@ -175,11 +175,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-<<<<<<< HEAD
     operator const T* const *() const
-=======
-    operator const T* const*() const
->>>>>>> hipblas_vector to host_vector
     {
         return m_data;
     }
