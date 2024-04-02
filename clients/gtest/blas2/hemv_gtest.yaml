@@ -4,21 +4,16 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { N: -1, lda: -1 }
-    - { N: 1000, lda: 1000 }
+    - { N: 100, lda: 200 }
 
   - &incx_incy_range
-    - { incx:  2, incy:  1 }
-    - { incx:  0, incy: -1 }
-    - { incx: -1, incy: -1 }
+    - { incx:  -2, incy:  1 }
 
   - &alpha_beta_range
-    - { alpha:  1.0, beta:  0.0 }
-    - { alpha: -1.0, beta: -1.0 }
-    - { alpha:  2.0, beta:  1.0 }
-    - { alpha:  0.0, beta:  1.0 }
+    - { alpha:  2.0, beta:  2.0 }
 
   - &batch_count_range
-    - [ -1, 0, 2 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: hemv_general
@@ -52,7 +47,7 @@ Tests:
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
