@@ -35,7 +35,6 @@
 #include "hipblas_datatype2string.hpp"
 #include <cstdio>
 #include <iostream>
-#include <new>
 #include <random>
 #include <vector>
 #endif
