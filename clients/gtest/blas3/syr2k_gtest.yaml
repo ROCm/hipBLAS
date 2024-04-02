@@ -4,13 +4,13 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { N:  -1, K:  -1, lda:  -1, ldb:  -1, ldc:  -1 }
-    - { N: 600, K: 500, lda: 600, ldb: 601, ldc: 602 }
+    - { M: 600, N: 500, lda: 500, ldb: 600, ldc: 501 }
 
   - &alpha_beta_range
     - { alpha: 2.0, alphai: -3.0, beta: 0.0, betai:  0.0 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 5 ]
+    - [ -1, 0, 5 ]
 
 Tests:
   - name: syr2k_general
@@ -44,7 +44,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
 

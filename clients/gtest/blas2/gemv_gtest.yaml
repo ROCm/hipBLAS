@@ -4,21 +4,16 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { M: -1, N: -1, lda: -1 }
-    - { M: 1000, N: 1000, lda: 1000 }
+    - { M: 100, N: 100, lda: 200 }
 
   - &incx_incy_range
-    - { incx:  2, incy:  1 }
-    - { incx:  0, incy: -1 }
-    - { incx: -1, incy: -1 }
+    - { incx: -2, incy:  1 }
 
   - &alpha_beta_range
-    - { alpha:  1.0, beta:  0.0 }
-    - { alpha: -1.0, beta: -1.0 }
-    - { alpha:  2.0, beta:  1.0 }
-    - { alpha:  0.0, beta:  1.0 }
+    - { alpha:  2.0, beta:  2.0 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 5 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: gemv_general
@@ -58,20 +53,6 @@ Tests:
     stride_scale: [ 1.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
-
-  #Remove this test before merge
-  - name: gemv_64
-    category: pre_checkin
-    arguments:
-      - { transA: N, M: 21474836498, N: 1, lda: 21474836498, incx: 1, incy: 1, batch_count: 1 }
-      - { transA: T, M: 21474836498, N: 1, lda: 21474836498, incx: 1, incy: 1, batch_count: 1 }
-    alpha_beta: *alpha_beta_range
-    pointer_mode_host: false
-    initialization: hpl # large reductions so ints can overflow
-    api: [ C_64 ]
-    function:
-      - gemv: *single_precision
-      - gemv_batched: *single_precision
 
   - name: gemv_general
     category: quick

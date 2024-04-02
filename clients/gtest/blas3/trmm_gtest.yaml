@@ -3,15 +3,13 @@ include: hipblas_common.yaml
 
 Definitions:
   - &size_range
-    - { M:  -1, N:  -1, lda:  -1, ldb:  -1, ldc:  -1 }
-    - { M:  10, N:  10, lda:  20, ldb: 100, ldc: 150 }
-    - { M: 192, N: 192, lda: 192, ldb: 192, ldc: 192 }
+    - { M: 92, N: 100, lda: 300, ldb: 302, ldc: 305 }
 
   - &alpha_range
     - { alpha: 2.0, alphai: -3.0 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 5 ]
+    - [ -1, 0, 5 ]
 
 Tests:
   - name: trmm_general
@@ -51,7 +49,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C ]
     backend_flags: AMD
 

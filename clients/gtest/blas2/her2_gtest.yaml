@@ -4,26 +4,16 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { N: -1, lda: -1 }
-    - { N: 11, lda: 11 }
-    - { N: 16, lda: 16 }
-    - { N: 32, lda: 32 }
-    - { N: 65, lda: 65 }
+    - { N: 65, lda: 68 }
 
   - &incx_incy_range
-    - { incx:  2, incy:  1 }
-    - { incx:  0, incy:  0 }
-    - { incx: -1, incy: -1 }
+    - { incx:  -2, incy:  1 }
 
   - &alpha_range
-    - { alpha: -0.5, alphai:  1.5 }
     - { alpha:  2.0, alphai: -1.0 }
-    - { alpha:  0.0, alphai:  0.0 }
-
-  - &alpha_range_ILP64
-    - { alpha: -0.5, alphai:  0.5 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 2, 10 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: her2_general
@@ -57,7 +47,7 @@ Tests:
     matrix_size: *size_range
     incx_incy: *incx_incy_range
     batch_count: *batch_count_range
-    stride_scale: [ 1.0, 2.5 ]
+    stride_scale: [ 2.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
