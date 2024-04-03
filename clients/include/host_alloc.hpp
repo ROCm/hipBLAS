@@ -22,6 +22,7 @@
  * ************************************************************************ */
 
 #pragma once
+#include <new>
 
 //!
 //! @brief Host free memory w/o swap.  Returns kB or -1 if unknown.

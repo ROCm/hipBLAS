@@ -29,7 +29,7 @@
 #include <assert.h>
 
 #include "hipblas.h"
-#include "hipblas_vector.hpp"
+#include "host_vector.hpp"
 
 //!
 //! @brief enum to check for NaN initialization of the Input vector/matrix

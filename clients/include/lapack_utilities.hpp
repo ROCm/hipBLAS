@@ -72,7 +72,7 @@
 #pragma once
 
 #include "hipblas.h"
-#include "hipblas_vector.hpp"
+#include "host_vector.hpp"
 
 // These helpers are implemented as ILP64 API so single instantiation can be used for reference for both API
 

@@ -26,7 +26,7 @@
 #define _NEAR_H
 
 #include "hipblas.h"
-#include "hipblas_vector.hpp"
+#include "host_vector.hpp"
 
 #ifdef GOOGLE_TEST
 #include "gtest/gtest.h"
