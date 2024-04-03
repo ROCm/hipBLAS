@@ -178,11 +178,11 @@ install_packages( )
     if [[ -z ${rocblas_path+foo} ]]; then
       if [[ -z ${custom_rocblas+foo} ]]; then
         # Install base rocblas package unless -b/--rocblas flag is passed
-        library_dependencies_ubuntu+=( "rocblas" )
-        library_dependencies_centos_rhel+=( "rocblas" )
-        library_dependencies_centos_rhel_8+=( "rocblas" )
-        library_dependencies_fedora+=( "rocblas" )
-        library_dependencies_sles+=( "rocblas" )
+        library_dependencies_ubuntu+=( "rocblas-dev" )
+        library_dependencies_centos_rhel+=( "rocblas-devel" )
+        library_dependencies_centos_rhel_8+=( "rocblas-devel" )
+        library_dependencies_fedora+=( "rocblas-devel" )
+        library_dependencies_sles+=( "rocblas-devel" )
       else
         # Install rocm-specific rocblas package
         library_dependencies_ubuntu+=( "${custom_rocblas}" )
@@ -196,11 +196,11 @@ install_packages( )
     # Do not install rocsolver if --rocsolver_path flag is set,
     if [[ -z ${rocsolver_path+foo} ]]; then
       if [[ "${build_solver}" == true ]]; then
-        library_dependencies_ubuntu+=( "rocsolver" )
-        library_dependencies_centos_rhel+=( "rocsolver" )
-        library_dependencies_centos_rhel_8+=( "rocsolver" )
-        library_dependencies_fedora+=( "rocsolver" )
-        library_dependencies_sles+=( "rocsolver" )
+        library_dependencies_ubuntu+=( "rocsolver-dev" )
+        library_dependencies_centos_rhel+=( "rocsolver-devel" )
+        library_dependencies_centos_rhel_8+=( "rocsolver-devel" )
+        library_dependencies_fedora+=( "rocsolver-devel" )
+        library_dependencies_sles+=( "rocsolver-devel" )
       fi
     fi
   fi
