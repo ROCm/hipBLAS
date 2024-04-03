@@ -21,92 +21,46 @@
  *
  * ************************************************************************ */
 
-#ifndef HIPBLAS_VECTOR_H_
-#define HIPBLAS_VECTOR_H_
+#pragma once
 
-#include "d_vector.hpp"
-#include "device_batch_vector.hpp"
-#include "hipblas.h"
-#include "host_batch_vector.hpp"
-#include "utility.h"
-#include <cinttypes>
-#include <cstdio>
-#include <locale.h>
+#include <cmath>
+#include <type_traits>
 #include <vector>
 
-/* ============================================================================================ */
-/*! \brief  pseudo-vector subclass which uses device memory */
-template <typename T, size_t PAD = 4096, typename U = T>
-class device_vector : private d_vector<T, PAD, U>
-{
-public:
-    // Must wrap constructor and destructor in functions to allow Google Test macros to work
-    explicit device_vector(size_t s)
-        : d_vector<T, PAD, U>(s)
-    {
-        data = this->device_vector_setup();
-    }
-
-    ~device_vector()
-    {
-        this->device_vector_teardown(data);
-    }
-
-    // Decay into pointer wherever pointer is expected
-    operator T*()
-    {
-        return data;
-    }
-
-    operator const T*() const
-    {
-        return data;
-    }
-
-    // Tell whether malloc failed
-    explicit operator bool() const
-    {
-        return data != nullptr;
-    }
-
-    // Disallow copying or assigning
-    device_vector(const device_vector&) = delete;
-    device_vector& operator=(const device_vector&) = delete;
-
-private:
-    T* data;
-};
+#include "device_matrix.hpp"
+#include "host_alloc.hpp"
 
 //!
-//! @brief  Pseudo-vector subclass which uses host memory.
+//! @brief  Pseudo-matrix subclass which uses host memory.
 //!
 template <typename T>
-struct host_vector : std::vector<T, host_memory_allocator<T>>
+struct host_matrix : std::vector<T, host_memory_allocator<T>>
 {
     // Inherit constructors
     using std::vector<T, host_memory_allocator<T>>::vector;
 
     //!
     //! @brief Constructor.
-    //! @param  inc Element index increment. If zero treated as one
     //!
-    host_vector(size_t n, int64_t inc = 1)
-        : std::vector<T, host_memory_allocator<T>>(calculate_nmemb(n, inc))
+    host_matrix(size_t m, size_t n, size_t lda)
+        : std::vector<T, host_memory_allocator<T>>(n * lda)
+        , m_m(m)
         , m_n(n)
-        , m_inc(inc ? inc : 1)
+        , m_lda(lda)
     {
     }
 
     //!
-    //! @brief Copy constructor from host_vector of other types convertible to T
+    //! @brief Copy constructor from host_matrix of other types convertible to T
     //!
     template <typename U, std::enable_if_t<std::is_convertible<U, T>{}, int> = 0>
-    host_vector(const host_vector<U>& x)
+    host_matrix(const host_matrix<U>& x)
         : std::vector<T, host_memory_allocator<T>>(x.size())
-        , m_n(x.size())
-        , m_inc(1)
+        , m_m(x.size())
+        , m_n(1)
+        , m_lda(1)
     {
-        for(size_t i = 0; i < m_n; ++i)
+        for(size_t i = 0; i < m_m; ++i)
             (*this)[i] = x[i];
     }
 
@@ -127,24 +81,11 @@ struct host_vector : std::vector<T, host_memory_allocator<T>>
     }
 
     //!
-    //! @brief Allow signed indices
-    //!
-    inline T& operator[](int64_t idx)
-    {
-        return std::vector<T, host_memory_allocator<T>>::operator[]((size_t)idx);
-    }
-
-    inline const T& operator[](int64_t idx) const
-    {
-        return std::vector<T, host_memory_allocator<T>>::operator[]((size_t)idx);
-    }
-
-    //!
-    //! @brief Transfer from a device vector.
-    //! @param  that That device vector.
+    //! @brief Transfer from a device matrix.
+    //! @param  that That device matrix.
     //! @return the hip error.
     //!
-    hipError_t transfer_from(const device_vector<T>& that)
+    hipError_t transfer_from(const device_matrix<T>& that)
     {
         hipError_t hip_err;
 
@@ -158,19 +99,27 @@ struct host_vector : std::vector<T, host_memory_allocator<T>>
     }
 
     //!
-    //! @brief Returns the length of the vector.
+    //! @brief Returns the rows of the Matrix.
     //!
-    size_t n() const
+    size_t m() const
     {
-        return m_n;
+        return this->m_m;
     }
 
     //!
-    //! @brief Returns the increment of the vector.
+    //! @brief Returns the cols of the Matrix.
     //!
-    int64_t inc() const
+    size_t n() const
     {
-        return m_inc;
+        return this->m_n;
+    }
+
+    //!
+    //! @brief Returns the leading dimension of the Matrix.
+    //!
+    size_t lda() const
+    {
+        return this->m_lda;
     }
 
     //!
@@ -190,6 +139,26 @@ struct host_vector : std::vector<T, host_memory_allocator<T>>
     }
 
     //!
+    //! @brief Random access to the Matrices.
+    //! @param batch_index the batch index.
+    //! @return The mutable pointer.
+    //!
+    T* operator[](int64_t batch_index)
+    {
+        return this->data();
+    }
+
+    //!
+    //! @brief Constant random access to the Matrices.
+    //! @param batch_index the batch index.
+    //! @return The non-mutable pointer.
+    //!
+    const T* operator[](int64_t batch_index) const
+    {
+        return this->data();
+    }
+
+    //!
     //! @brief Check if memory exists (out of context, always hipSuccess)
     //!
     static constexpr hipError_t memcheck()
@@ -198,12 +167,7 @@ struct host_vector : std::vector<T, host_memory_allocator<T>>
     }
 
 private:
-    size_t        m_n   = 0;
-    int64_t       m_inc = 0;
-    static size_t calculate_nmemb(size_t n, int64_t inc)
-    {
-        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
-    }
+    size_t m_m   = 0;
+    size_t m_n   = 0;
+    size_t m_lda = 0;
 };
-
-#endif
