@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -218,10 +218,11 @@ int main()
 
     for(int i = 0; i < size_c; i++)
     {
-        float hc_gold_val    = __half2float(hc_gold[i]);
-        float hc_val         = __half2float(hc[i]);
-        float relative_error = (hc_gold_val - hc_val) / hc_gold_val;
-        relative_error       = relative_error > 0 ? relative_error : -relative_error;
+        float hc_gold_val = __half2float(hc_gold[i]);
+        float hc_val      = __half2float(hc[i]);
+        float relative_error
+            = hc_gold_val == 0 ? (hc_gold_val - hc_val) : (hc_gold_val - hc_val) / hc_gold_val;
+        relative_error = relative_error > 0 ? relative_error : -relative_error;
         max_relative_error
             = relative_error < max_relative_error ? max_relative_error : relative_error;
     }
