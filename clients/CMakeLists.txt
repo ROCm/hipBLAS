@@ -123,7 +123,7 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     if(HIP_PLATFORM STREQUAL amd)
       if (NOT WIN32)
         execute_process (
-          COMMAND bash -c "${HIP_CLANG_ROOT}/bin/clang --version | grep -oP '(?<=Target: ).+' | tr -d '\n'"
+          COMMAND bash -c "${HIP_CLANG_ROOT}/bin/amdclang --version | grep -oP '(?<=Target: ).+' | tr -d '\n'"
           OUTPUT_VARIABLE LLVM_DEFAULT_TARGET_TRIPLE)
         if(LLVM_DEFAULT_TARGET_TRIPLE)
           list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib/${LLVM_DEFAULT_TARGET_TRIPLE}\"")
