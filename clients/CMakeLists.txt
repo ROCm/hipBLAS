@@ -118,11 +118,23 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
   # if there is no omp.h to find the client compilation will fail and this should be obvious, used to be REQUIRED
   find_package(OpenMP)
 
+  execute_process (
+    COMMAND bash -c "${HIP_CLANG_ROOT}/bin/clang --version | grep -oP '(?<=Target: ).+' | tr -d '\n'"
+    OUTPUT_VARIABLE LLVM_DEFAULT_TARGET_TRIPLE)
+
   if (TARGET OpenMP::OpenMP_CXX)
     set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
     if(HIP_PLATFORM STREQUAL amd)
+      if (NOT WIN32)
+        if(LLVM_DEFAULT_TARGET_TRIPLE)
+          list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib/${LLVM_DEFAULT_TARGET_TRIPLE}\"")
+        endif()
+      endif()
       list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
       if (NOT WIN32)
+        if(LLVM_DEFAULT_TARGET_TRIPLE)
+          list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib/${LLVM_DEFAULT_TARGET_TRIPLE}")
+        endif()
         list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
       else()
         list( APPEND COMMON_LINK_LIBS "libomp")
