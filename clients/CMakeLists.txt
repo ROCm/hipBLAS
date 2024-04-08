@@ -73,7 +73,7 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
 endif()
 
 # This project may compile dependencies for clients
-project( hipblas-clients LANGUAGES CXX Fortran )
+project( hipblas-clients LANGUAGES C CXX Fortran )
 
 # We use C++14 features, this will add compile option: -std=c++14
 set( CMAKE_CXX_STANDARD 17 )
@@ -123,8 +123,10 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
       get_filename_component(LIBOMP_PATH "${OpenMP_omp_LIBRARY}" PATH)
     endif()
   else()
-    find_package(LLVM PATHS ${HIP_CLANG_ROOT}/.. ${HIP_CLANG_ROOT} NO_DEFAULT_PATH)
-    find_library(LIBOMP_FOUND omp PATHS ${LLVM_LIBRARY_DIR}/${LLVM_TARGET_TRIPLE} ${LLVM_LIBRARY_DIR} NO_DEFAULT_PATH)
+    set(CMAKE_FIND_DEBUG_MODE TRUE)
+    find_package(LLVM HINTS ${HIP_CLANG_ROOT})
+    find_library(LIBOMP_FOUND omp HINTS ${LLVM_LIBRARY_DIR}/${LLVM_TARGET_TRIPLE} ${LLVM_LIBRARY_DIR} NO_DEFAULT_PATH)
+    set(CMAKE_FIND_DEBUG_MODE FALSE)
     if (LIBOMP_FOUND)
       get_filename_component(LIBOMP_PATH "${LIBOMP_FOUND}" PATH)
     endif()
