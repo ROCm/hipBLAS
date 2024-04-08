@@ -15,6 +15,8 @@ def runCI =
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
 
+    String hipblasCompiler="g++"
+
     //customize for project
     prj.paths.build_command = buildCommand
 
@@ -25,6 +27,15 @@ def runCI =
     else
     {
         prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
+    }
+
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("hipcc"))
+    {
+        hipblasCompiler="hipcc"
+    }
+    else if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("clang"))
+    {
+        hipblasCompiler="clang++"
     }
 
     // Define test architectures, optional rocm version argument is available
@@ -101,6 +112,6 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
 
-    String hostBuildCommand = './install.sh -c --compiler=g++'
-    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
+    String hostBuildCommand = './install.sh -c --compiler=' + hipblasCompiler
+    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, hipblasCompiler)
 }
