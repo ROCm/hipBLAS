@@ -51,10 +51,11 @@ def runTestCommand (platform, project)
         }
     }
 
+    String gtestCommonEnv = "HIPBLAS_CLIENT_RAM_GB_LIMIT=95"
     def command = """#!/usr/bin/env bash
                     set -x
                     cd ${stagingDir}
-                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
                 """
 
     platform.runCommand(this, command)
@@ -65,7 +66,7 @@ def runTestCommand (platform, project)
     def v2TestCommand = """#!/usr/bin/env bash
                     set -x
                     cd ${stagingDir}
-                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_output=xml --gtest_color=yes
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_output=xml --gtest_color=yes
                 """
 
     platform.runCommand(this, v2TestCommand)
@@ -73,7 +74,7 @@ def runTestCommand (platform, project)
     def yamlTestCommand = """#!/usr/bin/env bash
                     set -x
                     cd ${stagingDir}
-                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --yaml hipblas_smoke.yaml
+                    ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --yaml hipblas_smoke.yaml
                 """
     platform.runCommand(this, yamlTestCommand)
     junit "${stagingDir}/*.xml"

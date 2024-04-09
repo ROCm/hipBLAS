@@ -21,45 +21,47 @@
  *
  * ************************************************************************ */
 
-//
 #pragma once
 
-#include "host_alloc.hpp"
-#include <cmath>
 #include <string.h>
+
+#include "host_alloc.hpp"
+
 //
-// Local declaration of the device batch vector.
+// Local declaration of the device batch Matrix.
 //
 template <typename T>
-class device_batch_vector;
+class device_batch_matrix;
 
 //!
-//! @brief Implementation of the batch vector on host.
+//! @brief Implementation of the batch Matrix on host.
 //!
 template <typename T>
-class host_batch_vector
+class host_batch_matrix
 {
 public:
     //!
     //! @brief Delete copy constructor.
     //!
-    host_batch_vector(const host_batch_vector<T>& that) = delete;
+    host_batch_matrix(const host_batch_matrix<T>& that) = delete;
 
     //!
-    //! @brief Delete copy assignement.
+    //! @brief Delete copy assignment.
     //!
-    host_batch_vector& operator=(const host_batch_vector<T>& that) = delete;
+    host_batch_matrix& operator=(const host_batch_matrix<T>& that) = delete;
 
     //!
     //! @brief Constructor.
-    //! @param n           The length of the vector.
-    //! @param inc         The increment.
+    //! @param m           The number of rows of the Matrix.
+    //! @param n           The number of cols of the Matrix.
+    //! @param lda         The leading dimension of the Matrix.
     //! @param batch_count The batch count.
     //!
-    explicit host_batch_vector(int64_t n, int64_t inc, int64_t batch_count)
-        : m_n(n)
-        , m_inc(inc ? inc : 1)
-        , m_nmemb(calculate_nmemb(n, inc))
+    explicit host_batch_matrix(size_t m, size_t n, size_t lda, int64_t batch_count)
+        : m_m(m)
+        , m_n(n)
+        , m_lda(lda)
+        , m_nmemb(n * lda)
         , m_batch_count(batch_count)
     {
         if(false == this->try_initialize_memory())
@@ -69,39 +71,43 @@ public:
     }
 
     //!
-    //! @brief Constructor.
-    //! @param n           The length of the vector.
-    //! @param inc         The increment.
-    //! @param stride      (UNUSED) The stride.
-    //! @param batch_count The batch count.
-    //!
-    explicit host_batch_vector(int64_t n, int64_t inc, hipblasStride stride, int64_t batch_count)
-        : host_batch_vector(n, inc, batch_count)
-    {
-    }
-
-    //!
     //! @brief Destructor.
     //!
-    ~host_batch_vector()
+    ~host_batch_matrix()
     {
         this->free_memory();
     }
 
     //!
-    //! @brief Returns the length of the vector.
+    //! @brief Returns the rows of the Matrix.
     //!
-    int64_t n() const
+    size_t m() const
     {
-        return this->m_n;
+        return m_m;
     }
 
     //!
-    //! @brief Returns the increment of the vector.
+    //! @brief Returns the cols of the Matrix.
     //!
-    int64_t inc() const
+    size_t n() const
     {
-        return this->m_inc;
+        return m_n;
+    }
+
+    //!
+    //! @brief Returns the leading dimension of the Matrix.
+    //!
+    size_t lda() const
+    {
+        return m_lda;
+    }
+
+    //!
+    //! @brief Returns nmemb.
+    //!
+    size_t nmemb() const
+    {
+        return m_nmemb;
     }
 
     //!
@@ -109,37 +115,29 @@ public:
     //!
     int64_t batch_count() const
     {
-        return this->m_batch_count;
+        return m_batch_count;
     }
 
     //!
-    //! @brief Returns the stride value.
-    //!
-    hipblasStride stride() const
-    {
-        return 0;
-    }
-
-    //!
-    //! @brief Random access to the vectors.
+    //! @brief Random access to the Matrices.
     //! @param batch_index the batch index.
     //! @return The mutable pointer.
     //!
     T* operator[](int64_t batch_index)
     {
 
-        return this->m_data[batch_index];
+        return m_data[batch_index];
     }
 
     //!
-    //! @brief Constant random access to the vectors.
+    //! @brief Constant random access to the Matrices.
     //! @param batch_index the batch index.
     //! @return The non-mutable pointer.
     //!
     const T* operator[](int64_t batch_index) const
     {
 
-        return this->m_data[batch_index];
+        return m_data[batch_index];
     }
 
     //!
@@ -149,7 +147,7 @@ public:
     operator T**()
     // clang-format on
     {
-        return this->m_data;
+        return m_data;
     }
 
     //!
@@ -157,18 +155,18 @@ public:
     //!
     operator const T* const *()
     {
-        return this->m_data;
+        return m_data;
     }
 
     //!
-    //! @brief Copy from a host batched vector.
-    //! @param that the vector the data is copied from.
+    //! @brief Copy from a host batched Matrix.
+    //! @param that the Matrix the data is copied from.
     //! @return true if the copy is done successfully, false otherwise.
     //!
-    bool copy_from(const host_batch_vector<T>& that)
+    bool copy_from(const host_batch_matrix<T>& that)
     {
-        if((this->batch_count() == that.batch_count()) && (this->n() == that.n())
-           && (this->inc() == that.inc()))
+        if((this->batch_count() == that.batch_count()) && (this->m() == that.m())
+           && (this->n() == that.n()) && (this->lda() == that.lda()))
         {
             size_t num_bytes = m_nmemb * sizeof(T) * m_batch_count;
             if(m_batch_count > 0)
@@ -182,19 +180,22 @@ public:
     }
 
     //!
-    //! @brief Transfer from a device batched vector.
-    //! @param that the vector the data is copied from.
+    //! @brief Transfer from a device batched Matrix.
+    //! @param that the Matrix the data is copied from.
     //! @return the hip error.
     //!
-    hipError_t transfer_from(const device_batch_vector<T>& that)
+    hipError_t transfer_from(const device_batch_matrix<T>& that)
     {
         hipError_t hip_err;
         size_t     num_bytes = m_nmemb * sizeof(T) * m_batch_count;
+        if(that.use_HMM && hipSuccess != (hip_err = hipDeviceSynchronize()))
+            return hip_err;
+
+        hipMemcpyKind kind = that.use_HMM ? hipMemcpyHostToHost : hipMemcpyDeviceToHost;
 
         if(m_batch_count > 0)
         {
-            if(hipSuccess
-               != (hip_err = hipMemcpy((*this)[0], that[0], num_bytes, hipMemcpyDeviceToHost)))
+            if(hipSuccess != (hip_err = hipMemcpy((*this)[0], that[0], num_bytes, kind)))
             {
                 return hip_err;
             }
@@ -208,30 +209,23 @@ public:
     //!
     hipError_t memcheck() const
     {
-        return (nullptr != this->m_data) ? hipSuccess : hipErrorOutOfMemory;
+        return (nullptr != m_data) ? hipSuccess : hipErrorOutOfMemory;
     }
 
 private:
-    int64_t m_n{};
-    int64_t m_inc{};
+    size_t  m_m{};
+    size_t  m_n{};
+    size_t  m_lda{};
     size_t  m_nmemb{};
     int64_t m_batch_count{};
     T**     m_data{};
 
-    static size_t calculate_nmemb(size_t n, int64_t inc)
-    {
-        // allocate when n is zero
-        return 1 + ((n ? n : 1) - 1) * std::abs(inc ? inc : 1);
-    }
-
     bool try_initialize_memory()
     {
-        bool success
-            = (nullptr != (this->m_data = (T**)host_calloc_throw(this->m_batch_count, sizeof(T*))));
+        bool success = (nullptr != (m_data = (T**)host_calloc_throw(m_batch_count, sizeof(T*))));
         if(success)
         {
-            size_t nmemb = size_t(this->m_n) * std::abs(this->m_inc);
-            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
             {
                 if(batch_index == 0)
                 {
@@ -254,14 +248,14 @@ private:
 
     void free_memory()
     {
-        if(nullptr != this->m_data)
+        if(nullptr != m_data)
         {
-            for(int64_t batch_index = 0; batch_index < this->m_batch_count; ++batch_index)
+            for(int64_t batch_index = 0; batch_index < m_batch_count; ++batch_index)
             {
-                if(batch_index == 0 && nullptr != this->m_data[batch_index])
+                if(batch_index == 0 && nullptr != m_data[batch_index])
                 {
-                    free(this->m_data[batch_index]);
-                    this->m_data[batch_index] = nullptr;
+                    free(m_data[batch_index]);
+                    m_data[batch_index] = nullptr;
                 }
                 else
                 {
@@ -269,8 +263,8 @@ private:
                 }
             }
 
-            free(this->m_data);
-            this->m_data = nullptr;
+            free(m_data);
+            m_data = nullptr;
         }
     }
 };

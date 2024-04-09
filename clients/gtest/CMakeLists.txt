@@ -120,6 +120,7 @@ set( hipblas_test_common
   ../common/hipblas_parse_data.cpp
   ../common/hipblas_datatype2string.cpp
   ../common/hipblas_template_specialization.cpp
+  ../common/host_alloc.cpp
   ${BLIS_CPP}
 )
 

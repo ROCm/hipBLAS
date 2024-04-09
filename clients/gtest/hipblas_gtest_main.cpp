@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -148,27 +148,39 @@ public:
 
     void OnTestPartResult(const TestPartResult& result) override
     {
+        if(result.type() == TestPartResult::kSkip)
+        {
+            ++skipped_tests;
+
+            if(strstr(result.message(), LIMITED_RAM_STRING))
+            {
+                if(showInlineSkips)
+                    std::cout << "Skipped test due to limited RAM environment." << std::endl;
+            }
+            else if(strstr(result.message(), LIMITED_VRAM_STRING))
+            {
+                if(showInlineSkips)
+                    std::cout << "Skipped test due to limited GPU memory environment." << std::endl;
+            }
+            else if(showInlineSkips)
+            {
+                // this is more output than the simple sentences above
+                eventListener->OnTestPartResult(result);
+            }
+        }
+        else
+        {
+            eventListener->OnTestPartResult(result);
+        }
+
         // Additional skip controls used by rocBLAS. Might consider adding here
 
-        // if(!strcmp(result.message(), LIMITED_RAM_STRING_GTEST))
-        // {
-        //     if(showInlineSkips)
-        //         std::cout << "Skipped test due to limited RAM environment." << std::endl;
-        //     ++skipped_tests;
-        // }
-        // else if(!strcmp(result.message(), LIMITED_MEMORY_STRING_GTEST))
-        // {
-        //     if(showInlineSkips)
-        //         std::cout << "Skipped test due to limited GPU memory environment." << std::endl;
-        //     ++skipped_tests;
-        // }
         // else if(!strcmp(result.message(), TOO_MANY_DEVICES_STRING_GTEST))
         // {
         //     if(showInlineSkips)
         //         std::cout << "Skipped test due to too few GPUs." << std::endl;
         //     ++skipped_tests;
         // }
-        eventListener->OnTestPartResult(result);
     }
 
     void OnTestEnd(const TestInfo& test_info) override

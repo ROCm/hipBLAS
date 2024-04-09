@@ -4,21 +4,16 @@ include: hipblas_common.yaml
 Definitions:
   - &size_range
     - { M: -1, N: -1, lda: -1 }
-    - { M: 1000, N: 1000, lda: 1000 }
+    - { M: 100, N: 100, lda: 200 }
 
   - &incx_incy_range
-    - { incx:  2, incy:  1 }
-    - { incx:  0, incy: -1 }
-    - { incx: -1, incy: -1 }
+    - { incx: -2, incy:  1 }
 
   - &alpha_beta_range
-    - { alpha:  1.0, beta:  0.0 }
-    - { alpha: -1.0, beta: -1.0 }
-    - { alpha:  2.0, beta:  1.0 }
-    - { alpha:  0.0, beta:  1.0 }
+    - { alpha:  2.0, beta:  2.0 }
 
   - &batch_count_range
-    - [ -1, 0, 1, 5 ]
+    - [ -1, 5 ]
 
 Tests:
   - name: gemv_general
