@@ -73,7 +73,7 @@ if( NOT DEFINED CMAKE_CONFIGURATION_TYPES AND NOT DEFINED CMAKE_BUILD_TYPE )
 endif()
 
 # This project may compile dependencies for clients
-project( hipblas-clients LANGUAGES CXX Fortran )
+project( hipblas-clients LANGUAGES C CXX Fortran )
 
 # We use C++14 features, this will add compile option: -std=c++14
 set( CMAKE_CXX_STANDARD 17 )
@@ -116,17 +116,26 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
 
   # if it fails to find OpenMP compile and link flags in strange configurations it can just use non-parallel reference computation
   # if there is no omp.h to find the client compilation will fail and this should be obvious, used to be REQUIRED
-  find_package(OpenMP)
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+    find_package(OpenMP)
+    if (TARGET OpenMP::OpenMP_CXX)
+      set( LIBOMP_FOUND OpenMP::OpenMP_CXX)
+      get_filename_component(LIBOMP_PATH "${OpenMP_omp_LIBRARY}" PATH)
+    endif()
+  else()
+    find_package(LLVM HINTS ${HIP_CLANG_ROOT})
+    find_library(LIBOMP_FOUND omp HINTS ${LLVM_LIBRARY_DIR}/${LLVM_TARGET_TRIPLE} ${LLVM_LIBRARY_DIR} NO_DEFAULT_PATH)
+    if (LIBOMP_FOUND)
+      get_filename_component(LIBOMP_PATH "${LIBOMP_FOUND}" PATH)
+    endif()
+  endif()
 
-  if (TARGET OpenMP::OpenMP_CXX)
-    set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
-    if(HIP_PLATFORM STREQUAL amd)
-      list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
-      if (NOT WIN32)
-        list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
-      else()
-        list( APPEND COMMON_LINK_LIBS "libomp")
-      endif()
+  if(HIP_PLATFORM STREQUAL amd)
+    if (NOT WIN32 AND LIBOMP_FOUND)
+      set( COMMON_LINK_LIBS ${LIBOMP_FOUND})
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${LIBOMP_PATH}")
+    else()
+      list( APPEND COMMON_LINK_LIBS "libomp")
     endif()
   endif()
 
