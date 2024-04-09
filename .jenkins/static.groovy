@@ -18,7 +18,7 @@ def runCI =
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
-        prj.libraryDependencies = ['rocBLAS', 'rocPRIM']
+        prj.libraryDependencies = ['rocBLAS']
     }
     else
     {
