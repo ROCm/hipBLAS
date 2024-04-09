@@ -47,7 +47,7 @@ if(HIP_PLATFORM STREQUAL amd)
 
   add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
   # We test for C99 compatibility in the example_c.c test
-  set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(example_c.c PROPERTIES LANGUAGE C)
   set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
 endif()
 
