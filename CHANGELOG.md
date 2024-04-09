@@ -15,6 +15,7 @@ Documentation for hipBLAS is available at
 * install.sh script invokes rmake.py script, along with various improvements within the build scripts
 * Library dependencies in install.sh script have been changed from "rocblas" and "rocsolver" to the development packages
   "rocblas-dev" and "rocsolver-dev"
+* Linux AOCL dependency updated to release 4.2 gcc build
 * Windows vcpkg dependencies updated to release 2024.02.14
 
 ## hipBLAS 2.1.0 for ROCm 6.1.0
