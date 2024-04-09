@@ -15,11 +15,6 @@ def runCI =
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
 
-    String hipblasCompiler="g++"
-
-    //customize for project
-    prj.paths.build_command = buildCommand
-
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
         prj.libraryDependencies = ['rocBLAS']
@@ -29,14 +24,21 @@ def runCI =
         prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
     }
 
-    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("hipcc"))
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('hipcc'))
     {
-        hipblasCompiler="hipcc"
+        buildCommand += ' --compiler=hipcc'
     }
-    else if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("clang"))
+    else if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('clang'))
     {
-        hipblasCompiler="clang++"
+        buildCommand += ' --compiler=clang++'
     }
+    else
+    {
+        buildCommand += ' --compiler=g++'
+    }
+
+    //customize for project
+    prj.paths.build_command = buildCommand
 
     // Define test architectures, optional rocm version argument is available
     def nodes = new dockerNodes(nodeDetails, jobName, prj)
@@ -112,6 +114,6 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
 
-    String hostBuildCommand = './install.sh -c --compiler=' + hipblasCompiler
-    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, hipblasCompiler)
+    String hostBuildCommand = './install.sh -c'
+    setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }
