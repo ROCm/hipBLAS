@@ -47,7 +47,7 @@ if(HIP_PLATFORM STREQUAL amd)
 
   add_executable( hipblas-example-c example_c.c ${hipblas_samples_common} )
   # We test for C99 compatibility in the example_c.c test
-  set_source_files_properties(example_c.c PROPERTIES LANGUAGE C)
+  set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
 endif()
 
@@ -68,6 +68,9 @@ endif( )
 if(HIP_PLATFORM STREQUAL amd)
   list (APPEND hipblas-example-executables hipblas-example-bfdot-hip-bfloat16 hipblas-example-c)
   target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
+
+  # needed for hipcc to find hip includes for C example
+  target_compile_options(hipblas-example-c PRIVATE -I${HIP_INCLUDE_DIRS})
 endif()
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
