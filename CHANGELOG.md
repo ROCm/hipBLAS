@@ -3,7 +3,22 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.1.0
+## (Unreleased) hipBLAS 2.2.0
+
+### Additions
+
+* Level 2 functions have additional ILP64 API for both C and FORTRAN (_64 name suffix) with int64_t function arguments
+* Level 1 "_ex" functions have additional ILP64 API
+
+### Changes
+
+* install.sh script invokes rmake.py script, along with various improvements within the build scripts
+* Library dependencies in install.sh script have been changed from "rocblas" and "rocsolver" to the development packages
+  "rocblas-dev" and "rocsolver-dev"
+* Linux AOCL dependency updated to release 4.2 gcc build
+* Windows vcpkg dependencies updated to release 2024.02.14
+
+## hipBLAS 2.1.0 for ROCm 6.1.0
 
 ### Additions
 
