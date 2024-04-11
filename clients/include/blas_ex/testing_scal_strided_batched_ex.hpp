@@ -66,7 +66,7 @@ void testing_scal_strided_batched_ex_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<Tx> dx(stridex * batch_count);
+    device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -175,28 +175,31 @@ void testing_scal_strided_batched_ex(const Arguments& arg)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx_host(sizeX);
-    host_vector<Tx> hx_device(sizeX);
-    host_vector<Tx> hx_cpu(sizeX);
+    host_strided_batch_vector<Tx> hx_host(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Tx> hx_device(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Tx> hx_cpu(N, incx, stridex, batch_count);
 
-    host_vector<Tex> hx_host_ex(sizeX);
-    host_vector<Tex> hx_device_ex(sizeX);
-    host_vector<Tex> hx_cpu_ex(sizeX);
+    host_strided_batch_vector<Tex> hx_host_ex(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Tex> hx_device_ex(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Tex> hx_cpu_ex(N, incx, stridex, batch_count);
 
-    device_vector<Tx> dx(sizeX);
-    device_vector<Ta> d_alpha(1);
+    device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
+    device_vector<Ta>               d_alpha(1);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx_host, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx_host, arg, hipblas_client_alpha_sets_nan, true);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
-    hx_device = hx_cpu = hx_host;
+    hx_device.copy_from(hx_host);
+    hx_cpu.copy_from(hx_host);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     if(unit_check || norm_check)
@@ -210,31 +213,31 @@ void testing_scal_strided_batched_ex(const Arguments& arg)
             (handle, N, &h_alpha, alphaType, dx, xType, incx, stridex, batch_count, executionType));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hx_host.transfer_from(dx));
+        CHECK_HIP_ERROR(dx.transfer_from(hx_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(
             hipblasScalStridedBatchedExFn,
             (handle, N, d_alpha, alphaType, dx, xType, incx, stridex, batch_count, executionType));
 
-        CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx_device.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu + b * stridex, incx);
+            ref_scal<Tx, Ta>(N, h_alpha, hx_cpu[b], incx);
         }
 
         for(size_t b = 0; b < batch_count; b++)
         {
             for(size_t i = 0; i < N; i++)
             {
-                hx_host_ex[i * incx + b * stridex]   = (Tex)hx_host[i * incx + b * stridex];
-                hx_device_ex[i * incx + b * stridex] = (Tex)hx_device[i * incx + b * stridex];
-                hx_cpu_ex[i * incx + b * stridex]    = (Tex)hx_cpu[i * incx + b * stridex];
+                hx_host_ex[b][i * incx]   = (Tex)hx_host[b][i * incx];
+                hx_device_ex[b][i * incx] = (Tex)hx_device[b][i * incx];
+                hx_cpu_ex[b][i * incx]    = (Tex)hx_cpu[b][i * incx];
             }
         }
 

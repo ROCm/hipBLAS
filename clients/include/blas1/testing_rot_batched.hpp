@@ -111,6 +111,11 @@ void testing_rot_batched(const Arguments& arg)
     device_vector<U>       dc(1);
     device_vector<V>       ds(1);
 
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(dc.memcheck());
+    CHECK_DEVICE_ALLOCATION(ds.memcheck());
+
     // Initial Data on CPU
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy(N, incy, batch_count);
@@ -122,7 +127,7 @@ void testing_rot_batched(const Arguments& arg)
 
     hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_never_set_nan, false);
-    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(alpha, arg, hipblas_client_never_set_nan, false);
 
     // cos and sin of alpha (in rads)
     hc[0] = cos(alpha[0]);

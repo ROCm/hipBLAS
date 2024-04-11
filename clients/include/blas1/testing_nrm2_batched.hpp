@@ -127,7 +127,9 @@ void testing_nrm2_batched(const Arguments& arg)
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_vector<Tr>      d_hipblas_result(batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     // Initial Data on CPU
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);

@@ -103,16 +103,18 @@ void testing_copy_batched(const Arguments& arg)
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy);
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dy.transfer_from(hy));
+
+    CHECK_DEVICE_ALLOCATION(dx.transfer_from(hx));
+    CHECK_DEVICE_ALLOCATION(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {

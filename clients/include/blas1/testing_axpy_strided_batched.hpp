@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,9 +59,9 @@ void testing_axpy_strided_batched_bad_arg(const Arguments& arg)
         hipblasStride stride_x    = N;
         hipblasStride stride_y    = N;
 
-        device_vector<T> d_alpha(1), d_zero(1);
-        device_vector<T> dx(stride_x * batch_count);
-        device_vector<T> dy(stride_y * batch_count);
+        device_vector<T>               d_alpha(1), d_zero(1);
+        device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+        device_strided_batch_vector<T> dy(N, incy, stride_y, batch_count);
 
         const T  h_alpha(1), h_zero(0);
         const T* alpha = &h_alpha;
@@ -128,14 +128,8 @@ void testing_axpy_strided_batched(const Arguments& arg)
     int64_t abs_incx = incx < 0 ? -incx : incx;
     int64_t abs_incy = incy < 0 ? -incy : incy;
 
-    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
-    size_t        sizeY   = stridey * batch_count;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
+    hipblasStride stridex = N * abs_incx * stride_scale;
+    hipblasStride stridey = N * abs_incy * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -150,34 +144,36 @@ void testing_axpy_strided_batched(const Arguments& arg)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hy_host(sizeY);
-    host_vector<T> hy_device(sizeY);
-    host_vector<T> hx_cpu(sizeX);
-    host_vector<T> hy_cpu(sizeY);
+    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
+    host_strided_batch_vector<T> hy_host(N, incy, stridey, batch_count);
+    host_strided_batch_vector<T> hy_device(N, incy, stridey, batch_count);
+    host_strided_batch_vector<T> hx_cpu(N, incy, stridey, batch_count);
+    host_strided_batch_vector<T> hy_cpu(N, incy, stridey, batch_count);
 
-    device_vector<T> dx(sizeX);
-    device_vector<T> dy_host(sizeY);
-    device_vector<T> dy_device(sizeY);
-    device_vector<T> d_alpha(1);
+    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
+    device_strided_batch_vector<T> dy_host(N, incy, stridey, batch_count);
+    device_strided_batch_vector<T> dy_device(N, incy, stridey, batch_count);
+    device_vector<T>               d_alpha(1);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy_host.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy_device.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(
-        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
-    hy_device = hy_host;
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy_host, arg, hipblas_client_alpha_sets_nan, false);
 
-    // copy vector is easy in STL; hx_cpu = hx: save a copy in hx_cpu which will be output of CPU BLAS
-    hx_cpu = hx;
-    hy_cpu = hy_host;
+    hx_cpu.copy_from(hx);
+    hy_cpu.copy_from(hy_host);
+    hy_device.copy_from(hy_host);
 
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy_host, hy_host.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(
-        hipMemcpy(dy_device, hy_device.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy_host.transfer_from(hy_host));
+    CHECK_HIP_ERROR(dy_device.transfer_from(hy_device));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
@@ -194,10 +190,8 @@ void testing_axpy_strided_batched(const Arguments& arg)
                    (handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(
-            hipMemcpy(hy_host.data(), dy_host, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(
-            hipMemcpy(hy_device.data(), dy_device, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
 
         /* =====================================================================
                     CPU BLAS

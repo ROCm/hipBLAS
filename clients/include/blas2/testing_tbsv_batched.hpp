@@ -53,16 +53,18 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
-        hipblasOperation_t transA      = HIPBLAS_OP_N;
-        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
-        int64_t            N           = 100;
-        int64_t            K           = 5;
-        int64_t            lda         = 100;
-        int64_t            incx        = 1;
-        int64_t            batch_count = 2;
+        hipblasFillMode_t  uplo              = HIPBLAS_FILL_MODE_UPPER;
+        hipblasOperation_t transA            = HIPBLAS_OP_N;
+        hipblasDiagType_t  diag              = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            N                 = 100;
+        int64_t            K                 = 5;
+        int64_t            banded_matrix_row = K + 1;
+        int64_t            lda               = 100;
+        int64_t            incx              = 1;
+        int64_t            batch_count       = 2;
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dAb(banded_matrix_row, N, lda, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -73,7 +75,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      diag,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -87,7 +89,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      diag,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -101,7 +103,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      diag,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -115,7 +117,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      diag,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -129,7 +131,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -157,7 +159,7 @@ void testing_tbsv_batched_bad_arg(const Arguments& arg)
                      diag,
                      N,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      nullptr,
                      incx,
@@ -181,25 +183,23 @@ void testing_tbsv_batched(const Arguments& arg)
     auto hipblasTbsvBatchedFn_64
         = arg.api == FORTRAN_64 ? hipblasTbsvBatched_64<T, true> : hipblasTbsvBatched_64<T, false>;
 
-    hipblasFillMode_t  uplo        = char2hipblas_fill(arg.uplo);
-    hipblasDiagType_t  diag        = char2hipblas_diagonal(arg.diag);
-    hipblasOperation_t transA      = char2hipblas_operation(arg.transA);
-    int64_t            N           = arg.N;
-    int64_t            K           = arg.K;
-    int64_t            incx        = arg.incx;
-    int64_t            lda         = arg.lda;
-    int64_t            batch_count = arg.batch_count;
+    hipblasFillMode_t  uplo              = char2hipblas_fill(arg.uplo);
+    hipblasDiagType_t  diag              = char2hipblas_diagonal(arg.diag);
+    hipblasOperation_t transA            = char2hipblas_operation(arg.transA);
+    int64_t            N                 = arg.N;
+    int64_t            K                 = arg.K;
+    int64_t            incx              = arg.incx;
+    int64_t            lda               = arg.lda;
+    int64_t            batch_count       = arg.batch_count;
+    int64_t            banded_matrix_row = K + 1;
 
     size_t abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = N * N;
-    size_t size_AB  = lda * N;
-    size_t size_x   = abs_incx * N;
 
     hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = N < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    bool invalid_size = N < 0 || K < 0 || lda < banded_matrix_row || !incx || batch_count < 0;
     if(invalid_size || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
@@ -208,54 +208,60 @@ void testing_tbsv_batched(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(size_A, 1, batch_count);
-    host_batch_vector<T> hAB(size_AB, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hAb), `d` is in GPU (device) memory (eg dAb).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, N, batch_count);
+    host_batch_matrix<T> hAb(banded_matrix_row, N, lda, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hx_or_b(N, incx, batch_count);
 
-    device_batch_vector<T> dAB(size_AB, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hAb.memcheck());
+    CHECK_HIP_ERROR(hb.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hx_or_b.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dAb(banded_matrix_row, N, lda, batch_count);
     device_batch_vector<T> dx_or_b(N, incx, batch_count);
 
-    CHECK_HIP_ERROR(dAB.memcheck());
-    CHECK_HIP_ERROR(dx_or_b.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dAb.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx_or_b.memcheck());
 
     double hipblas_error, cumulative_hipblas_error = 0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_matrix(hA,
+                        arg,
+                        hipblas_client_never_set_nan,
+                        hipblas_diagonally_dominant_triangular_matrix,
+                        true,
+                        false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+
     hb.copy_from(hx);
+
+    banded_matrix_setup<T>(uplo == HIPBLAS_FILL_MODE_UPPER, hA, K);
+
+    if(diag == HIPBLAS_DIAG_UNIT)
+    {
+        make_unit_diagonal(uplo, hA);
+    }
+
+    regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, hA, hAb, K);
 
     for(size_t b = 0; b < batch_count; b++)
     {
-        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                                 (T*)hA[b],
-                                 arg,
-                                 N,
-                                 N,
-                                 N,
-                                 0,
-                                 1,
-                                 hipblas_client_never_set_nan,
-                                 false);
-
-        banded_matrix_setup(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, N, K);
-
-        if(diag == HIPBLAS_DIAG_UNIT)
-        {
-            make_unit_diagonal(uplo, (T*)hA[b], N, N);
-        }
-
-        regular_to_banded(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA[b], N, (T*)hAB[b], lda, N, K);
-
         // Calculate hb = hA*hx;
-        ref_tbmv<T>(uplo, transA, diag, N, K, hAB[b], lda, hb[b], incx);
+        ref_tbmv<T>(uplo, transA, diag, N, K, hAb[b], lda, hb[b], incx);
     }
 
     hx_or_b.copy_from(hb);
 
-    CHECK_HIP_ERROR(dAB.transfer_from(hAB));
+    CHECK_HIP_ERROR(dAb.transfer_from(hAb));
     CHECK_HIP_ERROR(dx_or_b.transfer_from(hx_or_b));
 
     /* =====================================================================
@@ -270,7 +276,7 @@ void testing_tbsv_batched(const Arguments& arg)
                     diag,
                     N,
                     K,
-                    dAB.ptr_on_device(),
+                    dAb.ptr_on_device(),
                     lda,
                     dx_or_b.ptr_on_device(),
                     incx,
@@ -313,7 +319,7 @@ void testing_tbsv_batched(const Arguments& arg)
                            diag,
                            N,
                            K,
-                           dAB.ptr_on_device(),
+                           dAb.ptr_on_device(),
                            lda,
                            dx_or_b.ptr_on_device(),
                            incx,

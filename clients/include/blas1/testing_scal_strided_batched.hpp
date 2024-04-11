@@ -55,7 +55,7 @@ void testing_scal_strided_batched_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<T> dx(stride_x * batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -94,8 +94,7 @@ void testing_scal_strided_batched(const Arguments& arg)
     int unit_check = arg.unit_check;
     int timing     = arg.timing;
 
-    hipblasStride stridex = size_t(N) * incx * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
+    hipblasStride stride_x = N * incx * stride_scale;
 
     U alpha = arg.get_alpha<U>();
 
@@ -106,28 +105,27 @@ void testing_scal_strided_batched(const Arguments& arg)
     if(N <= 0 || incx <= 0 || batch_count <= 0)
     {
         DAPI_CHECK(hipblasScalStridedBatchedFn,
-                   (handle, N, nullptr, nullptr, incx, stridex, batch_count));
+                   (handle, N, nullptr, nullptr, incx, stride_x, batch_count));
         return;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hz(sizeX);
+    host_strided_batch_vector<T> hx(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hz(N, incx, stride_x, batch_count);
 
-    device_vector<T> dx(sizeX);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
 
-    // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
-    hz = hx;
+    hz.copy_from(hx);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check)
     {
@@ -135,24 +133,24 @@ void testing_scal_strided_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         DAPI_CHECK(hipblasScalStridedBatchedFn,
-                   (handle, N, &alpha, dx, incx, stridex, batch_count));
+                   (handle, N, &alpha, dx, incx, stride_x, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_scal<T, U>(N, alpha, hz.data() + b * stridex, incx);
+            ref_scal<T, U>(N, alpha, hz.data() + b * stride_x, incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, incx, stridex, hz, hx);
+            unit_check_general<T>(1, N, batch_count, incx, stride_x, hz, hx);
         }
 
     } // end of if unit check
@@ -169,7 +167,7 @@ void testing_scal_strided_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             DAPI_CHECK(hipblasScalStridedBatchedFn,
-                       (handle, N, &alpha, dx, incx, stridex, batch_count));
+                       (handle, N, &alpha, dx, incx, stride_x, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

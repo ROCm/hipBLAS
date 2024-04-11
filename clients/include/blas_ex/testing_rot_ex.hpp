@@ -54,8 +54,8 @@ void testing_rot_ex_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<Tx>  dx(N * incx);
-    device_vector<Ty>  dy(N * incy);
+    device_vector<Tx>  dx(N, incx);
+    device_vector<Ty>  dy(N, incy);
     device_vector<Tcs> dc(1);
     device_vector<Tcs> ds(1);
 
@@ -142,47 +142,49 @@ void testing_rot_ex(const Arguments& arg)
 
     int64_t abs_incx = incx >= 0 ? incx : -incx;
     int64_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t  size_x   = N * size_t(abs_incx);
-    size_t  size_y   = N * size_t(abs_incy);
-    if(!size_x)
-        size_x = 1;
-    if(!size_y)
-        size_y = 1;
 
-    device_vector<Tx>  dx(size_x);
-    device_vector<Ty>  dy(size_y);
+    device_vector<Tx>  dx(N, incx);
+    device_vector<Ty>  dy(N, incy);
     device_vector<Tcs> dc(1);
     device_vector<Tcs> ds(1);
 
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(dc.memcheck());
+    CHECK_DEVICE_ALLOCATION(ds.memcheck());
+
     // Initial Data on CPU
-    host_vector<Tx>  hx_host(size_x);
-    host_vector<Ty>  hy_host(size_y);
-    host_vector<Tx>  hx_device(size_x);
-    host_vector<Ty>  hy_device(size_y);
-    host_vector<Tx>  hx_cpu(size_x);
-    host_vector<Ty>  hy_cpu(size_y);
+    host_vector<Tx>  hx_host(N, incx);
+    host_vector<Ty>  hy_host(N, incy);
+    host_vector<Tx>  hx_device(N, incx);
+    host_vector<Ty>  hy_device(N, incy);
+    host_vector<Tx>  hx_cpu(N, incx);
+    host_vector<Ty>  hy_cpu(N, incy);
     host_vector<Tcs> hc(1);
     host_vector<Tcs> hs(1);
 
     // Random alpha (0 - 10)
     host_vector<int> alpha(1);
 
-    hipblas_init_vector(hx_host, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hy_host, arg, N, abs_incy, 0, 1, hipblas_client_never_set_nan, false);
-    hipblas_init_vector(alpha, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
-    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
-    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hx_host, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_vector(hy_host, arg, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(alpha, arg, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hc, arg, hipblas_client_never_set_nan, false);
+    hipblas_init_vector(hs, arg, hipblas_client_never_set_nan, false);
 
     // // cos and sin of alpha (in rads)
     // hc[0] = cos(alpha[0]);
     // hs[0] = sin(alpha[0]);
 
     // CPU BLAS reference data
-    hx_cpu = hx_device = hx_host;
-    hy_cpu = hy_device = hy_host;
+    hx_device = hx_host;
+    hx_cpu    = hx_host;
+    hy_device = hy_host;
+    hy_cpu    = hy_host;
 
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx_host, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx_host));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
+
     CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(Tcs), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(Tcs), hipMemcpyHostToDevice));
 
@@ -193,17 +195,17 @@ void testing_rot_ex(const Arguments& arg)
         DAPI_CHECK(hipblasRotExFn,
                    (handle, N, dx, xType, incx, dy, yType, incy, hc, hs, csType, executionType));
 
-        CHECK_HIP_ERROR(hipMemcpy(hx_host, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dx, hx_device, sizeof(Tx) * size_x, hipMemcpyHostToDevice));
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * size_y, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hx_host.transfer_from(dx));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dx.transfer_from(hx_device));
+        CHECK_HIP_ERROR(dy.transfer_from(hy_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasRotExFn,
                    (handle, N, dx, xType, incx, dy, yType, incy, dc, ds, csType, executionType));
 
-        CHECK_HIP_ERROR(hipMemcpy(hx_device, dx, sizeof(Tx) * size_x, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * size_y, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx_device.transfer_from(dx));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
         // CBLAS
         // TODO: execution type in cblas_rot

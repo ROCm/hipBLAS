@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,9 +58,10 @@ void testing_dgmm_batched_bad_arg(const Arguments& arg)
 
     int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
 
-    device_batch_vector<T> dA(N * lda, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
     device_batch_vector<T> dx(K, incx, batch_count);
-    device_batch_vector<T> dC(N * ldc, 1, batch_count);
+    device_batch_matrix<T> dC(M, N, ldc, batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasDgmmBatchedFn(nullptr,
                                                side,
@@ -146,16 +147,13 @@ void testing_dgmm_batched(const Arguments& arg)
 
     hipblasSideMode_t side = char2hipblas_side(arg.side);
 
-    int M           = arg.M;
-    int N           = arg.N;
-    int lda         = arg.lda;
-    int incx        = arg.incx;
-    int ldc         = arg.ldc;
-    int batch_count = arg.batch_count;
-
-    size_t A_size = size_t(lda) * N;
-    size_t C_size = size_t(ldc) * N;
-    int    k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
+    int64_t M           = arg.M;
+    int64_t N           = arg.N;
+    int64_t lda         = arg.lda;
+    int64_t incx        = arg.incx;
+    int64_t ldc         = arg.ldc;
+    int64_t batch_count = arg.batch_count;
+    int64_t K           = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     hipblasLocalHandle handle(arg);
 
@@ -171,33 +169,36 @@ void testing_dgmm_batched(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA_copy(A_size, 1, batch_count);
-    host_batch_vector<T> hx(k, incx, batch_count);
-    host_batch_vector<T> hx_copy(k, incx, batch_count);
-    host_batch_vector<T> hC(C_size, 1, batch_count);
-    host_batch_vector<T> hC_1(C_size, 1, batch_count);
-    host_batch_vector<T> hC_gold(C_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(M, N, lda, batch_count);
+    host_batch_vector<T> hx(K, incx, batch_count);
+    host_batch_matrix<T> hC(M, N, ldc, batch_count);
+    host_batch_matrix<T> hC_gold(M, N, ldc, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dx(k, incx, batch_count);
-    device_batch_vector<T> dC(C_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hC.memcheck());
+    CHECK_HIP_ERROR(hC_gold.memcheck());
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dC.memcheck());
+    // Allocate device memory
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
+    device_batch_vector<T> dx(K, incx, batch_count);
+    device_batch_matrix<T> dC(M, N, ldc, batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
 
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
     hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
-    hipblas_init_vector(hC, arg, hipblas_client_never_set_nan);
+    hipblas_init_matrix(hC, arg, hipblas_client_never_set_nan, hipblas_general_matrix);
 
-    hA_copy.copy_from(hA);
-    hx_copy.copy_from(hx);
-    hC_1.copy_from(hC);
     hC_gold.copy_from(hC_gold);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
@@ -220,7 +221,7 @@ void testing_dgmm_batched(const Arguments& arg)
                                                  dC.ptr_on_device(),
                                                  ldc,
                                                  batch_count));
-        CHECK_HIP_ERROR(hC_1.transfer_from(dC));
+        CHECK_HIP_ERROR(hC.transfer_from(dC));
 
         /* =====================================================================
            CPU BLAS
@@ -237,12 +238,12 @@ void testing_dgmm_batched(const Arguments& arg)
                     if(HIPBLAS_SIDE_RIGHT == side)
                     {
                         hC_gold[b][i1 + i2 * ldc]
-                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][shift_x + i2 * incx];
+                            = hA[b][i1 + i2 * lda] * hx[b][shift_x + i2 * incx];
                     }
                     else
                     {
                         hC_gold[b][i1 + i2 * ldc]
-                            = hA_copy[b][i1 + i2 * lda] * hx_copy[b][shift_x + i1 * incx];
+                            = hA[b][i1 + i2 * lda] * hx[b][shift_x + i1 * incx];
                     }
                 }
             }
@@ -252,12 +253,12 @@ void testing_dgmm_batched(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC_1);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_gold, hC);
         }
 
         if(arg.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_1, batch_count);
+            hipblas_error = norm_check_general<T>('F', M, N, ldc, hC_gold, hC, batch_count);
         }
     }
 
@@ -290,7 +291,7 @@ void testing_dgmm_batched(const Arguments& arg)
                                               arg,
                                               gpu_time_used,
                                               dgmm_gflop_count<T>(M, N),
-                                              dgmm_gbyte_count<T>(M, N, k),
+                                              dgmm_gbyte_count<T>(M, N, K),
                                               hipblas_error);
     }
 }
