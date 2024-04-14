@@ -30,7 +30,6 @@
 #include "complex.hpp"
 #include <cmath>
 #include <cstdio>
-#include <immintrin.h>
 #include <iostream>
 #include <random>
 #include <type_traits>
