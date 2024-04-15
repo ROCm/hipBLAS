@@ -224,7 +224,7 @@ void testing_hpr_batched(const Arguments& arg)
                     batch_count));
 
         CHECK_HIP_ERROR(hAp_host.transfer_from(dAp));
-        CHECK_HIP_ERROR(dAp.transfer_from(hA));
+        CHECK_HIP_ERROR(dAp.transfer_from(hAp));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(

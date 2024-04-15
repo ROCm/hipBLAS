@@ -107,8 +107,8 @@ void testing_swap_strided_batched(const Arguments& arg)
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     host_strided_batch_vector<T> hx(N, incx, stride_x, batch_count);
-    host_strided_batch_vector<T> hy(N, incy, stride_y, batch_count);
     host_strided_batch_vector<T> hx_cpu(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hy(N, incy, stride_y, batch_count);
     host_strided_batch_vector<T> hy_cpu(N, incy, stride_y, batch_count);
 
     device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
@@ -153,7 +153,7 @@ void testing_swap_strided_batched(const Arguments& arg)
 
         if(unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, abs_incy, stride_x, hx_cpu.data(), hx.data());
+            unit_check_general<T>(1, N, batch_count, abs_incx, stride_x, hx_cpu.data(), hx.data());
             unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu.data(), hy.data());
         }
         if(norm_check)

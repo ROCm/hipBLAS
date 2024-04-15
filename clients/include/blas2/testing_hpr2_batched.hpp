@@ -247,7 +247,7 @@ void testing_hpr2_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_matrix<T> hA(1, size_A, 1, batch_count);
+    host_batch_matrix<T> hA(N, N, N, batch_count);
     host_batch_matrix<T> hAp(1, size_A, 1, batch_count);
     host_batch_matrix<T> hAp_cpu(1, size_A, 1, batch_count);
     host_batch_matrix<T> hAp_host(1, size_A, 1, batch_count);
