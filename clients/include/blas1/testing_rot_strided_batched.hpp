@@ -102,8 +102,8 @@ void testing_rot_strided_batched(const Arguments& arg)
 
     int64_t       abs_incx = incx >= 0 ? incx : -incx;
     int64_t       abs_incy = incy >= 0 ? incy : -incy;
-    hipblasStride stride_x = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stride_y = size_t(N) * abs_incy * stride_scale;
+    hipblasStride stride_x = N * abs_incx * stride_scale;
+    hipblasStride stride_y = N * abs_incy * stride_scale;
 
     const U rel_error = std::numeric_limits<U>::epsilon() * 1000;
 
@@ -169,8 +169,7 @@ void testing_rot_strided_batched(const Arguments& arg)
     // cy[0] = hy[0];
     for(int64_t b = 0; b < batch_count; b++)
     {
-        ref_rot<T, U, V>(
-            N, cx.data() + b * stride_x, incx, cy.data() + b * stride_y, incy, *hc, *hs);
+        ref_rot<T, U, V>(N, cx[b], incx, cy[b], incy, *hc, *hs);
     }
 
     if(arg.unit_check || arg.norm_check)
@@ -186,7 +185,7 @@ void testing_rot_strided_batched(const Arguments& arg)
                        (handle, N, dx, incx, stride_x, dy, incy, stride_y, hc, hs, batch_count));
 
             host_strided_batch_vector<T> rx(N, incx, stride_x, batch_count);
-            host_strided_batch_vector<T> ry(N, incx, stride_x, batch_count);
+            host_strided_batch_vector<T> ry(N, incy, stride_y, batch_count);
 
             // copy output from device to CPU
             CHECK_HIP_ERROR(rx.transfer_from(dx));
@@ -220,7 +219,7 @@ void testing_rot_strided_batched(const Arguments& arg)
                        (handle, N, dx, incx, stride_x, dy, incy, stride_y, dc, ds, batch_count));
 
             host_strided_batch_vector<T> rx(N, incx, stride_x, batch_count);
-            host_strided_batch_vector<T> ry(N, incx, stride_x, batch_count);
+            host_strided_batch_vector<T> ry(N, incy, stride_y, batch_count);
 
             // copy output from device to CPU
             CHECK_HIP_ERROR(rx.transfer_from(dx));

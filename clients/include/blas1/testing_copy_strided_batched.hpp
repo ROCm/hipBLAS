@@ -87,8 +87,8 @@ void testing_copy_strided_batched(const Arguments& arg)
     int64_t abs_incx = incx >= 0 ? incx : -incx;
     int64_t abs_incy = incy >= 0 ? incy : -incy;
 
-    hipblasStride stridex = N * abs_incx * stride_scale;
-    hipblasStride stridey = N * abs_incy * stride_scale;
+    hipblasStride stride_x = N * abs_incx * stride_scale;
+    hipblasStride stride_y = N * abs_incy * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -97,18 +97,18 @@ void testing_copy_strided_batched(const Arguments& arg)
     if(N <= 0 || batch_count <= 0)
     {
         DAPI_CHECK(hipblasCopyStridedBatchedFn,
-                   (handle, N, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
+                   (handle, N, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
         return;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
-    host_strided_batch_vector<T> hy(N, incy, stridey, batch_count);
-    host_strided_batch_vector<T> hx_cpu(N, incy, stridey, batch_count);
-    host_strided_batch_vector<T> hy_cpu(N, incy, stridey, batch_count);
+    host_strided_batch_vector<T> hx(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hx_cpu(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hy(N, incy, stride_y, batch_count);
+    host_strided_batch_vector<T> hy_cpu(N, incy, stride_y, batch_count);
 
-    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
-    device_strided_batch_vector<T> dy(N, incy, stridey, batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+    device_strided_batch_vector<T> dy(N, incy, stride_y, batch_count);
 
     CHECK_DEVICE_ALLOCATION(dx.memcheck());
     CHECK_DEVICE_ALLOCATION(dy.memcheck());
@@ -133,10 +133,9 @@ void testing_copy_strided_batched(const Arguments& arg)
                     HIPBLAS
         =================================================================== */
         DAPI_CHECK(hipblasCopyStridedBatchedFn,
-                   (handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
+                   (handle, N, dx, incx, stride_x, dy, incy, stride_y, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hx.transfer_from(dx));
         CHECK_HIP_ERROR(hy.transfer_from(dy));
 
         /*=====================================================================
@@ -144,19 +143,19 @@ void testing_copy_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_copy<T>(N, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy);
+            ref_copy<T>(N, hx_cpu[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy.data());
+            unit_check_general<T>(1, N, batch_count, abs_incy, stride_y, hy_cpu.data(), hy.data());
         }
         if(arg.norm_check)
         {
             hipblas_error
-                = norm_check_general<T>('F', 1, N, abs_incy, stridey, hy_cpu, hy, batch_count);
+                = norm_check_general<T>('F', 1, N, abs_incy, stride_y, hy_cpu, hy, batch_count);
         }
     } // end of if unit check
 
@@ -172,7 +171,7 @@ void testing_copy_strided_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             DAPI_CHECK(hipblasCopyStridedBatchedFn,
-                       (handle, N, dx, incx, stridex, dy, incy, stridey, batch_count));
+                       (handle, N, dx, incx, stride_x, dy, incy, stride_y, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

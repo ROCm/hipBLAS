@@ -125,7 +125,6 @@ void testing_copy_batched(const Arguments& arg)
                    (handle, N, dx.ptr_on_device(), incx, dy.ptr_on_device(), incy, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hx.transfer_from(dx));
         CHECK_HIP_ERROR(hy.transfer_from(dy));
 
         /* =====================================================================

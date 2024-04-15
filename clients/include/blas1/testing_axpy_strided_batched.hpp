@@ -128,8 +128,8 @@ void testing_axpy_strided_batched(const Arguments& arg)
     int64_t abs_incx = incx < 0 ? -incx : incx;
     int64_t abs_incy = incy < 0 ? -incy : incy;
 
-    hipblasStride stridex = N * abs_incx * stride_scale;
-    hipblasStride stridey = N * abs_incy * stride_scale;
+    hipblasStride stride_x = N * abs_incx * stride_scale;
+    hipblasStride stride_y = N * abs_incy * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -139,25 +139,23 @@ void testing_axpy_strided_batched(const Arguments& arg)
     {
         DAPI_CHECK(
             hipblasAxpyStridedBatchedFn,
-            (handle, N, nullptr, nullptr, incx, stridex, nullptr, incy, stridey, batch_count));
+            (handle, N, nullptr, nullptr, incx, stride_x, nullptr, incy, stride_y, batch_count));
         return;
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
-    host_strided_batch_vector<T> hy_host(N, incy, stridey, batch_count);
-    host_strided_batch_vector<T> hy_device(N, incy, stridey, batch_count);
-    host_strided_batch_vector<T> hx_cpu(N, incy, stridey, batch_count);
-    host_strided_batch_vector<T> hy_cpu(N, incy, stridey, batch_count);
+    host_strided_batch_vector<T> hx(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hx_cpu(N, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hy_host(N, incy, stride_y, batch_count);
+    host_strided_batch_vector<T> hy_device(N, incy, stride_y, batch_count);
+    host_strided_batch_vector<T> hy_cpu(N, incy, stride_y, batch_count);
 
-    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
-    device_strided_batch_vector<T> dy_host(N, incy, stridey, batch_count);
-    device_strided_batch_vector<T> dy_device(N, incy, stridey, batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+    device_strided_batch_vector<T> dy(N, incy, stride_y, batch_count);
     device_vector<T>               d_alpha(1);
 
     CHECK_DEVICE_ALLOCATION(dx.memcheck());
-    CHECK_DEVICE_ALLOCATION(dy_host.memcheck());
-    CHECK_DEVICE_ALLOCATION(dy_device.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
     CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
@@ -168,12 +166,10 @@ void testing_axpy_strided_batched(const Arguments& arg)
 
     hx_cpu.copy_from(hx);
     hy_cpu.copy_from(hy_host);
-    hy_device.copy_from(hy_host);
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dy_host.transfer_from(hy_host));
-    CHECK_HIP_ERROR(dy_device.transfer_from(hy_device));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
@@ -183,23 +179,24 @@ void testing_axpy_strided_batched(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasAxpyStridedBatchedFn,
-                   (handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
+                   (handle, N, d_alpha, dx, incx, stride_x, dy, incy, stride_y, batch_count));
+
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy_host));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasAxpyStridedBatchedFn,
-                   (handle, N, &alpha, dx, incx, stridex, dy_host, incy, stridey, batch_count));
+                   (handle, N, &alpha, dx, incx, stride_x, dy, incy, stride_y, batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hy_host.transfer_from(dy_host));
-        CHECK_HIP_ERROR(hy_device.transfer_from(dy_device));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_axpy<T>(
-                N, alpha, hx_cpu.data() + b * stridex, incx, hy_cpu.data() + b * stridey, incy);
+            ref_axpy<T>(N, alpha, hx_cpu[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -207,16 +204,16 @@ void testing_axpy_strided_batched(const Arguments& arg)
         if(arg.unit_check)
         {
             unit_check_general<T>(
-                1, N, batch_count, abs_incy, stridex, hy_cpu.data(), hy_host.data());
+                1, N, batch_count, abs_incy, stride_y, hy_cpu.data(), hy_host.data());
             unit_check_general<T>(
-                1, N, batch_count, abs_incy, stridey, hy_cpu.data(), hy_device.data());
+                1, N, batch_count, abs_incy, stride_y, hy_cpu.data(), hy_device.data());
         }
         if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_host.data(), batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu.data(), hy_host.data(), batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', 1, N, abs_incy, stridey, hy_cpu.data(), hy_device.data(), batch_count);
+                'F', 1, N, abs_incy, stride_y, hy_cpu.data(), hy_device.data(), batch_count);
         }
     } // end of if unit check
 
@@ -232,9 +229,8 @@ void testing_axpy_strided_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            DAPI_CHECK(
-                hipblasAxpyStridedBatchedFn,
-                (handle, N, d_alpha, dx, incx, stridex, dy_device, incy, stridey, batch_count));
+            DAPI_CHECK(hipblasAxpyStridedBatchedFn,
+                       (handle, N, d_alpha, dx, incx, stride_x, dy, incy, stride_y, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

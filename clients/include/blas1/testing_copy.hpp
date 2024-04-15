@@ -124,7 +124,6 @@ void testing_copy(const Arguments& arg)
         DAPI_CHECK(hipblasCopyFn, (handle, N, dx, incx, dy, incy));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hx.transfer_from(dx));
         CHECK_HIP_ERROR(hy.transfer_from(dy));
 
         /* =====================================================================

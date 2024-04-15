@@ -143,7 +143,7 @@ void testing_scal_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_scal<T, U>(N, alpha, hz.data() + b * stride_x, incx);
+            ref_scal<T, U>(N, alpha, hz[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
