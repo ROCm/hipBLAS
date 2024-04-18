@@ -81,7 +81,8 @@ if(HIP_PLATFORM STREQUAL amd)
   endif( )
 
   list(APPEND static_depends PACKAGE rocblas)
-  target_link_libraries( hipblas PRIVATE roc::rocblas hip::host )
+  target_link_libraries( hipblas PRIVATE roc::rocblas )
+  target_link_libraries( hipblas PUBLIC hip::host )
 
   # Add rocSOLVER as a dependency if BUILD_WITH_SOLVER is on
   if( BUILD_WITH_SOLVER )
