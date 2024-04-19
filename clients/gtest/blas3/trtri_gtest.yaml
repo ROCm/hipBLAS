@@ -17,7 +17,7 @@ Tests:
     uplo: [ 'L', 'U' ]
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C , FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trtri_batched_general
@@ -28,7 +28,7 @@ Tests:
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C , FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trtri_strided_batched_general
@@ -40,7 +40,7 @@ Tests:
     matrix_size: *size_range
     batch_count: *batch_count_range
     stride_scale: [ 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C , FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trtri_bad_arg
@@ -50,6 +50,6 @@ Tests:
       - trtri_batched_bad_arg
       - trtri_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C , FORTRAN_64, C_64]
     backend_flags: AMD
 ...

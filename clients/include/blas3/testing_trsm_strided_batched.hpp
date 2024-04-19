@@ -51,9 +51,11 @@ inline void testname_trsm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTrsmStridedBatchedFn
-        = FORTRAN ? hipblasTrsmStridedBatched<T, true> : hipblasTrsmStridedBatched<T, false>;
+    auto hipblasTrsmStridedBatchedFn    = arg.api == FORTRAN ? hipblasTrsmStridedBatched<T, true>
+                                                             : hipblasTrsmStridedBatched<T, false>;
+    auto hipblasTrsmStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasTrsmStridedBatched_64<T, true>
+                                              : hipblasTrsmStridedBatched_64<T, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -92,59 +94,64 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(nullptr,
-                                                          side,
-                                                          uplo,
-                                                          transA,
-                                                          diag,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dB,
-                                                          ldb,
-                                                          strideB,
-                                                          batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasTrsmStridedBatchedFn,
+                    (nullptr,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     strideA,
+                     dB,
+                     ldb,
+                     strideB,
+                     batch_count));
 
-        EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                          HIPBLAS_SIDE_BOTH,
-                                                          uplo,
-                                                          transA,
-                                                          diag,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dB,
-                                                          ldb,
-                                                          strideB,
-                                                          batch_count),
+        DAPI_EXPECT(
 #ifdef __HIP_PLATFORM_NVCC__
-                              HIPBLAS_STATUS_INVALID_ENUM);
+            HIPBLAS_STATUS_INVALID_ENUM,
 #else
-                              HIPBLAS_STATUS_INVALID_VALUE);
+            HIPBLAS_STATUS_INVALID_VALUE,
 #endif
-        EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                          side,
-                                                          HIPBLAS_FILL_MODE_FULL,
-                                                          transA,
-                                                          diag,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dB,
-                                                          ldb,
-                                                          strideB,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+            hipblasTrsmStridedBatchedFn,
+            (handle,
+             HIPBLAS_SIDE_BOTH,
+             uplo,
+             transA,
+             diag,
+             M,
+             N,
+             alpha,
+             dA,
+             lda,
+             strideA,
+             dB,
+             ldb,
+             strideB,
+             batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrsmStridedBatchedFn,
+                    (handle,
+                     side,
+                     HIPBLAS_FILL_MODE_FULL,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     strideA,
+                     dB,
+                     ldb,
+                     strideB,
+                     batch_count));
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsmStridedBatchedFn(handle,
                                         side,
@@ -162,166 +169,176 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                                         strideB,
                                         batch_count),
             HIPBLAS_STATUS_INVALID_ENUM);
-        EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                          side,
-                                                          uplo,
-                                                          transA,
-                                                          (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
-                                                          M,
-                                                          N,
-                                                          alpha,
-                                                          dA,
-                                                          lda,
-                                                          strideA,
-                                                          dB,
-                                                          ldb,
-                                                          strideB,
-                                                          batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTrsmStridedBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     strideA,
+                     dB,
+                     ldb,
+                     strideB,
+                     batch_count));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                              side,
-                                                              uplo,
-                                                              transA,
-                                                              diag,
-                                                              M,
-                                                              N,
-                                                              nullptr,
-                                                              dA,
-                                                              lda,
-                                                              strideA,
-                                                              dB,
-                                                              ldb,
-                                                              strideB,
-                                                              batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmStridedBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         M,
+                         N,
+                         nullptr,
+                         dA,
+                         lda,
+                         strideA,
+                         dB,
+                         ldb,
+                         strideB,
+                         batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                                  side,
-                                                                  uplo,
-                                                                  transA,
-                                                                  diag,
-                                                                  M,
-                                                                  N,
-                                                                  alpha,
-                                                                  nullptr,
-                                                                  lda,
-                                                                  strideA,
-                                                                  dB,
-                                                                  ldb,
-                                                                  strideB,
-                                                                  batch_count),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedFn(handle,
-                                                                  side,
-                                                                  uplo,
-                                                                  transA,
-                                                                  diag,
-                                                                  M,
-                                                                  N,
-                                                                  alpha,
-                                                                  dA,
-                                                                  lda,
-                                                                  strideA,
-                                                                  nullptr,
-                                                                  ldb,
-                                                                  strideB,
-                                                                  batch_count),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasTrsmStridedBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             transA,
+                             diag,
+                             M,
+                             N,
+                             alpha,
+                             nullptr,
+                             lda,
+                             strideA,
+                             dB,
+                             ldb,
+                             strideB,
+                             batch_count));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasTrsmStridedBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             transA,
+                             diag,
+                             M,
+                             N,
+                             alpha,
+                             dA,
+                             lda,
+                             strideA,
+                             nullptr,
+                             ldb,
+                             strideB,
+                             batch_count));
             }
 
             // If alpha == 0, then A can be nullptr
-            CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                            side,
-                                                            uplo,
-                                                            transA,
-                                                            diag,
-                                                            M,
-                                                            N,
-                                                            zero,
-                                                            nullptr,
-                                                            lda,
-                                                            strideA,
-                                                            dB,
-                                                            ldb,
-                                                            strideB,
-                                                            batch_count));
+            DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                       (handle,
+                        side,
+                        uplo,
+                        transA,
+                        diag,
+                        M,
+                        N,
+                        zero,
+                        nullptr,
+                        lda,
+                        strideA,
+                        dB,
+                        ldb,
+                        strideB,
+                        batch_count));
         }
 
         // If M == 0 || N == 0  batch_count == 0, can have nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        0,
-                                                        N,
-                                                        nullptr,
-                                                        nullptr,
-                                                        lda,
-                                                        strideA,
-                                                        nullptr,
-                                                        ldb,
-                                                        strideB,
-                                                        batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        0,
-                                                        nullptr,
-                                                        nullptr,
-                                                        lda,
-                                                        strideA,
-                                                        nullptr,
-                                                        ldb,
-                                                        strideB,
-                                                        batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        N,
-                                                        nullptr,
-                                                        nullptr,
-                                                        lda,
-                                                        strideA,
-                                                        nullptr,
-                                                        ldb,
-                                                        strideB,
-                                                        0));
+        DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    0,
+                    N,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    strideA,
+                    nullptr,
+                    ldb,
+                    strideB,
+                    batch_count));
+        DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    0,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    strideA,
+                    nullptr,
+                    ldb,
+                    strideB,
+                    batch_count));
+        DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    strideA,
+                    nullptr,
+                    ldb,
+                    strideB,
+                    0));
     }
 }
 
 template <typename T>
 void testing_trsm_strided_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTrsmStridedBatchedFn
-        = FORTRAN ? hipblasTrsmStridedBatched<T, true> : hipblasTrsmStridedBatched<T, false>;
+    auto hipblasTrsmStridedBatchedFn    = arg.api == FORTRAN ? hipblasTrsmStridedBatched<T, true>
+                                                             : hipblasTrsmStridedBatched<T, false>;
+    auto hipblasTrsmStridedBatchedFn_64 = arg.api == FORTRAN_64
+                                              ? hipblasTrsmStridedBatched_64<T, true>
+                                              : hipblasTrsmStridedBatched_64<T, false>;
 
     hipblasSideMode_t  side         = char2hipblas_side(arg.side);
     hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
-    int                M            = arg.M;
-    int                N            = arg.N;
-    int                lda          = arg.lda;
-    int                ldb          = arg.ldb;
+    int64_t            M            = arg.M;
+    int64_t            N            = arg.N;
+    int64_t            lda          = arg.lda;
+    int64_t            ldb          = arg.ldb;
     double             stride_scale = arg.stride_scale;
-    int                batch_count  = arg.batch_count;
+    int64_t            batch_count  = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
 
-    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    int64_t K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasStride strideA = size_t(lda) * K * stride_scale;
     hipblasStride strideB = size_t(ldb) * N * stride_scale;
@@ -329,13 +346,29 @@ void testing_trsm_strided_batched(const Arguments& arg)
     size_t        B_size  = strideB * batch_count;
 
     // check here to prevent undefined memory allocation error
-    // TODO: Workaround for cuda tests, not actually testing return values
-    if(M < 0 || N < 0 || lda < K || ldb < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || batch_count < 0;
+    if(invalid_size || !batch_count)
     {
-        return;
-    }
-    if(!batch_count)
-    {
+        CHECK_ROCBLAS_ERROR(rocblas_set_pointer_mode(handle, rocblas_pointer_mode_host));
+
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasTrsmStridedBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     strideA,
+                     nullptr,
+                     ldb,
+                     strideB,
+                     batch_count));
+
         return;
     }
 
@@ -366,7 +399,7 @@ void testing_trsm_strided_batched(const Arguments& arg)
     hipblas_init_matrix(
         hB_host, arg, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan);
 
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
         T* hAb = hA.data() + b * strideA;
         T* hBb = hB_host.data() + b * strideB;
@@ -394,49 +427,51 @@ void testing_trsm_strided_batched(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        N,
-                                                        &h_alpha,
-                                                        dA,
-                                                        lda,
-                                                        strideA,
-                                                        dB,
-                                                        ldb,
-                                                        strideB,
-                                                        batch_count));
+        DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    &h_alpha,
+                    dA,
+                    lda,
+                    strideA,
+                    dB,
+                    ldb,
+                    strideB,
+                    batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                        side,
-                                                        uplo,
-                                                        transA,
-                                                        diag,
-                                                        M,
-                                                        N,
-                                                        d_alpha,
-                                                        dA,
-                                                        lda,
-                                                        strideA,
-                                                        dB,
-                                                        ldb,
-                                                        strideB,
-                                                        batch_count));
+        DAPI_CHECK(hipblasTrsmStridedBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    d_alpha,
+                    dA,
+                    lda,
+                    strideA,
+                    dB,
+                    ldb,
+                    strideB,
+                    batch_count));
 
         CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_trsm<T>(side,
                         uplo,
@@ -479,21 +514,22 @@ void testing_trsm_strided_batched(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
             }
 
-            CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedFn(handle,
-                                                            side,
-                                                            uplo,
-                                                            transA,
-                                                            diag,
-                                                            M,
-                                                            N,
-                                                            d_alpha,
-                                                            dA,
-                                                            lda,
-                                                            strideA,
-                                                            dB,
-                                                            ldb,
-                                                            strideB,
-                                                            batch_count));
+            DAPI_DISPATCH(hipblasTrsmStridedBatchedFn,
+                          (handle,
+                           side,
+                           uplo,
+                           transA,
+                           diag,
+                           M,
+                           N,
+                           d_alpha,
+                           dA,
+                           lda,
+                           strideA,
+                           dB,
+                           ldb,
+                           strideB,
+                           batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

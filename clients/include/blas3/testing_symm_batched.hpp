@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,9 +50,10 @@ inline void testname_symm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_symm_batched_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSymmBatchedFn
-        = FORTRAN ? hipblasSymmBatched<T, true> : hipblasSymmBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasSymmBatched<T, true> : hipblasSymmBatched<T, false>;
+    auto hipblasSymmBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasSymmBatched_64<T, true> : hipblasSymmBatched_64<T, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -95,257 +96,285 @@ void testing_symm_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(nullptr,
-                                                   side,
-                                                   uplo,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dB.ptr_on_device(),
-                                                   ldb,
-                                                   beta,
-                                                   dC.ptr_on_device(),
-                                                   ldc,
-                                                   batch_count),
-                              HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasSymmBatchedFn,
+                    (nullptr,
+                     side,
+                     uplo,
+                     M,
+                     N,
+                     alpha,
+                     dA.ptr_on_device(),
+                     lda,
+                     dB.ptr_on_device(),
+                     ldb,
+                     beta,
+                     dC.ptr_on_device(),
+                     ldc,
+                     batch_count));
 
-        EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                   HIPBLAS_SIDE_BOTH,
-                                                   uplo,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dB.ptr_on_device(),
-                                                   ldb,
-                                                   beta,
-                                                   dC.ptr_on_device(),
-                                                   ldc,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                   (hipblasSideMode_t)HIPBLAS_OP_N,
-                                                   uplo,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dB.ptr_on_device(),
-                                                   ldb,
-                                                   beta,
-                                                   dC.ptr_on_device(),
-                                                   ldc,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
-        EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                   side,
-                                                   HIPBLAS_FILL_MODE_FULL,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dB.ptr_on_device(),
-                                                   ldb,
-                                                   beta,
-                                                   dC.ptr_on_device(),
-                                                   ldc,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                   side,
-                                                   (hipblasFillMode_t)HIPBLAS_OP_N,
-                                                   M,
-                                                   N,
-                                                   alpha,
-                                                   dA.ptr_on_device(),
-                                                   lda,
-                                                   dB.ptr_on_device(),
-                                                   ldb,
-                                                   beta,
-                                                   dC.ptr_on_device(),
-                                                   ldc,
-                                                   batch_count),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasSymmBatchedFn,
+                    (handle,
+                     HIPBLAS_SIDE_BOTH,
+                     uplo,
+                     M,
+                     N,
+                     alpha,
+                     dA.ptr_on_device(),
+                     lda,
+                     dB.ptr_on_device(),
+                     ldb,
+                     beta,
+                     dC.ptr_on_device(),
+                     ldc,
+                     batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasSymmBatchedFn,
+                    (handle,
+                     (hipblasSideMode_t)HIPBLAS_OP_N,
+                     uplo,
+                     M,
+                     N,
+                     alpha,
+                     dA.ptr_on_device(),
+                     lda,
+                     dB.ptr_on_device(),
+                     ldb,
+                     beta,
+                     dC.ptr_on_device(),
+                     ldc,
+                     batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasSymmBatchedFn,
+                    (handle,
+                     side,
+                     HIPBLAS_FILL_MODE_FULL,
+                     M,
+                     N,
+                     alpha,
+                     dA.ptr_on_device(),
+                     lda,
+                     dB.ptr_on_device(),
+                     ldb,
+                     beta,
+                     dC.ptr_on_device(),
+                     ldc,
+                     batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasSymmBatchedFn,
+                    (handle,
+                     side,
+                     (hipblasFillMode_t)HIPBLAS_OP_N,
+                     M,
+                     N,
+                     alpha,
+                     dA.ptr_on_device(),
+                     lda,
+                     dB.ptr_on_device(),
+                     ldb,
+                     beta,
+                     dC.ptr_on_device(),
+                     ldc,
+                     batch_count));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                       side,
-                                                       uplo,
-                                                       M,
-                                                       N,
-                                                       nullptr,
-                                                       dA.ptr_on_device(),
-                                                       lda,
-                                                       dB.ptr_on_device(),
-                                                       ldb,
-                                                       beta,
-                                                       dC.ptr_on_device(),
-                                                       ldc,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                       side,
-                                                       uplo,
-                                                       M,
-                                                       N,
-                                                       alpha,
-                                                       dA.ptr_on_device(),
-                                                       lda,
-                                                       dB.ptr_on_device(),
-                                                       ldb,
-                                                       nullptr,
-                                                       dC.ptr_on_device(),
-                                                       ldc,
-                                                       batch_count),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSymmBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         M,
+                         N,
+                         nullptr,
+                         dA.ptr_on_device(),
+                         lda,
+                         dB.ptr_on_device(),
+                         ldb,
+                         beta,
+                         dC.ptr_on_device(),
+                         ldc,
+                         batch_count));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSymmBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         M,
+                         N,
+                         alpha,
+                         dA.ptr_on_device(),
+                         lda,
+                         dB.ptr_on_device(),
+                         ldb,
+                         nullptr,
+                         dC.ptr_on_device(),
+                         ldc,
+                         batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                           side,
-                                                           uplo,
-                                                           M,
-                                                           N,
-                                                           alpha,
-                                                           nullptr,
-                                                           lda,
-                                                           dB.ptr_on_device(),
-                                                           ldb,
-                                                           beta,
-                                                           dC.ptr_on_device(),
-                                                           ldc,
-                                                           batch_count),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                           side,
-                                                           uplo,
-                                                           M,
-                                                           N,
-                                                           alpha,
-                                                           dA.ptr_on_device(),
-                                                           lda,
-                                                           nullptr,
-                                                           ldb,
-                                                           beta,
-                                                           dC.ptr_on_device(),
-                                                           ldc,
-                                                           batch_count),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(hipblasSymmBatchedFn(handle,
-                                                           side,
-                                                           uplo,
-                                                           M,
-                                                           N,
-                                                           alpha,
-                                                           dA.ptr_on_device(),
-                                                           lda,
-                                                           dB.ptr_on_device(),
-                                                           ldb,
-                                                           beta,
-                                                           nullptr,
-                                                           ldc,
-                                                           batch_count),
-                                      HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSymmBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             M,
+                             N,
+                             alpha,
+                             nullptr,
+                             lda,
+                             dB.ptr_on_device(),
+                             ldb,
+                             beta,
+                             dC.ptr_on_device(),
+                             ldc,
+                             batch_count));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSymmBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             M,
+                             N,
+                             alpha,
+                             dA.ptr_on_device(),
+                             lda,
+                             nullptr,
+                             ldb,
+                             beta,
+                             dC.ptr_on_device(),
+                             ldc,
+                             batch_count));
+                DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSymmBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             M,
+                             N,
+                             alpha,
+                             dA.ptr_on_device(),
+                             lda,
+                             dB.ptr_on_device(),
+                             ldb,
+                             beta,
+                             nullptr,
+                             ldc,
+                             batch_count));
             }
 
             // alpha == 0 && beta == 1, can have all nullptrs
-            CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                     side,
-                                                     uplo,
-                                                     M,
-                                                     N,
-                                                     zero,
-                                                     nullptr,
-                                                     lda,
-                                                     nullptr,
-                                                     ldb,
-                                                     one,
-                                                     nullptr,
-                                                     ldc,
-                                                     batch_count));
+            DAPI_CHECK(hipblasSymmBatchedFn,
+                       (handle,
+                        side,
+                        uplo,
+                        M,
+                        N,
+                        zero,
+                        nullptr,
+                        lda,
+                        nullptr,
+                        ldb,
+                        one,
+                        nullptr,
+                        ldc,
+                        batch_count));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                 side,
-                                                 uplo,
-                                                 0,
-                                                 N,
-                                                 nullptr,
-                                                 nullptr,
-                                                 lda,
-                                                 nullptr,
-                                                 ldb,
-                                                 nullptr,
-                                                 nullptr,
-                                                 ldc,
-                                                 batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                 side,
-                                                 uplo,
-                                                 M,
-                                                 0,
-                                                 nullptr,
-                                                 nullptr,
-                                                 lda,
-                                                 nullptr,
-                                                 ldb,
-                                                 nullptr,
-                                                 nullptr,
-                                                 ldc,
-                                                 batch_count));
-        CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                 side,
-                                                 uplo,
-                                                 M,
-                                                 N,
-                                                 nullptr,
-                                                 nullptr,
-                                                 lda,
-                                                 nullptr,
-                                                 ldb,
-                                                 nullptr,
-                                                 nullptr,
-                                                 ldc,
-                                                 0));
+        DAPI_CHECK(hipblasSymmBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    0,
+                    N,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    nullptr,
+                    ldb,
+                    nullptr,
+                    nullptr,
+                    ldc,
+                    batch_count));
+        DAPI_CHECK(hipblasSymmBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    M,
+                    0,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    nullptr,
+                    ldb,
+                    nullptr,
+                    nullptr,
+                    ldc,
+                    batch_count));
+        DAPI_CHECK(hipblasSymmBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    M,
+                    N,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    nullptr,
+                    ldb,
+                    nullptr,
+                    nullptr,
+                    ldc,
+                    0));
     }
 }
 
 template <typename T>
 void testing_symm_batched(const Arguments& arg)
 {
-    bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasSymmBatchedFn
-        = FORTRAN ? hipblasSymmBatched<T, true> : hipblasSymmBatched<T, false>;
+        = arg.api == FORTRAN ? hipblasSymmBatched<T, true> : hipblasSymmBatched<T, false>;
+    auto hipblasSymmBatchedFn_64
+        = arg.api == FORTRAN_64 ? hipblasSymmBatched_64<T, true> : hipblasSymmBatched_64<T, false>;
 
     hipblasSideMode_t side        = char2hipblas_side(arg.side);
     hipblasFillMode_t uplo        = char2hipblas_fill(arg.uplo);
-    int               M           = arg.M;
-    int               N           = arg.N;
-    int               lda         = arg.lda;
-    int               ldb         = arg.ldb;
-    int               ldc         = arg.ldc;
-    int               batch_count = arg.batch_count;
+    int64_t           M           = arg.M;
+    int64_t           N           = arg.N;
+    int64_t           lda         = arg.lda;
+    int64_t           ldb         = arg.ldb;
+    int64_t           ldc         = arg.ldc;
+    int64_t           batch_count = arg.batch_count;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    int64_t K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < K || ldb < M || ldc < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < K || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
-        return;
-    }
-    else if(batch_count == 0)
-    {
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasSymmBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     M,
+                     N,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     nullptr,
+                     ldb,
+                     nullptr,
+                     nullptr,
+                     ldc,
+                     batch_count));
         return;
     }
 
@@ -394,45 +423,47 @@ void testing_symm_batched(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                 side,
-                                                 uplo,
-                                                 M,
-                                                 N,
-                                                 &h_alpha,
-                                                 dA.ptr_on_device(),
-                                                 lda,
-                                                 dB.ptr_on_device(),
-                                                 ldb,
-                                                 &h_beta,
-                                                 dC.ptr_on_device(),
-                                                 ldc,
-                                                 batch_count));
+        DAPI_CHECK(hipblasSymmBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    M,
+                    N,
+                    &h_alpha,
+                    dA.ptr_on_device(),
+                    lda,
+                    dB.ptr_on_device(),
+                    ldb,
+                    &h_beta,
+                    dC.ptr_on_device(),
+                    ldc,
+                    batch_count));
 
         CHECK_HIP_ERROR(hC_host.transfer_from(dC));
         CHECK_HIP_ERROR(dC.transfer_from(hC_device));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                 side,
-                                                 uplo,
-                                                 M,
-                                                 N,
-                                                 d_alpha,
-                                                 dA.ptr_on_device(),
-                                                 lda,
-                                                 dB.ptr_on_device(),
-                                                 ldb,
-                                                 d_beta,
-                                                 dC.ptr_on_device(),
-                                                 ldc,
-                                                 batch_count));
+        DAPI_CHECK(hipblasSymmBatchedFn,
+                   (handle,
+                    side,
+                    uplo,
+                    M,
+                    N,
+                    d_alpha,
+                    dA.ptr_on_device(),
+                    lda,
+                    dB.ptr_on_device(),
+                    ldb,
+                    d_beta,
+                    dC.ptr_on_device(),
+                    ldc,
+                    batch_count));
 
         CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        for(int b = 0; b < batch_count; b++)
+        for(int64_t b = 0; b < batch_count; b++)
         {
             ref_symm<T>(side, uplo, M, N, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_gold[b], ldc);
         }
@@ -466,20 +497,21 @@ void testing_symm_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasSymmBatchedFn(handle,
-                                                     side,
-                                                     uplo,
-                                                     M,
-                                                     N,
-                                                     d_alpha,
-                                                     dA.ptr_on_device(),
-                                                     lda,
-                                                     dB.ptr_on_device(),
-                                                     ldb,
-                                                     d_beta,
-                                                     dC.ptr_on_device(),
-                                                     ldc,
-                                                     batch_count));
+            DAPI_DISPATCH(hipblasSymmBatchedFn,
+                          (handle,
+                           side,
+                           uplo,
+                           M,
+                           N,
+                           d_alpha,
+                           dA.ptr_on_device(),
+                           lda,
+                           dB.ptr_on_device(),
+                           ldb,
+                           d_beta,
+                           dC.ptr_on_device(),
+                           ldc,
+                           batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
