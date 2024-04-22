@@ -42098,21 +42098,20 @@ hipblasStatus_t hipblasStrmm_64(hipblasHandle_t    handle,
                                 int64_t            ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_strmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           alpha,
-    //                                           A,
-    //                                           lda,
-    //                                           B,
-    //                                           ldb,
-    //                                           C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_strmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 alpha,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42135,21 +42134,20 @@ hipblasStatus_t hipblasDtrmm_64(hipblasHandle_t    handle,
                                 int64_t            ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_dtrmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           alpha,
-    //                                           A,
-    //                                           lda,
-    //                                           B,
-    //                                           ldb,
-    //                                           C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_dtrmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 alpha,
+                                                 A,
+                                                 lda,
+                                                 B,
+                                                 ldb,
+                                                 C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42172,21 +42170,20 @@ hipblasStatus_t hipblasCtrmm_64(hipblasHandle_t       handle,
                                 int64_t               ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           (rocblas_float_complex*)alpha,
-    //                                           (rocblas_float_complex*)A,
-    //                                           lda,
-    //                                           (rocblas_float_complex*)B,
-    //                                           ldb,
-    //                                           (rocblas_float_complex*)C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_ctrmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 (rocblas_float_complex*)alpha,
+                                                 (rocblas_float_complex*)A,
+                                                 lda,
+                                                 (rocblas_float_complex*)B,
+                                                 ldb,
+                                                 (rocblas_float_complex*)C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42209,21 +42206,20 @@ hipblasStatus_t hipblasZtrmm_64(hipblasHandle_t             handle,
                                 int64_t                     ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           (rocblas_double_complex*)alpha,
-    //                                           (rocblas_double_complex*)A,
-    //                                           lda,
-    //                                           (rocblas_double_complex*)B,
-    //                                           ldb,
-    //                                           (rocblas_double_complex*)C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_ztrmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 (rocblas_double_complex*)alpha,
+                                                 (rocblas_double_complex*)A,
+                                                 lda,
+                                                 (rocblas_double_complex*)B,
+                                                 ldb,
+                                                 (rocblas_double_complex*)C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42246,21 +42242,20 @@ hipblasStatus_t hipblasCtrmm_v2_64(hipblasHandle_t    handle,
                                    int64_t            ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           (rocblas_float_complex*)alpha,
-    //                                           (rocblas_float_complex*)A,
-    //                                           lda,
-    //                                           (rocblas_float_complex*)B,
-    //                                           ldb,
-    //                                           (rocblas_float_complex*)C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_ctrmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 (rocblas_float_complex*)alpha,
+                                                 (rocblas_float_complex*)A,
+                                                 lda,
+                                                 (rocblas_float_complex*)B,
+                                                 ldb,
+                                                 (rocblas_float_complex*)C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42283,21 +42278,20 @@ hipblasStatus_t hipblasZtrmm_v2_64(hipblasHandle_t         handle,
                                    int64_t                 ldc)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_64((rocblas_handle)handle,
-    //                                           hipblasConvertSide(side),
-    //                                           hipblasConvertFill(uplo),
-    //                                           hipblasConvertOperation(transA),
-    //                                           hipblasConvertDiag(diag),
-    //                                           m,
-    //                                           n,
-    //                                           (rocblas_double_complex*)alpha,
-    //                                           (rocblas_double_complex*)A,
-    //                                           lda,
-    //                                           (rocblas_double_complex*)B,
-    //                                           ldb,
-    //                                           (rocblas_double_complex*)C,
-    //                                           ldc));
+    return hipblasConvertStatus(rocblas_ztrmm_64((rocblas_handle)handle,
+                                                 hipblasConvertSide(side),
+                                                 hipblasConvertFill(uplo),
+                                                 hipblasConvertOperation(transA),
+                                                 hipblasConvertDiag(diag),
+                                                 m,
+                                                 n,
+                                                 (rocblas_double_complex*)alpha,
+                                                 (rocblas_double_complex*)A,
+                                                 lda,
+                                                 (rocblas_double_complex*)B,
+                                                 ldb,
+                                                 (rocblas_double_complex*)C,
+                                                 ldc));
 }
 catch(...)
 {
@@ -42551,22 +42545,21 @@ hipblasStatus_t hipblasStrmmBatched_64(hipblasHandle_t    handle,
                                        int64_t            batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_strmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   alpha,
-    //                                                   A,
-    //                                                   lda,
-    //                                                   B,
-    //                                                   ldb,
-    //                                                   C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_strmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -42590,22 +42583,21 @@ hipblasStatus_t hipblasDtrmmBatched_64(hipblasHandle_t     handle,
                                        int64_t             batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_dtrmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   alpha,
-    //                                                   A,
-    //                                                   lda,
-    //                                                   B,
-    //                                                   ldb,
-    //                                                   C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_dtrmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         alpha,
+                                                         A,
+                                                         lda,
+                                                         B,
+                                                         ldb,
+                                                         C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -42629,22 +42621,21 @@ hipblasStatus_t hipblasCtrmmBatched_64(hipblasHandle_t             handle,
                                        int64_t                     batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   (rocblas_float_complex*)alpha,
-    //                                                   (rocblas_float_complex**)A,
-    //                                                   lda,
-    //                                                   (rocblas_float_complex**)B,
-    //                                                   ldb,
-    //                                                   (rocblas_float_complex**)C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_ctrmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         (rocblas_float_complex*)alpha,
+                                                         (rocblas_float_complex**)A,
+                                                         lda,
+                                                         (rocblas_float_complex**)B,
+                                                         ldb,
+                                                         (rocblas_float_complex**)C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -42668,22 +42659,21 @@ hipblasStatus_t hipblasZtrmmBatched_64(hipblasHandle_t                   handle,
                                        int64_t                           batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   (rocblas_double_complex*)alpha,
-    //                                                   (rocblas_double_complex**)A,
-    //                                                   lda,
-    //                                                   (rocblas_double_complex**)B,
-    //                                                   ldb,
-    //                                                   (rocblas_double_complex**)C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_ztrmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         (rocblas_double_complex*)alpha,
+                                                         (rocblas_double_complex**)A,
+                                                         lda,
+                                                         (rocblas_double_complex**)B,
+                                                         ldb,
+                                                         (rocblas_double_complex**)C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -42707,22 +42697,21 @@ hipblasStatus_t hipblasCtrmmBatched_v2_64(hipblasHandle_t         handle,
                                           int64_t                 batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   (rocblas_float_complex*)alpha,
-    //                                                   (rocblas_float_complex**)A,
-    //                                                   lda,
-    //                                                   (rocblas_float_complex**)B,
-    //                                                   ldb,
-    //                                                   (rocblas_float_complex**)C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_ctrmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         (rocblas_float_complex*)alpha,
+                                                         (rocblas_float_complex**)A,
+                                                         lda,
+                                                         (rocblas_float_complex**)B,
+                                                         ldb,
+                                                         (rocblas_float_complex**)C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -42746,22 +42735,21 @@ hipblasStatus_t hipblasZtrmmBatched_v2_64(hipblasHandle_t               handle,
                                           int64_t                       batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_batched_64((rocblas_handle)handle,
-    //                                                   hipblasConvertSide(side),
-    //                                                   hipblasConvertFill(uplo),
-    //                                                   hipblasConvertOperation(transA),
-    //                                                   hipblasConvertDiag(diag),
-    //                                                   m,
-    //                                                   n,
-    //                                                   (rocblas_double_complex*)alpha,
-    //                                                   (rocblas_double_complex**)A,
-    //                                                   lda,
-    //                                                   (rocblas_double_complex**)B,
-    //                                                   ldb,
-    //                                                   (rocblas_double_complex**)C,
-    //                                                   ldc,
-    //                                                   batchCount));
+    return hipblasConvertStatus(rocblas_ztrmm_batched_64((rocblas_handle)handle,
+                                                         hipblasConvertSide(side),
+                                                         hipblasConvertFill(uplo),
+                                                         hipblasConvertOperation(transA),
+                                                         hipblasConvertDiag(diag),
+                                                         m,
+                                                         n,
+                                                         (rocblas_double_complex*)alpha,
+                                                         (rocblas_double_complex**)A,
+                                                         lda,
+                                                         (rocblas_double_complex**)B,
+                                                         ldb,
+                                                         (rocblas_double_complex**)C,
+                                                         ldc,
+                                                         batchCount));
 }
 catch(...)
 {
@@ -43054,25 +43042,24 @@ hipblasStatus_t hipblasStrmmStridedBatched_64(hipblasHandle_t    handle,
                                               int64_t            batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_strmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           alpha,
-    //                                                           A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_strmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 alpha,
+                                                                 A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {
@@ -43099,25 +43086,24 @@ hipblasStatus_t hipblasDtrmmStridedBatched_64(hipblasHandle_t    handle,
                                               int64_t            batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_dtrmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           alpha,
-    //                                                           A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_dtrmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 alpha,
+                                                                 A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {
@@ -43144,25 +43130,24 @@ hipblasStatus_t hipblasCtrmmStridedBatched_64(hipblasHandle_t       handle,
                                               int64_t               batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           (rocblas_float_complex*)alpha,
-    //                                                           (rocblas_float_complex*)A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           (rocblas_float_complex*)B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           (rocblas_float_complex*)C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_ctrmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_float_complex*)alpha,
+                                                                 (rocblas_float_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_float_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 (rocblas_float_complex*)C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {
@@ -43189,25 +43174,24 @@ hipblasStatus_t hipblasZtrmmStridedBatched_64(hipblasHandle_t             handle
                                               int64_t                     batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           (rocblas_double_complex*)alpha,
-    //                                                           (rocblas_double_complex*)A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           (rocblas_double_complex*)B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           (rocblas_double_complex*)C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_ztrmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_double_complex*)alpha,
+                                                                 (rocblas_double_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_double_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 (rocblas_double_complex*)C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {
@@ -43234,25 +43218,24 @@ hipblasStatus_t hipblasCtrmmStridedBatched_v2_64(hipblasHandle_t    handle,
                                                  int64_t            batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ctrmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           (rocblas_float_complex*)alpha,
-    //                                                           (rocblas_float_complex*)A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           (rocblas_float_complex*)B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           (rocblas_float_complex*)C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_ctrmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_float_complex*)alpha,
+                                                                 (rocblas_float_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_float_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 (rocblas_float_complex*)C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {
@@ -43279,25 +43262,24 @@ hipblasStatus_t hipblasZtrmmStridedBatched_v2_64(hipblasHandle_t         handle,
                                                  int64_t                 batchCount)
 try
 {
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-    // return hipblasConvertStatus(rocblas_ztrmm_strided_batched_64((rocblas_handle)handle,
-    //                                                           hipblasConvertSide(side),
-    //                                                           hipblasConvertFill(uplo),
-    //                                                           hipblasConvertOperation(transA),
-    //                                                           hipblasConvertDiag(diag),
-    //                                                           m,
-    //                                                           n,
-    //                                                           (rocblas_double_complex*)alpha,
-    //                                                           (rocblas_double_complex*)A,
-    //                                                           lda,
-    //                                                           strideA,
-    //                                                           (rocblas_double_complex*)B,
-    //                                                           ldb,
-    //                                                           strideB,
-    //                                                           (rocblas_double_complex*)C,
-    //                                                           ldc,
-    //                                                           strideC,
-    //                                                           batchCount));
+    return hipblasConvertStatus(rocblas_ztrmm_strided_batched_64((rocblas_handle)handle,
+                                                                 hipblasConvertSide(side),
+                                                                 hipblasConvertFill(uplo),
+                                                                 hipblasConvertOperation(transA),
+                                                                 hipblasConvertDiag(diag),
+                                                                 m,
+                                                                 n,
+                                                                 (rocblas_double_complex*)alpha,
+                                                                 (rocblas_double_complex*)A,
+                                                                 lda,
+                                                                 strideA,
+                                                                 (rocblas_double_complex*)B,
+                                                                 ldb,
+                                                                 strideB,
+                                                                 (rocblas_double_complex*)C,
+                                                                 ldc,
+                                                                 strideC,
+                                                                 batchCount));
 }
 catch(...)
 {

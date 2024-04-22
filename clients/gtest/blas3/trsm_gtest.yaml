@@ -22,7 +22,7 @@ Tests:
     diag: [ 'N', 'U' ]
     matrix_size: *size_range
     alpha_beta: *alpha_range
-    api: [ FORTRAN, C , FORTRAN_64, C_64]
+    api: [ FORTRAN, C, FORTRAN_64, C_64]
 
   - name: trsm_batched_general
     category: quick
@@ -35,7 +35,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C , FORTRAN_64, C_64]
+    api: [ FORTRAN, C, FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trsm_strided_batched_general
@@ -50,7 +50,7 @@ Tests:
     alpha_beta: *alpha_range
     batch_count: *batch_count_range
     stride_scale: [ 2.5 ]
-    api: [ FORTRAN, C , FORTRAN_64, C_64]
+    api: [ FORTRAN, C, FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trsm_bad_arg
@@ -60,7 +60,7 @@ Tests:
       - trsm_batched_bad_arg
       - trsm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C , FORTRAN_64, C_64]
+    api: [ FORTRAN, C, FORTRAN_64, C_64]
     backend_flags: AMD
 
   - name: trsm_bad_arg
@@ -69,7 +69,7 @@ Tests:
       - trsm_bad_arg
       - trsm_batched_bad_arg
     precision: *single_double_precisions_complex_real
-    api: [ FORTRAN, C , FORTRAN_64, C_64]
+    api: [ FORTRAN, C, FORTRAN_64, C_64]
     bad_arg_all: false
     backend_flags: NVIDIA
 ...

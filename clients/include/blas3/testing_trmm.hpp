@@ -236,7 +236,7 @@ void testing_trmm_bad_arg(const Arguments& arg)
                          *dOut,
                          ldOut));
 
-            // trmm will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // trmm will quick-return with N == 0 || M == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
             // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
             DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
@@ -246,9 +246,26 @@ void testing_trmm_bad_arg(const Arguments& arg)
                          uplo,
                          transA,
                          diag,
+                         0,
                          c_i32_overflow,
+                         nullptr,
+                         nullptr,
                          c_i32_overflow,
-                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
                          nullptr,
                          c_i32_overflow,
                          nullptr,

@@ -350,7 +350,24 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      ldOut,
                      0));
 
-        // 64-bit interface test
+        // 64-bit interface tests
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrmmBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     0,
+                     c_i32_overflow,
+                     nullptr,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     c_i32_overflow));
         DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTrmmBatchedFn,
                     (handle,
@@ -359,8 +376,8 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      transA,
                      diag,
                      c_i32_overflow,
-                     c_i32_overflow,
-                     zero,
+                     0,
+                     nullptr,
                      nullptr,
                      c_i32_overflow,
                      nullptr,
