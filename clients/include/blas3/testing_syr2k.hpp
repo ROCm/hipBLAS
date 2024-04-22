@@ -158,6 +158,25 @@ void testing_syr2k_bad_arg(const Arguments& arg)
             DAPI_CHECK(
                 hipblasSyr2kFn,
                 (handle, uplo, transA, N, K, zero, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
+
+            // syr2k will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSyr2kFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If N == 0, can have nullptrs

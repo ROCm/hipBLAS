@@ -162,6 +162,41 @@ void testing_geam_bad_arg(const Arguments& arg)
                        (handle, transA, transB, M, N, zero, nullptr, lda, beta, dB, ldb, dC, ldc));
             DAPI_CHECK(hipblasGeamFn,
                        (handle, transA, transB, M, N, alpha, dA, lda, zero, nullptr, ldb, dC, ldc));
+
+            // geam will quick-return with M == 0 || N == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamFn,
+                        (handle,
+                         transA,
+                         transB,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamFn,
+                        (handle,
+                         transA,
+                         transB,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0, can have nullptrs, but quirk of needing lda == ldb == ldc since A == B == C
@@ -249,7 +284,7 @@ void testing_geam(const Arguments& arg)
     if(invalid_size || !N || !M)
     {
         DAPI_EXPECT((invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS),
-                    hipblasGeam,
+                    hipblasGeamFn,
                     (handle,
                      transA,
                      transB,

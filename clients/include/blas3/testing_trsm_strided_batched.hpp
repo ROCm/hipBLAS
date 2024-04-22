@@ -262,6 +262,44 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                         ldb,
                         strideB,
                         batch_count));
+
+            // 64-bit interface tests
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmStridedBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmStridedBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0  batch_count == 0, can have nullptrs
@@ -345,11 +383,13 @@ void testing_trsm_strided_batched(const Arguments& arg)
     size_t        A_size  = strideA * batch_count;
     size_t        B_size  = strideB * batch_count;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || batch_count < 0;
     if(invalid_size || !batch_count)
     {
-        CHECK_ROCBLAS_ERROR(rocblas_set_pointer_mode(handle, rocblas_pointer_mode_host));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasTrsmStridedBatchedFn,
@@ -382,8 +422,7 @@ void testing_trsm_strided_batched(const Arguments& arg)
     device_vector<T> dB(B_size);
     device_vector<T> d_alpha(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial hA on CPU
     hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,

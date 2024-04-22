@@ -132,6 +132,34 @@ void testing_dgmm_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      ldc,
                      batch_count));
+
+        // 64-bit interface tests
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmBatchedFn,
+                    (handle,
+                     side,
+                     0,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow,
+                     c_i32_overflow));
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmBatchedFn,
+                    (handle,
+                     side,
+                     c_i32_overflow,
+                     0,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow,
+                     c_i32_overflow));
     }
 
     // If M == 0 || N == 0 || batch_count == 0, can have all nullptrs
@@ -237,7 +265,7 @@ void testing_dgmm_batched(const Arguments& arg)
         ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_dgmm(side, M, N, hA_copy[b], lda, hx_copy[b], incx, hC_gold[b], ldc);
+            ref_dgmm<T>(side, M, N, hA_copy[b], lda, hx_copy[b], incx, hC_gold[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

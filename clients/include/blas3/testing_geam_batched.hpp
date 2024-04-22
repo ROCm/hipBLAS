@@ -302,6 +302,42 @@ void testing_geam_batched_bad_arg(const Arguments& arg)
                         dC.ptr_on_device(),
                         ldc,
                         batch_count));
+
+            // 64-bit interface tests
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamBatchedFn,
+                        (handle,
+                         transA,
+                         transB,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamBatchedFn,
+                        (handle,
+                         transA,
+                         transB,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
@@ -373,6 +409,8 @@ void testing_geam_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
+    hipblasLocalHandle handle(arg);
+
     int64_t A_row, A_col, B_row, B_col;
 
     if(transA == HIPBLAS_OP_N)
@@ -405,7 +443,7 @@ void testing_geam_batched(const Arguments& arg)
     if(invalid_size || !N || !M || !batch_count)
     {
         DAPI_EXPECT((invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS),
-                    hipblasGeamBatched,
+                    hipblasGeamBatchedFn,
                     (handle,
                      transA,
                      transB,
@@ -423,8 +461,7 @@ void testing_geam_batched(const Arguments& arg)
         return;
     }
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // allocate memory on device
     device_batch_vector<T> dA(A_size, 1, batch_count);

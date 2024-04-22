@@ -386,6 +386,28 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      strideOut,
                      0));
 
+        // 64-bit interface test
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrmmStridedBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     c_i32_overflow,
+                     c_i32_overflow,
+                     zero,
+                     nullptr,
+                     c_i32_overflow,
+                     strideA,
+                     nullptr,
+                     c_i32_overflow,
+                     strideB,
+                     nullptr,
+                     c_i32_overflow,
+                     strideOut,
+                     c_i32_overflow));
+
         // in-place only checks
         if(inplace)
         {
@@ -453,6 +475,8 @@ void testing_trmm_strided_batched(const Arguments& arg)
     size_t C_size   = stride_C * batch_count;
     size_t out_size = stride_out * batch_count;
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || ldc < M || batch_count < 0;
@@ -498,8 +522,6 @@ void testing_trmm_strided_batched(const Arguments& arg)
     device_vector<T>* dOut = inplace ? &dB : &dC;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(arg);
 
     // Initial Data on CPU
     hipblas_init_matrix(

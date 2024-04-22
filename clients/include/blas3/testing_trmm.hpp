@@ -235,6 +235,26 @@ void testing_trmm_bad_arg(const Arguments& arg)
                          ldb,
                          *dOut,
                          ldOut));
+
+            // trmm will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // quick return: if M == 0, then all other ptrs can be nullptr
@@ -315,6 +335,8 @@ void testing_trmm(const Arguments& arg)
     size_t C_size   = inplace ? 1 : size_t(ldc) * N;
     size_t out_size = ldOut * N;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || ldc < M;
     if(M == 0 || N == 0 || invalid_size)
@@ -354,8 +376,7 @@ void testing_trmm(const Arguments& arg)
 
     device_vector<T>* dOut = inplace ? &dB : &dC;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, K, K, lda, 0, 1, hipblas_client_alpha_sets_nan, true);

@@ -320,6 +320,28 @@ void testing_syrkx_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         strideC,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSyrkxStridedBatchedFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
         }
 
         // If N == 0 || batch_count, can have nullptrs
@@ -389,6 +411,8 @@ void testing_syrkx_strided_batched(const Arguments& arg)
     hipblasStride stride_B = size_t(ldb) * K1 * stride_scale;
     hipblasStride stride_C = size_t(ldc) * N * stride_scale;
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size
@@ -400,7 +424,8 @@ void testing_syrkx_strided_batched(const Arguments& arg)
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasSyrkxStridedBatchedFn,
                     (handle,
-                     uplo transA,
+                     uplo,
+                     transA,
                      N,
                      K,
                      nullptr,
@@ -435,8 +460,7 @@ void testing_syrkx_strided_batched(const Arguments& arg)
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);

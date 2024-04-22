@@ -345,6 +345,29 @@ void testing_gemm_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         strideC,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGemmStridedBatchedFn,
+                        (handle,
+                         transA,
+                         transB,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs

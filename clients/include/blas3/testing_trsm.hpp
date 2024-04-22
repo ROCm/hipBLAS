@@ -143,6 +143,39 @@ void testing_trsm_bad_arg(const Arguments& arg)
             // If alpha == 0, then A can be nullptr
             DAPI_CHECK(hipblasTrsmFn,
                        (handle, side, uplo, transA, diag, M, N, zero, nullptr, lda, dB, ldb));
+
+            // trsm will quick-return with N == 0 || M == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0, can have nullptrs
@@ -175,11 +208,13 @@ void testing_trsm(const Arguments& arg)
     size_t  A_size = size_t(lda) * K;
     size_t  B_size = size_t(ldb) * N;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M;
     if(invalid_size)
     {
-        CHECK_ROCBLAS_ERROR(rocblas_set_pointer_mode(handle, rocblas_pointer_mode_host));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTrsmFn,
@@ -198,8 +233,7 @@ void testing_trsm(const Arguments& arg)
     device_vector<T> dB(B_size);
     device_vector<T> d_alpha(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial hA on CPU
     hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,

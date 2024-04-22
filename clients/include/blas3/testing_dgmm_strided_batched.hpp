@@ -147,6 +147,40 @@ void testing_dgmm_strided_batched_bad_arg(const Arguments& arg)
                      ldc,
                      strideC,
                      batch_count));
+
+        // 64-bit interface tests
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmStridedBatchedFn,
+                    (handle,
+                     side,
+                     0,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     strideA,
+                     nullptr,
+                     incx,
+                     stridex,
+                     nullptr,
+                     c_i32_overflow,
+                     strideC,
+                     c_i32_overflow));
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmStridedBatchedFn,
+                    (handle,
+                     side,
+                     c_i32_overflow,
+                     0,
+                     nullptr,
+                     c_i32_overflow,
+                     strideA,
+                     nullptr,
+                     incx,
+                     stridex,
+                     nullptr,
+                     c_i32_overflow,
+                     strideC,
+                     c_i32_overflow));
     }
 
     // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
@@ -318,15 +352,15 @@ void testing_dgmm_strided_batched(const Arguments& arg)
         ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_dgmm(side,
-                     M,
-                     N,
-                     hA_copy + b * stride_A,
-                     lda,
-                     hx_copy + b * stride_x,
-                     incx,
-                     hC_gold + b * stride_C,
-                     ldc);
+            ref_dgmm<T>(side,
+                        M,
+                        N,
+                        hA_copy + b * stride_A,
+                        lda,
+                        hx_copy + b * stride_x,
+                        incx,
+                        hC_gold + b * stride_C,
+                        ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

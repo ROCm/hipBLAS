@@ -206,6 +206,26 @@ void testing_gemm_bad_arg(const Arguments& arg)
                         beta,
                         dC,
                         ldc));
+
+            // gemm will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGemmFn,
+                        (handle,
+                         transA,
+                         transB,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0, can have nullptrs

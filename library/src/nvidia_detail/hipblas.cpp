@@ -33490,6 +33490,287 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
+// gemm_64
+hipblasStatus_t hipblasHgemm_64(hipblasHandle_t    handle,
+                                hipblasOperation_t transa,
+                                hipblasOperation_t transb,
+                                int64_t            m,
+                                int64_t            n,
+                                int64_t            k,
+                                const hipblasHalf* alpha,
+                                const hipblasHalf* A,
+                                int64_t            lda,
+                                const hipblasHalf* B,
+                                int64_t            ldb,
+                                const hipblasHalf* beta,
+                                hipblasHalf*       C,
+                                int64_t            ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasHgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               (__half*)alpha,
+                                               (__half*)A,
+                                               lda,
+                                               (__half*)B,
+                                               ldb,
+                                               (__half*)beta,
+                                               (__half*)C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasSgemm_64(hipblasHandle_t    handle,
+                                hipblasOperation_t transa,
+                                hipblasOperation_t transb,
+                                int64_t            m,
+                                int64_t            n,
+                                int64_t            k,
+                                const float*       alpha,
+                                const float*       A,
+                                int64_t            lda,
+                                const float*       B,
+                                int64_t            ldb,
+                                const float*       beta,
+                                float*             C,
+                                int64_t            ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasSgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               alpha,
+                                               A,
+                                               lda,
+                                               B,
+                                               ldb,
+                                               beta,
+                                               C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasDgemm_64(hipblasHandle_t    handle,
+                                hipblasOperation_t transa,
+                                hipblasOperation_t transb,
+                                int64_t            m,
+                                int64_t            n,
+                                int64_t            k,
+                                const double*      alpha,
+                                const double*      A,
+                                int64_t            lda,
+                                const double*      B,
+                                int64_t            ldb,
+                                const double*      beta,
+                                double*            C,
+                                int64_t            ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasDgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               alpha,
+                                               A,
+                                               lda,
+                                               B,
+                                               ldb,
+                                               beta,
+                                               C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemm_64(hipblasHandle_t       handle,
+                                hipblasOperation_t    transa,
+                                hipblasOperation_t    transb,
+                                int64_t               m,
+                                int64_t               n,
+                                int64_t               k,
+                                const hipblasComplex* alpha,
+                                const hipblasComplex* A,
+                                int64_t               lda,
+                                const hipblasComplex* B,
+                                int64_t               ldb,
+                                const hipblasComplex* beta,
+                                hipblasComplex*       C,
+                                int64_t               ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               (cuComplex*)alpha,
+                                               (cuComplex*)A,
+                                               lda,
+                                               (cuComplex*)B,
+                                               ldb,
+                                               (cuComplex*)beta,
+                                               (cuComplex*)C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemm_64(hipblasHandle_t             handle,
+                                hipblasOperation_t          transa,
+                                hipblasOperation_t          transb,
+                                int64_t                     m,
+                                int64_t                     n,
+                                int64_t                     k,
+                                const hipblasDoubleComplex* alpha,
+                                const hipblasDoubleComplex* A,
+                                int64_t                     lda,
+                                const hipblasDoubleComplex* B,
+                                int64_t                     ldb,
+                                const hipblasDoubleComplex* beta,
+                                hipblasDoubleComplex*       C,
+                                int64_t                     ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               (cuDoubleComplex*)alpha,
+                                               (cuDoubleComplex*)A,
+                                               lda,
+                                               (cuDoubleComplex*)B,
+                                               ldb,
+                                               (cuDoubleComplex*)beta,
+                                               (cuDoubleComplex*)C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemm_v2_64(hipblasHandle_t    handle,
+                                   hipblasOperation_t transa,
+                                   hipblasOperation_t transb,
+                                   int64_t            m,
+                                   int64_t            n,
+                                   int64_t            k,
+                                   const hipComplex*  alpha,
+                                   const hipComplex*  A,
+                                   int64_t            lda,
+                                   const hipComplex*  B,
+                                   int64_t            ldb,
+                                   const hipComplex*  beta,
+                                   hipComplex*        C,
+                                   int64_t            ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               (cuComplex*)alpha,
+                                               (cuComplex*)A,
+                                               lda,
+                                               (cuComplex*)B,
+                                               ldb,
+                                               (cuComplex*)beta,
+                                               (cuComplex*)C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemm_v2_64(hipblasHandle_t         handle,
+                                   hipblasOperation_t      transa,
+                                   hipblasOperation_t      transb,
+                                   int64_t                 m,
+                                   int64_t                 n,
+                                   int64_t                 k,
+                                   const hipDoubleComplex* alpha,
+                                   const hipDoubleComplex* A,
+                                   int64_t                 lda,
+                                   const hipDoubleComplex* B,
+                                   int64_t                 ldb,
+                                   const hipDoubleComplex* beta,
+                                   hipDoubleComplex*       C,
+                                   int64_t                 ldc)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemm_64((cublasHandle_t)handle,
+                                               hipblasConvertOperation(transa),
+                                               hipblasConvertOperation(transb),
+                                               m,
+                                               n,
+                                               k,
+                                               (cuDoubleComplex*)alpha,
+                                               (cuDoubleComplex*)A,
+                                               lda,
+                                               (cuDoubleComplex*)B,
+                                               ldb,
+                                               (cuDoubleComplex*)beta,
+                                               (cuDoubleComplex*)C,
+                                               ldc));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
 // gemm_batched
 hipblasStatus_t hipblasHgemmBatched(hipblasHandle_t          handle,
                                     hipblasOperation_t       transa,
@@ -33751,6 +34032,301 @@ try
                                                    (cuDoubleComplex* const*)C,
                                                    ldc,
                                                    batchCount));
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+// gemm_batched_64
+hipblasStatus_t hipblasHgemmBatched_64(hipblasHandle_t          handle,
+                                       hipblasOperation_t       transa,
+                                       hipblasOperation_t       transb,
+                                       int64_t                  m,
+                                       int64_t                  n,
+                                       int64_t                  k,
+                                       const hipblasHalf*       alpha,
+                                       const hipblasHalf* const A[],
+                                       int64_t                  lda,
+                                       const hipblasHalf* const B[],
+                                       int64_t                  ldb,
+                                       const hipblasHalf*       beta,
+                                       hipblasHalf* const       C[],
+                                       int64_t                  ldc,
+                                       int64_t                  batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasHgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      (__half*)alpha,
+                                                      (__half* const*)A,
+                                                      lda,
+                                                      (__half* const*)B,
+                                                      ldb,
+                                                      (__half*)beta,
+                                                      (__half* const*)C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasSgemmBatched_64(hipblasHandle_t    handle,
+                                       hipblasOperation_t transa,
+                                       hipblasOperation_t transb,
+                                       int64_t            m,
+                                       int64_t            n,
+                                       int64_t            k,
+                                       const float*       alpha,
+                                       const float* const A[],
+                                       int64_t            lda,
+                                       const float* const B[],
+                                       int64_t            ldb,
+                                       const float*       beta,
+                                       float* const       C[],
+                                       int64_t            ldc,
+                                       int64_t            batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasSgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      alpha,
+                                                      A,
+                                                      lda,
+                                                      B,
+                                                      ldb,
+                                                      beta,
+                                                      C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasDgemmBatched_64(hipblasHandle_t     handle,
+                                       hipblasOperation_t  transa,
+                                       hipblasOperation_t  transb,
+                                       int64_t             m,
+                                       int64_t             n,
+                                       int64_t             k,
+                                       const double*       alpha,
+                                       const double* const A[],
+                                       int64_t             lda,
+                                       const double* const B[],
+                                       int64_t             ldb,
+                                       const double*       beta,
+                                       double* const       C[],
+                                       int64_t             ldc,
+                                       int64_t             batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasDgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      alpha,
+                                                      A,
+                                                      lda,
+                                                      B,
+                                                      ldb,
+                                                      beta,
+                                                      C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemmBatched_64(hipblasHandle_t             handle,
+                                       hipblasOperation_t          transa,
+                                       hipblasOperation_t          transb,
+                                       int64_t                     m,
+                                       int64_t                     n,
+                                       int64_t                     k,
+                                       const hipblasComplex*       alpha,
+                                       const hipblasComplex* const A[],
+                                       int64_t                     lda,
+                                       const hipblasComplex* const B[],
+                                       int64_t                     ldb,
+                                       const hipblasComplex*       beta,
+                                       hipblasComplex* const       C[],
+                                       int64_t                     ldc,
+                                       int64_t                     batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      (cuComplex*)alpha,
+                                                      (cuComplex* const*)A,
+                                                      lda,
+                                                      (cuComplex* const*)B,
+                                                      ldb,
+                                                      (cuComplex*)beta,
+                                                      (cuComplex* const*)C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemmBatched_64(hipblasHandle_t                   handle,
+                                       hipblasOperation_t                transa,
+                                       hipblasOperation_t                transb,
+                                       int64_t                           m,
+                                       int64_t                           n,
+                                       int64_t                           k,
+                                       const hipblasDoubleComplex*       alpha,
+                                       const hipblasDoubleComplex* const A[],
+                                       int64_t                           lda,
+                                       const hipblasDoubleComplex* const B[],
+                                       int64_t                           ldb,
+                                       const hipblasDoubleComplex*       beta,
+                                       hipblasDoubleComplex* const       C[],
+                                       int64_t                           ldc,
+                                       int64_t                           batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      (cuDoubleComplex*)alpha,
+                                                      (cuDoubleComplex* const*)A,
+                                                      lda,
+                                                      (cuDoubleComplex* const*)B,
+                                                      ldb,
+                                                      (cuDoubleComplex*)beta,
+                                                      (cuDoubleComplex* const*)C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemmBatched_v2_64(hipblasHandle_t         handle,
+                                          hipblasOperation_t      transa,
+                                          hipblasOperation_t      transb,
+                                          int64_t                 m,
+                                          int64_t                 n,
+                                          int64_t                 k,
+                                          const hipComplex*       alpha,
+                                          const hipComplex* const A[],
+                                          int64_t                 lda,
+                                          const hipComplex* const B[],
+                                          int64_t                 ldb,
+                                          const hipComplex*       beta,
+                                          hipComplex* const       C[],
+                                          int64_t                 ldc,
+                                          int64_t                 batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      (cuComplex*)alpha,
+                                                      (cuComplex* const*)A,
+                                                      lda,
+                                                      (cuComplex* const*)B,
+                                                      ldb,
+                                                      (cuComplex*)beta,
+                                                      (cuComplex* const*)C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemmBatched_v2_64(hipblasHandle_t               handle,
+                                          hipblasOperation_t            transa,
+                                          hipblasOperation_t            transb,
+                                          int64_t                       m,
+                                          int64_t                       n,
+                                          int64_t                       k,
+                                          const hipDoubleComplex*       alpha,
+                                          const hipDoubleComplex* const A[],
+                                          int64_t                       lda,
+                                          const hipDoubleComplex* const B[],
+                                          int64_t                       ldb,
+                                          const hipDoubleComplex*       beta,
+                                          hipDoubleComplex* const       C[],
+                                          int64_t                       ldc,
+                                          int64_t                       batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemmBatched_64((cublasHandle_t)handle,
+                                                      hipblasConvertOperation(transa),
+                                                      hipblasConvertOperation(transb),
+                                                      m,
+                                                      n,
+                                                      k,
+                                                      (cuDoubleComplex*)alpha,
+                                                      (cuDoubleComplex* const*)A,
+                                                      lda,
+                                                      (cuDoubleComplex* const*)B,
+                                                      ldb,
+                                                      (cuDoubleComplex*)beta,
+                                                      (cuDoubleComplex* const*)C,
+                                                      ldc,
+                                                      batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {
@@ -34060,6 +34636,343 @@ try
                                                           ldc,
                                                           bsc,
                                                           batchCount));
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+// gemm_strided_batched_64
+hipblasStatus_t hipblasHgemmStridedBatched_64(hipblasHandle_t    handle,
+                                              hipblasOperation_t transa,
+                                              hipblasOperation_t transb,
+                                              int64_t            m,
+                                              int64_t            n,
+                                              int64_t            k,
+                                              const hipblasHalf* alpha,
+                                              const hipblasHalf* A,
+                                              int64_t            lda,
+                                              long long          bsa,
+                                              const hipblasHalf* B,
+                                              int64_t            ldb,
+                                              long long          bsb,
+                                              const hipblasHalf* beta,
+                                              hipblasHalf*       C,
+                                              int64_t            ldc,
+                                              long long          bsc,
+                                              int64_t            batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasHgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             (__half*)alpha,
+                                                             (__half*)(A),
+                                                             lda,
+                                                             bsa,
+                                                             (__half*)(B),
+                                                             ldb,
+                                                             bsb,
+                                                             (__half*)beta,
+                                                             (__half*)C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasSgemmStridedBatched_64(hipblasHandle_t    handle,
+                                              hipblasOperation_t transa,
+                                              hipblasOperation_t transb,
+                                              int64_t            m,
+                                              int64_t            n,
+                                              int64_t            k,
+                                              const float*       alpha,
+                                              const float*       A,
+                                              int64_t            lda,
+                                              long long          bsa,
+                                              const float*       B,
+                                              int64_t            ldb,
+                                              long long          bsb,
+                                              const float*       beta,
+                                              float*             C,
+                                              int64_t            ldc,
+                                              long long          bsc,
+                                              int64_t            batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasSgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             alpha,
+                                                             const_cast<float*>(A),
+                                                             lda,
+                                                             bsa,
+                                                             const_cast<float*>(B),
+                                                             ldb,
+                                                             bsb,
+                                                             beta,
+                                                             C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasDgemmStridedBatched_64(hipblasHandle_t    handle,
+                                              hipblasOperation_t transa,
+                                              hipblasOperation_t transb,
+                                              int64_t            m,
+                                              int64_t            n,
+                                              int64_t            k,
+                                              const double*      alpha,
+                                              const double*      A,
+                                              int64_t            lda,
+                                              long long          bsa,
+                                              const double*      B,
+                                              int64_t            ldb,
+                                              long long          bsb,
+                                              const double*      beta,
+                                              double*            C,
+                                              int64_t            ldc,
+                                              long long          bsc,
+                                              int64_t            batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasDgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             alpha,
+                                                             const_cast<double*>(A),
+                                                             lda,
+                                                             bsa,
+                                                             const_cast<double*>(B),
+                                                             ldb,
+                                                             bsb,
+                                                             beta,
+                                                             C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemmStridedBatched_64(hipblasHandle_t       handle,
+                                              hipblasOperation_t    transa,
+                                              hipblasOperation_t    transb,
+                                              int64_t               m,
+                                              int64_t               n,
+                                              int64_t               k,
+                                              const hipblasComplex* alpha,
+                                              const hipblasComplex* A,
+                                              int64_t               lda,
+                                              long long             bsa,
+                                              const hipblasComplex* B,
+                                              int64_t               ldb,
+                                              long long             bsb,
+                                              const hipblasComplex* beta,
+                                              hipblasComplex*       C,
+                                              int64_t               ldc,
+                                              long long             bsc,
+                                              int64_t               batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             (cuComplex*)alpha,
+                                                             (cuComplex*)(A),
+                                                             lda,
+                                                             bsa,
+                                                             (cuComplex*)(B),
+                                                             ldb,
+                                                             bsb,
+                                                             (cuComplex*)beta,
+                                                             (cuComplex*)C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemmStridedBatched_64(hipblasHandle_t             handle,
+                                              hipblasOperation_t          transa,
+                                              hipblasOperation_t          transb,
+                                              int64_t                     m,
+                                              int64_t                     n,
+                                              int64_t                     k,
+                                              const hipblasDoubleComplex* alpha,
+                                              const hipblasDoubleComplex* A,
+                                              int64_t                     lda,
+                                              long long                   bsa,
+                                              const hipblasDoubleComplex* B,
+                                              int64_t                     ldb,
+                                              long long                   bsb,
+                                              const hipblasDoubleComplex* beta,
+                                              hipblasDoubleComplex*       C,
+                                              int64_t                     ldc,
+                                              long long                   bsc,
+                                              int64_t                     batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             (cuDoubleComplex*)alpha,
+                                                             (cuDoubleComplex*)(A),
+                                                             lda,
+                                                             bsa,
+                                                             (cuDoubleComplex*)(B),
+                                                             ldb,
+                                                             bsb,
+                                                             (cuDoubleComplex*)beta,
+                                                             (cuDoubleComplex*)C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasCgemmStridedBatched_v2_64(hipblasHandle_t    handle,
+                                                 hipblasOperation_t transa,
+                                                 hipblasOperation_t transb,
+                                                 int64_t            m,
+                                                 int64_t            n,
+                                                 int64_t            k,
+                                                 const hipComplex*  alpha,
+                                                 const hipComplex*  A,
+                                                 int64_t            lda,
+                                                 long long          bsa,
+                                                 const hipComplex*  B,
+                                                 int64_t            ldb,
+                                                 long long          bsb,
+                                                 const hipComplex*  beta,
+                                                 hipComplex*        C,
+                                                 int64_t            ldc,
+                                                 long long          bsc,
+                                                 int64_t            batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasCgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             (cuComplex*)alpha,
+                                                             (cuComplex*)(A),
+                                                             lda,
+                                                             bsa,
+                                                             (cuComplex*)(B),
+                                                             ldb,
+                                                             bsb,
+                                                             (cuComplex*)beta,
+                                                             (cuComplex*)C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasZgemmStridedBatched_v2_64(hipblasHandle_t         handle,
+                                                 hipblasOperation_t      transa,
+                                                 hipblasOperation_t      transb,
+                                                 int64_t                 m,
+                                                 int64_t                 n,
+                                                 int64_t                 k,
+                                                 const hipDoubleComplex* alpha,
+                                                 const hipDoubleComplex* A,
+                                                 int64_t                 lda,
+                                                 long long               bsa,
+                                                 const hipDoubleComplex* B,
+                                                 int64_t                 ldb,
+                                                 long long               bsb,
+                                                 const hipDoubleComplex* beta,
+                                                 hipDoubleComplex*       C,
+                                                 int64_t                 ldc,
+                                                 long long               bsc,
+                                                 int64_t                 batchCount)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasZgemmStridedBatched_64((cublasHandle_t)handle,
+                                                             hipblasConvertOperation(transa),
+                                                             hipblasConvertOperation(transb),
+                                                             m,
+                                                             n,
+                                                             k,
+                                                             (cuDoubleComplex*)alpha,
+                                                             (cuDoubleComplex*)(A),
+                                                             lda,
+                                                             bsa,
+                                                             (cuDoubleComplex*)(B),
+                                                             ldb,
+                                                             bsb,
+                                                             (cuDoubleComplex*)beta,
+                                                             (cuDoubleComplex*)C,
+                                                             ldc,
+                                                             bsc,
+                                                             batchCount));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
 }
 catch(...)
 {

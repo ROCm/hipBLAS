@@ -61,7 +61,8 @@ void testing_dgmm_bad_arg(const Arguments& arg)
     device_vector<T> dC(N * ldc);
 
     DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
-                hipblasDgmmFn(nullptr, side, M, N, dA, lda, dx, incx, dC, ldc));
+                hipblasDgmmFn,
+                (nullptr, side, M, N, dA, lda, dx, incx, dC, ldc));
 
     DAPI_EXPECT(
         HIPBLAS_STATUS_INVALID_ENUM,
@@ -71,11 +72,41 @@ void testing_dgmm_bad_arg(const Arguments& arg)
     if(arg.bad_arg_all)
     {
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasDgmmFn(handle, side, M, N, nullptr, lda, dx, incx, dC, ldc));
+                    hipblasDgmmFn,
+                    (handle, side, M, N, nullptr, lda, dx, incx, dC, ldc));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasDgmmFn(handle, side, M, N, dA, lda, nullptr, incx, dC, ldc));
+                    hipblasDgmmFn,
+                    (handle, side, M, N, dA, lda, nullptr, incx, dC, ldc));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, nullptr, ldc));
+                    hipblasDgmmFn,
+                    (handle, side, M, N, dA, lda, dx, incx, nullptr, ldc));
+
+        // dgmm will quick-return with M == 0 || N == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
+        // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle,
+                     side,
+                     0,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow));
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle,
+                     side,
+                     c_i32_overflow,
+                     0,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow));
     }
 
     // If M == 0 || N == 0, can have nullptrs
@@ -162,7 +193,7 @@ void testing_dgmm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        ref_dgmm(side, M, N, hA_copy, lda, hx_copy, incx, hC_gold, ldc);
+        ref_dgmm<T>(side, M, N, hA_copy, lda, hx_copy, incx, hC_gold, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

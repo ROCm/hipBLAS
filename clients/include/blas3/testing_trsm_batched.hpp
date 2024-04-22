@@ -240,6 +240,40 @@ void testing_trsm_batched_bad_arg(const Arguments& arg)
                         dB.ptr_on_device(),
                         ldb,
                         batch_count));
+
+            // 64-bit interface tests
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrsmBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0  batch_count == 0, can have nullptrs
@@ -301,11 +335,13 @@ void testing_trsm_batched(const Arguments& arg)
     size_t  A_size = size_t(lda) * K;
     size_t  B_size = size_t(ldb) * N;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || batch_count < 0;
     if(invalid_size || !batch_count)
     {
-        CHECK_ROCBLAS_ERROR(rocblas_set_pointer_mode(handle, rocblas_pointer_mode_host));
+        CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasTrsmBatchedFn,
@@ -339,8 +375,7 @@ void testing_trsm_batched(const Arguments& arg)
     CHECK_HIP_ERROR(dA.memcheck());
     CHECK_HIP_ERROR(dB.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial hA on CPU
     hipblas_init_vector(hB_host, arg, hipblas_client_never_set_nan);

@@ -134,6 +134,23 @@ void testing_syrk_bad_arg(const Arguments& arg)
             // If alpha == 0 && beta == 1, A, C may be nullptr
             DAPI_CHECK(hipblasSyrkFn,
                        (handle, uplo, transA, N, K, zero, nullptr, lda, one, nullptr, ldc));
+
+            // syrk will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSyrkFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If N == 0, can have nullptrs
@@ -157,6 +174,8 @@ void testing_syrk(const Arguments& arg)
     int64_t            ldc    = arg.ldc;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
+
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -188,8 +207,7 @@ void testing_syrk(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);

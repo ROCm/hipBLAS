@@ -344,6 +344,28 @@ void testing_herkx_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         strideC,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHerkxStridedBatchedFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
         }
 
         // If N == 0 || batch_count, can have nullptrs
@@ -416,6 +438,8 @@ void testing_herkx_strided_batched(const Arguments& arg)
     size_t             B_size   = stride_B * batch_count;
     size_t             C_size   = stride_C * batch_count;
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size
@@ -427,7 +451,8 @@ void testing_herkx_strided_batched(const Arguments& arg)
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasHerkxStridedBatchedFn,
                     (handle,
-                     uplo transA,
+                     uplo,
+                     transA,
                      N,
                      K,
                      nullptr,
@@ -461,8 +486,7 @@ void testing_herkx_strided_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     U h_beta  = arg.get_beta<U>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);

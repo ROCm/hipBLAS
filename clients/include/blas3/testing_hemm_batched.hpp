@@ -281,6 +281,25 @@ void testing_hemm_batched_bad_arg(const Arguments& arg)
                         nullptr,
                         ldc,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHemmBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
@@ -352,6 +371,8 @@ void testing_hemm_batched(const Arguments& arg)
     size_t  rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
     int64_t K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || ldc < M || batch_count < 0;
@@ -382,8 +403,7 @@ void testing_hemm_batched(const Arguments& arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();

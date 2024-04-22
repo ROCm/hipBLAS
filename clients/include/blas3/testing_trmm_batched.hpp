@@ -350,6 +350,25 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      ldOut,
                      0));
 
+        // 64-bit interface test
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrmmBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     c_i32_overflow,
+                     c_i32_overflow,
+                     zero,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     c_i32_overflow));
+
         // in-place only checks
         if(inplace)
         {
@@ -408,6 +427,8 @@ void testing_trmm_batched(const Arguments& arg)
     size_t  C_size   = inplace ? 1 : size_t(ldc) * N;
     size_t  out_size = ldOut * N;
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || ldc < M || batch_count < 0;
@@ -434,8 +455,6 @@ void testing_trmm_batched(const Arguments& arg)
     }
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
-
-    hipblasLocalHandle handle(arg);
 
     // host arrays
     host_batch_vector<T> hA(A_size, 1, batch_count);

@@ -320,6 +320,28 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         strideC,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSymmStridedBatchedFn,
+                        (handle,
+                         side,
+                         uplo,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0  batch_count == 0, can have nullptrs
@@ -409,6 +431,8 @@ void testing_symm_strided_batched(const Arguments& arg)
     hipblasStride stride_B = size_t(ldb) * N * stride_scale;
     hipblasStride stride_C = size_t(ldc) * N * stride_scale;
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < K || batch_count < 0;
@@ -455,8 +479,7 @@ void testing_symm_strided_batched(const Arguments& arg)
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(

@@ -274,6 +274,25 @@ void testing_syrkx_batched_bad_arg(const Arguments& arg)
                         nullptr,
                         ldc,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSyrkxBatchedFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
         }
 
         // If N == 0 || batch_count == 0, can have nullptrs
@@ -330,6 +349,8 @@ void testing_syrkx_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size
@@ -341,7 +362,8 @@ void testing_syrkx_batched(const Arguments& arg)
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasSyrkxBatchedFn,
                     (handle,
-                     uplo transA,
+                     uplo,
+                     transA,
                      N,
                      K,
                      nullptr,
@@ -378,8 +400,7 @@ void testing_syrkx_batched(const Arguments& arg)
     CHECK_HIP_ERROR(dB.memcheck());
     CHECK_HIP_ERROR(dC.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     hipblas_init(hA, true);
     hipblas_init(hB);

@@ -9422,7 +9422,7 @@ function hipblasCsyrk_64Fortran(handle, uplo, transA, n, k, alpha, &
     type(c_ptr), value :: C
     integer(c_int64_t), value :: ldc
             hipblasCsyrk_64Fortran = &
-        hipblasCsyrk(handle, uplo, transA, n, k, alpha, &
+        hipblasCsyrk_64(handle, uplo, transA, n, k, alpha, &
                         A, lda, beta, C, ldc)
 end function hipblasCsyrk_64Fortran
 
@@ -9445,7 +9445,7 @@ function hipblasZsyrk_64Fortran(handle, uplo, transA, n, k, alpha, &
     type(c_ptr), value :: C
     integer(c_int64_t), value :: ldc
             hipblasZsyrk_64Fortran = &
-        hipblasZsyrk(handle, uplo, transA, n, k, alpha, &
+        hipblasZsyrk_64(handle, uplo, transA, n, k, alpha, &
                         A, lda, beta, C, ldc)
 end function hipblasZsyrk_64Fortran
 

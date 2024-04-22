@@ -158,6 +158,25 @@ void testing_syrkx_bad_arg(const Arguments& arg)
             DAPI_CHECK(
                 hipblasSyrkxFn,
                 (handle, uplo, transA, N, K, zero, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
+
+            // syrkx will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasSyrkxFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If N == 0, can have nullptrs
@@ -185,16 +204,18 @@ void testing_syrkx(const Arguments& arg)
     auto hipblasSyrkxFn_64
         = arg.api == FORTRAN_64 ? hipblasSyrkx_64<T, true> : hipblasSyrkx_64<T, false>;
 
-    hipblasFillMode_t  uplo  = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t trans = char2hipblas_operation(arg.transA);
-    int64_t            N     = arg.N;
-    int64_t            K     = arg.K;
-    int64_t            lda   = arg.lda;
-    int64_t            ldb   = arg.ldb;
-    int64_t            ldc   = arg.ldc;
+    hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA = char2hipblas_operation(arg.transA);
+    int64_t            N      = arg.N;
+    int64_t            K      = arg.K;
+    int64_t            lda    = arg.lda;
+    int64_t            ldb    = arg.ldb;
+    int64_t            ldc    = arg.ldc;
 
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
+
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -206,7 +227,8 @@ void testing_syrkx(const Arguments& arg)
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasSyrkxFn,
                     (handle,
-                     uplo transA,
+                     uplo,
+                     transA,
                      N,
                      K,
                      nullptr,
@@ -220,7 +242,7 @@ void testing_syrkx(const Arguments& arg)
         return;
     }
 
-    int64_t K1     = (trans == HIPBLAS_OP_N ? K : N);
+    int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
     size_t  A_size = size_t(lda) * K1;
     size_t  B_size = size_t(ldb) * K1;
     size_t  C_size = size_t(ldc) * N;
@@ -238,8 +260,7 @@ void testing_syrkx(const Arguments& arg)
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     srand(1);
@@ -263,7 +284,7 @@ void testing_syrkx(const Arguments& arg)
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(
             hipblasSyrkxFn,
-            (handle, uplo, trans, N, K, (T*)&h_alpha, dA, lda, dB, ldb, (T*)&h_beta, dC, ldc));
+            (handle, uplo, transA, N, K, (T*)&h_alpha, dA, lda, dB, ldb, (T*)&h_beta, dC, ldc));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
@@ -271,14 +292,14 @@ void testing_syrkx(const Arguments& arg)
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasSyrkxFn,
-                   (handle, uplo, trans, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+                   (handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        syrkx_reference<T>(uplo, trans, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
+        syrkx_reference<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -309,7 +330,7 @@ void testing_syrkx(const Arguments& arg)
                 gpu_time_used = get_time_us_sync(stream);
 
             DAPI_DISPATCH(hipblasSyrkxFn,
-                          (handle, uplo, trans, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+                          (handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

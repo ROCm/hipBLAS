@@ -301,6 +301,25 @@ void testing_herkx_batched_bad_arg(const Arguments& arg)
                         nullptr,
                         ldc,
                         batch_count));
+
+            // 64-bit interface test
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHerkxBatchedFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow,
+                         c_i32_overflow));
         }
 
         // If N == 0 || batch_count == 0, can have nullptrs
@@ -359,6 +378,8 @@ void testing_herkx_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     U h_beta  = arg.get_beta<U>();
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size
@@ -370,7 +391,8 @@ void testing_herkx_batched(const Arguments& arg)
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasHerkxBatchedFn,
                     (handle,
-                     uplo transA,
+                     uplo,
+                     transA,
                      N,
                      K,
                      nullptr,
@@ -385,8 +407,7 @@ void testing_herkx_batched(const Arguments& arg)
         return;
     }
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
     size_t  A_size = size_t(lda) * K1;

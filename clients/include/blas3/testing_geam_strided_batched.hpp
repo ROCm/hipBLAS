@@ -344,6 +344,48 @@ void testing_geam_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         strideC,
                         batch_count));
+
+            // 64-bit interface tests
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamStridedBatchedFn,
+                        (handle,
+                         transA,
+                         transB,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGeamStridedBatchedFn,
+                        (handle,
+                         transA,
+                         transB,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideA,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         strideB,
+                         nullptr,
+                         c_i32_overflow,
+                         strideC,
+                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
@@ -458,12 +500,14 @@ void testing_geam_strided_batched(const Arguments& arg)
     size_t B_size = stride_B * batch_count;
     size_t C_size = stride_C * batch_count;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || batch_count < 0 || lda < A_row || ldb < B_row || ldc < M;
     if(invalid_size || !N || !M || !batch_count)
     {
         DAPI_EXPECT((invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS),
-                    hipblasGeamStridedBatched,
+                    hipblasGeamStridedBatchedFn,
                     (handle,
                      transA,
                      transB,
@@ -484,8 +528,7 @@ void testing_geam_strided_batched(const Arguments& arg)
         return;
     }
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // allocate memory on device
     device_vector<T> dA(A_size);
