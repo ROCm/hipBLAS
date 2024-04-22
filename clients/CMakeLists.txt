@@ -136,14 +136,15 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     endif()
   endif()
 
-  if(HIP_PLATFORM STREQUAL amd)
-    if(LIBOMP_FOUND)
-      set( COMMON_LINK_LIBS ${LIBOMP_FOUND})
-      if (NOT WIN32)
-        list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${LIBOMP_PATH}")
-      endif()
-    # If cmake cannot find the proper libomp.so, use HIP_CLANG_ROOT as fallback.
-    else()
+  if(LIBOMP_FOUND)
+    # LIBOMP_FOUND will contain full path to libomp.so
+    set( COMMON_LINK_LIBS ${LIBOMP_FOUND})
+    if(HIP_PLATFORM STREQUAL amd AND NOT WIN32)
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${LIBOMP_PATH}")
+    endif()
+  # If cmake cannot find the proper libomp.so, use HIP_CLANG_ROOT as fallback.
+  else()
+    if(HIP_PLATFORM STREQUAL amd)
       # Add library search paths.
       list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib/${LLVM_TARGET_TRIPLE}\"")
       list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
