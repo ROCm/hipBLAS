@@ -111,6 +111,7 @@ void testing_rotm_batched(const Arguments& arg)
 
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy(N, incy, batch_count);
+    host_batch_vector<T> hdata(4, 1, batch_count);
     host_batch_vector<T> hparam(5, 1, batch_count);
 
     device_batch_vector<T> dx(N, incx, batch_count);
@@ -123,6 +124,12 @@ void testing_rotm_batched(const Arguments& arg)
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hdata, arg, hipblas_client_alpha_sets_nan, false);
+
+    for(int64_t b = 0; b < batch_count; b++)
+    {
+        ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
+    }
 
     constexpr int FLAG_COUNT        = 4;
     const T       FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};

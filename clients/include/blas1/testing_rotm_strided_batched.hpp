@@ -124,6 +124,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
     int64_t       incx         = arg.incx;
     int64_t       incy         = arg.incy;
     hipblasStride stride_param = 5 * stride_scale;
+    hipblasStride stride_data  = 4 * stride_scale;
     int64_t       batch_count  = arg.batch_count;
 
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
@@ -159,6 +160,7 @@ void testing_rotm_strided_batched(const Arguments& arg)
     // Initial Data on CPU
     host_strided_batch_vector<T> hx(N, incx, stride_x, batch_count);
     host_strided_batch_vector<T> hy(N, incy, stride_y, batch_count);
+    host_strided_batch_vector<T> hdata(4, 1, stride_data, batch_count);
     host_strided_batch_vector<T> hparam(5, 1, stride_param, batch_count);
 
     device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
@@ -171,6 +173,10 @@ void testing_rotm_strided_batched(const Arguments& arg)
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hdata, arg, hipblas_client_alpha_sets_nan, false);
+
+    for(int64_t b = 0; b < batch_count; b++)
+        ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
 
     constexpr int FLAG_COUNT        = 4;
     const T       FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};
