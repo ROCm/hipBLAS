@@ -58,7 +58,8 @@ void testing_spr_batched_bad_arg(const Arguments& arg)
         int64_t N           = 100;
         int64_t incx        = 1;
         int64_t batch_count = 2;
-        int64_t size_A      = N * (N + 1) / 2;
+        int64_t size_A      = hipblas_packed_matrix_size(N);
+        ;
 
         device_vector<T> d_alpha(1), d_zero(1);
 
@@ -148,7 +149,8 @@ void testing_spr_batched(const Arguments& arg)
     int64_t           batch_count = arg.batch_count;
 
     int64_t abs_incx = incx < 0 ? -incx : incx;
-    size_t  size_A   = size_t(N) * (N + 1) / 2;
+    size_t  size_A   = hipblas_packed_matrix_size(N);
+    ;
 
     T h_alpha = arg.get_alpha<T>();
 
