@@ -188,8 +188,8 @@ void testing_dgmm_batched(const Arguments& arg)
     int64_t ldc         = arg.ldc;
     int64_t batch_count = arg.batch_count;
 
-    size_t  A_size = size_t(lda) * N;
-    size_t  C_size = size_t(ldc) * N;
+    size_t  A_size = lda * N;
+    size_t  C_size = ldc * N;
     int64_t k      = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     hipblasLocalHandle handle(arg);

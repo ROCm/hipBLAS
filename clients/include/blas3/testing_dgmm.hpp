@@ -130,10 +130,10 @@ void testing_dgmm(const Arguments& arg)
     int64_t ldc  = arg.ldc;
 
     int64_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t  A_size   = size_t(lda) * N;
-    size_t  C_size   = size_t(ldc) * N;
+    size_t  A_size   = lda * N;
+    size_t  C_size   = ldc * N;
     int64_t k        = (side == HIPBLAS_SIDE_RIGHT ? N : M);
-    size_t  X_size   = size_t(abs_incx) * k;
+    size_t  X_size   = abs_incx * k;
     if(!X_size)
         X_size = 1;
 

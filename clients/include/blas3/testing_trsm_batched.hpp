@@ -332,8 +332,8 @@ void testing_trsm_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
 
     int64_t K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t  A_size = size_t(lda) * K;
-    size_t  B_size = size_t(ldb) * N;
+    size_t  A_size = lda * K;
+    size_t  B_size = ldb * N;
 
     hipblasLocalHandle handle(arg);
 

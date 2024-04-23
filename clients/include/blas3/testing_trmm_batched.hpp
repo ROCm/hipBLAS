@@ -91,10 +91,10 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
             zero = zero_d;
         }
 
-        size_t A_size = size_t(lda) * K;
-        size_t B_size = size_t(ldb) * N;
+        size_t A_size = lda * K;
+        size_t B_size = ldb * N;
 
-        size_t C_size = inplace ? 1 : size_t(ldc) * N;
+        size_t C_size = inplace ? 1 : ldc * N;
 
         device_batch_vector<T> dAb(A_size, 1, batch_count);
         device_batch_vector<T> dBb(B_size, 1, batch_count);

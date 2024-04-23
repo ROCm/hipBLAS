@@ -492,9 +492,9 @@ void testing_geam_strided_batched(const Arguments& arg)
         B_col = M;
     }
 
-    stride_A = size_t(lda) * A_col * stride_scale;
-    stride_B = size_t(ldb) * B_col * stride_scale;
-    stride_C = size_t(ldc) * N * stride_scale;
+    stride_A = lda * A_col * stride_scale;
+    stride_B = ldb * B_col * stride_scale;
+    stride_C = ldc * N * stride_scale;
 
     size_t A_size = stride_A * batch_count;
     size_t B_size = stride_B * batch_count;

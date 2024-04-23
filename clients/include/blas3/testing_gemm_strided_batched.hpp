@@ -480,9 +480,9 @@ void testing_gemm_strided_batched(const Arguments& arg)
         B_col = K;
     }
 
-    hipblasStride stride_A = size_t(lda) * A_col * stride_scale;
-    hipblasStride stride_B = size_t(ldb) * B_col * stride_scale;
-    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A = lda * A_col * stride_scale;
+    hipblasStride stride_B = ldb * B_col * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
 
     // check here to prevent undefined memory allocation error
     bool invalid_size

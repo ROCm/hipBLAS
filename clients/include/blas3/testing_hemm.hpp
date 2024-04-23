@@ -227,9 +227,9 @@ void testing_hemm(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    size_t A_size = size_t(lda) * K;
-    size_t B_size = size_t(ldb) * N;
-    size_t C_size = size_t(ldc) * N;
+    size_t A_size = lda * K;
+    size_t B_size = ldb * N;
+    size_t C_size = ldc * N;
 
     host_vector<T> hA(A_size);
     host_vector<T> hB(B_size);

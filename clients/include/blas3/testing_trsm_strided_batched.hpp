@@ -378,8 +378,8 @@ void testing_trsm_strided_batched(const Arguments& arg)
 
     int64_t K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
-    hipblasStride strideA = size_t(lda) * K * stride_scale;
-    hipblasStride strideB = size_t(ldb) * N * stride_scale;
+    hipblasStride strideA = lda * K * stride_scale;
+    hipblasStride strideB = ldb * N * stride_scale;
     size_t        A_size  = strideA * batch_count;
     size_t        B_size  = strideB * batch_count;
 

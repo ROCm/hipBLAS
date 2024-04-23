@@ -427,9 +427,9 @@ void testing_symm_strided_batched(const Arguments& arg)
     size_t  rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
     int64_t K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
-    hipblasStride stride_A = size_t(lda) * K * stride_scale;
-    hipblasStride stride_B = size_t(ldb) * N * stride_scale;
-    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A = lda * K * stride_scale;
+    hipblasStride stride_B = ldb * N * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
 
     hipblasLocalHandle handle(arg);
 

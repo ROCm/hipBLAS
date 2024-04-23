@@ -79,10 +79,10 @@ void testing_trmm_bad_arg(const Arguments& arg)
             zero = zero_d;
         }
 
-        size_t A_size = size_t(lda) * K;
-        size_t B_size = size_t(ldb) * N;
+        size_t A_size = lda * K;
+        size_t B_size = ldb * N;
 
-        size_t C_size = inplace ? 1 : size_t(ldc) * N;
+        size_t C_size = inplace ? 1 : ldc * N;
 
         device_vector<T> dA(A_size);
         device_vector<T> dB(B_size);
@@ -345,11 +345,11 @@ void testing_trmm(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
 
     int64_t K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t  A_size = size_t(lda) * K;
-    size_t  B_size = size_t(ldb) * N;
+    size_t  A_size = lda * K;
+    size_t  B_size = ldb * N;
 
     // avoid unnecessary allocation if inplace
-    size_t C_size   = inplace ? 1 : size_t(ldc) * N;
+    size_t C_size   = inplace ? 1 : ldc * N;
     size_t out_size = ldOut * N;
 
     hipblasLocalHandle handle(arg);

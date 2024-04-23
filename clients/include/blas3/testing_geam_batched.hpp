@@ -434,9 +434,9 @@ void testing_geam_batched(const Arguments& arg)
         B_col = M;
     }
 
-    size_t A_size = size_t(lda) * A_col;
-    size_t B_size = size_t(ldb) * B_col;
-    size_t C_size = size_t(ldc) * N;
+    size_t A_size = lda * A_col;
+    size_t B_size = ldb * B_col;
+    size_t C_size = ldc * N;
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || batch_count < 0 || lda < A_row || ldb < B_row || ldc < M;

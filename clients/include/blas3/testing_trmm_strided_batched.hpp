@@ -485,9 +485,9 @@ void testing_trmm_strided_batched(const Arguments& arg)
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     int64_t       K          = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    hipblasStride stride_A   = size_t(lda) * K * stride_scale;
-    hipblasStride stride_B   = size_t(ldb) * N * stride_scale;
-    hipblasStride stride_C   = inplace ? 1 : size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A   = lda * K * stride_scale;
+    hipblasStride stride_B   = ldb * N * stride_scale;
+    hipblasStride stride_C   = inplace ? 1 : ldc * N * stride_scale;
     hipblasStride stride_out = inplace ? stride_B : stride_C;
 
     size_t A_size   = stride_A * batch_count;

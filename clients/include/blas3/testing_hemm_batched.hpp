@@ -397,9 +397,9 @@ void testing_hemm_batched(const Arguments& arg)
         return;
     }
 
-    size_t A_size = size_t(lda) * K;
-    size_t B_size = size_t(ldb) * N;
-    size_t C_size = size_t(ldc) * N;
+    size_t A_size = lda * K;
+    size_t B_size = ldb * N;
+    size_t C_size = ldc * N;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 

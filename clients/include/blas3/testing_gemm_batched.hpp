@@ -454,9 +454,9 @@ void testing_gemm_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    size_t A_size = size_t(lda) * A_col;
-    size_t B_size = size_t(ldb) * B_col;
-    size_t C_size = size_t(ldc) * N;
+    size_t A_size = lda * A_col;
+    size_t B_size = ldb * B_col;
+    size_t C_size = ldc * N;
 
     // host arrays
     host_batch_vector<T> hA(A_size, 1, batch_count);

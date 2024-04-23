@@ -198,8 +198,8 @@ void testing_herk(const Arguments& arg)
     }
 
     int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
-    size_t  A_size = size_t(lda) * K1;
-    size_t  C_size = size_t(ldc) * N;
+    size_t  A_size = lda * K1;
+    size_t  C_size = ldc * N;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);

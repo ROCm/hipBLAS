@@ -405,9 +405,9 @@ void testing_syr2k_strided_batched(const Arguments& arg)
     int64_t            batch_count  = arg.batch_count;
 
     int64_t       K1       = (transA == HIPBLAS_OP_N ? K : N);
-    hipblasStride stride_A = size_t(lda) * K1 * stride_scale;
-    hipblasStride stride_B = size_t(ldb) * K1 * stride_scale;
-    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A = lda * K1 * stride_scale;
+    hipblasStride stride_B = ldb * K1 * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
     size_t        A_size   = stride_A * batch_count;
     size_t        B_size   = stride_B * batch_count;
     size_t        C_size   = stride_C * batch_count;

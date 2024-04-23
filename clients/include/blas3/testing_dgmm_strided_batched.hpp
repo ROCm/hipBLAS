@@ -253,9 +253,9 @@ void testing_dgmm_strided_batched(const Arguments& arg)
     int64_t k            = (side == HIPBLAS_SIDE_RIGHT ? N : M);
 
     int64_t       abs_incx = incx >= 0 ? incx : -incx;
-    hipblasStride stride_A = size_t(lda) * N * stride_scale;
-    hipblasStride stride_x = size_t(abs_incx) * k * stride_scale;
-    hipblasStride stride_C = size_t(ldc) * N * stride_scale;
+    hipblasStride stride_A = lda * N * stride_scale;
+    hipblasStride stride_x = abs_incx * k * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
     if(!stride_x)
         stride_x = 1;
 
