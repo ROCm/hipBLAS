@@ -122,9 +122,11 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
     if(HIP_PLATFORM STREQUAL amd)
       if (NOT WIN32)
-        execute_process (
-          COMMAND bash -c "${HIP_CLANG_ROOT}/bin/amdclang --version | grep -oP '(?<=Target: ).+' | tr -d '\n'"
-          OUTPUT_VARIABLE LLVM_DEFAULT_TARGET_TRIPLE)
+        execute_process(
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+          COMMAND bash -c "${HIP_CLANG_ROOT}/bin/amdclang --version | grep -oP '(?<=Target: ).+'"
+          OUTPUT_VARIABLE LLVM_DEFAULT_TARGET_TRIPLE
+        )
         if(LLVM_DEFAULT_TARGET_TRIPLE)
           list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib/${LLVM_DEFAULT_TARGET_TRIPLE}\"")
         endif()
