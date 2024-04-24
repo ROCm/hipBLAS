@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,9 @@ void testing_trmm_bad_arg(const Arguments& arg)
 {
     auto hipblasTrmmFn
         = arg.api == hipblas_client_api::FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
-    bool inplace = arg.inplace;
+    auto hipblasTrmmFn_64 = arg.api == hipblas_client_api::FORTRAN_64 ? hipblasTrmm_64<T, true>
+                                                                      : hipblasTrmm_64<T, false>;
+    bool inplace          = arg.inplace;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_DEVICE, HIPBLAS_POINTER_MODE_HOST})
     {
@@ -77,10 +79,10 @@ void testing_trmm_bad_arg(const Arguments& arg)
             zero = zero_d;
         }
 
-        size_t A_size = size_t(lda) * K;
-        size_t B_size = size_t(ldb) * N;
+        size_t A_size = lda * K;
+        size_t B_size = ldb * N;
 
-        size_t C_size = inplace ? 1 : size_t(ldc) * N;
+        size_t C_size = inplace ? 1 : ldc * N;
 
         device_vector<T> dA(A_size);
         device_vector<T> dB(B_size);
@@ -91,217 +93,231 @@ void testing_trmm_bad_arg(const Arguments& arg)
         // cuBLAS doesn't have CUBLAS_SIDE_BOTH so will return invalid_enum,
         // while rocBLAS has rocblas_side_both, but just invalid for this func.
         // invalid enums
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            HIPBLAS_SIDE_BOTH,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
+        DAPI_EXPECT(
 #ifndef __HIP_PLATFORM_NVCC__
-                              HIPBLAS_STATUS_INVALID_VALUE);
+            HIPBLAS_STATUS_INVALID_VALUE,
 #else
-                              HIPBLAS_STATUS_INVALID_ENUM);
+            HIPBLAS_STATUS_INVALID_ENUM,
 #endif
+            hipblasTrmmFn,
+            (handle,
+             HIPBLAS_SIDE_BOTH,
+             uplo,
+             transA,
+             diag,
+             M,
+             N,
+             alpha,
+             dA,
+             lda,
+             dB,
+             ldb,
+             *dOut,
+             ldOut));
 
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            HIPBLAS_FILL_MODE_FULL,
-                                            transA,
-                                            diag,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     HIPBLAS_FILL_MODE_FULL,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     dB,
+                     ldb,
+                     *dOut,
+                     ldOut));
 
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            uplo,
-                                            (hipblasOperation_t)HIPBLAS_SIDE_BOTH,
-                                            diag,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     uplo,
+                     (hipblasOperation_t)HIPBLAS_SIDE_BOTH,
+                     diag,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     dB,
+                     ldb,
+                     *dOut,
+                     ldOut));
 
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            uplo,
-                                            transA,
-                                            (hipblasDiagType_t)HIPBLAS_SIDE_BOTH,
-                                            M,
-                                            N,
-                                            alpha,
-                                            dA,
-                                            lda,
-                                            dB,
-                                            ldb,
-                                            *dOut,
-                                            ldOut),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     (hipblasDiagType_t)HIPBLAS_SIDE_BOTH,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     dB,
+                     ldb,
+                     *dOut,
+                     ldOut));
 
         // nullptr checks
-        EXPECT_HIPBLAS_STATUS(
-            hipblasTrmmFn(
-                nullptr, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, ldOut),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_NOT_INITIALIZED,
+            hipblasTrmmFn,
+            (nullptr, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, ldOut));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                alpha,
-                                                dA,
-                                                lda,
-                                                dB,
-                                                ldb,
-                                                nullptr,
-                                                ldOut),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasTrmmFn,
+                (handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, nullptr, ldOut));
 
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                nullptr,
-                                                dA,
-                                                lda,
-                                                dB,
-                                                ldb,
-                                                *dOut,
-                                                ldOut),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasTrmmFn,
+                (handle, side, uplo, transA, diag, M, N, nullptr, dA, lda, dB, ldb, *dOut, ldOut));
 
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                alpha,
-                                                nullptr,
-                                                lda,
-                                                dB,
-                                                ldb,
-                                                *dOut,
-                                                ldOut),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         M,
+                         N,
+                         alpha,
+                         nullptr,
+                         lda,
+                         dB,
+                         ldb,
+                         *dOut,
+                         ldOut));
 
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                alpha,
-                                                dA,
-                                                lda,
-                                                nullptr,
-                                                ldb,
-                                                *dOut,
-                                                ldOut),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         M,
+                         N,
+                         alpha,
+                         dA,
+                         lda,
+                         nullptr,
+                         ldb,
+                         *dOut,
+                         ldOut));
 
             // quick return: if alpha == 0, both A & B can be nullptr
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                zero,
-                                                nullptr,
-                                                lda,
-                                                nullptr,
-                                                ldb,
-                                                *dOut,
-                                                ldOut),
-                                  HIPBLAS_STATUS_SUCCESS);
+            DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         M,
+                         N,
+                         zero,
+                         nullptr,
+                         lda,
+                         nullptr,
+                         ldb,
+                         *dOut,
+                         ldOut));
+
+            // trmm will quick-return with N == 0 || M == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         0,
+                         c_i32_overflow,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasTrmmFn,
+                        (handle,
+                         side,
+                         uplo,
+                         transA,
+                         diag,
+                         c_i32_overflow,
+                         0,
+                         nullptr,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // quick return: if M == 0, then all other ptrs can be nullptr
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            0,
-                                            N,
-                                            nullptr,
-                                            nullptr,
-                                            lda,
-                                            nullptr,
-                                            ldb,
-                                            nullptr,
-                                            ldOut),
-                              HIPBLAS_STATUS_SUCCESS);
+        DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     0,
+                     N,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     nullptr,
+                     ldb,
+                     nullptr,
+                     ldOut));
 
         // quick return: if N == 0, then all other ptrs can be nullptr
-        EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                            side,
-                                            uplo,
-                                            transA,
-                                            diag,
-                                            M,
-                                            0,
-                                            nullptr,
-                                            nullptr,
-                                            lda,
-                                            nullptr,
-                                            ldb,
-                                            nullptr,
-                                            ldOut),
-                              HIPBLAS_STATUS_SUCCESS);
+        DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     0,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     nullptr,
+                     ldb,
+                     nullptr,
+                     ldOut));
 
         // in-place only checks
         if(inplace)
         {
             // if inplace, must have ldb == ldc
-            EXPECT_HIPBLAS_STATUS(hipblasTrmmFn(handle,
-                                                side,
-                                                uplo,
-                                                transA,
-                                                diag,
-                                                M,
-                                                N,
-                                                alpha,
-                                                dA,
-                                                lda,
-                                                dB,
-                                                ldb,
-                                                *dOut,
-                                                ldb + 1),
-                                  HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(
+                HIPBLAS_STATUS_INVALID_VALUE,
+                hipblasTrmmFn,
+                (handle, side, uplo, transA, diag, M, N, alpha, dA, lda, dB, ldb, *dOut, ldb + 1));
         }
     }
 }
@@ -309,34 +325,55 @@ void testing_trmm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasTrmmFn = FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
-    bool inplace       = arg.inplace;
+    auto hipblasTrmmFn
+        = arg.api == hipblas_client_api::FORTRAN ? hipblasTrmm<T, true> : hipblasTrmm<T, false>;
+    auto hipblasTrmmFn_64 = arg.api == hipblas_client_api::FORTRAN_64 ? hipblasTrmm_64<T, true>
+                                                                      : hipblasTrmm_64<T, false>;
+    bool inplace          = arg.inplace;
 
     hipblasSideMode_t  side   = char2hipblas_side(arg.side);
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
-    int                M      = arg.M;
-    int                N      = arg.N;
-    int                lda    = arg.lda;
-    int                ldb    = arg.ldb;
-    int                ldc    = arg.ldc;
-    int                ldOut  = inplace ? ldb : ldc;
+    int64_t            M      = arg.M;
+    int64_t            N      = arg.N;
+    int64_t            lda    = arg.lda;
+    int64_t            ldb    = arg.ldb;
+    int64_t            ldc    = arg.ldc;
+    int64_t            ldOut  = inplace ? ldb : ldc;
 
     T h_alpha = arg.get_alpha<T>();
 
-    int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t A_size = size_t(lda) * K;
-    size_t B_size = size_t(ldb) * N;
+    int64_t K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
+    size_t  A_size = lda * K;
+    size_t  B_size = ldb * N;
 
     // avoid unnecessary allocation if inplace
-    size_t C_size   = inplace ? 1 : size_t(ldc) * N;
+    size_t C_size   = inplace ? 1 : ldc * N;
     size_t out_size = ldOut * N;
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
-    if(M < 0 || N < 0 || lda < K || ldb < M || ldOut < M)
+    bool invalid_size = M < 0 || N < 0 || lda < K || ldb < M || ldc < M;
+    if(M == 0 || N == 0 || invalid_size)
     {
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasTrmmFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     nullptr,
+                     ldb,
+                     nullptr,
+                     ldOut));
         return;
     }
 
@@ -356,8 +393,7 @@ void testing_trmm(const Arguments& arg)
 
     device_vector<T>* dOut = inplace ? &dB : &dC;
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, K, K, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
@@ -383,8 +419,9 @@ void testing_trmm(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
-            handle, side, uplo, transA, diag, M, N, &h_alpha, dA, lda, dB, ldb, *dOut, ldOut));
+        DAPI_CHECK(
+            hipblasTrmmFn,
+            (handle, side, uplo, transA, diag, M, N, &h_alpha, dA, lda, dB, ldb, *dOut, ldOut));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hOut_host, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
@@ -393,8 +430,9 @@ void testing_trmm(const Arguments& arg)
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
 
-        CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
-            handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
+        DAPI_CHECK(
+            hipblasTrmmFn,
+            (handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
 
         CHECK_HIP_ERROR(hipMemcpy(hOut_device, *dOut, sizeof(T) * out_size, hipMemcpyDeviceToHost));
 
@@ -431,8 +469,9 @@ void testing_trmm(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasTrmmFn(
-                handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
+            DAPI_DISPATCH(
+                hipblasTrmmFn,
+                (handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb, *dOut, ldOut));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

@@ -564,6 +564,18 @@ void ref_gemm(hipblasOperation_t transA,
               To*                C,
               int64_t            ldc);
 
+// dgmm
+template <typename T>
+void ref_dgmm(hipblasSideMode_t side,
+              int64_t           M,
+              int64_t           N,
+              const T*          dA,
+              int64_t           lda,
+              const T*          dx,
+              int64_t           incx,
+              T*                dC,
+              int64_t           ldc);
+
 // hemm
 template <typename T>
 void ref_hemm(hipblasSideMode_t side,

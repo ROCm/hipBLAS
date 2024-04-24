@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,9 @@ template <typename T>
 void testing_her2k_bad_arg(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasHer2kFn = FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
+    auto hipblasHer2kFn = arg.api == FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
+    auto hipblasHer2kFn_64
+        = arg.api == FORTRAN_64 ? hipblasHer2k_64<T, U, true> : hipblasHer2k_64<T, U, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -87,107 +88,118 @@ void testing_her2k_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        EXPECT_HIPBLAS_STATUS(
-            hipblasHer2kFn(nullptr, uplo, transA, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),
-            HIPBLAS_STATUS_NOT_INITIALIZED);
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasHer2kFn,
+                    (nullptr, uplo, transA, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc));
 
-        EXPECT_HIPBLAS_STATUS(hipblasHer2kFn(handle,
-                                             HIPBLAS_FILL_MODE_FULL,
-                                             transA,
-                                             N,
-                                             K,
-                                             alpha,
-                                             dA,
-                                             lda,
-                                             dB,
-                                             ldb,
-                                             beta,
-                                             dC,
-                                             ldc),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasHer2kFn(handle,
-                                             (hipblasFillMode_t)HIPBLAS_OP_N,
-                                             transA,
-                                             N,
-                                             K,
-                                             alpha,
-                                             dA,
-                                             lda,
-                                             dB,
-                                             ldb,
-                                             beta,
-                                             dC,
-                                             ldc),
-                              HIPBLAS_STATUS_INVALID_ENUM);
-        // EXPECT_HIPBLAS_STATUS(
-        //     hipblasHer2kFn(
-        //         handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc),
-        //     HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasHer2kFn(handle,
-                                             uplo,
-                                             (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
-                                             N,
-                                             K,
-                                             alpha,
-                                             dA,
-                                             lda,
-                                             dB,
-                                             ldb,
-                                             beta,
-                                             dC,
-                                             ldc),
-                              HIPBLAS_STATUS_INVALID_ENUM);
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasHer2kFn,
+            (handle, HIPBLAS_FILL_MODE_FULL, transA, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasHer2kFn,
+                    (handle,
+                     (hipblasFillMode_t)HIPBLAS_OP_N,
+                     transA,
+                     N,
+                     K,
+                     alpha,
+                     dA,
+                     lda,
+                     dB,
+                     ldb,
+                     beta,
+                     dC,
+                     ldc));
+        // DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+        //     hipblasHer2kFn, (
+        //         handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
+                    hipblasHer2kFn,
+                    (handle,
+                     uplo,
+                     (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
+                     N,
+                     K,
+                     alpha,
+                     dA,
+                     lda,
+                     dB,
+                     ldb,
+                     beta,
+                     dC,
+                     ldc));
 
         if(arg.bad_arg_all)
         {
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHer2kFn(
-                    handle, uplo, transA, N, K, nullptr, dA, lda, dB, ldb, beta, dC, ldc),
-                HIPBLAS_STATUS_INVALID_VALUE);
-            EXPECT_HIPBLAS_STATUS(
-                hipblasHer2kFn(
-                    handle, uplo, transA, N, K, alpha, dA, lda, dB, ldb, nullptr, dC, ldc),
-                HIPBLAS_STATUS_INVALID_VALUE);
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHer2kFn,
+                        (handle, uplo, transA, N, K, nullptr, dA, lda, dB, ldb, beta, dC, ldc));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHer2kFn,
+                        (handle, uplo, transA, N, K, alpha, dA, lda, dB, ldb, nullptr, dC, ldc));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasHer2kFn(
-                        handle, uplo, transA, N, K, alpha, nullptr, lda, dB, ldb, beta, dC, ldc),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasHer2kFn(
-                        handle, uplo, transA, N, K, alpha, dA, lda, nullptr, ldb, beta, dC, ldc),
-                    HIPBLAS_STATUS_INVALID_VALUE);
-                EXPECT_HIPBLAS_STATUS(
-                    hipblasHer2kFn(
-                        handle, uplo, transA, N, K, alpha, dA, lda, dB, ldb, beta, nullptr, ldc),
-                    HIPBLAS_STATUS_INVALID_VALUE);
+                DAPI_EXPECT(
+                    HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHer2kFn,
+                    (handle, uplo, transA, N, K, alpha, nullptr, lda, dB, ldb, beta, dC, ldc));
+                DAPI_EXPECT(
+                    HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHer2kFn,
+                    (handle, uplo, transA, N, K, alpha, dA, lda, nullptr, ldb, beta, dC, ldc));
+                DAPI_EXPECT(
+                    HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasHer2kFn,
+                    (handle, uplo, transA, N, K, alpha, dA, lda, dB, ldb, beta, nullptr, ldc));
             }
 
             // If k == 0 && beta == 1, A, B, C may be nullptr
-            CHECK_HIPBLAS_ERROR(hipblasHer2kFn(
-                handle, uplo, transA, N, 0, alpha, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
+            DAPI_CHECK(
+                hipblasHer2kFn,
+                (handle, uplo, transA, N, 0, alpha, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
 
             // If alpha == 0 && beta == 1, A, B, C may be nullptr
-            CHECK_HIPBLAS_ERROR(hipblasHer2kFn(
-                handle, uplo, transA, N, K, zero, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
+            DAPI_CHECK(
+                hipblasHer2kFn,
+                (handle, uplo, transA, N, K, zero, nullptr, lda, nullptr, ldb, one, nullptr, ldc));
+
+            // her2k will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHer2kFn,
+                        (handle,
+                         uplo,
+                         transA,
+                         c_i32_overflow,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         c_i32_overflow,
+                         nullptr,
+                         c_i32_overflow,
+                         one,
+                         nullptr,
+                         c_i32_overflow));
         }
 
         // If N == 0, can have nullptrs
-        CHECK_HIPBLAS_ERROR(hipblasHer2kFn(handle,
-                                           uplo,
-                                           transA,
-                                           0,
-                                           K,
-                                           nullptr,
-                                           nullptr,
-                                           lda,
-                                           nullptr,
-                                           ldb,
-                                           nullptr,
-                                           nullptr,
-                                           ldc));
+        DAPI_CHECK(hipblasHer2kFn,
+                   (handle,
+                    uplo,
+                    transA,
+                    0,
+                    K,
+                    nullptr,
+                    nullptr,
+                    lda,
+                    nullptr,
+                    ldb,
+                    nullptr,
+                    nullptr,
+                    ldc));
     }
 }
 
@@ -195,14 +207,15 @@ template <typename T>
 void testing_her2k(const Arguments& arg)
 {
     using U             = real_t<T>;
-    bool FORTRAN        = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasHer2kFn = FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
+    auto hipblasHer2kFn = arg.api == FORTRAN ? hipblasHer2k<T, U, true> : hipblasHer2k<T, U, false>;
+    auto hipblasHer2kFn_64
+        = arg.api == FORTRAN_64 ? hipblasHer2k_64<T, U, true> : hipblasHer2k_64<T, U, false>;
 
-    int N   = arg.N;
-    int K   = arg.K;
-    int lda = arg.lda;
-    int ldb = arg.ldb;
-    int ldc = arg.ldc;
+    int64_t N   = arg.N;
+    int64_t K   = arg.K;
+    int64_t lda = arg.lda;
+    int64_t ldb = arg.ldb;
+    int64_t ldc = arg.ldc;
 
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
@@ -211,16 +224,36 @@ void testing_her2k(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(N < 0 || K < 0 || ldc < N || (transA == HIPBLAS_OP_N && (lda < N || ldb < N))
-       || (transA != HIPBLAS_OP_N && (lda < K || ldb < K)))
+    bool invalid_size
+        = (N < 0 || K < 0 || ldc < N || (transA == HIPBLAS_OP_N && (lda < N || ldb < N))
+           || (transA != HIPBLAS_OP_N && (lda < K || ldb < K)));
+
+    hipblasLocalHandle handle(arg);
+
+    if(invalid_size || !N)
     {
+        DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
+                    hipblasHer2kFn,
+                    (handle,
+                     uplo,
+                     transA,
+                     N,
+                     K,
+                     nullptr,
+                     nullptr,
+                     lda,
+                     nullptr,
+                     ldb,
+                     nullptr,
+                     nullptr,
+                     ldc));
         return;
     }
 
-    int    K1     = (transA == HIPBLAS_OP_N ? K : N);
-    size_t A_size = size_t(lda) * K1;
-    size_t B_size = size_t(ldb) * K1;
-    size_t C_size = size_t(ldc) * N;
+    int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
+    size_t  A_size = lda * K1;
+    size_t  B_size = ldb * K1;
+    size_t  C_size = ldc * N;
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_vector<T> hA(A_size);
@@ -238,8 +271,7 @@ void testing_her2k(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     U h_beta  = arg.get_beta<U>();
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
@@ -263,16 +295,16 @@ void testing_her2k(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        CHECK_HIPBLAS_ERROR(hipblasHer2kFn(
-            handle, uplo, transA, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
+        DAPI_CHECK(hipblasHer2kFn,
+                   (handle, uplo, transA, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
         CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIPBLAS_ERROR(
-            hipblasHer2kFn(handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+        DAPI_CHECK(hipblasHer2kFn,
+                   (handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
 
         CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
 
@@ -308,8 +340,8 @@ void testing_her2k(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasHer2kFn(
-                handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+            DAPI_DISPATCH(hipblasHer2kFn,
+                          (handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
