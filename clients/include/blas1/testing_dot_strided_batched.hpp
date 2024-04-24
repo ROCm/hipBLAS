@@ -68,9 +68,9 @@ void testing_dot_strided_batched_bad_arg(const Arguments& arg)
         hipblasStride stride_x    = N * incx;
         hipblasStride stride_y    = N * incy;
 
-        device_vector<T> dx(stride_x * batch_count);
-        device_vector<T> dy(stride_x * batch_count);
-        device_vector<T> d_res(batch_count);
+        device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+        device_strided_batch_vector<T> dy(N, incy, stride_y, batch_count);
+        device_vector<T>               d_res(batch_count);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -116,14 +116,8 @@ void testing_dot_strided_batched(const Arguments& arg)
 
     int64_t       abs_incx = incx >= 0 ? incx : -incx;
     int64_t       abs_incy = incy >= 0 ? incy : -incy;
-    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
-    size_t        sizeX    = stridex * batch_count;
-    size_t        sizeY    = stridey * batch_count;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
+    hipblasStride stridex  = N * abs_incx * stride_scale;
+    hipblasStride stridey  = N * abs_incy * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -164,27 +158,29 @@ void testing_dot_strided_batched(const Arguments& arg)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hy(sizeY);
-    host_vector<T> h_hipblas_result1(batch_count);
-    host_vector<T> h_hipblas_result2(batch_count);
-    host_vector<T> h_cpu_result(batch_count);
+    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
+    host_strided_batch_vector<T> hy(N, incy, stridey, batch_count);
+    host_vector<T>               h_hipblas_result1(batch_count);
+    host_vector<T>               h_hipblas_result2(batch_count);
+    host_vector<T>               h_cpu_result(batch_count);
 
-    device_vector<T> dx(sizeX);
-    device_vector<T> dy(sizeY);
-    device_vector<T> d_hipblas_result(batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
+    device_strided_batch_vector<T> dy(N, incy, stridey, batch_count);
+    device_vector<T>               d_hipblas_result(batch_count);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(
-        hy, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {

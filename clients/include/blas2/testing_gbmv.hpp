@@ -60,14 +60,15 @@ void testing_gbmv_bad_arg(const Arguments& arg)
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasOperation_t transA = HIPBLAS_OP_N;
-        int64_t            N      = 100;
-        int64_t            M      = 100;
-        int64_t            KL     = 5;
-        int64_t            KU     = 5;
-        int64_t            lda    = 100;
-        int64_t            incx   = 1;
-        int64_t            incy   = 1;
+        hipblasOperation_t transA            = HIPBLAS_OP_N;
+        int64_t            N                 = 100;
+        int64_t            M                 = 100;
+        int64_t            KL                = 5;
+        int64_t            KU                = 5;
+        int64_t            lda               = 100;
+        int64_t            incx              = 1;
+        int64_t            incy              = 1;
+        int64_t            banded_matrix_row = KL + KU + 1;
 
         device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
 
@@ -89,9 +90,9 @@ void testing_gbmv_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_vector<T> dA(N * lda);
-        device_vector<T> dx(N * incx);
-        device_vector<T> dy(M * incy);
+        device_matrix<T> dA(banded_matrix_row, N, lda);
+        device_vector<T> dx(N, incx);
+        device_vector<T> dy(M, incy);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasGbmvFn,
@@ -230,15 +231,15 @@ void testing_gbmv(const Arguments& arg)
     auto hipblasGbmvFn_64
         = arg.api == FORTRAN_64 ? hipblasGbmv_64<T, true> : hipblasGbmv_64<T, false>;
 
-    int64_t M    = arg.M;
-    int64_t N    = arg.N;
-    int64_t KL   = arg.KL;
-    int64_t KU   = arg.KU;
-    int64_t lda  = arg.lda;
-    int64_t incx = arg.incx;
-    int64_t incy = arg.incy;
+    int64_t M                 = arg.M;
+    int64_t N                 = arg.N;
+    int64_t KL                = arg.KL;
+    int64_t KU                = arg.KU;
+    int64_t lda               = arg.lda;
+    int64_t incx              = arg.incx;
+    int64_t incy              = arg.incy;
+    int64_t banded_matrix_row = KL + KU + 1;
 
-    size_t A_size = lda * N;
     size_t dim_x;
     size_t dim_y;
 
@@ -259,7 +260,8 @@ void testing_gbmv(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || N < 0 || lda < KL + KU + 1 || !incx || !incy || KL < 0 || KU < 0;
+    bool invalid_size
+        = M < 0 || N < 0 || lda < banded_matrix_row || !incx || !incy || KL < 0 || KU < 0;
     if(invalid_size || !M || !N)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
@@ -284,22 +286,26 @@ void testing_gbmv(const Arguments& arg)
     size_t abs_incx = incx >= 0 ? incx : -incx;
     size_t abs_incy = incy >= 0 ? incy : -incy;
 
-    size_t X_size = dim_x * abs_incx;
-    size_t Y_size = dim_y * abs_incy;
-
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hx(X_size);
-    host_vector<T> hy(Y_size);
-    host_vector<T> hy_host(Y_size);
-    host_vector<T> hy_device(Y_size);
-    host_vector<T> hy_cpu(Y_size);
+    host_matrix<T> hA(banded_matrix_row, N, lda);
+    host_vector<T> hx(dim_x, incx);
+    host_vector<T> hy(dim_y, incy);
+    host_vector<T> hy_host(dim_y, incy);
+    host_vector<T> hy_device(dim_y, incy);
+    host_vector<T> hy_cpu(dim_y, incy);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(X_size);
-    device_vector<T> dy(Y_size);
+    device_matrix<T> dA(banded_matrix_row, N, lda);
+    device_vector<T> dx(dim_x, incx);
+    device_vector<T> dy(dim_y, incy);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     double hipblas_error_host, hipblas_error_device;
 
@@ -307,17 +313,18 @@ void testing_gbmv(const Arguments& arg)
     T h_beta  = arg.get_beta<T>();
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, lda, N, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
-    hipblas_init_vector(hx, arg, dim_x, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_vector(hy, arg, dim_y, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hy, arg, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hy_cpu = hy: save a copy in hy_cpu which will be output of CPU BLAS
     hy_cpu = hy;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
+
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -331,14 +338,14 @@ void testing_gbmv(const Arguments& arg)
             hipblasGbmvFn,
             (handle, transA, M, N, KL, KU, (T*)&h_alpha, dA, lda, dx, incx, (T*)&h_beta, dy, incy));
 
-        CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasGbmvFn,
                    (handle, transA, M, N, KL, KU, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
-        CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
         /* =====================================================================
            CPU BLAS
@@ -377,7 +384,7 @@ void testing_gbmv(const Arguments& arg)
     if(arg.timing)
     {
         double gpu_time_used;
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

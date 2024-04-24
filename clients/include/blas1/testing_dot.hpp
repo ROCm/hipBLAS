@@ -60,8 +60,8 @@ void testing_dot_bad_arg(const Arguments& arg)
         int64_t incx = 1;
         int64_t incy = 1;
 
-        device_vector<T> dx(N * incx);
-        device_vector<T> dy(N * incy);
+        device_vector<T> dx(N, incx);
+        device_vector<T> dy(N, incy);
         device_vector<T> d_res(1);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
@@ -129,31 +129,29 @@ void testing_dot(const Arguments& arg)
 
     int64_t abs_incx = incx >= 0 ? incx : -incx;
     int64_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t  sizeX    = size_t(N) * abs_incx;
-    size_t  sizeY    = size_t(N) * abs_incy;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hy(sizeY);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hy(N, incy);
 
     T                cpu_result, h_hipblas_result_1, h_hipblas_result_2;
-    device_vector<T> dx(sizeX);
-    device_vector<T> dy(sizeY);
+    device_vector<T> dx(N, incx);
+    device_vector<T> dy(N, incy);
     device_vector<T> d_hipblas_result(1);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {

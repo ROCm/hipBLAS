@@ -53,17 +53,19 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
-        hipblasOperation_t transA      = HIPBLAS_OP_N;
-        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
-        int64_t            N           = 100;
-        int64_t            K           = 5;
-        int64_t            lda         = 100;
-        int64_t            incx        = 1;
-        int64_t            batch_count = 2;
+        hipblasFillMode_t  uplo              = HIPBLAS_FILL_MODE_UPPER;
+        hipblasOperation_t transA            = HIPBLAS_OP_N;
+        hipblasDiagType_t  diag              = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            M                 = 100;
+        int64_t            K                 = 5;
+        int64_t            banded_matrix_row = K + 1;
+        int64_t            lda               = 100;
+        int64_t            incx              = 1;
+        int64_t            batch_count       = 2;
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
-        device_batch_vector<T> dx(N, incx, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dAb(banded_matrix_row, M, lda, batch_count);
+        device_batch_vector<T> dx(M, incx, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasTbmvBatchedFn,
@@ -71,9 +73,9 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -85,9 +87,9 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      HIPBLAS_FILL_MODE_FULL,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -99,9 +101,9 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      (hipblasFillMode_t)HIPBLAS_OP_N,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -112,9 +114,9 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      uplo,
                      (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -125,9 +127,9 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      dx.ptr_on_device(),
                      incx,
@@ -139,7 +141,7 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
                      nullptr,
                      lda,
@@ -153,19 +155,19 @@ void testing_tbmv_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA.ptr_on_device(),
+                     dAb.ptr_on_device(),
                      lda,
                      nullptr,
                      incx,
                      batch_count));
 
-        // With N == 0, can have all nullptrs
+        // With M == 0, can have all nullptrs
         DAPI_CHECK(hipblasTbmvBatchedFn,
                    (handle, uplo, transA, diag, 0, K, nullptr, lda, nullptr, incx, batch_count));
         DAPI_CHECK(hipblasTbmvBatchedFn,
-                   (handle, uplo, transA, diag, N, K, nullptr, lda, nullptr, incx, 0));
+                   (handle, uplo, transA, diag, M, K, nullptr, lda, nullptr, incx, 0));
     }
 }
 
@@ -188,8 +190,8 @@ void testing_tbmv_batched(const Arguments& arg)
     int64_t            incx        = arg.incx;
     int64_t            batch_count = arg.batch_count;
 
-    size_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t A_size   = lda * M;
+    const int64_t banded_matrix_row = K + 1;
+    size_t        abs_incx          = incx >= 0 ? incx : -incx;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -197,7 +199,7 @@ void testing_tbmv_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || K < 0 || lda < K + 1 || !incx || batch_count < 0;
+    bool invalid_size = M < 0 || K < 0 || lda < banded_matrix_row || !incx || batch_count < 0;
     if(invalid_size || !M || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
@@ -208,26 +210,38 @@ void testing_tbmv_batched(const Arguments& arg)
 
     double hipblas_error;
 
-    // arrays of pointers-to-host on host
-    host_batch_vector<T> hA(A_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hAb), `d` is in GPU (device) memory (eg dAb).
+    // Allocate host memory
+    host_batch_matrix<T> hAb(banded_matrix_row, M, lda, batch_count);
     host_batch_vector<T> hx(M, incx, batch_count);
     host_batch_vector<T> hx_cpu(M, incx, batch_count);
     host_batch_vector<T> hx_res(M, incx, batch_count);
 
-    // device arrays
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hAb.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hx_cpu.memcheck());
+    CHECK_HIP_ERROR(hx_res.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dAb(banded_matrix_row, M, lda, batch_count);
     device_batch_vector<T> dx(M, incx, batch_count);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dAb.memcheck());
 
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    // Initial Data on CPU
+    hipblas_init_matrix(
+        hAb, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true, false);
     hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
 
+    // copy vector
     hx_cpu.copy_from(hx);
 
+    // copy data from CPU to device
     CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dAb.transfer_from(hAb));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -241,7 +255,7 @@ void testing_tbmv_batched(const Arguments& arg)
                     diag,
                     M,
                     K,
-                    dA.ptr_on_device(),
+                    dAb.ptr_on_device(),
                     lda,
                     dx.ptr_on_device(),
                     incx,
@@ -254,7 +268,7 @@ void testing_tbmv_batched(const Arguments& arg)
         =================================================================== */
         for(size_t b = 0; b < batch_count; b++)
         {
-            ref_tbmv<T>(uplo, transA, diag, M, K, hA[b], lda, hx_cpu[b], incx);
+            ref_tbmv<T>(uplo, transA, diag, M, K, hAb[b], lda, hx_cpu[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -290,7 +304,7 @@ void testing_tbmv_batched(const Arguments& arg)
                            diag,
                            M,
                            K,
-                           dA.ptr_on_device(),
+                           dAb.ptr_on_device(),
                            lda,
                            dx.ptr_on_device(),
                            incx,

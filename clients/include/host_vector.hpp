@@ -25,7 +25,7 @@
 #define HOST_VECTOR_H_
 
 #include "hipblas.h"
-#include "host_batch_vector.hpp"
+#include "host_alloc.hpp"
 #include "utility.h"
 #include <cinttypes>
 #include <cstdio>

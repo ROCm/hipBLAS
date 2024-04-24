@@ -29,6 +29,8 @@
 #include <assert.h>
 
 #include "hipblas.h"
+#include "host_batch_vector.hpp"
+#include "host_strided_batch_vector.hpp"
 #include "host_vector.hpp"
 
 //!
@@ -395,16 +397,16 @@ inline void hipblas_init_nan(host_batch_vector<T>& that, bool seedReset = false)
     hipblas_init_template(that, random_nan_generator<T>, seedReset);
 }
 
-// //!
-// //! @brief Initialize a host_vector with NaNs.
-// //! @param that The host_vector to be initialized.
-// //! @param seedReset reset he seed if true, do not reset the seed otherwise.
-// //!
-// template <typename T>
-// inline void hipblas_init_nan(host_vector<T>& that, bool seedReset = false)
-// {
-//     hipblas_init_template(that, random_nan_generator<T>, seedReset);
-// }
+//!
+//! @brief Initialize a host_strided_batch_vector with NaNs.
+//! @param that The host_strided_batch_vector to be initialized.
+//! @param seedReset reset the seed if true, do not reset the seed otherwise.
+//!
+template <typename T>
+inline void hipblas_init_nan(host_strided_batch_vector<T>& that, bool seedReset = false)
+{
+    hipblas_init_template(that, random_nan_generator<T>, seedReset);
+}
 
 template <typename T>
 inline void hipblas_init_nan(host_vector<T>& A,
@@ -434,6 +436,19 @@ inline void hipblas_init_hpl(host_batch_vector<T>& that,
 }
 
 //!
+//! @brief Initialize a host_strided_batch_vector.
+//! @param that The host_strided_batch_vector.
+//! @param seedReset reset the seed if true, do not reset the seed otherwise.
+//!
+template <typename T>
+inline void hipblas_init_hpl(host_strided_batch_vector<T>& that,
+                             bool                          seedReset        = false,
+                             bool                          alternating_sign = false)
+{
+    hipblas_init_template(that, random_hpl_generator<T>, seedReset, alternating_sign);
+}
+
+//!
 //! @brief Initialize a host_batch_vector.
 //! @param that The host_batch_vector.
 //! @param seedReset reset the seed if true, do not reset the seed otherwise.
@@ -441,6 +456,19 @@ inline void hipblas_init_hpl(host_batch_vector<T>& that,
 template <typename T>
 inline void
     hipblas_init(host_batch_vector<T>& that, bool seedReset = false, bool alternating_sign = false)
+{
+    hipblas_init_template(that, random_generator<T>, seedReset, alternating_sign);
+}
+
+//!
+//! @brief Initialize a host_strided_batch_vector.
+//! @param that The host_strided_batch_vector.
+//! @param seedReset reset the seed if true, do not reset the seed otherwise.
+//!
+template <typename T>
+inline void hipblas_init(host_strided_batch_vector<T>& that,
+                         bool                          seedReset        = false,
+                         bool                          alternating_sign = false)
 {
     hipblas_init_template(that, random_generator<T>, seedReset, alternating_sign);
 }
@@ -464,7 +492,7 @@ inline void hipblas_init(host_vector<T>& that, bool seedReset = false)
 //! @param init_cos cos initialize if true, else sin initialize.
 //!
 template <typename T>
-inline void hipblas_init_trig(host_batch_vector<T>& that, bool init_cos = false)
+inline void hipblas_init_trig(T& that, bool init_cos = false)
 {
     if(init_cos)
     {
@@ -496,99 +524,13 @@ inline void hipblas_init_trig(host_batch_vector<T>& that, bool init_cos = false)
     }
 }
 
-//!
-//! @brief Initialize a host_vector.
-//! @param hx The host_vector.
-//! @param arg Specifies the argument class.
-//! @param N Length of the host vector.
-//! @param incx Increment for the host vector.
-//! @param stride_x Incement between the host vector.
-//! @param batch_count number of instances in the batch.
-//! @param nan_init Initialize vector with Nan's depending upon the hipblas_client_nan_init enum value.
-//! @param seedReset reset the seed if true, do not reset the seed otherwise. Use init_cos if seedReset is true else use init_sin.
-//! @param alternating_sign Initialize vector so adjacent entries have alternating sign.
-//!
-template <typename T>
-inline void hipblas_init_vector(host_vector<T>&         hx,
-                                const Arguments&        arg,
-                                size_t                  N,
-                                int64_t                 incx,
-                                hipblasStride           stride_x,
-                                int64_t                 batch_count,
-                                hipblas_client_nan_init nan_init,
-                                bool                    seedReset        = false,
-                                bool                    alternating_sign = false)
-{
-    if(seedReset)
-        hipblas_seedrand();
-
-    if(nan_init == hipblas_client_alpha_sets_nan && hipblas_isnan(arg.alpha))
-    {
-        hipblas_init_nan(hx, 1, N, incx, stride_x, batch_count);
-    }
-    else if(nan_init == hipblas_client_beta_sets_nan && hipblas_isnan(arg.beta))
-    {
-        hipblas_init_nan(hx, 1, N, incx, stride_x, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::hpl)
-    {
-        if(alternating_sign)
-            hipblas_init_hpl_alternating_sign(hx, 1, N, incx, stride_x, batch_count);
-        else
-            hipblas_init_hpl(hx, 1, N, incx, stride_x, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::rand_int)
-    {
-        if(alternating_sign)
-            hipblas_init_alternating_sign(hx, 1, N, incx, stride_x, batch_count);
-        else
-            hipblas_init(hx, 1, N, incx, stride_x, batch_count);
-    }
-    else if(arg.initialization == hipblas_initialization::trig_float)
-    {
-        if(seedReset)
-            hipblas_init_cos(hx, 1, N, incx, stride_x, batch_count);
-        else
-            hipblas_init_sin(hx, 1, N, incx, stride_x, batch_count);
-    }
-}
-
-//!
-//! @brief Initialize a host_batch_vector.
-//! @param hx The host_batch_vector.
-//! @param arg Specifies the argument class.
-//! @param nan_init Initialize vector with Nan's depending upon the hipblas_client_nan_init enum value.
-//! @param seedReset reset the seed if true, do not reset the seed otherwise. Use init_cos if seedReset is true else use init_sin.
-//! @param alternating_sign Initialize vector so adjacent entries have alternating sign.
-//!
-template <typename T>
-inline void hipblas_init_vector(host_batch_vector<T>&   hx,
-                                const Arguments&        arg,
-                                hipblas_client_nan_init nan_init,
-                                bool                    seedReset        = false,
-                                bool                    alternating_sign = false)
-{
-    if(nan_init == hipblas_client_alpha_sets_nan && hipblas_isnan(arg.alpha))
-    {
-        hipblas_init_nan(hx, seedReset);
-    }
-    else if(nan_init == hipblas_client_beta_sets_nan && hipblas_isnan(arg.beta))
-    {
-        hipblas_init_nan(hx, seedReset);
-    }
-    else if(arg.initialization == hipblas_initialization::hpl)
-    {
-        hipblas_init_hpl(hx, seedReset, alternating_sign);
-    }
-    else if(arg.initialization == hipblas_initialization::rand_int)
-    {
-        hipblas_init(hx, seedReset, alternating_sign);
-    }
-    else if(arg.initialization == hipblas_initialization::trig_float)
-    {
-        hipblas_init_trig(hx, seedReset);
-    }
-}
+// Initialize matrix so adjacent entries have alternating sign.
+// In gemm if either A or B are initialized with alternating
+// sign the reduction sum will be summing positive
+// and negative numbers, so it should not get too large.
+// This helps reduce floating point inaccuracies for 16bit
+// arithmetic where the exponent has only 5 bits, and the
+// mantissa 10 bits.
 
 // Initialize matrix so adjacent entries have alternating sign.
 // In gemm if either A or B are initialized with alternating
@@ -635,6 +577,65 @@ void hipblas_init_matrix_alternating_sign(hipblas_matrix_type matrix_type,
                         = uplo == 'U' ? (j >= i ? rand_gen() : 0) : (j <= i ? rand_gen() : 0);
                     A[i + j * lda + b * stride] = (i ^ j) & 1 ? T(value) : T(hipblas_negate(value));
                 }
+    }
+}
+
+template <typename U, typename T>
+void hipblas_init_matrix_alternating_sign(hipblas_matrix_type matrix_type,
+                                          const char          uplo,
+                                          T                   rand_gen(),
+                                          U&                  hA)
+{
+    auto M   = hA.m();
+    auto N   = hA.n();
+    auto lda = hA.lda();
+
+    for(int64_t batch_index = 0; batch_index < hA.batch_count(); ++batch_index)
+    {
+        auto* A = hA[batch_index];
+
+        if(matrix_type == hipblas_general_matrix)
+        {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+            for(size_t i = 0; i < M; ++i)
+                for(size_t j = 0; j < N; ++j)
+                {
+                    auto value     = rand_gen();
+                    A[i + j * lda] = (i ^ j) & 1 ? T(value) : T(hipblas_negate(value));
+                }
+        }
+        else if(matrix_type == hipblas_triangular_matrix)
+        {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+            for(size_t i = 0; i < M; ++i)
+                for(size_t j = 0; j < N; ++j)
+                {
+                    auto value
+                        = uplo == 'U' ? (j >= i ? rand_gen() : T(0)) : (j <= i ? rand_gen() : T(0));
+                    A[i + j * lda] = (i ^ j) & 1 ? T(value) : T(hipblas_negate(value));
+                }
+        }
+    }
+}
+
+// Initialize vector so adjacent entries have alternating sign.
+template <typename T>
+void hipblas_init_vector_alternating_sign(T rand_gen(), T* x, int64_t N, int64_t incx)
+{
+    if(incx < 0)
+        x -= (N - 1) * incx;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t j = 0; j < N; ++j)
+    {
+        auto value  = rand_gen();
+        x[j * incx] = j & 1 ? T(value) : T(hipblas_negate(value));
     }
 }
 
@@ -925,36 +926,8 @@ void hipblas_fill_matrix_type(hipblas_matrix_type matrix_type,
     } // for batch
 }
 
-template <typename T>
-void hipblas_init_matrix(const char      uplo,
-                         T               rand_gen(),
-                         host_vector<T>& A,
-                         size_t          M,
-                         size_t          N,
-                         size_t          lda,
-                         hipblasStride   stride      = 0,
-                         int64_t         batch_count = 1)
-{
-    hipblas_fill_matrix_type(
-        hipblas_general_matrix, uplo, rand_gen(), A, M, N, lda, stride, batch_count);
-}
-
-template <typename T>
-void hipblas_init_matrix(
-    const char uplo, T rand_gen(), host_batch_vector<T>& A, size_t M, size_t N, size_t lda)
-{
-    for(int64_t b = 0; b < A.batch_count(); b++)
-        hipblas_fill_matrix_type(
-            hipblas_general_matrix, uplo, rand_gen(), (T*)A[b], M, N, lda, 0, 1);
-}
-
-/*
 template <typename U, typename T>
-void hipblas_init_matrix(hipblas_matrix_type matrix_type,
-                         const char                uplo,
-                         T                         rand_gen(),
-                         U&                        hA,
-                         int)
+void hipblas_init_matrix(hipblas_matrix_type matrix_type, const char uplo, T rand_gen(), U& hA)
 {
     for(int64_t batch_index = 0; batch_index < hA.batch_count(); ++batch_index)
     {
@@ -1112,12 +1085,27 @@ void hipblas_init_matrix(hipblas_matrix_type matrix_type,
     }
 }
 
+/*! \brief  vector initialization: */
+// Initialize vectors with rand_int/hpl/NaN values
+
+template <typename T>
+void hipblas_init_vector(T rand_gen(), T* x, int64_t N, int64_t incx)
+{
+    if(incx < 0)
+        x -= (N - 1) * incx;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t j = 0; j < N; ++j)
+        x[j * incx] = rand_gen();
+}
 
 template <typename T, typename U>
 void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
-                              const char                uplo,
-                              U&                        hA,
-                              bool                      seedReset = false)
+                              const char          uplo,
+                              U&                  hA,
+                              bool                seedReset = false)
 {
     for(int64_t batch_index = 0; batch_index < hA.batch_count(); ++batch_index)
     {
@@ -1210,7 +1198,22 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
         }
     }
 }
-*/
+
+/*! \brief  Trigonometric vector initialization: */
+// Initialize vector with rand_int/hpl/NaN values
+
+template <typename T>
+void hipblas_init_vector_trig(T* x, int64_t N, int64_t incx, bool seedReset = false)
+{
+    if(incx < 0)
+        x -= (N - 1) * incx;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t j = 0; j < N; ++j)
+        x[j * incx] = T(seedReset ? cos(j * incx) : sin(j * incx));
+}
 
 //!
 //! @brief Initialize a host matrix.
@@ -1413,6 +1416,55 @@ inline void regular_to_banded(
     }
 }
 
+/* ============================================================================= */
+/*! \brief For testing purposes, to convert a regular matrix to a banded matrix.
+ *         This routine is for host batched and strided batched vectors */
+
+template <typename T>
+inline void regular_to_banded(bool upper, const T& h_A, T& h_AB, int64_t k)
+{
+    size_t  lda  = h_A.lda();
+    size_t  ldab = h_AB.lda();
+    int64_t n    = h_AB.n();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t batch_index = 0; batch_index < h_A.batch_count(); ++batch_index)
+    {
+        auto* A  = h_A[batch_index];
+        auto* AB = h_AB[batch_index];
+
+        // convert regular A matrix to banded AB matrix
+        for(int64_t j = 0; j < n; j++)
+        {
+            int64_t min1 = upper ? std::max(int64_t(0), j - k) : j;
+            int64_t max1 = upper ? j : std::min(n - 1, j + k);
+            int64_t m    = upper ? k - j : -j;
+
+            // Move bands of A into new banded AB format.
+            for(int i = min1; i <= max1; i++)
+                AB[j * ldab + (m + i)] = A[j * lda + i];
+
+            min1 = upper ? k + 1 : std::min(k + 1, n - j);
+            max1 = ldab - 1;
+
+            // fill in bottom with random data to ensure we aren't using it.
+            // for !upper, fill in bottom right triangle as well.
+            for(int i = min1; i <= max1; i++)
+                hipblas_init(AB + j * ldab + i, 1, 1, 1);
+
+            // for upper, fill in top left triangle with random data to ensure
+            // we aren't using it.
+            if(upper)
+            {
+                for(int i = 0; i < m; i++)
+                    hipblas_init(AB + j * ldab + i, 1, 1, 1);
+            }
+        }
+    }
+}
+
 /* ============================================================================== */
 /* \brief For testing purposes, zeros out elements not needed in a banded matrix. */
 template <typename T>
@@ -1427,6 +1479,35 @@ inline void banded_matrix_setup(bool upper, T* A, int64_t lda, int64_t n, int64_
                 A[j * n + i] = T(0.0);
             else if(!upper && (i > k + j || j > i))
                 A[j * n + i] = T(0.0);
+        }
+    }
+}
+
+/* =============================================================================== */
+/*! \brief For testing purposes, zeros out elements not needed in a banded matrix.
+ *         This routine is for host batched and strided batched vectors */
+
+template <typename U, typename T>
+inline void banded_matrix_setup(bool upper, T& h_A, int64_t k)
+{
+    int64_t n = h_A.n();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t batch_index = 0; batch_index < h_A.batch_count(); ++batch_index)
+    {
+        auto* A = h_A[batch_index];
+        // Made A a banded matrix with k sub/super-diagonals
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(upper && (j > k + i || i > j))
+                    A[j * size_t(n) + i] = U(0);
+                else if(!upper && (i > k + j || j > i))
+                    A[j * size_t(n) + i] = U(0);
+            }
         }
     }
 }
@@ -1446,7 +1527,7 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
                 hA[i + j * lda] = hA[i + j * lda] / diag;
         }
     }
-    else // rocblas_fill_upper
+    else // HIPBLAS_FILL_MODE_UPPER
     {
         for(int64_t j = 0; j < N; j++)
         {
@@ -1464,6 +1545,48 @@ void make_unit_diagonal(hipblasFillMode_t uplo, T* hA, int64_t lda, int64_t N)
 }
 
 /* ============================================================================================= */
+/*! \brief For testing purposes, makes the square matrix hA into a unit_diagonal matrix and               *
+ *         randomly initialize the diagonal. This routine is for host batched and strided batched vectors */
+template <typename T>
+void make_unit_diagonal(hipblasFillMode_t uplo, T& h_A)
+{
+    int64_t N   = h_A.n();
+    size_t  lda = h_A.lda();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t batch_index = 0; batch_index < h_A.batch_count(); ++batch_index)
+    {
+        auto* A = h_A[batch_index];
+
+        if(uplo == HIPBLAS_FILL_MODE_LOWER)
+        {
+            for(int i = 0; i < N; i++)
+            {
+                auto diag = A[i + i * lda];
+                for(int j = 0; j <= i; j++)
+                    A[i + j * lda] = A[i + j * lda] / diag;
+            }
+        }
+        else // HIPBLAS_FILL_MODE_UPPER
+        {
+            for(int j = 0; j < N; j++)
+            {
+                auto diag = A[j + j * lda];
+                for(int i = 0; i <= j; i++)
+                    A[i + j * lda] = A[i + j * lda] / diag;
+            }
+        }
+        // randomly initalize diagonal to ensure we aren't using it's values for tests.
+        for(int i = 0; i < N; i++)
+        {
+            hipblas_init(A + i * lda + i, 1, 1, 1);
+        }
+    }
+}
+
+/* ============================================================================================= */
 /*! \brief For testing purposes, to convert a regular matrix to a packed matrix.                  */
 template <typename T>
 inline void regular_to_packed(bool upper, const T* A, T* AP, int64_t n)
@@ -1477,4 +1600,42 @@ inline void regular_to_packed(bool upper, const T* A, T* AP, int64_t n)
         for(int64_t i = 0; i < n; i++)
             for(int64_t j = i; j < n; j++)
                 AP[index++] = A[j + i * n];
+}
+
+/* ============================================================================================= */
+/*! \brief For testing purposes, to convert a regular matrix to a packed matrix.
+ *         This routine is for host batched and strided batched matrices */
+
+template <typename U>
+inline void regular_to_packed(bool upper, U& h_A, U& h_AP, int64_t n)
+{
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(int64_t batch_index = 0; batch_index < h_A.batch_count(); ++batch_index)
+    {
+        auto*  AP    = h_AP[batch_index];
+        auto*  A     = h_A[batch_index];
+        size_t index = 0;
+        if(upper)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j <= i; j++)
+                {
+                    AP[index++] = A[j + i * size_t(n)];
+                }
+            }
+        }
+        else
+        {
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = i; j < n; j++)
+                {
+                    AP[index++] = A[j + i * size_t(n)];
+                }
+            }
+        }
+    }
 }
