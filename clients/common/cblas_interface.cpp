@@ -2404,6 +2404,91 @@ void ref_geam_helper(hipblasOperation_t transA,
     }
 }
 
+template <typename T>
+void ref_dgmm_helper(hipblasSideMode_t side,
+                     int64_t           M,
+                     int64_t           N,
+                     const T*          A,
+                     int64_t           lda,
+                     const T*          x,
+                     int64_t           incx,
+                     T*                C,
+                     int64_t           ldc)
+{
+    ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
+    for(size_t i1 = 0; i1 < M; i1++)
+    {
+        for(size_t i2 = 0; i2 < N; i2++)
+        {
+            if(HIPBLAS_SIDE_RIGHT == side)
+            {
+                C[i1 + i2 * ldc] = A[i1 + i2 * lda] * x[shift_x + i2 * incx];
+            }
+            else
+            {
+                C[i1 + i2 * ldc] = A[i1 + i2 * lda] * x[shift_x + i1 * incx];
+            }
+        }
+    }
+}
+
+// dgmm
+template <>
+void ref_dgmm(hipblasSideMode_t side,
+              int64_t           M,
+              int64_t           N,
+              const float*      A,
+              int64_t           lda,
+              const float*      x,
+              int64_t           incx,
+              float*            C,
+              int64_t           ldc)
+{
+    ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
+}
+
+template <>
+void ref_dgmm(hipblasSideMode_t side,
+              int64_t           M,
+              int64_t           N,
+              const double*     A,
+              int64_t           lda,
+              const double*     x,
+              int64_t           incx,
+              double*           C,
+              int64_t           ldc)
+{
+    ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
+}
+
+template <>
+void ref_dgmm(hipblasSideMode_t     side,
+              int64_t               M,
+              int64_t               N,
+              const hipblasComplex* A,
+              int64_t               lda,
+              const hipblasComplex* x,
+              int64_t               incx,
+              hipblasComplex*       C,
+              int64_t               ldc)
+{
+    ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
+}
+
+template <>
+void ref_dgmm(hipblasSideMode_t           side,
+              int64_t                     M,
+              int64_t                     N,
+              const hipblasDoubleComplex* A,
+              int64_t                     lda,
+              const hipblasDoubleComplex* x,
+              int64_t                     incx,
+              hipblasDoubleComplex*       C,
+              int64_t                     ldc)
+{
+    ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
+}
+
 // geam
 template <>
 void ref_geam(hipblasOperation_t transa,

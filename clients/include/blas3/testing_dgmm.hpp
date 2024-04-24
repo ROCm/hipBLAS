@@ -40,8 +40,9 @@ inline void testname_dgmm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_dgmm_bad_arg(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
+    auto hipblasDgmmFn = arg.api == FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
+    auto hipblasDgmmFn_64
+        = arg.api == FORTRAN_64 ? hipblasDgmm_64<T, true> : hipblasDgmm_64<T, false>;
 
     hipblasLocalHandle handle(arg);
 
@@ -60,36 +61,66 @@ void testing_dgmm_bad_arg(const Arguments& arg)
     device_vector<T> dx(K, incx);
     device_matrix<T> dC(M, N, ldc);
 
-    EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(nullptr, side, M, N, dA, lda, dx, incx, dC, ldc),
-                          HIPBLAS_STATUS_NOT_INITIALIZED);
+    DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                hipblasDgmmFn,
+                (nullptr, side, M, N, dA, lda, dx, incx, dC, ldc));
 
-    EXPECT_HIPBLAS_STATUS(
-        hipblasDgmmFn(
-            handle, (hipblasSideMode_t)HIPBLAS_FILL_MODE_FULL, M, N, dA, lda, dx, incx, dC, ldc),
-        HIPBLAS_STATUS_INVALID_ENUM);
+    DAPI_EXPECT(
+        HIPBLAS_STATUS_INVALID_ENUM,
+        hipblasDgmmFn,
+        (handle, (hipblasSideMode_t)HIPBLAS_FILL_MODE_FULL, M, N, dA, lda, dx, incx, dC, ldc));
 
     if(arg.bad_arg_all)
     {
-        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, nullptr, lda, dx, incx, dC, ldc),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, dA, lda, nullptr, incx, dC, ldc),
-                              HIPBLAS_STATUS_INVALID_VALUE);
-        EXPECT_HIPBLAS_STATUS(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, nullptr, ldc),
-                              HIPBLAS_STATUS_INVALID_VALUE);
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle, side, M, N, nullptr, lda, dx, incx, dC, ldc));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle, side, M, N, dA, lda, nullptr, incx, dC, ldc));
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle, side, M, N, dA, lda, dx, incx, nullptr, ldc));
+
+        // dgmm will quick-return with M == 0 || N == 0. Here, c_i32_overflow will rollover in the case of 32-bit params,
+        // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle,
+                     side,
+                     0,
+                     c_i32_overflow,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow));
+        DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasDgmmFn,
+                    (handle,
+                     side,
+                     c_i32_overflow,
+                     0,
+                     nullptr,
+                     c_i32_overflow,
+                     nullptr,
+                     incx,
+                     nullptr,
+                     c_i32_overflow));
     }
 
     // If M == 0 || N == 0, can have nullptrs
-    CHECK_HIPBLAS_ERROR(
-        hipblasDgmmFn(handle, side, 0, N, nullptr, lda, nullptr, incx, nullptr, ldc));
-    CHECK_HIPBLAS_ERROR(
-        hipblasDgmmFn(handle, side, M, 0, nullptr, lda, nullptr, incx, nullptr, ldc));
+    DAPI_CHECK(hipblasDgmmFn, (handle, side, 0, N, nullptr, lda, nullptr, incx, nullptr, ldc));
+    DAPI_CHECK(hipblasDgmmFn, (handle, side, M, 0, nullptr, lda, nullptr, incx, nullptr, ldc));
 }
 
 template <typename T>
 void testing_dgmm(const Arguments& arg)
 {
-    bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
-    auto hipblasDgmmFn = FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
+    auto hipblasDgmmFn = arg.api == FORTRAN ? hipblasDgmm<T, true> : hipblasDgmm<T, false>;
+    auto hipblasDgmmFn_64
+        = arg.api == FORTRAN_64 ? hipblasDgmm_64<T, true> : hipblasDgmm_64<T, false>;
 
     hipblasSideMode_t side = char2hipblas_side(arg.side);
 
@@ -109,10 +140,9 @@ void testing_dgmm(const Arguments& arg)
     bool invalid_size = M < 0 || N < 0 || ldc < M || lda < M;
     if(invalid_size || !N || !M)
     {
-        hipblasStatus_t actual
-            = hipblasDgmmFn(handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc);
-        EXPECT_HIPBLAS_STATUS(
-            actual, (invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS));
+        DAPI_EXPECT((invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS),
+                    hipblasDgmmFn,
+                    (handle, side, M, N, nullptr, lda, nullptr, incx, nullptr, ldc));
         return;
     }
 
@@ -152,7 +182,7 @@ void testing_dgmm(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        CHECK_HIPBLAS_ERROR(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc));
+        DAPI_CHECK(hipblasDgmmFn, (handle, side, M, N, dA, lda, dx, incx, dC, ldc));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hC.transfer_from(dC));
@@ -161,27 +191,7 @@ void testing_dgmm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        // reference calculation
-        ptrdiff_t shift_x = incx < 0 ? -ptrdiff_t(incx) * (N - 1) : 0;
-
-        T* C = (T*)hC_gold;
-        T* A = (T*)hA;
-        T* x = (T*)hx;
-
-        for(size_t i1 = 0; i1 < M; i1++)
-        {
-            for(size_t i2 = 0; i2 < N; i2++)
-            {
-                if(HIPBLAS_SIDE_RIGHT == side)
-                {
-                    C[i1 + i2 * ldc] = A[i1 + i2 * lda] * x[shift_x + i2 * incx];
-                }
-                else
-                {
-                    C[i1 + i2 * ldc] = A[i1 + i2 * lda] * x[shift_x + i1 * incx];
-                }
-            }
-        }
+        ref_dgmm<T>(side, M, N, hA, lda, hx, incx, hC_gold, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
@@ -207,7 +217,7 @@ void testing_dgmm(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            CHECK_HIPBLAS_ERROR(hipblasDgmmFn(handle, side, M, N, dA, lda, dx, incx, dC, ldc));
+            DAPI_DISPATCH(hipblasDgmmFn, (handle, side, M, N, dA, lda, dx, incx, dC, ldc));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 
