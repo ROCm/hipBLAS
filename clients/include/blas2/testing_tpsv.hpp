@@ -55,32 +55,32 @@ void testing_tpsv_bad_arg(const Arguments& arg)
         hipblasDiagType_t  diag   = HIPBLAS_DIAG_NON_UNIT;
         int64_t            N      = 100;
         int64_t            incx   = 1;
-        int64_t            A_size = N * (N + 1) / 2;
 
-        device_vector<T> dA(A_size);
-        device_vector<T> dx(N * incx);
+        // Allocate device memory
+        device_matrix<T> dAp(1, hipblas_packed_matrix_size(N), 1);
+        device_vector<T> dx(N, incx);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasTpsvFn,
-                    (nullptr, uplo, transA, diag, N, dA, dx, incx));
+                    (nullptr, uplo, transA, diag, N, dAp, dx, incx));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTpsvFn,
-                    (handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dA, dx, incx));
+                    (handle, HIPBLAS_FILL_MODE_FULL, transA, diag, N, dAp, dx, incx));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasTpsvFn,
-                    (handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dA, dx, incx));
+                    (handle, (hipblasFillMode_t)HIPBLAS_OP_N, transA, diag, N, dAp, dx, incx));
 
         DAPI_EXPECT(
             HIPBLAS_STATUS_INVALID_ENUM,
             hipblasTpsvFn,
-            (handle, uplo, (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL, diag, N, dA, dx, incx));
+            (handle, uplo, (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL, diag, N, dAp, dx, incx));
 
         DAPI_EXPECT(
             HIPBLAS_STATUS_INVALID_ENUM,
             hipblasTpsvFn,
-            (handle, uplo, transA, (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL, N, dA, dx, incx));
+            (handle, uplo, transA, (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL, N, dAp, dx, incx));
 
         if(arg.bad_arg_all)
         {
@@ -90,7 +90,7 @@ void testing_tpsv_bad_arg(const Arguments& arg)
 
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasTpsvFn,
-                        (handle, uplo, transA, diag, N, dA, nullptr, incx));
+                        (handle, uplo, transA, diag, N, dAp, nullptr, incx));
         }
 
         // With N == 0, can have all nullptrs
@@ -130,32 +130,33 @@ void testing_tpsv(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(size_A);
-    host_vector<T> hAP(size_AP);
-    host_vector<T> hb(size_x);
-    host_vector<T> hx(size_x);
-    host_vector<T> hx_or_b_1(size_x);
-    host_vector<T> hx_or_b_2(size_x);
-    host_vector<T> cpu_x_or_b(size_x);
+    // Naming: `h` is in CPU (host) memory(eg hAp), `d` is in GPU (device) memory (eg dAp).
+    // Allocate host memory
+    host_matrix<T> hA(N, N, N);
+    host_matrix<T> hAp(1, hipblas_packed_matrix_size(N), 1);
+    host_vector<T> hb(N, incx);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hx_or_b(N, incx);
+    host_vector<T> cpu_x_or_b(N, incx);
 
-    device_vector<T> dAP(size_AP);
-    device_vector<T> dx_or_b(size_x);
+    // Allocate device memory
+    device_matrix<T> dAp(1, hipblas_packed_matrix_size(N), 1);
+    device_vector<T> dx_or_b(N, incx);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dAp.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx_or_b.memcheck());
 
     double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                             (T*)hA,
-                             arg,
-                             N,
-                             N,
-                             N,
-                             0,
-                             1,
-                             hipblas_client_never_set_nan,
-                             true);
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, false);
+    hipblas_init_matrix(hA,
+                        arg,
+                        hipblas_client_never_set_nan,
+                        hipblas_diagonally_dominant_triangular_matrix,
+                        true,
+                        false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
 
     hb = hx;
 
@@ -167,29 +168,27 @@ void testing_tpsv(const Arguments& arg)
     // Calculate hb = hA*hx;
     ref_trmv<T>(uplo, transA, diag, N, hA.data(), N, hb.data(), incx);
     cpu_x_or_b = hb; // cpuXorB <- B
-    hx_or_b_1  = hb;
-    hx_or_b_2  = hb;
+    hx_or_b    = hb;
 
-    regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, (T*)hA, (T*)hAP, N);
+    // helper function to convert Regular matrix `hA` to packed matrix `hAp`
+    regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, hA, hAp, N);
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dAP, hAP.data(), sizeof(T) * size_AP, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(
-        hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dAp.transfer_from(hAp));
+    CHECK_HIP_ERROR(dx_or_b.transfer_from(hx_or_b));
 
     /* =====================================================================
            HIPBLAS
     =================================================================== */
     if(arg.unit_check || arg.norm_check)
     {
-        DAPI_CHECK(hipblasTpsvFn, (handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
+        DAPI_CHECK(hipblasTpsvFn, (handle, uplo, transA, diag, N, dAp, dx_or_b, incx));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(
-            hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx_or_b.transfer_from(dx_or_b));
 
         // Calculating error
-        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b.data()));
 
         if(arg.unit_check)
         {
@@ -211,7 +210,7 @@ void testing_tpsv(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            DAPI_DISPATCH(hipblasTpsvFn, (handle, uplo, transA, diag, N, dAP, dx_or_b, incx));
+            DAPI_DISPATCH(hipblasTpsvFn, (handle, uplo, transA, diag, N, dAp, dx_or_b, incx));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used; // in microseconds
 

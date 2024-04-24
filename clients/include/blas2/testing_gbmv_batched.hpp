@@ -63,15 +63,16 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasOperation_t transA      = HIPBLAS_OP_N;
-        int64_t            N           = 100;
-        int64_t            M           = 100;
-        int64_t            KL          = 5;
-        int64_t            KU          = 5;
-        int64_t            lda         = 100;
-        int64_t            incx        = 1;
-        int64_t            incy        = 1;
-        int64_t            batch_count = 2;
+        hipblasOperation_t transA            = HIPBLAS_OP_N;
+        int64_t            N                 = 100;
+        int64_t            M                 = 100;
+        int64_t            KL                = 5;
+        int64_t            KU                = 5;
+        int64_t            lda               = 100;
+        int64_t            incx              = 1;
+        int64_t            incy              = 1;
+        int64_t            batch_count       = 2;
+        int64_t            banded_matrix_row = KL + KU + 1;
 
         device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
 
@@ -93,7 +94,7 @@ void testing_gbmv_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        device_batch_matrix<T> dA(banded_matrix_row, N, lda, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(M, incy, batch_count);
 
@@ -348,16 +349,16 @@ void testing_gbmv_batched(const Arguments& arg)
     auto hipblasGbmvBatchedFn_64
         = arg.api == FORTRAN_64 ? hipblasGbmvBatched_64<T, true> : hipblasGbmvBatched_64<T, false>;
 
-    int64_t M           = arg.M;
-    int64_t N           = arg.N;
-    int64_t KL          = arg.KL;
-    int64_t KU          = arg.KU;
-    int64_t lda         = arg.lda;
-    int64_t incx        = arg.incx;
-    int64_t incy        = arg.incy;
-    int64_t batch_count = arg.batch_count;
+    int64_t M                 = arg.M;
+    int64_t N                 = arg.N;
+    int64_t KL                = arg.KL;
+    int64_t KU                = arg.KU;
+    int64_t lda               = arg.lda;
+    int64_t incx              = arg.incx;
+    int64_t incy              = arg.incy;
+    int64_t batch_count       = arg.batch_count;
+    int64_t banded_matrix_row = KL + KU + 1;
 
-    size_t A_size = lda * N;
     size_t dim_x;
     size_t dim_y;
 
@@ -378,8 +379,8 @@ void testing_gbmv_batched(const Arguments& arg)
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    bool invalid_size = M < 0 || N < 0 || lda < KL + KU + 1 || !incx || !incy || batch_count < 0
-                        || KL < 0 || KU < 0;
+    bool invalid_size = M < 0 || N < 0 || lda < banded_matrix_row || !incx || !incy
+                        || batch_count < 0 || KL < 0 || KU < 0;
     if(invalid_size || !M || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
@@ -411,7 +412,7 @@ void testing_gbmv_batched(const Arguments& arg)
     T h_beta  = arg.get_beta<T>();
 
     // arrays of pointers-to-host on host
-    host_batch_vector<T> hA(A_size, 1, batch_count);
+    host_batch_matrix<T> hA(banded_matrix_row, N, lda, batch_count);
     host_batch_vector<T> hx(dim_x, incx, batch_count);
     host_batch_vector<T> hy(dim_y, incy, batch_count);
     host_batch_vector<T> hy_host(dim_y, incy, batch_count);
@@ -419,18 +420,21 @@ void testing_gbmv_batched(const Arguments& arg)
     host_batch_vector<T> hy_cpu(dim_y, incy, batch_count);
 
     // arrays of pointers-to-device on host
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_matrix<T> dA(banded_matrix_row, N, lda, batch_count);
     device_batch_vector<T> dx(dim_x, incx, batch_count);
     device_batch_vector<T> dy(dim_y, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(hy, arg, hipblas_client_beta_sets_nan);
 

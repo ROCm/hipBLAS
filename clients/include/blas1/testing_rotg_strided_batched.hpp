@@ -55,10 +55,10 @@ void testing_rotg_strided_batched_bad_arg(const Arguments& arg)
     hipblasStride stride_s    = 10;
     int64_t       batch_count = 5;
 
-    device_vector<T> da(stride_a * batch_count);
-    device_vector<T> db(stride_b * batch_count);
-    device_vector<U> dc(stride_c * batch_count);
-    device_vector<T> ds(stride_s * batch_count);
+    device_strided_batch_vector<T> da(1, 1, stride_a, batch_count);
+    device_strided_batch_vector<T> db(1, 1, stride_b, batch_count);
+    device_strided_batch_vector<U> dc(1, 1, stride_c, batch_count);
+    device_strided_batch_vector<T> ds(1, 1, stride_s, batch_count);
 
     DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                 hipblasRotgStridedBatchedFn,
@@ -105,43 +105,52 @@ void testing_rotg_strided_batched(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    size_t size_a = size_t(stride_a) * size_t(batch_count);
-    size_t size_b = size_t(stride_b) * size_t(batch_count);
-    size_t size_c = size_t(stride_c) * size_t(batch_count);
-    size_t size_s = size_t(stride_s) * size_t(batch_count);
-
-    host_vector<T> ha(size_a);
-    host_vector<T> hb(size_b);
-    host_vector<U> hc(size_c);
-    host_vector<T> hs(size_s);
-
-    // Initial data on CPU
-    hipblas_init_vector(ha, arg, 1, 1, stride_a, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hb, arg, 1, 1, stride_b, batch_count, hipblas_client_alpha_sets_nan, false);
-    hipblas_init_vector(hc, arg, 1, 1, stride_c, batch_count, hipblas_client_alpha_sets_nan, false);
-    hipblas_init_vector(hs, arg, 1, 1, stride_s, batch_count, hipblas_client_alpha_sets_nan, false);
+    host_strided_batch_vector<T> ha(1, 1, stride_a, batch_count);
+    host_strided_batch_vector<T> hb(1, 1, stride_b, batch_count);
+    host_strided_batch_vector<U> hc(1, 1, stride_c, batch_count);
+    host_strided_batch_vector<T> hs(1, 1, stride_s, batch_count);
 
     // CPU_BLAS
-    host_vector<T> ca = ha;
-    host_vector<T> cb = hb;
-    host_vector<U> cc = hc;
-    host_vector<T> cs = hs;
+    host_strided_batch_vector<T> ca(1, 1, stride_a, batch_count);
+    host_strided_batch_vector<T> cb(1, 1, stride_b, batch_count);
+    host_strided_batch_vector<U> cc(1, 1, stride_c, batch_count);
+    host_strided_batch_vector<T> cs(1, 1, stride_s, batch_count);
 
     // result vector for hipBLAS device
-    host_vector<T> ra = ha;
-    host_vector<T> rb = hb;
-    host_vector<U> rc = hc;
-    host_vector<T> rs = hs;
+    host_strided_batch_vector<T> ra(1, 1, stride_a, batch_count);
+    host_strided_batch_vector<T> rb(1, 1, stride_b, batch_count);
+    host_strided_batch_vector<U> rc(1, 1, stride_c, batch_count);
+    host_strided_batch_vector<T> rs(1, 1, stride_s, batch_count);
 
-    device_vector<T> da(size_a);
-    device_vector<T> db(size_b);
-    device_vector<U> dc(size_c);
-    device_vector<T> ds(size_s);
+    // Initial data on CPU
+    hipblas_init_vector(ha, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hb, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, hipblas_client_alpha_sets_nan, false);
 
-    CHECK_HIP_ERROR(hipMemcpy(da, ha, sizeof(T) * size_a, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(db, hb, sizeof(T) * size_b, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U) * size_c, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(T) * size_s, hipMemcpyHostToDevice));
+    ca.copy_from(ha);
+    cb.copy_from(hb);
+    cc.copy_from(hc);
+    cs.copy_from(hs);
+    ra.copy_from(ha);
+    rb.copy_from(hb);
+    rc.copy_from(hc);
+    rs.copy_from(hs);
+
+    device_strided_batch_vector<T> da(1, 1, stride_a, batch_count);
+    device_strided_batch_vector<T> db(1, 1, stride_b, batch_count);
+    device_strided_batch_vector<U> dc(1, 1, stride_c, batch_count);
+    device_strided_batch_vector<T> ds(1, 1, stride_s, batch_count);
+
+    CHECK_DEVICE_ALLOCATION(da.memcheck());
+    CHECK_DEVICE_ALLOCATION(db.memcheck());
+    CHECK_DEVICE_ALLOCATION(dc.memcheck());
+    CHECK_DEVICE_ALLOCATION(ds.memcheck());
+
+    CHECK_HIP_ERROR(da.transfer_from(ha));
+    CHECK_HIP_ERROR(db.transfer_from(hb));
+    CHECK_HIP_ERROR(dc.transfer_from(hc));
+    CHECK_HIP_ERROR(ds.transfer_from(hs));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -153,10 +162,10 @@ void testing_rotg_strided_batched(const Arguments& arg)
         DAPI_CHECK(hipblasRotgStridedBatchedFn,
                    (handle, da, stride_a, db, stride_b, dc, stride_c, ds, stride_s, batch_count));
 
-        CHECK_HIP_ERROR(hipMemcpy(ra, da, sizeof(T) * size_a, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rb, db, sizeof(T) * size_b, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rc, dc, sizeof(U) * size_c, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rs, ds, sizeof(T) * size_s, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(ra.transfer_from(da));
+        CHECK_HIP_ERROR(rb.transfer_from(db));
+        CHECK_HIP_ERROR(rc.transfer_from(dc));
+        CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         for(int64_t b = 0; b < batch_count; b++)
         {

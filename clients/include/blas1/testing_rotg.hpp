@@ -84,10 +84,10 @@ void testing_rotg(const Arguments& arg)
     host_vector<T> hs(1);
 
     // Initial data on CPU
-    hipblas_init_vector(ha, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hb, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
-    hipblas_init_vector(hc, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
-    hipblas_init_vector(hs, arg, 1, 1, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(ha, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hb, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hc, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hs, arg, hipblas_client_alpha_sets_nan, false);
 
     // CPU BLAS
     host_vector<T> ca = ha;
@@ -106,10 +106,16 @@ void testing_rotg(const Arguments& arg)
     device_vector<U> dc(1);
     device_vector<T> ds(1);
 
-    CHECK_HIP_ERROR(hipMemcpy(da, ha, sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(db, hb, sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc, sizeof(U), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(ds, hs, sizeof(T), hipMemcpyHostToDevice));
+    CHECK_DEVICE_ALLOCATION(da.memcheck());
+    CHECK_DEVICE_ALLOCATION(db.memcheck());
+    CHECK_DEVICE_ALLOCATION(dc.memcheck());
+    CHECK_DEVICE_ALLOCATION(ds.memcheck());
+
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(da.transfer_from(ha));
+    CHECK_HIP_ERROR(db.transfer_from(hb));
+    CHECK_HIP_ERROR(dc.transfer_from(hc));
+    CHECK_HIP_ERROR(ds.transfer_from(hs));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -119,10 +125,11 @@ void testing_rotg(const Arguments& arg)
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasRotgFn, (handle, da, db, dc, ds));
 
-        CHECK_HIP_ERROR(hipMemcpy(ra, da, sizeof(T), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rb, db, sizeof(T), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rc, dc, sizeof(U), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(rs, ds, sizeof(T), hipMemcpyDeviceToHost));
+        // copy output from device to CPU
+        CHECK_HIP_ERROR(ra.transfer_from(da));
+        CHECK_HIP_ERROR(rb.transfer_from(db));
+        CHECK_HIP_ERROR(rc.transfer_from(dc));
+        CHECK_HIP_ERROR(rs.transfer_from(ds));
 
         ref_rotg<T, U>(ca, cb, cc, cs);
 

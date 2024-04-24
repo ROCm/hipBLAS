@@ -57,8 +57,9 @@ void testing_trmv_bad_arg(const Arguments& arg)
         int64_t            lda    = 100;
         int64_t            incx   = 1;
 
-        device_vector<T> dA(N * lda);
-        device_vector<T> dx(N * incx);
+        // Allocate device memory
+        device_matrix<T> dA(N, N, lda);
+        device_vector<T> dx(N, incx);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasTrmvFn,
@@ -121,8 +122,6 @@ void testing_trmv(const Arguments& arg)
     int64_t            incx   = arg.incx;
 
     size_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t x_size   = N * abs_incx;
-    size_t A_size   = lda * N;
 
     hipblasLocalHandle handle(arg);
 
@@ -137,26 +136,33 @@ void testing_trmv(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hx(x_size);
-    host_vector<T> hres(x_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(N, N, lda);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hres(N, incx);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(x_size);
+    // Allocate device memory
+    device_matrix<T> dA(N, N, lda);
+    device_vector<T> dx(N, incx);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     double hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_triangular_matrix, true, false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
 
     // copy vector is easy in STL; hz = hy: save a copy in hz which will be output of CPU BLAS
     hres = hx;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -166,7 +172,7 @@ void testing_trmv(const Arguments& arg)
         DAPI_CHECK(hipblasTrmvFn, (handle, uplo, transA, diag, N, dA, lda, dx, incx));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hres.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hres.transfer_from(dx));
 
         /* =====================================================================
            CPU BLAS

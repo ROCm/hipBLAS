@@ -119,6 +119,11 @@ void testing_rotg_batched(const Arguments& arg)
     device_batch_vector<U> dc(1, 1, batch_count);
     device_batch_vector<T> ds(1, 1, batch_count);
 
+    CHECK_DEVICE_ALLOCATION(da.memcheck());
+    CHECK_DEVICE_ALLOCATION(db.memcheck());
+    CHECK_DEVICE_ALLOCATION(dc.memcheck());
+    CHECK_DEVICE_ALLOCATION(ds.memcheck());
+
     hipblas_init_vector(ha, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hb, arg, hipblas_client_alpha_sets_nan, false);
     hipblas_init_vector(hc, arg, hipblas_client_alpha_sets_nan, false);

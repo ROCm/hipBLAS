@@ -50,8 +50,8 @@ void testing_swap_bad_arg(const Arguments& arg)
     int64_t incx = 1;
     int64_t incy = 1;
 
-    device_vector<T> dx(N * incx);
-    device_vector<T> dy(N * incy);
+    device_vector<T> dx(N, incx);
+    device_vector<T> dy(N, incy);
 
     DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasSwapFn, (nullptr, N, dx, incx, dy, incy));
 
@@ -91,36 +91,34 @@ void testing_swap(const Arguments& arg)
 
     int64_t abs_incx = incx >= 0 ? incx : -incx;
     int64_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t  sizeX    = size_t(N) * abs_incx;
-    size_t  sizeY    = size_t(N) * abs_incy;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
-    host_vector<T> hy(sizeY);
-    host_vector<T> hx_cpu(sizeX);
-    host_vector<T> hy_cpu(sizeY);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hy(N, incy);
+    host_vector<T> hx_cpu(N, incx);
+    host_vector<T> hy_cpu(N, incy);
 
     // allocate memory on device
-    device_vector<T> dx(sizeX);
-    device_vector<T> dy(sizeY);
-    int              device_pointer = 1;
+    device_vector<T> dx(N, incx);
+    device_vector<T> dy(N, incy);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+
+    int device_pointer = 1;
 
     double gpu_time_used = 0.0, cpu_time_used = 0.0;
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
     hx_cpu = hx;
     hy_cpu = hy;
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(unit_check || norm_check)
     {
@@ -130,13 +128,13 @@ void testing_swap(const Arguments& arg)
         DAPI_CHECK(hipblasSwapFn, (handle, N, dx, incx, dy, incy));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hy.data(), dy, sizeof(T) * sizeY, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
+        CHECK_HIP_ERROR(hy.transfer_from(dy));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
-        ref_swap<T>(N, hx.data(), incx, hy.data(), incy);
+        ref_swap<T>(N, hx_cpu.data(), incx, hy_cpu.data(), incy);
 
         if(unit_check)
         {

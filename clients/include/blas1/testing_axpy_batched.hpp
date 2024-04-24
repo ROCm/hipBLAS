@@ -139,8 +139,9 @@ void testing_axpy_batched(const Arguments& arg)
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
 
     hipblas_init_vector(hx_cpu, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hy_host, arg, hipblas_client_alpha_sets_nan, false);
@@ -156,6 +157,7 @@ void testing_axpy_batched(const Arguments& arg)
         /* =====================================================================
                     HIPBLAS
         =================================================================== */
+
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(
             hipblasAxpyBatchedFn,

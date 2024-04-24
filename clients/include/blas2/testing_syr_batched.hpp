@@ -71,8 +71,9 @@ void testing_syr_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        // Allocate device memory
         device_batch_vector<T> dx(N, incx, batch_count);
+        device_batch_matrix<T> dA(N, N, lda, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasSyrBatchedFn,
@@ -192,25 +193,40 @@ void testing_syr_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA_cpu(A_size, 1, batch_count);
-    host_batch_vector<T> hA_host(A_size, 1, batch_count);
-    host_batch_vector<T> hA_device(A_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_cpu(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_host(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_device(N, N, lda, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hA_cpu.memcheck());
+    CHECK_HIP_ERROR(hA_host.memcheck());
+    CHECK_HIP_ERROR(hA_device.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
     device_vector<T>       d_alpha(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    // Initial Data on CPU
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_symmetric_matrix, true, false);
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
 
+    // copy vector
     hA_cpu.copy_from(hA);
 
+    // copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));

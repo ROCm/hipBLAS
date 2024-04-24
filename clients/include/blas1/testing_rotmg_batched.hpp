@@ -125,6 +125,12 @@ void testing_rotmg_batched(const Arguments& arg)
     device_batch_vector<T> dy1(1, 1, batch_count);
     device_batch_vector<T> dparams(5, 1, batch_count);
 
+    CHECK_DEVICE_ALLOCATION(dd1.memcheck());
+    CHECK_DEVICE_ALLOCATION(dd2.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx1.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy1.memcheck());
+    CHECK_DEVICE_ALLOCATION(dparams.memcheck());
+
     hipblas_init_vector(hd1, arg, hipblas_client_alpha_sets_nan, true);
     hipblas_init_vector(hd2, arg, hipblas_client_alpha_sets_nan, false);
     hipblas_init_vector(hx1, arg, hipblas_client_alpha_sets_nan, false);
@@ -136,11 +142,6 @@ void testing_rotmg_batched(const Arguments& arg)
     cx1.copy_from(hx1);
     cy1.copy_from(hy1);
     cparams.copy_from(hparams);
-    hd1_d.copy_from(hd1);
-    hd2_d.copy_from(hd2);
-    hx1_d.copy_from(hx1);
-    hy1_d.copy_from(hy1);
-    hparams_d.copy_from(hparams);
 
     CHECK_HIP_ERROR(dd1.transfer_from(hd1));
     CHECK_HIP_ERROR(dd2.transfer_from(hd2));

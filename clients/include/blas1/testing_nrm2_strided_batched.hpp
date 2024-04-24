@@ -55,8 +55,8 @@ void testing_nrm2_strided_batched_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<T>  dx(stride_x * batch_count);
-    device_vector<Tr> d_res(batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+    device_vector<Tr>              d_res(batch_count);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -91,8 +91,7 @@ void testing_nrm2_strided_batched(const Arguments& arg)
     double  stride_scale = arg.stride_scale;
     int64_t batch_count  = arg.batch_count;
 
-    hipblasStride stridex = size_t(N) * incx * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -123,23 +122,25 @@ void testing_nrm2_strided_batched(const Arguments& arg)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T>  hx(sizeX);
-    host_vector<Tr> h_hipblas_result_host(batch_count);
-    host_vector<Tr> h_hipblas_result_device(batch_count);
-    host_vector<Tr> h_cpu_result(batch_count);
+    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
+    host_vector<Tr>              h_hipblas_result_host(batch_count);
+    host_vector<Tr>              h_hipblas_result_device(batch_count);
+    host_vector<Tr>              h_cpu_result(batch_count);
 
-    device_vector<T>  dx(sizeX);
-    device_vector<Tr> d_hipblas_result(batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
+    device_vector<Tr>              d_hipblas_result(batch_count);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     double gpu_time_used;
     double hipblas_error_host = 0, hipblas_error_device = 0;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check || arg.norm_check)
     {

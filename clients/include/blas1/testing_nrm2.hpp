@@ -50,7 +50,7 @@ void testing_nrm2_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<T>  dx(N * incx);
+    device_vector<T>  dx(N, incx);
     device_vector<Tr> d_res(1);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -104,22 +104,23 @@ void testing_nrm2(const Arguments& arg)
         return;
     }
 
-    int64_t sizeX = N * incx;
-
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hx(sizeX);
+    host_vector<T> hx(N, incx);
+    Tr             cpu_result, hipblas_result_host, hipblas_result_device;
 
-    device_vector<T>  dx(sizeX);
+    device_vector<T>  dx(N, incx);
     device_vector<Tr> d_hipblas_result(1);
-    Tr                cpu_result, hipblas_result_host, hipblas_result_device;
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check || arg.norm_check)
     {

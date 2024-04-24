@@ -61,7 +61,8 @@ void testing_trmv_batched_bad_arg(const Arguments& arg)
         int64_t            incx        = 1;
         int64_t            batch_count = 2;
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dA(N, N, lda, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -183,19 +184,31 @@ void testing_trmv_batched(const Arguments& arg)
 
     double hipblas_error;
 
-    // arrays of pointers-to-host on host
-    host_batch_vector<T> hA(A_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hres(N, incx, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hres.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    // Initial Data on CPU
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_triangular_matrix, true, false);
     hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+
+    // copy vector
     hres.copy_from(hx);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));

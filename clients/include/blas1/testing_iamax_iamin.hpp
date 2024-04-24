@@ -39,7 +39,7 @@ void testing_iamax_iamin_bad_arg(const Arguments& arg, FUNC func)
     int64_t incx  = 1;
     R       h_res = -1;
 
-    device_vector<T> dx(N * incx);
+    device_vector<T> dx(N, incx);
     device_vector<R> d_res(1);
     R*               res = d_res;
 
@@ -119,21 +119,22 @@ void testing_iamax_iamin(const Arguments& arg, FUNC func)
         return;
     }
 
-    size_t sizeX = size_t(N) * incx;
-
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice
-    host_vector<T> hx(sizeX);
+    host_vector<T> hx(N, incx);
     R              cpu_result, hipblas_result_host, hipblas_result_device;
 
-    device_vector<T> dx(sizeX);
+    device_vector<T> dx(N, incx);
     device_vector<R> d_hipblas_result(1);
 
-    // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * N * incx, hipMemcpyHostToDevice));
+    // Initial Data on CPU
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     double gpu_time_used;
     R      hipblas_error_host, hipblas_error_device;

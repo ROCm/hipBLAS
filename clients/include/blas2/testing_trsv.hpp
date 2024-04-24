@@ -57,8 +57,9 @@ void testing_trsv_bad_arg(const Arguments& arg)
         int64_t            lda    = 100;
         int64_t            incx   = 1;
 
-        device_vector<T> dA(N * lda);
-        device_vector<T> dx(N * incx);
+        // Allocate device memory
+        device_matrix<T> dA(N, N, lda);
+        device_vector<T> dx(N, incx);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasTrsvFn,
@@ -116,13 +117,11 @@ void testing_trsv(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasDiagType_t  diag   = char2hipblas_diagonal(arg.diag);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
-    int                N      = arg.N;
-    int                incx   = arg.incx;
-    int                lda    = arg.lda;
+    int64_t            N      = arg.N;
+    int64_t            incx   = arg.incx;
+    int64_t            lda    = arg.lda;
 
-    int    abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = size_t(lda) * N;
-    size_t size_x   = abs_incx * size_t(N);
+    int64_t abs_incx = incx < 0 ? -incx : incx;
 
     hipblasLocalHandle handle(arg);
 
@@ -137,29 +136,31 @@ void testing_trsv(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(size_A);
-    host_vector<T> hb(size_x);
-    host_vector<T> hx(size_x);
-    host_vector<T> hx_or_b_1(size_x);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(N, N, lda);
+    host_vector<T> hb(N, incx);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hx_or_b(N, incx);
 
-    device_vector<T> dA(size_A);
-    device_vector<T> dx_or_b(size_x);
+    // Allocate device memory
+    device_matrix<T> dA(N, N, lda);
+    device_vector<T> dx_or_b(N, incx);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx_or_b.memcheck());
 
     double hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                             (T*)hA,
-                             arg,
-                             N,
-                             N,
-                             lda,
-                             0,
-                             1,
-                             hipblas_client_never_set_nan,
-                             true);
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(hA,
+                        arg,
+                        hipblas_client_never_set_nan,
+                        hipblas_diagonally_dominant_triangular_matrix,
+                        true,
+                        false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
 
     hb = hx;
 
@@ -170,12 +171,12 @@ void testing_trsv(const Arguments& arg)
 
     // Calculate hb = hA*hx;
     ref_trmv<T>(uplo, transA, diag, N, hA.data(), lda, hb.data(), incx);
-    hx_or_b_1 = hb;
+    hx_or_b = hb;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * size_A, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(
-        hipMemcpy(dx_or_b, hx_or_b_1.data(), sizeof(T) * size_x, hipMemcpyHostToDevice));
+
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx_or_b.transfer_from(hx_or_b));
 
     /* =====================================================================
            HIPBLAS
@@ -186,11 +187,10 @@ void testing_trsv(const Arguments& arg)
         DAPI_CHECK(hipblasTrsvFn, (handle, uplo, transA, diag, N, dA, lda, dx_or_b, incx));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(
-            hipMemcpy(hx_or_b_1.data(), dx_or_b, sizeof(T) * size_x, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx_or_b.transfer_from(dx_or_b));
 
         // Calculating error
-        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b_1.data()));
+        hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx.data(), hx_or_b.data()));
 
         if(arg.unit_check)
         {

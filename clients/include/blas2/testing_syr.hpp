@@ -67,8 +67,9 @@ void testing_syr_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_vector<T> dA(N * lda);
-        device_vector<T> dx(N * incx);
+        // Allocate device memory
+        device_matrix<T> dA(N, N, lda);
+        device_vector<T> dx(N, incx);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasSyrFn,
@@ -124,8 +125,6 @@ void testing_syr(const Arguments& arg)
     int64_t           lda  = arg.lda;
 
     int64_t abs_incx = incx < 0 ? -incx : incx;
-    size_t  A_size   = size_t(lda) * N;
-    size_t  x_size   = abs_incx * size_t(N);
 
     hipblasLocalHandle handle(arg);
 
@@ -140,29 +139,39 @@ void testing_syr(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hA_cpu(A_size);
-    host_vector<T> hA_host(A_size);
-    host_vector<T> hA_device(A_size);
-    host_vector<T> hx(x_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(N, N, lda);
+    host_matrix<T> hA_cpu(N, N, lda);
+    host_matrix<T> hA_host(N, N, lda);
+    host_matrix<T> hA_device(N, N, lda);
+    host_vector<T> hx(N, incx);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(x_size);
+    // Allocate device memory
+    device_matrix<T> dA(N, N, lda);
+    device_vector<T> dx(N, incx);
     device_vector<T> d_alpha(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     T h_alpha = arg.get_alpha<T>();
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_never_set_nan, true, false);
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_symmetric_matrix, true, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
+
+    // copy vector
     hA_cpu = hA;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     if(arg.unit_check || arg.norm_check)
@@ -173,13 +182,13 @@ void testing_syr(const Arguments& arg)
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasSyrFn, (handle, uplo, N, &h_alpha, dx, incx, dA, lda));
 
-        CHECK_HIP_ERROR(hipMemcpy(hA_host.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hA_host.transfer_from(dA));
+        CHECK_HIP_ERROR(dA.transfer_from(hA));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasSyrFn, (handle, uplo, N, d_alpha, dx, incx, dA, lda));
 
-        CHECK_HIP_ERROR(hipMemcpy(hA_device.data(), dA, sizeof(T) * A_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hA_device.transfer_from(dA));
 
         /* =====================================================================
            CPU BLAS
@@ -204,7 +213,7 @@ void testing_syr(const Arguments& arg)
 
     if(arg.timing)
     {
-        CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dA.transfer_from(hA));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

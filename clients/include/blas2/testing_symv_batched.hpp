@@ -78,7 +78,8 @@ void testing_symv_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dA(N, N, lda, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(N, incy, batch_count);
 
@@ -274,7 +275,6 @@ void testing_symv_batched(const Arguments& arg)
     int64_t           batch_count = arg.batch_count;
 
     int64_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t  A_size   = size_t(lda) * N;
 
     hipblasLocalHandle handle(arg);
 
@@ -305,29 +305,44 @@ void testing_symv_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    // arrays of pointers-to-host on host
-    host_batch_vector<T> hA(A_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy(N, incy, batch_count);
-    host_batch_vector<T> hy_cpu(N, incy, batch_count);
     host_batch_vector<T> hy_host(N, incy, batch_count);
     host_batch_vector<T> hy_device(N, incy, batch_count);
+    host_batch_vector<T> hy_cpu(N, incy, batch_count); // gold standard
 
-    // device arrays
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hy.memcheck());
+    CHECK_HIP_ERROR(hy_cpu.memcheck());
+    CHECK_HIP_ERROR(hy_host.memcheck());
+    CHECK_HIP_ERROR(hy_device.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan);
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_alpha_sets_nan, hipblas_symmetric_matrix, true, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(hy, arg, hipblas_client_beta_sets_nan);
+
+    // copy vector
     hy_cpu.copy_from(hy);
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));

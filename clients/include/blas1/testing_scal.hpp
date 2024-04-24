@@ -50,7 +50,7 @@ void testing_scal_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    device_vector<T> dx(N * incx);
+    device_vector<T> dx(N, incx);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -95,25 +95,26 @@ void testing_scal(const Arguments& arg)
         return;
     }
 
-    size_t sizeX = size_t(N) * incx;
-    U      alpha = arg.get_alpha<U>();
+    U alpha = arg.get_alpha<U>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T>   hx(sizeX);
-    host_vector<T>   hz(sizeX);
-    device_vector<T> dx(sizeX);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hz(N, incx);
+
+    device_vector<T> dx(N, incx);
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     double gpu_time_used, cpu_time_used;
     double hipblas_error = 0.0;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, incx, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
 
     // copy vector is easy in STL; hz = hx: save a copy in hz which will be output of CPU BLAS
     hz = hx;
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -123,7 +124,7 @@ void testing_scal(const Arguments& arg)
         DAPI_CHECK(hipblasScalFn, (handle, N, &alpha, dx, incx));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx.data(), dx, sizeof(T) * sizeX, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx.transfer_from(dx));
 
         /* =====================================================================
                     CPU BLAS

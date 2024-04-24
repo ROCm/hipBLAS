@@ -263,8 +263,9 @@ void testing_axpy_batched_ex(const Arguments& arg)
     device_batch_vector<Ty> dy(N, incy, batch_count);
     device_vector<Ta>       d_alpha(1);
 
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 

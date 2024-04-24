@@ -72,9 +72,9 @@ void testing_axpy_strided_batched_ex_bad_arg(const Arguments& arg)
         hipblasStride stridex = N * incx;
         hipblasStride stridey = N * incy;
 
-        device_vector<Ta> d_alpha(1), d_zero(1);
-        device_vector<Tx> dx(stridex * batch_count);
-        device_vector<Ty> dy(stridey * batch_count);
+        device_vector<Ta>               d_alpha(1), d_zero(1);
+        device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
+        device_strided_batch_vector<Ty> dy(N, incy, stridey, batch_count);
 
         const Ta  h_alpha(1), h_zero(0);
         const Ta* alpha = &h_alpha;
@@ -247,8 +247,8 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
     int64_t abs_incx = incx < 0 ? -incx : incx;
     int64_t abs_incy = incy < 0 ? -incy : incy;
 
-    hipblasStride stridex = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stridey = size_t(N) * abs_incy * stride_scale;
+    hipblasStride stridex = N * abs_incx * stride_scale;
+    hipblasStride stridey = N * abs_incy * stride_scale;
 
     hipblasDatatype_t alphaType     = arg.a_type;
     hipblasDatatype_t xType         = arg.b_type;
@@ -279,38 +279,33 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
         return;
     }
 
-    size_t sizeX = stridex * batch_count;
-    size_t sizeY = stridey * batch_count;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
-
     Ta h_alpha = arg.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx(sizeX);
-    host_vector<Ty> hy_cpu(sizeY);
-    host_vector<Ty> hy_host(sizeY);
-    host_vector<Ty> hy_device(sizeY);
+    host_strided_batch_vector<Tx> hx(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Ty> hy_cpu(N, incy, stridey, batch_count);
+    host_strided_batch_vector<Ty> hy_host(N, incy, stridey, batch_count);
+    host_strided_batch_vector<Ty> hy_device(N, incy, stridey, batch_count);
 
-    device_vector<Tx> dx(sizeX);
-    device_vector<Ty> dy(sizeY);
-    device_vector<Ta> d_alpha(1);
+    device_vector<Ta>               d_alpha(1);
+    device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
+    device_strided_batch_vector<Ty> dy(N, incy, stridey, batch_count);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(
-        hy_host, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy_host, arg, hipblas_client_alpha_sets_nan, false);
 
-    hy_device = hy_host;
-    hy_cpu    = hy_host;
+    hy_device.copy_from(hy_host);
+    hy_cpu.copy_from(hy_host);
 
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
@@ -333,8 +328,8 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
                 batch_count,
                 executionType));
 
-    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_device));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     DAPI_CHECK(hipblasAxpyStridedBatchedExFn,
@@ -353,7 +348,7 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
                 batch_count,
                 executionType));
 
-    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -362,7 +357,7 @@ void testing_axpy_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_axpy(N, h_alpha, hx + b * stridex, incx, hy_cpu + b * stridey, incy);
+            ref_axpy(N, h_alpha, hx[b], incx, hy_cpu[b], incy);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,

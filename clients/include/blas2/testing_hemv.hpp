@@ -77,9 +77,9 @@ void testing_hemv_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_vector<T> dA(N * lda);
-        device_vector<T> dx(N * incx);
-        device_vector<T> dy(N * incy);
+        device_matrix<T> dA(N, N, lda);
+        device_vector<T> dx(N, incx);
+        device_vector<T> dy(N, incy);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
                     hipblasHemvFn,
@@ -150,9 +150,6 @@ void testing_hemv(const Arguments& arg)
 
     size_t abs_incx = incx >= 0 ? incx : -incx;
     size_t abs_incy = incy >= 0 ? incy : -incy;
-    size_t A_size   = lda * N;
-    size_t X_size   = abs_incx * N;
-    size_t Y_size   = abs_incy * N;
 
     hipblasFillMode_t uplo = char2hipblas_fill(arg.uplo);
 
@@ -171,18 +168,25 @@ void testing_hemv(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hx(X_size);
-    host_vector<T> hy(Y_size);
-    host_vector<T> hy_cpu(Y_size);
-    host_vector<T> hy_host(Y_size);
-    host_vector<T> hy_device(Y_size);
+    host_matrix<T> hA(N, N, lda);
+    host_vector<T> hx(N, incx);
+    host_vector<T> hy(N, incy);
+    host_vector<T> hy_cpu(N, incy);
+    host_vector<T> hy_host(N, incy);
+    host_vector<T> hy_device(N, incy);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(X_size);
-    device_vector<T> dy(Y_size);
+    device_matrix<T> dA(N, N, lda);
+    device_vector<T> dx(N, incx);
+    device_vector<T> dy(N, incy);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     double hipblas_error_host, hipblas_error_device;
 
@@ -190,17 +194,17 @@ void testing_hemv(const Arguments& arg)
     T h_beta  = arg.get_beta<T>();
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, N, lda, 0, 1, hipblas_client_alpha_sets_nan, true, false);
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_hermitian_matrix, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
+    hipblas_init_vector(hy, arg, hipblas_client_beta_sets_nan);
 
     // copy vector is easy in STL; hy_cpu = hy: save a copy in hy_cpu which will be output of CPU BLAS
     hy_cpu = hy;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * X_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -213,13 +217,13 @@ void testing_hemv(const Arguments& arg)
         DAPI_CHECK(hipblasHemvFn,
                    (handle, uplo, N, (T*)&h_alpha, dA, lda, dx, incx, (T*)&h_beta, dy, incy));
 
-        CHECK_HIP_ERROR(hipMemcpy(hy_host.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasHemvFn, (handle, uplo, N, d_alpha, dA, lda, dx, incx, d_beta, dy, incy));
 
-        CHECK_HIP_ERROR(hipMemcpy(hy_device.data(), dy, sizeof(T) * Y_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
         /* =====================================================================
            CPU BLAS
@@ -243,7 +247,7 @@ void testing_hemv(const Arguments& arg)
     if(arg.timing)
     {
         double gpu_time_used;
-        CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(T) * Y_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dy.transfer_from(hy));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

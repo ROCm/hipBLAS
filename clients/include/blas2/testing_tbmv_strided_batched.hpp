@@ -62,24 +62,37 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
         hipblasLocalHandle handle(arg);
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, pointer_mode));
 
-        hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_UPPER;
-        hipblasOperation_t transA      = HIPBLAS_OP_N;
-        hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
-        int64_t            N           = 100;
-        int64_t            K           = 5;
-        int64_t            lda         = 100;
-        int64_t            incx        = 1;
-        int64_t            batch_count = 2;
-        hipblasStride      strideA     = N * lda;
-        hipblasStride      stridex     = N * incx;
+        hipblasFillMode_t  uplo              = HIPBLAS_FILL_MODE_UPPER;
+        hipblasOperation_t transA            = HIPBLAS_OP_N;
+        hipblasDiagType_t  diag              = HIPBLAS_DIAG_NON_UNIT;
+        int64_t            M                 = 100;
+        int64_t            K                 = 5;
+        int64_t            banded_matrix_row = K + 1;
+        int64_t            lda               = 100;
+        int64_t            incx              = 1;
+        int64_t            batch_count       = 2;
+        hipblasStride      stride_A          = M * lda;
+        hipblasStride      stride_x          = M * incx;
 
-        device_vector<T> dA(strideA * batch_count);
-        device_vector<T> dx(stridex * batch_count);
+        // Allocate device memory
+        device_strided_batch_matrix<T> dAb(banded_matrix_row, M, lda, stride_A, batch_count);
+        device_strided_batch_vector<T> dx(M, incx, stride_x, batch_count);
 
-        DAPI_EXPECT(
-            HIPBLAS_STATUS_NOT_INITIALIZED,
-            hipblasTbmvStridedBatchedFn,
-            (nullptr, uplo, transA, diag, N, K, dA, lda, strideA, dx, incx, stridex, batch_count));
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasTbmvStridedBatchedFn,
+                    (nullptr,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     K,
+                     dAb,
+                     lda,
+                     stride_A,
+                     dx,
+                     incx,
+                     stride_x,
+                     batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTbmvStridedBatchedFn,
@@ -87,14 +100,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      HIPBLAS_FILL_MODE_FULL,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA,
+                     dAb,
                      lda,
-                     strideA,
+                     stride_A,
                      dx,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -103,14 +116,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      (hipblasFillMode_t)HIPBLAS_OP_N,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA,
+                     dAb,
                      lda,
-                     strideA,
+                     stride_A,
                      dx,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -119,14 +132,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      uplo,
                      (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA,
+                     dAb,
                      lda,
-                     strideA,
+                     stride_A,
                      dx,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -135,14 +148,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
-                     N,
+                     M,
                      K,
-                     dA,
+                     dAb,
                      lda,
-                     strideA,
+                     stride_A,
                      dx,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -151,14 +164,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      dx,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -167,17 +180,17 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                      uplo,
                      transA,
                      diag,
-                     N,
+                     M,
                      K,
-                     dA,
+                     dAb,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      incx,
-                     stridex,
+                     stride_x,
                      batch_count));
 
-        // With N == 0, can have all nullptrs
+        // With M == 0, can have all nullptrs
         DAPI_CHECK(hipblasTbmvStridedBatchedFn,
                    (handle,
                     uplo,
@@ -187,14 +200,14 @@ void testing_tbmv_strided_batched_bad_arg(const Arguments& arg)
                     K,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     incx,
-                    stridex,
+                    stride_x,
                     batch_count));
         DAPI_CHECK(
             hipblasTbmvStridedBatchedFn,
-            (handle, uplo, transA, diag, N, K, nullptr, lda, strideA, nullptr, incx, stridex, 0));
+            (handle, uplo, transA, diag, M, K, nullptr, lda, stride_A, nullptr, incx, stride_x, 0));
     }
 }
 
@@ -209,22 +222,20 @@ void testing_tbmv_strided_batched(const Arguments& arg)
                                               ? hipblasTbmvStridedBatched_64<T, true>
                                               : hipblasTbmvStridedBatched_64<T, false>;
 
-    hipblasFillMode_t  uplo         = char2hipblas_fill(arg.uplo);
-    hipblasOperation_t transA       = char2hipblas_operation(arg.transA);
-    hipblasDiagType_t  diag         = char2hipblas_diagonal(arg.diag);
-    int64_t            M            = arg.M;
-    int64_t            K            = arg.K;
-    int64_t            lda          = arg.lda;
-    int64_t            incx         = arg.incx;
-    double             stride_scale = arg.stride_scale;
-    int64_t            batch_count  = arg.batch_count;
+    hipblasFillMode_t  uplo              = char2hipblas_fill(arg.uplo);
+    hipblasOperation_t transA            = char2hipblas_operation(arg.transA);
+    hipblasDiagType_t  diag              = char2hipblas_diagonal(arg.diag);
+    int64_t            M                 = arg.M;
+    int64_t            K                 = arg.K;
+    int64_t            lda               = arg.lda;
+    int64_t            incx              = arg.incx;
+    double             stride_scale      = arg.stride_scale;
+    int64_t            batch_count       = arg.batch_count;
+    const int64_t      banded_matrix_row = K + 1;
 
     size_t        abs_incx = incx >= 0 ? incx : -incx;
     hipblasStride stride_A = lda * M * stride_scale;
     hipblasStride stride_x = M * abs_incx * stride_scale;
-
-    size_t A_size = stride_A * batch_count;
-    size_t x_size = stride_x * batch_count;
 
     hipblasLocalHandle handle(arg);
 
@@ -251,54 +262,70 @@ void testing_tbmv_strided_batched(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hx(x_size);
-    host_vector<T> hx_cpu(x_size);
-    host_vector<T> hx_res(x_size);
+    // Naming: `h` is in CPU (host) memory(eg hAb), `d` is in GPU (device) memory (eg dAb).
+    // Allocate host memory
+    host_strided_batch_matrix<T> hAb(banded_matrix_row, M, lda, stride_A, batch_count);
+    host_strided_batch_vector<T> hx(M, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hx_cpu(M, incx, stride_x, batch_count);
+    host_strided_batch_vector<T> hx_res(M, incx, stride_x, batch_count);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dx(x_size);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hAb.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hx_cpu.memcheck());
+    CHECK_HIP_ERROR(hx_res.memcheck());
+
+    // Allocate device memory
+    device_strided_batch_matrix<T> dAb(banded_matrix_row, M, lda, stride_A, batch_count);
+    device_strided_batch_vector<T> dx(M, incx, stride_x, batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dAb.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     double hipblas_error;
 
     // Initial Data on CPU
     hipblas_init_matrix(
-        hA, arg, M, M, lda, stride_A, batch_count, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(
-        hx, arg, M, abs_incx, stride_x, batch_count, hipblas_client_never_set_nan, false, true);
-    hx_cpu = hx;
+        hAb, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true, false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+
+    // copy vector
+    hx_cpu.copy_from(hx);
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dAb.transfer_from(hAb));
 
     if(arg.unit_check || arg.norm_check)
     {
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        DAPI_CHECK(
-            hipblasTbmvStridedBatchedFn,
-            (handle, uplo, transA, diag, M, K, dA, lda, stride_A, dx, incx, stride_x, batch_count));
+        DAPI_CHECK(hipblasTbmvStridedBatchedFn,
+                   (handle,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    K,
+                    dAb,
+                    lda,
+                    stride_A,
+                    dx,
+                    incx,
+                    stride_x,
+                    batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hx_res.data(), dx, sizeof(T) * x_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hx_res.transfer_from(dx));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
         for(size_t b = 0; b < batch_count; b++)
         {
-            ref_tbmv<T>(uplo,
-                        transA,
-                        diag,
-                        M,
-                        K,
-                        hA.data() + b * stride_A,
-                        lda,
-                        hx_cpu.data() + b * stride_x,
-                        incx);
+            ref_tbmv<T>(uplo, transA, diag, M, K, hAb[b], lda, hx_cpu[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -317,7 +344,7 @@ void testing_tbmv_strided_batched(const Arguments& arg)
     if(arg.timing)
     {
         double gpu_time_used;
-        CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * x_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dx.transfer_from(hx));
 
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
@@ -335,7 +362,7 @@ void testing_tbmv_strided_batched(const Arguments& arg)
                            diag,
                            M,
                            K,
-                           dA,
+                           dAb,
                            lda,
                            stride_A,
                            dx,

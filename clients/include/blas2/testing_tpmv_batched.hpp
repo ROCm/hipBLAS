@@ -59,9 +59,9 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
         int64_t            N           = 100;
         int64_t            incx        = 1;
         int64_t            batch_count = 2;
-        int64_t            A_size      = N * (N + 1) / 2;
 
-        device_batch_vector<T> dA(A_size, 1, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dAp(1, hipblas_packed_matrix_size(N), 1, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -71,7 +71,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
                      transA,
                      diag,
                      N,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      dx.ptr_on_device(),
                      incx,
                      batch_count));
@@ -83,7 +83,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
                      transA,
                      diag,
                      N,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      dx.ptr_on_device(),
                      incx,
                      batch_count));
@@ -95,7 +95,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
                      transA,
                      diag,
                      N,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      dx.ptr_on_device(),
                      incx,
                      batch_count));
@@ -107,7 +107,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
                      (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
                      diag,
                      N,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      dx.ptr_on_device(),
                      incx,
                      batch_count));
@@ -119,7 +119,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
                      transA,
                      (hipblasDiagType_t)HIPBLAS_FILL_MODE_FULL,
                      N,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      dx.ptr_on_device(),
                      incx,
                      batch_count));
@@ -131,7 +131,7 @@ void testing_tpmv_batched_bad_arg(const Arguments& arg)
         DAPI_EXPECT(
             HIPBLAS_STATUS_INVALID_VALUE,
             hipblasTpmvBatchedFn,
-            (handle, uplo, transA, diag, N, dA.ptr_on_device(), nullptr, incx, batch_count));
+            (handle, uplo, transA, diag, N, dAp.ptr_on_device(), nullptr, incx, batch_count));
 
         // With N == 0, can have all nullptrs
         DAPI_CHECK(hipblasTpmvBatchedFn,
@@ -159,7 +159,6 @@ void testing_tpmv_batched(const Arguments& arg)
     int64_t            batch_count = arg.batch_count;
 
     size_t abs_incx = incx >= 0 ? incx : -incx;
-    size_t A_size   = N * (N + 1) / 2;
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
@@ -178,23 +177,37 @@ void testing_tpmv_batched(const Arguments& arg)
 
     double hipblas_error;
 
-    // arrays of pointers-to-host on host
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hx(N, incx, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hAp), `d` is in GPU (device) memory (eg dAp).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, N, batch_count);
+    host_batch_matrix<T> hAp(1, hipblas_packed_matrix_size(N), 1, batch_count);
+    host_batch_vector<T> hx_cpu(N, incx, batch_count);
     host_batch_vector<T> hx_res(N, incx, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hAp.memcheck());
+    CHECK_HIP_ERROR(hx_cpu.memcheck());
+    CHECK_HIP_ERROR(hx_res.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dAp(1, hipblas_packed_matrix_size(N), 1, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dAp.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
-    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_triangular_matrix, true, false);
+    hipblas_init_vector(hx_cpu, arg, hipblas_client_never_set_nan, false, true);
 
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
-    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    // helper function to convert Regular matrix `hA` to packed matrix `hAp`
+    regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, hA, hAp, N);
+
+    CHECK_HIP_ERROR(dAp.transfer_from(hAp));
+    CHECK_HIP_ERROR(dx.transfer_from(hx_cpu));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -207,7 +220,7 @@ void testing_tpmv_batched(const Arguments& arg)
                     transA,
                     diag,
                     N,
-                    dA.ptr_on_device(),
+                    dAp.ptr_on_device(),
                     dx.ptr_on_device(),
                     incx,
                     batch_count));
@@ -220,18 +233,18 @@ void testing_tpmv_batched(const Arguments& arg)
         =================================================================== */
         for(size_t b = 0; b < batch_count; b++)
         {
-            ref_tpmv<T>(uplo, transA, diag, N, hA[b], hx[b], incx);
+            ref_tpmv<T>(uplo, transA, diag, N, hAp[b], hx_cpu[b], incx);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, N, batch_count, abs_incx, hx, hx_res);
+            unit_check_general<T>(1, N, batch_count, abs_incx, hx_cpu, hx_res);
         }
         if(arg.norm_check)
         {
-            hipblas_error = norm_check_general<T>('F', 1, N, abs_incx, hx, hx_res, batch_count);
+            hipblas_error = norm_check_general<T>('F', 1, N, abs_incx, hx_cpu, hx_res, batch_count);
         }
     }
 
@@ -253,7 +266,7 @@ void testing_tpmv_batched(const Arguments& arg)
                            transA,
                            diag,
                            N,
-                           dA.ptr_on_device(),
+                           dAp.ptr_on_device(),
                            dx.ptr_on_device(),
                            incx,
                            batch_count));

@@ -111,15 +111,13 @@ void testing_scal_batched(const Arguments& arg)
     host_batch_vector<T> hz(N, incx, batch_count);
 
     device_batch_vector<T> dx(N, incx, batch_count);
-    device_batch_vector<T> dz(N, incx, batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dz.memcheck());
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
 
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
     hz.copy_from(hx);
 
     CHECK_HIP_ERROR(dx.transfer_from(hx));
-    CHECK_HIP_ERROR(dz.transfer_from(hx));
 
     if(unit_check || norm_check)
     {

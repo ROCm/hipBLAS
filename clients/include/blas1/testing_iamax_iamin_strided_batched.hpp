@@ -41,8 +41,8 @@ void testing_iamax_iamin_strided_batched_bad_arg(const Arguments& arg, FUNC func
     int64_t       batch_count = 2;
     hipblasStride stride_x    = N * incx;
 
-    device_vector<T> dx(stride_x * batch_count);
-    device_vector<R> d_res(batch_count);
+    device_strided_batch_vector<T> dx(N, incx, stride_x, batch_count);
+    device_vector<R>               d_res(batch_count);
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
     {
@@ -102,8 +102,7 @@ void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
     double  stride_scale = arg.stride_scale;
     int64_t batch_count  = arg.batch_count;
 
-    hipblasStride stridex = size_t(N) * incx * stride_scale;
-    size_t        sizeX   = stridex * batch_count;
+    hipblasStride stridex = N * incx * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -136,20 +135,23 @@ void testing_iamax_iamin_strided_batched(const Arguments& arg, FUNC func)
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this
     // practice
-    host_vector<T>       hx(sizeX);
-    device_vector<T>     dx(sizeX);
-    host_vector<R>       cpu_result(batch_count);
-    host_vector<int64_t> cpu_result_64(batch_count);
-    host_vector<R>       hipblas_result_host(batch_count);
-    host_vector<R>       hipblas_result_device(batch_count);
-    device_vector<R>     d_hipblas_result(batch_count);
+    host_strided_batch_vector<T> hx(N, incx, stridex, batch_count);
+    host_vector<R>               cpu_result(batch_count);
+    host_vector<int64_t>         cpu_result_64(batch_count);
+    host_vector<R>               hipblas_result_host(batch_count);
+    host_vector<R>               hipblas_result_device(batch_count);
+
+    device_strided_batch_vector<T> dx(N, incx, stridex, batch_count);
+    device_vector<R>               d_hipblas_result(batch_count);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(T) * sizeX, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
 
     double gpu_time_used;
     R      hipblas_error_host = 0, hipblas_error_device = 0;
