@@ -58,8 +58,8 @@ void testing_axpy_ex_bad_arg(const Arguments& arg)
         int64_t incy = 1;
 
         device_vector<Ta> d_alpha(1), d_zero(1);
-        device_vector<Tx> dx(N * incx);
-        device_vector<Ty> dy(N * incy);
+        device_vector<Tx> dx(N, incx);
+        device_vector<Ty> dy(N, incy);
 
         const Ta  h_alpha(1), h_zero(0);
         const Ta* alpha = &h_alpha;
@@ -202,38 +202,33 @@ void testing_axpy_ex(const Arguments& arg)
     int64_t abs_incx = incx < 0 ? -incx : incx;
     int64_t abs_incy = incy < 0 ? -incy : incy;
 
-    size_t sizeX = size_t(N) * abs_incx;
-    size_t sizeY = size_t(N) * abs_incy;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
-
     Ta h_alpha = arg.get_alpha<Ta>();
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx(sizeX);
-    host_vector<Ty> hy_host(sizeY);
-    host_vector<Ty> hy_device(sizeY);
-    host_vector<Ty> hy_cpu(sizeY);
+    host_vector<Tx> hx(N, incx);
+    host_vector<Ty> hy_host(N, incy);
+    host_vector<Ty> hy_device(N, incy);
+    host_vector<Ty> hy_cpu(N, incy);
 
-    device_vector<Tx> dx(sizeX);
-    device_vector<Ty> dy(sizeY);
+    device_vector<Tx> dx(N, incx);
+    device_vector<Ty> dy(N, incy);
     device_vector<Ta> d_alpha(1);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hy_host, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
-    // hx[0] = (Tx)5.0f;
-    // hy_host[0] = (Ty)22.0f;
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hy_host, arg, hipblas_client_alpha_sets_nan, false);
 
     hy_device = hy_host;
     hy_cpu    = hy_host;
 
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_host, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(Ta), hipMemcpyHostToDevice));
 
     /* =====================================================================
@@ -244,13 +239,14 @@ void testing_axpy_ex(const Arguments& arg)
                (handle, N, &h_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
 
     // copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hy_host, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy_device, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hy_host.transfer_from(dy));
+    CHECK_HIP_ERROR(dy.transfer_from(hy_device));
 
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
     DAPI_CHECK(hipblasAxpyExFn,
                (handle, N, d_alpha, alphaType, dx, xType, incx, dy, yType, incy, executionType));
-    CHECK_HIP_ERROR(hipMemcpy(hy_device, dy, sizeof(Ty) * sizeY, hipMemcpyDeviceToHost));
+
+    CHECK_HIP_ERROR(hy_device.transfer_from(dy));
 
     if(arg.unit_check || arg.norm_check)
     {

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2020-2022 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2020-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -146,6 +146,11 @@ constexpr double swap_gbyte_count(int n)
 inline size_t tri_count(int n)
 {
     return size_t(n) * (1 + n) / 2;
+}
+
+inline size_t hipblas_packed_matrix_size(int64_t n)
+{
+    return (size_t(n) * (1 + n)) / 2;
 }
 
 /* \brief byte counts of GEMV */

@@ -65,8 +65,8 @@ void testing_dot_ex_bad_arg(const Arguments& arg)
         int64_t incx = 1;
         int64_t incy = 1;
 
-        device_vector<Tx> dx(N * incx);
-        device_vector<Ty> dy(N * incy);
+        device_vector<Tx> dx(N, incx);
+        device_vector<Ty> dy(N, incy);
         device_vector<Tr> d_res(1);
         host_vector<Tr>   h_res(1);
 
@@ -187,34 +187,32 @@ void testing_dot_ex(const Arguments& arg)
         return;
     }
 
-    int    abs_incx = incx >= 0 ? incx : -incx;
-    int    abs_incy = incy >= 0 ? incy : -incy;
-    size_t sizeX    = size_t(N) * abs_incx;
-    size_t sizeY    = size_t(N) * abs_incy;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
+    int abs_incx = incx >= 0 ? incx : -incx;
+    int abs_incy = incy >= 0 ? incy : -incy;
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx(sizeX);
-    host_vector<Ty> hy(sizeY);
+    host_vector<Tx> hx(N, incx);
+    host_vector<Ty> hy(N, incy);
 
-    device_vector<Tx> dx(sizeX);
-    device_vector<Ty> dy(sizeY);
+    device_vector<Tx> dx(N, incx);
+    device_vector<Ty> dy(N, incy);
     device_vector<Tr> d_hipblas_result(1);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     Tr cpu_result, hipblas_result_host, hipblas_result_device;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, N, abs_incx, 0, 1, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(hy, arg, N, abs_incy, 0, 1, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx.data(), sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy.data(), sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {

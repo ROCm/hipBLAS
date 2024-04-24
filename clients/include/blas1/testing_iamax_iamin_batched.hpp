@@ -130,7 +130,9 @@ void testing_iamax_iamin_batched(const Arguments& arg, FUNC func)
 
     device_batch_vector<T> dx(N, incx, batch_count);
     device_vector<R>       d_hipblas_result_device(batch_count);
-    CHECK_HIP_ERROR(dx.memcheck());
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result_device.memcheck());
 
     // Initial Data on CPU
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true);

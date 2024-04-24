@@ -80,9 +80,9 @@ void testing_dot_strided_batched_ex_bad_arg(const Arguments& arg)
         hipblasStride stridex = N * incx;
         hipblasStride stridey = N * incy;
 
-        device_vector<Tx> dx(stridex * batch_count);
-        device_vector<Ty> dy(stridey * batch_count);
-        device_vector<Tr> d_res(batch_count);
+        device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
+        device_strided_batch_vector<Ty> dy(N, incy, stridey, batch_count);
+        device_vector<Tr>               d_res(batch_count);
 
         // None of these test cases will write to result so using device pointer is fine for both modes
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -204,14 +204,8 @@ void testing_dot_strided_batched_ex(const Arguments& arg)
 
     int64_t       abs_incx = incx >= 0 ? incx : -incx;
     int64_t       abs_incy = incy >= 0 ? incy : -incy;
-    hipblasStride stridex  = size_t(N) * abs_incx * stride_scale;
-    hipblasStride stridey  = size_t(N) * abs_incy * stride_scale;
-    size_t        sizeX    = stridex * batch_count;
-    size_t        sizeY    = stridey * batch_count;
-    if(!sizeX)
-        sizeX = 1;
-    if(!sizeY)
-        sizeY = 1;
+    hipblasStride stridex  = N * abs_incx * stride_scale;
+    hipblasStride stridey  = N * abs_incy * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -260,27 +254,29 @@ void testing_dot_strided_batched_ex(const Arguments& arg)
     }
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<Tx> hx(sizeX);
-    host_vector<Ty> hy(sizeY);
-    host_vector<Tr> h_hipblas_result_host(batch_count);
-    host_vector<Tr> h_hipblas_result_device(batch_count);
-    host_vector<Tr> h_cpu_result(batch_count);
+    host_strided_batch_vector<Tx> hx(N, incx, stridex, batch_count);
+    host_strided_batch_vector<Ty> hy(N, incy, stridey, batch_count);
+    host_vector<Tr>               h_hipblas_result_host(batch_count);
+    host_vector<Tr>               h_hipblas_result_device(batch_count);
+    host_vector<Tr>               h_cpu_result(batch_count);
 
-    device_vector<Tx> dx(sizeX);
-    device_vector<Ty> dy(sizeY);
-    device_vector<Tr> d_hipblas_result(batch_count);
+    device_strided_batch_vector<Tx> dx(N, incx, stridex, batch_count);
+    device_strided_batch_vector<Ty> dy(N, incy, stridey, batch_count);
+    device_vector<Tr>               d_hipblas_result(batch_count);
+
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_hipblas_result.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(
-        hx, arg, N, abs_incx, stridex, batch_count, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(
-        hy, arg, N, abs_incy, stridey, batch_count, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
 
-    // copy data from CPU to device, does not work for incx != 1
-    CHECK_HIP_ERROR(hipMemcpy(dx, hx, sizeof(Tx) * sizeX, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dy, hy, sizeof(Ty) * sizeY, hipMemcpyHostToDevice));
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dx.transfer_from(hx));
+    CHECK_HIP_ERROR(dy.transfer_from(hy));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -331,12 +327,7 @@ void testing_dot_strided_batched_ex(const Arguments& arg)
         =================================================================== */
         for(int64_t b = 0; b < batch_count; b++)
         {
-            (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N,
-                                                hx.data() + b * stridex,
-                                                incx,
-                                                hy.data() + b * stridey,
-                                                incy,
-                                                &h_cpu_result[b]);
+            (CONJ ? ref_dotc<Tx> : ref_dot<Tx>)(N, hx[b], incx, hy[b], incy, &h_cpu_result[b]);
         }
 
         if(arg.unit_check)

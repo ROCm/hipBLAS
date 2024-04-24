@@ -233,28 +233,33 @@ void testing_her2_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA_cpu(A_size, 1, batch_count);
-    host_batch_vector<T> hA_host(A_size, 1, batch_count);
-    host_batch_vector<T> hA_device(A_size, 1, batch_count);
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_cpu(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_host(N, N, lda, batch_count);
+    host_batch_matrix<T> hA_device(N, N, lda, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy(N, incy, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_hermitian_matrix, true);
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan);
 
+    // copy matrix
     hA_cpu.copy_from(hA);
+
+    // copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));

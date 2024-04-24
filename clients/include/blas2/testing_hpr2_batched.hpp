@@ -58,7 +58,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
         int64_t           incx        = 1;
         int64_t           incy        = 1;
         int64_t           batch_count = 2;
-        int64_t           A_size      = N * (N + 1) / 2;
+        int64_t           size_A      = N * (N + 1) / 2;
 
         device_vector<T> d_alpha(1), d_zero(1);
 
@@ -74,7 +74,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
             zero  = d_zero;
         }
 
-        device_batch_vector<T> dA(A_size, 1, batch_count);
+        device_batch_vector<T> dAp(size_A, 1, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
         device_batch_vector<T> dy(N, incy, batch_count);
 
@@ -88,7 +88,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                      incx,
                      dy.ptr_on_device(),
                      incy,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -101,7 +101,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                      incx,
                      dy.ptr_on_device(),
                      incy,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -114,7 +114,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                      incx,
                      dy.ptr_on_device(),
                      incy,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -127,12 +127,12 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                      incx,
                      dy.ptr_on_device(),
                      incy,
-                     dA.ptr_on_device(),
+                     dAp.ptr_on_device(),
                      batch_count));
 
         if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
         {
-            // For device mode in rocBLAS we don't have checks for dA, dx as we may be able to quick return
+            // For device mode in rocBLAS we don't have checks for dAp, dx as we may be able to quick return
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasHpr2BatchedFn,
                         (handle,
@@ -143,7 +143,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                          incx,
                          dy.ptr_on_device(),
                          incy,
-                         dA.ptr_on_device(),
+                         dAp.ptr_on_device(),
                          batch_count));
 
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -156,7 +156,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                          incx,
                          nullptr,
                          incy,
-                         dA.ptr_on_device(),
+                         dAp.ptr_on_device(),
                          batch_count));
 
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -195,7 +195,7 @@ void testing_hpr2_batched_bad_arg(const Arguments& arg)
                         incx,
                         dy.ptr_on_device(),
                         incy,
-                        dA.ptr_on_device(),
+                        dAp.ptr_on_device(),
                         batch_count));
         }
 
@@ -226,7 +226,7 @@ void testing_hpr2_batched(const Arguments& arg)
     int64_t incy        = arg.incy;
     int64_t batch_count = arg.batch_count;
 
-    size_t            A_size = N * (N + 1) / 2;
+    size_t            size_A = hipblas_packed_matrix_size(N);
     hipblasFillMode_t uplo   = char2hipblas_fill(arg.uplo);
 
     double hipblas_error_host, hipblas_error_device;
@@ -247,29 +247,38 @@ void testing_hpr2_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA_cpu(A_size, 1, batch_count);
-    host_batch_vector<T> hA_host(A_size, 1, batch_count);
-    host_batch_vector<T> hA_device(A_size, 1, batch_count);
+    host_batch_matrix<T> hA(N, N, N, batch_count);
+    host_batch_matrix<T> hAp(1, size_A, 1, batch_count);
+    host_batch_matrix<T> hAp_cpu(1, size_A, 1, batch_count);
+    host_batch_matrix<T> hAp_host(1, size_A, 1, batch_count);
+    host_batch_matrix<T> hAp_device(1, size_A, 1, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
     host_batch_vector<T> hy(N, incy, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    device_batch_matrix<T> dAp(1, size_A, 1, batch_count);
     device_batch_vector<T> dx(N, incx, batch_count);
     device_batch_vector<T> dy(N, incy, batch_count);
     device_vector<T>       d_alpha(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx.memcheck());
-    CHECK_HIP_ERROR(dy.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dAp.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx.memcheck());
+    CHECK_DEVICE_ALLOCATION(dy.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_vector(hA, arg, hipblas_client_never_set_nan, true);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_hermitian_matrix, true);
     hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, false, true);
     hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan);
 
-    hA_cpu.copy_from(hA);
-    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    // helper function to convert Regular matrix `hA` to packed matrix `hAp`
+    regular_to_packed(uplo == HIPBLAS_FILL_MODE_UPPER, hA, hAp, N);
+
+    // copy matrix
+    hAp_cpu.copy_from(hAp);
+
+    // copy data from CPU to device
+    CHECK_HIP_ERROR(dAp.transfer_from(hAp));
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
@@ -289,11 +298,11 @@ void testing_hpr2_batched(const Arguments& arg)
                     incx,
                     dy.ptr_on_device(),
                     incy,
-                    dA.ptr_on_device(),
+                    dAp.ptr_on_device(),
                     batch_count));
 
-        CHECK_HIP_ERROR(hA_host.transfer_from(dA));
-        CHECK_HIP_ERROR(dA.transfer_from(hA));
+        CHECK_HIP_ERROR(hAp_host.transfer_from(dAp));
+        CHECK_HIP_ERROR(dAp.transfer_from(hAp));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasHpr2BatchedFn,
@@ -305,39 +314,39 @@ void testing_hpr2_batched(const Arguments& arg)
                     incx,
                     dy.ptr_on_device(),
                     incy,
-                    dA.ptr_on_device(),
+                    dAp.ptr_on_device(),
                     batch_count));
 
-        CHECK_HIP_ERROR(hA_device.transfer_from(dA));
+        CHECK_HIP_ERROR(hAp_device.transfer_from(dAp));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
         for(size_t b = 0; b < batch_count; b++)
         {
-            ref_hpr2<T>(uplo, N, h_alpha, hx[b], incx, hy[b], incy, hA_cpu[b]);
+            ref_hpr2<T>(uplo, N, h_alpha, hx[b], incx, hy[b], incy, hAp_cpu[b]);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(1, A_size, batch_count, 1, hA_cpu, hA_host);
-            unit_check_general<T>(1, A_size, batch_count, 1, hA_cpu, hA_device);
+            unit_check_general<T>(1, size_A, batch_count, 1, hAp_cpu, hAp_host);
+            unit_check_general<T>(1, size_A, batch_count, 1, hAp_cpu, hAp_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu, hA_host, batch_count);
+                = norm_check_general<T>('F', 1, size_A, 1, hAp_cpu, hAp_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', 1, A_size, 1, hA_cpu, hA_device, batch_count);
+                = norm_check_general<T>('F', 1, size_A, 1, hAp_cpu, hAp_device, batch_count);
         }
     }
 
     if(arg.timing)
     {
         double gpu_time_used;
-        CHECK_HIP_ERROR(dA.transfer_from(hA));
+        CHECK_HIP_ERROR(dAp.transfer_from(hAp));
         hipStream_t stream;
         CHECK_HIPBLAS_ERROR(hipblasGetStream(handle, &stream));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -357,7 +366,7 @@ void testing_hpr2_batched(const Arguments& arg)
                            incx,
                            dy.ptr_on_device(),
                            incy,
-                           dA.ptr_on_device(),
+                           dAp.ptr_on_device(),
                            batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

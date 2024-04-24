@@ -61,7 +61,8 @@ void testing_trsv_batched_bad_arg(const Arguments& arg)
         int64_t            incx        = 1;
         int64_t            batch_count = 2;
 
-        device_batch_vector<T> dA(N * lda, 1, batch_count);
+        // Allocate device memory
+        device_batch_matrix<T> dA(N, N, lda, batch_count);
         device_batch_vector<T> dx(N, incx, batch_count);
 
         DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
@@ -166,7 +167,6 @@ void testing_trsv_batched(const Arguments& arg)
     int64_t            batch_count = arg.batch_count;
 
     size_t abs_incx = incx < 0 ? -incx : incx;
-    size_t size_A   = lda * N;
 
     hipblasLocalHandle handle(arg);
 
@@ -181,50 +181,54 @@ void testing_trsv_batched(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(size_A, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
     host_batch_vector<T> hb(N, incx, batch_count);
     host_batch_vector<T> hx(N, incx, batch_count);
-    host_batch_vector<T> hx_or_b_1(N, incx, batch_count);
+    host_batch_vector<T> hx_or_b(N, incx, batch_count);
 
-    device_batch_vector<T> dA(size_A, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hb.memcheck());
+    CHECK_HIP_ERROR(hx.memcheck());
+    CHECK_HIP_ERROR(hx_or_b.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
     device_batch_vector<T> dx_or_b(N, incx, batch_count);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dx_or_b.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dx_or_b.memcheck());
 
     double hipblas_error, cumulative_hipblas_error;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, true, true);
+    hipblas_init_matrix(hA,
+                        arg,
+                        hipblas_client_never_set_nan,
+                        hipblas_diagonally_dominant_triangular_matrix,
+                        true,
+                        false);
+    hipblas_init_vector(hx, arg, hipblas_client_never_set_nan, false, true);
 
     hb.copy_from(hx);
 
+    if(diag == HIPBLAS_DIAG_UNIT)
+    {
+        make_unit_diagonal(uplo, hA);
+    }
+
     for(size_t b = 0; b < batch_count; b++)
     {
-        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                                 (T*)hA[b],
-                                 arg,
-                                 N,
-                                 N,
-                                 lda,
-                                 0,
-                                 1,
-                                 hipblas_client_never_set_nan,
-                                 false);
-
-        if(diag == HIPBLAS_DIAG_UNIT)
-        {
-            make_unit_diagonal(uplo, (T*)hA[b], lda, N);
-        }
-
         // Calculate hb = hA*hx;
         ref_trmv<T>(uplo, transA, diag, N, hA[b], lda, hb[b], incx);
     }
 
-    hx_or_b_1.copy_from(hb);
+    hx_or_b.copy_from(hb);
 
-    CHECK_HIP_ERROR(dx_or_b.transfer_from(hx_or_b_1));
+    CHECK_HIP_ERROR(dx_or_b.transfer_from(hx_or_b));
     CHECK_HIP_ERROR(dA.transfer_from(hA));
 
     /* =====================================================================
@@ -245,13 +249,13 @@ void testing_trsv_batched(const Arguments& arg)
                     incx,
                     batch_count));
 
-        CHECK_HIP_ERROR(hx_or_b_1.transfer_from(dx_or_b));
+        CHECK_HIP_ERROR(hx_or_b.transfer_from(dx_or_b));
 
         // Calculating error
         // For norm_check/bench, currently taking the cumulative sum of errors over all batches
         for(size_t b = 0; b < batch_count; b++)
         {
-            hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b_1[b]));
+            hipblas_error = hipblas_abs(vector_norm_1<T>(N, abs_incx, hx[b], hx_or_b[b]));
             if(arg.unit_check)
             {
                 double tolerance = std::numeric_limits<real_t<T>>::epsilon() * 40 * N;

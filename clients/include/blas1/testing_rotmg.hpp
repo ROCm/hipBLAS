@@ -86,12 +86,16 @@ void testing_rotmg(const Arguments& arg)
     const T rel_error = std::numeric_limits<T>::epsilon() * 1000;
 
     // Initial data on CPU
-    hipblas_init_vector(hparams, arg, 9, 1, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_vector(hparams, arg, hipblas_client_alpha_sets_nan, true);
 
-    host_vector<T>   cparams   = hparams;
-    host_vector<T>   hparams_d = hparams;
+    host_vector<T> cparams   = hparams;
+    host_vector<T> hparams_d = hparams;
+
     device_vector<T> dparams(9);
-    CHECK_HIP_ERROR(hipMemcpy(dparams, hparams, 9 * sizeof(T), hipMemcpyHostToDevice));
+
+    CHECK_DEVICE_ALLOCATION(dparams.memcheck());
+
+    CHECK_HIP_ERROR(dparams.transfer_from(hparams));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -103,7 +107,7 @@ void testing_rotmg(const Arguments& arg)
         DAPI_CHECK(hipblasRotmgFn,
                    (handle, dparams, dparams + 1, dparams + 2, dparams + 3, dparams + 4));
 
-        CHECK_HIP_ERROR(hipMemcpy(hparams_d, dparams, 9 * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hparams_d.transfer_from(dparams));
 
         // CPU BLAS
         ref_rotmg<T>(&cparams[0], &cparams[1], &cparams[2], &cparams[3], &cparams[4]);
