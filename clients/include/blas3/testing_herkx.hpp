@@ -111,9 +111,7 @@ void testing_herkx_bad_arg(const Arguments& arg)
                      beta,
                      dC,
                      ldc));
-        // DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-        //     hipblasHerkxFn, (
-        //         handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc));
+
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHerkxFn,
                     (handle,
@@ -138,6 +136,10 @@ void testing_herkx_bad_arg(const Arguments& arg)
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasHerkxFn,
                         (handle, uplo, transA, N, K, alpha, dA, lda, dB, ldb, nullptr, dC, ldc));
+
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasHerkxFn,
+                        (handle, uplo, HIPBLAS_OP_T, N, K, alpha, dA, lda, dB, ldb, beta, dC, ldc));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
             {
