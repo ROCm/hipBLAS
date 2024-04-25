@@ -72,16 +72,19 @@ void testing_geam_strided_batched_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
-    hipblasStride strideA = colsA * lda;
-    hipblasStride strideB = colsB * ldb;
-    hipblasStride strideC = N * ldc;
+    hipblasStride stride_A = A_col * lda;
+    hipblasStride stride_B = B_col * ldb;
+    hipblasStride stride_C = N * ldc;
 
-    device_vector<T> dA(strideA * batch_count);
-    device_vector<T> dB(strideB * batch_count);
-    device_vector<T> dC(strideC * batch_count);
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(A_row, A_col, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(B_row, B_col, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
 
     device_vector<T> d_alpha(1), d_beta(1), d_zero(1);
     const T          h_alpha(1), h_beta(2), h_zero(0);
@@ -468,37 +471,14 @@ void testing_geam_strided_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int64_t       A_row, A_col, B_row, B_col;
-    hipblasStride stride_A, stride_B, stride_C;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
-    if(transA == HIPBLAS_OP_N)
-    {
-        A_row = M;
-        A_col = N;
-    }
-    else
-    {
-        A_row = N;
-        A_col = M;
-    }
-    if(transB == HIPBLAS_OP_N)
-    {
-        B_row = M;
-        B_col = N;
-    }
-    else
-    {
-        B_row = N;
-        B_col = M;
-    }
-
-    stride_A = lda * A_col * stride_scale;
-    stride_B = ldb * B_col * stride_scale;
-    stride_C = ldc * N * stride_scale;
-
-    size_t A_size = stride_A * batch_count;
-    size_t B_size = stride_B * batch_count;
-    size_t C_size = stride_C * batch_count;
+    hipblasStride stride_A = lda * A_col * stride_scale;
+    hipblasStride stride_B = ldb * B_col * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -530,38 +510,47 @@ void testing_geam_strided_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    // allocate memory on device
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
-    device_vector<T> d_alpha(1);
-    device_vector<T> d_beta(1);
-    if(!dA || !dB || !dC || !d_alpha || !d_beta)
-    {
-        return;
-    }
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_strided_batch_matrix<T> hA(A_row, A_col, lda, stride_A, batch_count);
+    host_strided_batch_matrix<T> hB(B_row, B_col, ldb, stride_B, batch_count);
+    host_strided_batch_matrix<T> hC_host(M, N, ldc, stride_C, batch_count);
+    host_strided_batch_matrix<T> hC_device(M, N, ldc, stride_C, batch_count);
+    host_strided_batch_matrix<T> hC_cpu(M, N, ldc, stride_C, batch_count);
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC1(C_size);
-    host_vector<T> hC2(C_size);
-    host_vector<T> hC_copy(C_size);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
+    CHECK_HIP_ERROR(hC_host.memcheck());
+    CHECK_HIP_ERROR(hC_device.memcheck());
+    CHECK_HIP_ERROR(hC_cpu.memcheck());
+
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(A_row, A_col, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(B_row, B_col, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
+    device_vector<T>               d_alpha(1);
+    device_vector<T>               d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_matrix(
-        hA, arg, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(
-        hB, arg, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_beta_sets_nan);
-    hipblas_init_matrix(hC1, arg, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hB, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
-    hC2     = hC1;
-    hC_copy = hC1;
+    hC_device.copy_from(hC_host);
+    hC_cpu.copy_from(hC_host);
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(T) * B_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC1.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -592,10 +581,10 @@ void testing_geam_strided_batched(const Arguments& arg)
                         stride_C,
                         batch_count));
 
-            CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hC_host.transfer_from(dC));
         }
         {
-            CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(dC.transfer_from(hC_device));
 
             // d_alpha and d_beta are device pointers
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -618,7 +607,7 @@ void testing_geam_strided_batched(const Arguments& arg)
                         stride_C,
                         batch_count));
 
-            CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hC_device.transfer_from(dC));
         }
 
         /* =====================================================================
@@ -627,34 +616,24 @@ void testing_geam_strided_batched(const Arguments& arg)
         // reference calculation
         for(int64_t b = 0; b < batch_count; b++)
         {
-            ref_geam(transA,
-                     transB,
-                     M,
-                     N,
-                     &h_alpha,
-                     (T*)hA + b * stride_A,
-                     lda,
-                     &h_beta,
-                     (T*)hB + b * stride_B,
-                     ldb,
-                     (T*)hC_copy + b * stride_C,
-                     ldc);
+            ref_geam(
+                transA, transB, M, N, &h_alpha, hA[b], lda, &h_beta, hB[b], ldb, hC_cpu[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC1);
-            unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC2);
+            unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_host);
+            unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_device);
         }
 
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_copy, hC1, batch_count);
+                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_cpu, hC_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_copy, hC2, batch_count);
+                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_cpu, hC_device, batch_count);
         }
     }
 

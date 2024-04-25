@@ -55,11 +55,12 @@ void testing_symm_bad_arg(const Arguments& arg)
     hipblasSideMode_t side = HIPBLAS_SIDE_LEFT;
     hipblasFillMode_t uplo = HIPBLAS_FILL_MODE_LOWER;
 
-    int64_t colsA = side == HIPBLAS_SIDE_LEFT ? N : M;
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
-    device_vector<T> dA(colsA * lda);
-    device_vector<T> dB(N * ldb);
-    device_vector<T> dC(N * ldc);
+    // Allocate device memory
+    device_matrix<T> dA(dim_A, dim_A, lda);
+    device_matrix<T> dB(M, N, ldb);
+    device_matrix<T> dC(M, N, ldc);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
     const T          h_alpha(1), h_beta(2), h_one(1), h_zero(0);
@@ -209,14 +210,10 @@ void testing_symm(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    size_t  rows = (side == HIPBLAS_SIDE_LEFT ? N : M);
-    int64_t K    = (side == HIPBLAS_SIDE_LEFT ? M : N);
-
-    hipblasLocalHandle handle(arg);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
     // check here to prevent undefined memory allocation error
-    bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < K;
-    if(invalid_size || !M || !N)
+    if(M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A)
     {
         DAPI_EXPECT(
             invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
@@ -225,38 +222,45 @@ void testing_symm(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    size_t A_size = lda * K;
-    size_t B_size = ldb * N;
-    size_t C_size = ldc * N;
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(dim_A, dim_A, lda);
+    host_matrix<T> hB(M, N, ldb);
+    host_matrix<T> hC_host(M, N, ldc);
+    host_matrix<T> hC_device(M, N, ldc);
+    host_matrix<T> hC_cpu(M, N, ldc);
 
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC_host(C_size);
-    host_vector<T> hC_device(C_size);
-    host_vector<T> hC_gold(C_size);
-
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
+    // Allocate device memory
+    device_matrix<T> dA(dim_A, dim_A, lda);
+    device_matrix<T> dB(M, N, ldb);
+    device_matrix<T> dC(M, N, ldc);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     hipblasStatus_t status = HIPBLAS_STATUS_SUCCESS;
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, rows, K, lda, 0, 1, hipblas_client_never_set_nan, true);
-    hipblas_init_matrix(hB, arg, M, N, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
-    hC_gold   = hC_host;
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_symmetric_matrix, true);
+    hipblas_init_matrix(
+        hB, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
+
+    hC_cpu    = hC_host;
     hC_device = hC_host;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -270,32 +274,32 @@ void testing_symm(const Arguments& arg)
                    (handle, side, uplo, M, N, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasSymmFn,
                    (handle, side, uplo, M, N, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
 
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        ref_symm<T>(side, uplo, M, N, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
+        ref_symm<T>(side, uplo, M, N, h_alpha, hA, lda, hB, ldb, h_beta, hC_cpu, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, ldc, hC_gold, hC_host);
-            unit_check_general<T>(M, N, ldc, hC_gold, hC_device);
+            unit_check_general<T>(M, N, ldc, hC_cpu, hC_host);
+            unit_check_general<T>(M, N, ldc, hC_cpu, hC_device);
         }
 
         if(arg.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_host);
-            hipblas_error_device = norm_check_general<T>('F', M, N, ldc, hC_gold, hC_device);
+            hipblas_error_host   = norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_host);
+            hipblas_error_device = norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_device);
         }
     }
 
@@ -319,8 +323,8 @@ void testing_symm(const Arguments& arg)
         hipblasSymmModel{}.log_args<T>(std::cout,
                                        arg,
                                        gpu_time_used,
-                                       symm_gflop_count<T>(M, N, K),
-                                       symm_gbyte_count<T>(M, N, K),
+                                       symm_gflop_count<T>(M, N, dim_A),
+                                       symm_gbyte_count<T>(M, N, dim_A),
                                        hipblas_error_host,
                                        hipblas_error_device);
     }

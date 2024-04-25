@@ -247,8 +247,9 @@ void testing_dot_batched_ex(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init(hy, true, false);
-    hipblas_init_alternating_sign(hx);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false, true);
+
     CHECK_HIP_ERROR(dx.transfer_from(hx));
     CHECK_HIP_ERROR(dy.transfer_from(hy));
 

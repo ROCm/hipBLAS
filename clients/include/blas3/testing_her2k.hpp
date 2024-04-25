@@ -56,11 +56,13 @@ void testing_her2k_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_LOWER;
 
-    int64_t cols = transA == HIPBLAS_OP_N ? K : N;
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
-    device_vector<T> dA(cols * lda);
-    device_vector<T> dB(cols * ldb);
-    device_vector<T> dC(N * ldc);
+    // Allocate device memory
+    device_matrix<T> dA(rows, cols, lda);
+    device_matrix<T> dB(rows, cols, ldb);
+    device_matrix<T> dC(N, N, ldc);
 
     device_vector<T> d_alpha(1), d_zero(1);
     device_vector<U> d_beta(1), d_one(1);
@@ -250,23 +252,30 @@ void testing_her2k(const Arguments& arg)
         return;
     }
 
-    int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
-    size_t  A_size = lda * K1;
-    size_t  B_size = ldb * K1;
-    size_t  C_size = ldc * N;
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, 1) : N);
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, 1) : N);
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC_host(C_size);
-    host_vector<T> hC_device(C_size);
-    host_vector<T> hC_gold(C_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(rows, cols, lda);
+    host_matrix<T> hB(rows, cols, ldb);
+    host_matrix<T> hC_host(N, N, ldc);
+    host_matrix<T> hC_device(N, N, ldc);
+    host_matrix<T> hC_cpu(N, N, ldc);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
+    // Allocate device memory
+    device_matrix<T> dA(rows, cols, lda);
+    device_matrix<T> dB(rows, cols, ldb);
+    device_matrix<T> dC(N, N, ldc);
     device_vector<T> d_alpha(1);
     device_vector<U> d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     T h_alpha = arg.get_alpha<T>();
     U h_beta  = arg.get_beta<U>();
@@ -274,18 +283,18 @@ void testing_her2k(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, N, K1, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(hB, arg, N, K1, ldb, 0, 1, hipblas_client_never_set_nan, false, true);
-    hipblas_init_matrix(hC_host, arg, N, N, ldc, 0, 1, hipblas_client_never_set_nan);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hB, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_never_set_nan, hipblas_hermitian_matrix);
 
     // copy matrix is easy in STL; hB = hA: save a copy in hB which will be output of CPU BLAS
     hC_device = hC_host;
-    hC_gold   = hC_host;
+    hC_cpu    = hC_host;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(U), hipMemcpyHostToDevice));
 
@@ -299,32 +308,32 @@ void testing_her2k(const Arguments& arg)
                    (handle, uplo, transA, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasHer2kFn,
                    (handle, uplo, transA, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
 
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-        ref_her2k<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
+        ref_her2k<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_cpu, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(N, N, ldc, hC_gold, hC_host);
-            unit_check_general<T>(N, N, ldc, hC_gold, hC_device);
+            unit_check_general<T>(N, N, ldc, hC_cpu, hC_host);
+            unit_check_general<T>(N, N, ldc, hC_cpu, hC_device);
         }
 
         if(arg.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', N, N, ldc, hC_gold, hC_host);
-            hipblas_error_device = norm_check_general<T>('F', N, N, ldc, hC_gold, hC_device);
+            hipblas_error_host   = norm_check_general<T>('F', N, N, ldc, hC_cpu, hC_host);
+            hipblas_error_device = norm_check_general<T>('F', N, N, ldc, hC_cpu, hC_device);
         }
     }
 

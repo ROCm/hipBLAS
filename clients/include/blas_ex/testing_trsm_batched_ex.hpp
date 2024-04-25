@@ -71,9 +71,10 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
     int64_t K        = side == HIPBLAS_SIDE_LEFT ? M : N;
     int64_t invAsize = TRSM_BLOCK * K;
 
-    device_batch_vector<T> dA(K * lda, 1, batch_count);
-    device_batch_vector<T> dB(N * ldb, 1, batch_count);
-    device_batch_vector<T> dInvA(invAsize, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<T> dA(K, K, lda, batch_count);
+    device_batch_matrix<T> dB(M, N, ldb, batch_count);
+    device_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1);
     const T          h_alpha(1), h_zero(0);
@@ -106,7 +107,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_NOT_INITIALIZED);
@@ -124,7 +125,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_INVALID_VALUE);
@@ -142,7 +143,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_INVALID_VALUE);
@@ -159,7 +160,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_INVALID_ENUM);
@@ -176,7 +177,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_INVALID_ENUM);
@@ -194,7 +195,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      HIPBLAS_R_16F),
                               HIPBLAS_STATUS_NOT_SUPPORTED);
@@ -212,7 +213,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                      dB.ptr_on_device(),
                                                      ldb,
                                                      batch_count,
-                                                     dInvA.ptr_on_device(),
+                                                     dinvA.ptr_on_device(),
                                                      invAsize,
                                                      computeType),
                               HIPBLAS_STATUS_INVALID_VALUE);
@@ -232,7 +233,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                          dB.ptr_on_device(),
                                                          ldb,
                                                          batch_count,
-                                                         dInvA.ptr_on_device(),
+                                                         dinvA.ptr_on_device(),
                                                          invAsize,
                                                          computeType),
                                   HIPBLAS_STATUS_INVALID_VALUE);
@@ -249,7 +250,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                          nullptr,
                                                          ldb,
                                                          batch_count,
-                                                         dInvA.ptr_on_device(),
+                                                         dinvA.ptr_on_device(),
                                                          invAsize,
                                                          computeType),
                                   HIPBLAS_STATUS_INVALID_VALUE);
@@ -269,7 +270,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
                                                    dB.ptr_on_device(),
                                                    ldb,
                                                    batch_count,
-                                                   dInvA.ptr_on_device(),
+                                                   dinvA.ptr_on_device(),
                                                    invAsize,
                                                    computeType));
 
@@ -360,9 +361,7 @@ void testing_trsm_batched_ex(const Arguments& arg)
 
     T h_alpha = arg.get_alpha<T>();
 
-    int    K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t A_size = size_t(lda) * K;
-    size_t B_size = size_t(ldb) * N;
+    int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // check here to prevent undefined memory allocation error
     // TODO: Workaround for cuda tests, not actually testing return values
@@ -374,44 +373,46 @@ void testing_trsm_batched_ex(const Arguments& arg)
     {
         return;
     }
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hB_host(B_size, 1, batch_count);
-    host_batch_vector<T> hB_device(B_size, 1, batch_count);
-    host_batch_vector<T> hB_cpu(B_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(K, K, lda, batch_count);
+    host_batch_matrix<T> hB_host(K, K, lda, batch_count);
+    host_batch_matrix<T> hB_device(M, N, ldb, batch_count);
+    host_batch_matrix<T> hB_cpu(M, N, ldb, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dB(B_size, 1, batch_count);
-    device_batch_vector<T> dinvA(TRSM_BLOCK * K, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB_host.memcheck());
+    CHECK_HIP_ERROR(hB_device.memcheck());
+    CHECK_HIP_ERROR(hB_cpu.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(K, K, lda, batch_count);
+    device_batch_matrix<T> dB(M, N, ldb, batch_count);
+    device_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, batch_count);
     device_vector<T>       d_alpha(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dB.memcheck());
-    CHECK_HIP_ERROR(dinvA.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dinvA.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    // Initial hA on CPU
-    hipblas_init_vector(hB_host, arg, hipblas_client_never_set_nan);
+    // Initial data on CPU
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_diagonally_dominant_triangular_matrix, true);
+    hipblas_init_matrix(hB_host, arg, hipblas_client_never_set_nan, hipblas_general_matrix);
+
+    if(diag == HIPBLAS_DIAG_UNIT)
+    {
+        make_unit_diagonal(uplo, hA);
+    }
+
     for(int b = 0; b < batch_count; b++)
     {
-        hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                                 (T*)hA[b],
-                                 arg,
-                                 K,
-                                 K,
-                                 lda,
-                                 0,
-                                 1,
-                                 hipblas_client_never_set_nan,
-                                 true);
-
-        if(diag == HIPBLAS_DIAG_UNIT)
-        {
-            make_unit_diagonal(uplo, (T*)hA[b], lda, K);
-        }
-
         // Calculate hB = hA*hX;
         ref_trmm<T>(side,
                     uplo,

@@ -70,12 +70,15 @@ void testing_geam_batched_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
-    device_batch_vector<T> dA(colsA * lda, 1, batch_count);
-    device_batch_vector<T> dB(colsB * ldb, 1, batch_count);
-    device_batch_vector<T> dC(N * ldc, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<T> dA(A_row, A_col, lda, batch_count);
+    device_batch_matrix<T> dB(B_row, B_col, ldb, batch_count);
+    device_batch_matrix<T> dC(M, N, ldc, batch_count);
 
     device_vector<T> d_alpha(1), d_beta(1), d_zero(1);
     const T          h_alpha(1), h_beta(2), h_zero(0);
@@ -409,34 +412,10 @@ void testing_geam_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    hipblasLocalHandle handle(arg);
-
-    int64_t A_row, A_col, B_row, B_col;
-
-    if(transA == HIPBLAS_OP_N)
-    {
-        A_row = M;
-        A_col = N;
-    }
-    else
-    {
-        A_row = N;
-        A_col = M;
-    }
-    if(transB == HIPBLAS_OP_N)
-    {
-        B_row = M;
-        B_col = N;
-    }
-    else
-    {
-        B_row = N;
-        B_col = M;
-    }
-
-    size_t A_size = lda * A_col;
-    size_t B_size = ldb * B_col;
-    size_t C_size = ldc * N;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || batch_count < 0 || lda < A_row || ldb < B_row || ldc < M;
@@ -463,33 +442,48 @@ void testing_geam_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    // allocate memory on device
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dB(B_size, 1, batch_count);
-    device_batch_vector<T> dC(C_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(A_row, A_col, lda, batch_count);
+    host_batch_matrix<T> hB(B_row, B_col, ldb, batch_count);
+    host_batch_matrix<T> hC_host(M, N, ldc, batch_count);
+    host_batch_matrix<T> hC_device(M, N, ldc, batch_count);
+    host_batch_matrix<T> hC_cpu(M, N, ldc, batch_count);
+
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
+    CHECK_HIP_ERROR(hC_host.memcheck());
+    CHECK_HIP_ERROR(hC_device.memcheck());
+    CHECK_HIP_ERROR(hC_cpu.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(A_row, A_col, lda, batch_count);
+    device_batch_matrix<T> dB(B_row, B_col, ldb, batch_count);
+    device_batch_matrix<T> dC(M, N, ldc, batch_count);
+    device_batch_matrix<T> dC_in_place(M, N, ldc, batch_count);
     device_vector<T>       d_alpha(1);
     device_vector<T>       d_beta(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dB.memcheck());
-    CHECK_HIP_ERROR(dC.memcheck());
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hB(B_size, 1, batch_count);
-    host_batch_vector<T> hC1(C_size, 1, batch_count);
-    host_batch_vector<T> hC2(C_size, 1, batch_count);
-    host_batch_vector<T> hC_copy(C_size, 1, batch_count);
+    // Initial Data on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hB, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
-    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hB, arg, hipblas_client_beta_sets_nan);
-    hipblas_init_vector(hC1, arg, hipblas_client_beta_sets_nan);
-    hC2.copy_from(hC1);
-    hC_copy.copy_from(hC1);
+    hC_device.copy_from(hC_host);
+    hC_cpu.copy_from(hC_host);
 
+    // copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dB.transfer_from(hB));
-    CHECK_HIP_ERROR(dC.transfer_from(hC1));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -517,10 +511,10 @@ void testing_geam_batched(const Arguments& arg)
                         ldc,
                         batch_count));
 
-            CHECK_HIP_ERROR(hC1.transfer_from(dC));
+            CHECK_HIP_ERROR(hC_host.transfer_from(dC));
         }
         {
-            CHECK_HIP_ERROR(dC.transfer_from(hC2));
+            CHECK_HIP_ERROR(dC.transfer_from(hC_device));
 
             // d_alpha and d_beta are device pointers
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
@@ -540,7 +534,7 @@ void testing_geam_batched(const Arguments& arg)
                         ldc,
                         batch_count));
 
-            CHECK_HIP_ERROR(hC2.transfer_from(dC));
+            CHECK_HIP_ERROR(hC_device.transfer_from(dC));
         }
 
         /* =====================================================================
@@ -559,7 +553,7 @@ void testing_geam_batched(const Arguments& arg)
                      &h_beta,
                      (T*)hB[b],
                      ldb,
-                     (T*)hC_copy[b],
+                     (T*)hC_cpu[b],
                      ldc);
         }
 
@@ -567,14 +561,16 @@ void testing_geam_batched(const Arguments& arg)
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC1);
-            unit_check_general<T>(M, N, batch_count, ldc, hC_copy, hC2);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_cpu, hC_host);
+            unit_check_general<T>(M, N, batch_count, ldc, hC_cpu, hC_device);
         }
 
         if(arg.norm_check)
         {
-            hipblas_error_host   = norm_check_general<T>('F', M, N, ldc, hC_copy, hC1, batch_count);
-            hipblas_error_device = norm_check_general<T>('F', M, N, ldc, hC_copy, hC2, batch_count);
+            hipblas_error_host
+                = norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_host, batch_count);
+            hipblas_error_device
+                = norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_device, batch_count);
         }
     }
 

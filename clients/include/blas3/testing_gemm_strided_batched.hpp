@@ -73,16 +73,19 @@ void testing_gemm_strided_batched_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, int64_t(1));
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, int64_t(1));
 
-    hipblasStride strideA = colsA * lda;
-    hipblasStride strideB = colsB * ldb;
-    hipblasStride strideC = N * ldc;
+    hipblasStride stride_A = A_col * lda;
+    hipblasStride stride_B = B_row * ldb;
+    hipblasStride stride_C = N * ldc;
 
-    device_vector<T> dA(strideA * batch_count);
-    device_vector<T> dB(strideB * batch_count);
-    device_vector<T> dC(strideC * batch_count);
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(A_row, A_col, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(B_row, B_col, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
     T                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
@@ -454,31 +457,10 @@ void testing_gemm_strided_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int64_t A_row, A_col, B_row, B_col;
-
-    hipblasLocalHandle handle(arg);
-
-    if(transA == HIPBLAS_OP_N)
-    {
-        A_row = M;
-        A_col = K;
-    }
-    else
-    {
-        A_row = K;
-        A_col = M;
-    }
-
-    if(transB == HIPBLAS_OP_N)
-    {
-        B_row = K;
-        B_col = N;
-    }
-    else
-    {
-        B_row = N;
-        B_col = K;
-    }
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, 1);
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, 1) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, 1) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, 1);
 
     hipblasStride stride_A = lda * A_col * stride_scale;
     hipblasStride stride_B = ldb * B_col * stride_scale;
@@ -512,39 +494,53 @@ void testing_gemm_strided_batched(const Arguments& arg)
         return;
     }
 
-    size_t A_size = stride_A * batch_count;
-    size_t B_size = stride_B * batch_count;
-    size_t C_size = stride_C * batch_count;
+    hipblasStride stride_A = lda * A_col * stride_scale;
+    hipblasStride stride_B = ldb * B_col * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC_host(C_size);
-    host_vector<T> hC_device(C_size);
-    host_vector<T> hC_copy(C_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_strided_batch_matrix<T> hA(A_row, A_col, lda, stride_A, batch_count);
+    host_strided_batch_matrix<T> hB(B_row, B_col, ldb, stride_B, batch_count);
+    host_strided_batch_matrix<T> hC_host(M, N, ldc, stride_C, batch_count);
+    host_strided_batch_matrix<T> hC_device(M, N, ldc, stride_C, batch_count);
+    host_strided_batch_matrix<T> hC_cpu(M, N, ldc, stride_C, batch_count);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
-    device_vector<T> d_alpha(1);
-    device_vector<T> d_beta(1);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
+    CHECK_HIP_ERROR(hC_host.memcheck());
+    CHECK_HIP_ERROR(hC_device.memcheck());
+    CHECK_HIP_ERROR(hC_cpu.memcheck());
+
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(A_row, A_col, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(B_row, B_col, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
+    device_vector<T>               d_alpha(1);
+    device_vector<T>               d_beta(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     // Initial Data on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
     hipblas_init_matrix(
-        hA, arg, A_row, A_col, lda, stride_A, batch_count, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(
-        hB, arg, B_row, B_col, ldb, stride_B, batch_count, hipblas_client_alpha_sets_nan);
-    hipblas_init_matrix(
-        hC_host, arg, M, N, ldc, stride_C, batch_count, hipblas_client_beta_sets_nan);
+        hB, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
-    // copy vector is easy in STL; hz = hx: save a copy in hC_copy which will be output of CPU BLAS
-    hC_copy   = hC_host;
-    hC_device = hC_host;
+    // copy vector
+    hC_device.copy_from(hC_host);
+    hC_cpu.copy_from(hC_host);
 
     // copy data from CPU to device, does not work for lda != A_row
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * B_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -580,11 +576,11 @@ void testing_gemm_strided_batched(const Arguments& arg)
                     batch_count));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
         // device mode
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * C_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_host));
         DAPI_CHECK(hipblasGemmStridedBatchedFn,
                    (handle,
                     transA,
@@ -604,26 +600,15 @@ void testing_gemm_strided_batched(const Arguments& arg)
                     ldc,
                     stride_C,
                     batch_count));
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
         /* =====================================================================
                     CPU BLAS
         =================================================================== */
         for(int64_t i = 0; i < batch_count; i++)
         {
-            ref_gemm<T>(transA,
-                        transB,
-                        M,
-                        N,
-                        K,
-                        h_alpha,
-                        hA.data() + stride_A * i,
-                        lda,
-                        hB.data() + stride_B * i,
-                        ldb,
-                        h_beta,
-                        hC_copy.data() + stride_C * i,
-                        ldc);
+            ref_gemm<T>(
+                transA, transB, M, N, K, h_alpha, hA[b], lda, hB[b], ldb, h_beta, hC_cpu[b], ldc);
         }
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -633,21 +618,21 @@ void testing_gemm_strided_batched(const Arguments& arg)
             if(std::is_same_v<T, hipblasHalf> && (getArchMajor() == 11))
             {
                 const double tol = K * sum_error_tolerance_for_gfx11<T, T, T>;
-                near_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_host, tol);
-                near_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_device, tol);
+                near_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_host, tol);
+                near_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_device, tol);
             }
             else
             {
-                unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_host);
-                unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_copy, hC_device);
+                unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_host);
+                unit_check_general<T>(M, N, batch_count, ldc, stride_C, hC_cpu, hC_device);
             }
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_copy, hC_host, batch_count);
+                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_cpu, hC_host, batch_count);
             hipblas_error_device
-                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_copy, hC_device, batch_count);
+                = norm_check_general<T>('F', M, N, ldc, stride_C, hC_cpu, hC_device, batch_count);
         }
     }
 

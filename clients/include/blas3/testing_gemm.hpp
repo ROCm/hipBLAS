@@ -67,12 +67,15 @@ void testing_gemm_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, int64_t(1));
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, int64_t(1));
 
-    device_vector<T> dA(colsA * lda);
-    device_vector<T> dB(colsB * ldb);
-    device_vector<T> dC(N * ldc);
+    // Allocate device memory
+    device_matrix<T> dA(A_row, A_col, lda);
+    device_matrix<T> dB(B_row, B_col, ldb);
+    device_matrix<T> dC(M, N, ldc);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
     T                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
@@ -281,35 +284,10 @@ void testing_gemm(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int64_t A_row, A_col, B_row, B_col;
-
-    hipblasLocalHandle handle(arg);
-
-    if(transA == HIPBLAS_OP_N)
-    {
-        A_row = M;
-        A_col = K;
-    }
-    else
-    {
-        A_row = K;
-        A_col = M;
-    }
-
-    if(transB == HIPBLAS_OP_N)
-    {
-        B_row = K;
-        B_col = N;
-    }
-    else
-    {
-        B_row = N;
-        B_col = K;
-    }
-
-    size_t A_size = lda * A_col;
-    size_t B_size = ldb * B_col;
-    size_t C_size = ldc * N;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, 1);
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, 1) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, 1) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, 1);
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || K < 0 || lda < A_row || ldb < B_row || ldc < M;
@@ -337,33 +315,42 @@ void testing_gemm(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC_host(C_size);
-    host_vector<T> hC_device(C_size);
-    host_vector<T> hC_copy(C_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(A_row, A_col, lda);
+    host_matrix<T> hB(B_row, B_col, ldb);
+    host_matrix<T> hC_host(M, N, ldc);
+    host_matrix<T> hC_device(M, N, ldc);
+    host_matrix<T> hC_cpu(M, N, ldc);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
+    // Allocate device memory
+    device_matrix<T> dA(A_row, A_col, lda);
+    device_matrix<T> dB(B_row, B_col, ldb);
+    device_matrix<T> dC(M, N, ldc);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(
-        hB, arg, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
-    // copy vector is easy in STL; hz = hx: save a copy in hC_copy which will be output of CPU BLAS
-    hC_copy   = hC_host;
+    // Initial Data on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(
+        hB, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
+
+    // copy vector is easy in STL; hz = hx: save a copy in hC_cpu which will be output of CPU BLAS
+    hC_cpu    = hC_host;
     hC_device = hC_host;
 
     // copy data from CPU to device, does not work for lda != A_row
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * lda * A_col, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(T) * ldb * B_col, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -379,13 +366,14 @@ void testing_gemm(const Arguments& arg)
                    (handle, transA, transB, M, N, K, &h_alpha, dA, lda, dB, ldb, &h_beta, dC, ldc));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
 
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(T) * ldc * N, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        DAPI_CHECK(hipblasGemmFn,
-                   (handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(T) * ldc * N, hipMemcpyDeviceToHost));
+        CHECK_HIPBLAS_ERROR(hipblasGemmFn(
+            handle, transA, transB, M, N, K, d_alpha, dA, lda, dB, ldb, d_beta, dC, ldc));
+
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         /* =====================================================================
                     CPU BLAS
@@ -401,7 +389,7 @@ void testing_gemm(const Arguments& arg)
                     hB.data(),
                     ldb,
                     h_beta,
-                    hC_copy.data(),
+                    hC_cpu.data(),
                     ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
@@ -411,21 +399,21 @@ void testing_gemm(const Arguments& arg)
             if(std::is_same_v<T, hipblasHalf> && (getArchMajor() == 11))
             {
                 const double tol = K * sum_error_tolerance_for_gfx11<T, T, T>;
-                near_check_general<T>(M, N, ldc, hC_copy.data(), hC_host.data(), tol);
-                near_check_general<T>(M, N, ldc, hC_copy.data(), hC_device.data(), tol);
+                near_check_general<T>(M, N, ldc, hC_cpu.data(), hC_host.data(), tol);
+                near_check_general<T>(M, N, ldc, hC_cpu.data(), hC_device.data(), tol);
             }
             else
             {
-                unit_check_general<T>(M, N, ldc, hC_copy, hC_host);
-                unit_check_general<T>(M, N, ldc, hC_copy, hC_device);
+                unit_check_general<T>(M, N, ldc, hC_cpu, hC_host);
+                unit_check_general<T>(M, N, ldc, hC_cpu, hC_device);
             }
         }
         if(arg.norm_check)
         {
             hipblas_error_host
-                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_host));
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_host));
             hipblas_error_device
-                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_copy, hC_device));
+                = hipblas_abs(norm_check_general<T>('F', M, N, ldc, hC_cpu, hC_device));
         }
 
     } // end of if unit/norm check

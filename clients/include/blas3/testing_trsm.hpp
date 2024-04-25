@@ -58,8 +58,9 @@ void testing_trsm_bad_arg(const Arguments& arg)
 
     int64_t K = side == HIPBLAS_SIDE_LEFT ? M : N;
 
-    device_vector<T> dA(K * lda);
-    device_vector<T> dB(N * ldb);
+    // Allocate device memory
+    device_matrix<T> dA(K, K, lda);
+    device_matrix<T> dB(M, N, ldb);
 
     device_vector<T> d_alpha(1), d_zero(1);
     const T          h_alpha(1), h_zero(0);
@@ -204,9 +205,7 @@ void testing_trsm(const Arguments& arg)
 
     T h_alpha = arg.get_alpha<T>();
 
-    int64_t K      = (side == HIPBLAS_SIDE_LEFT ? M : N);
-    size_t  A_size = lda * K;
-    size_t  B_size = ldb * N;
+    int64_t K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasLocalHandle handle(arg);
 
@@ -223,46 +222,46 @@ void testing_trsm(const Arguments& arg)
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB_host(B_size);
-    host_vector<T> hB_device(B_size);
-    host_vector<T> hB_gold(B_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(K, K, lda);
+    host_matrix<T> hB_host(M, N, ldb);
+    host_matrix<T> hB_device(M, N, ldb);
+    host_matrix<T> hB_cpu(M, N, ldb);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> d_alpha(1);
+    // Allocate device memory
+    device_matrix<T> dA(K, K, lda);
+    device_matrix<T> dB(M, N, ldb);
+    device_vector<T> d_alpha(1, 1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    // Initial hA on CPU
-    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                             (T*)hA,
-                             arg,
-                             K,
-                             K,
-                             lda,
-                             0,
-                             1,
-                             hipblas_client_never_set_nan,
-                             true);
-    hipblas_init_matrix(hB_host, arg, M, N, ldb, 0, 1, hipblas_client_never_set_nan);
+    // Initial data on CPU
+    hipblas_init_matrix(
+        hA, arg, hipblas_client_never_set_nan, hipblas_diagonally_dominant_triangular_matrix, true);
+    hipblas_init_matrix(
+        hB_host, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
 
+    //  make hA unit diagonal if diag == HIPBLAS_DIAG_UNIT
     if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, (T*)hA, lda, K);
     }
 
-    hB_gold = hB_host; // original solution hX
-
     // Calculate hB = hA*hX;
     ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hA, lda, hB_host, ldb);
 
+    hB_cpu    = hB_host; // original solution hX
     hB_device = hB_host;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     /* =====================================================================
@@ -274,28 +273,28 @@ void testing_trsm(const Arguments& arg)
         DAPI_CHECK(hipblasTrsmFn,
                    (handle, side, uplo, transA, diag, M, N, &h_alpha, dA, lda, dB, ldb));
 
-        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hB_host.transfer_from(dB));
+        CHECK_HIP_ERROR(dB.transfer_from(hB_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasTrsmFn,
                    (handle, side, uplo, transA, diag, M, N, d_alpha, dA, lda, dB, ldb));
 
-        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hB_device.transfer_from(dB));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
 
         // ref_trsm<T>(
-        //     side, uplo, transA, diag, M, N, h_alpha, (const T*)hA, lda, hB_gold, ldb);
+        //     side, uplo, transA, diag, M, N, h_alpha, (const T*)hA, lda, hB_cpu, ldb);
 
         // if enable norm check, norm check is invasive
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
         double    tolerance = eps * 40 * M;
 
-        hipblas_error_host   = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_host);
-        hipblas_error_device = norm_check_general<T>('F', M, N, ldb, hB_gold, hB_device);
+        hipblas_error_host   = norm_check_general<T>('F', M, N, ldb, hB_cpu, hB_host);
+        hipblas_error_device = norm_check_general<T>('F', M, N, ldb, hB_cpu, hB_device);
         if(arg.unit_check)
         {
             unit_check_error(hipblas_error_host, tolerance);
