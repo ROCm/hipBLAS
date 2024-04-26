@@ -212,7 +212,10 @@ void testing_symm(const Arguments& arg)
 
     size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
+    bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A;
     if(M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A)
     {
         DAPI_EXPECT(

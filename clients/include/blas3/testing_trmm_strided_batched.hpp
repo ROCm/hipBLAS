@@ -95,7 +95,7 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
         hipblasStride stride_A   = lda * K;
         hipblasStride stride_B   = ldb * N;
         hipblasStride stride_C   = ldc * N;
-        hipblasStride stride_out = inplace ? stride_B : stride_C;
+        hipblasStride stride_Out = inplace ? stride_B : stride_C;
 
         // Allocate device memory
         device_strided_batch_matrix<T> dA(K, K, lda, stride_A, batch_count);
@@ -122,13 +122,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -142,14 +142,14 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      N,
                      alpha,
                      dA,
-                     strideA,
+                     stride_A,
                      lda,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -164,13 +164,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
@@ -185,13 +185,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         // nullptr checks
@@ -207,13 +207,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -228,13 +228,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -249,34 +249,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
-                     batch_count));
-
-        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasTrmmStridedBatchedFn,
-                    (handle,
-                     side,
-                     uplo,
-                     transA,
-                     diag,
-                     M,
-                     N,
-                     alpha,
-                     dA,
-                     lda,
-                     strideA,
-                     nullptr,
-                     ldb,
-                     strideB,
-                     *dOut,
-                     ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -291,13 +270,34 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
+                     nullptr,
+                     ldb,
+                     stride_B,
+                     *dOut,
+                     ldOut,
+                     stride_Out,
+                     batch_count));
+
+        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                    hipblasTrmmStridedBatchedFn,
+                    (handle,
+                     side,
+                     uplo,
+                     transA,
+                     diag,
+                     M,
+                     N,
+                     alpha,
+                     dA,
+                     lda,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      nullptr,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         // quick return: if alpha == 0, both A & B can be nullptr
@@ -313,13 +313,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      zero,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      ldb,
-                     strideB,
+                     stride_B,
                      *dOut,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         // quick return: if M == 0, then all ptrs can be nullptr
@@ -335,13 +335,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      ldb,
-                     strideB,
+                     stride_B,
                      nullptr,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         // quick return: if N == 0, then all ptrs can be nullptr
@@ -357,13 +357,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      ldb,
-                     strideB,
+                     stride_B,
                      nullptr,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      batch_count));
 
         // quick return: if batch_count == 0, then all ptrs can be nullptr
@@ -379,13 +379,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      ldb,
-                     strideB,
+                     stride_B,
                      nullptr,
                      ldOut,
-                     strideOut,
+                     stride_Out,
                      0));
 
         // 64-bit interface tests
@@ -401,13 +401,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      nullptr,
                      c_i32_overflow,
-                     strideA,
+                     stride_A,
                      nullptr,
                      c_i32_overflow,
-                     strideB,
+                     stride_B,
                      nullptr,
                      c_i32_overflow,
-                     strideOut,
+                     stride_Out,
                      c_i32_overflow));
         DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS : HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTrmmStridedBatchedFn,
@@ -421,13 +421,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                      nullptr,
                      nullptr,
                      c_i32_overflow,
-                     strideA,
+                     stride_A,
                      nullptr,
                      c_i32_overflow,
-                     strideB,
+                     stride_B,
                      nullptr,
                      c_i32_overflow,
-                     strideOut,
+                     stride_Out,
                      c_i32_overflow));
 
         // in-place only checks
@@ -446,13 +446,13 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
                          alpha,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          *dOut,
                          ldb + 1,
-                         strideOut,
+                         stride_Out,
                          batch_count));
         }
     }
@@ -490,7 +490,9 @@ void testing_trmm_strided_batched(const Arguments& arg)
     hipblasStride stride_A   = lda * K * stride_scale;
     hipblasStride stride_B   = ldb * N * stride_scale;
     hipblasStride stride_C   = inplace ? 1 : ldc * N * stride_scale;
-    hipblasStride stride_out = inplace ? stride_B : stride_C;
+    hipblasStride stride_Out = inplace ? stride_B : stride_C;
+
+    hipblasLocalHandle handle(arg);
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
@@ -515,7 +517,7 @@ void testing_trmm_strided_batched(const Arguments& arg)
                      stride_B,
                      nullptr,
                      ldOut,
-                     stride_out,
+                     stride_Out,
                      batch_count));
         return;
     }
@@ -527,9 +529,9 @@ void testing_trmm_strided_batched(const Arguments& arg)
     host_strided_batch_matrix<T> hC
         = (inplace) ? host_strided_batch_matrix<T>(1, 1, 1, 1, 1)
                     : host_strided_batch_matrix<T>(M, N, ldc, stride_C, batch_count);
-    host_strided_batch_matrix<T> hOut_host(M, N, ldOut, stride_out, batch_count);
-    host_strided_batch_matrix<T> hOut_device(M, N, ldOut, stride_out, batch_count);
-    host_strided_batch_matrix<T> hOut_cpu(M, N, ldOut, stride_out, batch_count);
+    host_strided_batch_matrix<T> hOut_host(M, N, ldOut, stride_Out, batch_count);
+    host_strided_batch_matrix<T> hOut_device(M, N, ldOut, stride_Out, batch_count);
+    host_strided_batch_matrix<T> hOut_cpu(M, N, ldOut, stride_Out, batch_count);
 
     // Check host memory allocation
     CHECK_HIP_ERROR(hA.memcheck());
@@ -598,7 +600,7 @@ void testing_trmm_strided_batched(const Arguments& arg)
                     stride_B,
                     *dOut,
                     ldOut,
-                    stride_out,
+                    stride_Out,
                     batch_count));
 
         CHECK_HIP_ERROR(hOut_host.transfer_from(*dOut));
@@ -622,7 +624,7 @@ void testing_trmm_strided_batched(const Arguments& arg)
                     stride_B,
                     *dOut,
                     ldOut,
-                    stride_out,
+                    stride_Out,
                     batch_count));
 
         CHECK_HIP_ERROR(hOut_device.transfer_from(*dOut));
@@ -636,21 +638,21 @@ void testing_trmm_strided_batched(const Arguments& arg)
         }
 
         copy_matrix_with_different_leading_dimensions(
-            hB, hOut_cpu, M, N, ldb, ldOut, stride_B, stride_out, batch_count);
+            hB, hOut_cpu, M, N, ldb, ldOut, stride_B, stride_Out, batch_count);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, batch_count, ldOut, stride_out, hOut_cpu, hOut_host);
-            unit_check_general<T>(M, N, batch_count, ldOut, stride_out, hOut_cpu, hOut_device);
+            unit_check_general<T>(M, N, batch_count, ldOut, stride_Out, hOut_cpu, hOut_host);
+            unit_check_general<T>(M, N, batch_count, ldOut, stride_Out, hOut_cpu, hOut_device);
         }
         if(arg.norm_check)
         {
             hipblas_error_host = norm_check_general<T>(
-                'F', M, N, ldOut, stride_out, hOut_cpu, hOut_host, batch_count);
+                'F', M, N, ldOut, stride_Out, hOut_cpu, hOut_host, batch_count);
             hipblas_error_device = norm_check_general<T>(
-                'F', M, N, ldOut, stride_out, hOut_cpu, hOut_device, batch_count);
+                'F', M, N, ldOut, stride_Out, hOut_cpu, hOut_device, batch_count);
         }
     }
 
@@ -683,7 +685,7 @@ void testing_trmm_strided_batched(const Arguments& arg)
                            stride_B,
                            *dOut,
                            ldOut,
-                           stride_out,
+                           stride_Out,
                            batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

@@ -244,29 +244,8 @@ void testing_syrkx(const Arguments& arg)
         return;
     }
 
-<<<<<<< HEAD
-    int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
-    size_t  A_size = lda * K1;
-    size_t  B_size = ldb * K1;
-    size_t  C_size = ldc * N;
-
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC_host(C_size);
-    host_vector<T> hC_device(C_size);
-    host_vector<T> hC_gold(C_size);
-
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
-    device_vector<T> d_alpha(1);
-    device_vector<T> d_beta(1);
-
-    double gpu_time_used, hipblas_error_host, hipblas_error_device;
-=======
-    size_t cols = (trans == HIPBLAS_OP_N ? std::max(K, 1) : N);
-    size_t rows = (trans != HIPBLAS_OP_N ? std::max(K, 1) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory
@@ -290,9 +269,7 @@ void testing_syrkx(const Arguments& arg)
     CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
     CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
->>>>>>> bb5854e... New allocator and initializer to Level 3 matrices
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
@@ -334,11 +311,7 @@ void testing_syrkx(const Arguments& arg)
         /* =====================================================================
            CPU BLAS
         =================================================================== */
-<<<<<<< HEAD
-        syrkx_reference<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_gold, ldc);
-=======
-        syrkx_reference<T>(uplo, trans, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_cpu, ldc);
->>>>>>> bb5854e... New allocator and initializer to Level 3 matrices
+        syrkx_reference<T>(uplo, transA, N, K, h_alpha, hA, lda, hB, ldb, h_beta, hC_cpu, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order

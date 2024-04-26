@@ -111,11 +111,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -128,11 +128,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHerkStridedBatchedFn,
@@ -144,11 +144,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasHerkStridedBatchedFn,
@@ -160,11 +160,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHerkStridedBatchedFn,
@@ -176,11 +176,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         if(arg.bad_arg_all)
@@ -195,11 +195,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          beta,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasHerkStridedBatchedFn,
@@ -211,11 +211,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                          alpha,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          nullptr,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
@@ -230,11 +230,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              nullptr,
                              lda,
-                             strideA,
+                             stride_A,
                              beta,
                              dC,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasHerkStridedBatchedFn,
@@ -246,11 +246,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              beta,
                              nullptr,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
             }
 
@@ -264,11 +264,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                         alpha,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         one,
                         nullptr,
                         ldc,
-                        strideC,
+                        stride_C,
                         batch_count));
 
             // If alpha == 0 && beta == 1, A, C may be nullptr
@@ -281,11 +281,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                         zero,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         one,
                         nullptr,
                         ldc,
-                        strideC,
+                        stride_C,
                         batch_count));
 
             // 64-bit interface test
@@ -300,11 +300,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                          zero,
                          nullptr,
                          c_i32_overflow,
-                         strideA,
+                         stride_A,
                          one,
                          nullptr,
                          c_i32_overflow,
-                         strideC,
+                         stride_C,
                          c_i32_overflow));
         }
 
@@ -318,11 +318,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     batch_count));
         DAPI_CHECK(hipblasHerkStridedBatchedFn,
                    (handle,
@@ -333,11 +333,11 @@ void testing_herk_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     0));
     }
 }
@@ -363,8 +363,8 @@ void testing_herk_strided_batched(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, 1) : N);
-    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, 1) : N);
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     hipblasStride stride_A = lda * cols * stride_scale;
     hipblasStride stride_C = ldc * N * stride_scale;

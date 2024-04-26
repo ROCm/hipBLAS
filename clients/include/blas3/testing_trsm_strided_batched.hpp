@@ -108,10 +108,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      batch_count));
 
         DAPI_EXPECT(
@@ -131,10 +131,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
              alpha,
              dA,
              lda,
-             strideA,
+             stride_A,
              dB,
              ldb,
-             strideB,
+             stride_B,
              batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -149,10 +149,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      batch_count));
         EXPECT_HIPBLAS_STATUS(
             hipblasTrsmStridedBatchedFn(handle,
@@ -183,10 +183,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      batch_count));
 
         if(arg.bad_arg_all)
@@ -203,10 +203,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
@@ -223,10 +223,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              nullptr,
                              lda,
-                             strideA,
+                             stride_A,
                              dB,
                              ldb,
-                             strideB,
+                             stride_B,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasTrsmStridedBatchedFn,
@@ -240,10 +240,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              nullptr,
                              ldb,
-                             strideB,
+                             stride_B,
                              batch_count));
             }
 
@@ -259,10 +259,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                         zero,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         dB,
                         ldb,
-                        strideB,
+                        stride_B,
                         batch_count));
 
             // 64-bit interface tests
@@ -279,10 +279,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          nullptr,
                          c_i32_overflow,
-                         strideA,
+                         stride_A,
                          nullptr,
                          c_i32_overflow,
-                         strideB,
+                         stride_B,
                          c_i32_overflow));
             DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
@@ -297,10 +297,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          nullptr,
                          c_i32_overflow,
-                         strideA,
+                         stride_A,
                          nullptr,
                          c_i32_overflow,
-                         strideB,
+                         stride_B,
                          c_i32_overflow));
         }
 
@@ -316,10 +316,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     batch_count));
         DAPI_CHECK(hipblasTrsmStridedBatchedFn,
                    (handle,
@@ -332,10 +332,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     batch_count));
         DAPI_CHECK(hipblasTrsmStridedBatchedFn,
                    (handle,
@@ -348,10 +348,10 @@ void testing_trsm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     0));
     }
 }
@@ -380,8 +380,8 @@ void testing_trsm_strided_batched(const Arguments& arg)
 
     int64_t K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
-    hipblasStride strideA = lda * K * stride_scale;
-    hipblasStride strideB = ldb * N * stride_scale;
+    hipblasStride stride_A = lda * K * stride_scale;
+    hipblasStride stride_B = ldb * N * stride_scale;
 
     hipblasLocalHandle handle(arg);
 
@@ -403,10 +403,10 @@ void testing_trsm_strided_batched(const Arguments& arg)
                      nullptr,
                      nullptr,
                      lda,
-                     strideA,
+                     stride_A,
                      nullptr,
                      ldb,
-                     strideB,
+                     stride_B,
                      batch_count));
 
         return;
@@ -489,10 +489,10 @@ void testing_trsm_strided_batched(const Arguments& arg)
                     &h_alpha,
                     dA,
                     lda,
-                    strideA,
+                    stride_A,
                     dB,
                     ldb,
-                    strideB,
+                    stride_B,
                     batch_count));
 
         // copy output from device to CPU
@@ -511,10 +511,10 @@ void testing_trsm_strided_batched(const Arguments& arg)
                     d_alpha,
                     dA,
                     lda,
-                    strideA,
+                    stride_A,
                     dB,
                     ldb,
-                    strideB,
+                    stride_B,
                     batch_count));
 
         CHECK_HIP_ERROR(hB_device.transfer_from(dB));
@@ -566,10 +566,10 @@ void testing_trsm_strided_batched(const Arguments& arg)
                            d_alpha,
                            dA,
                            lda,
-                           strideA,
+                           stride_A,
                            dB,
                            ldb,
-                           strideB,
+                           stride_B,
                            batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;

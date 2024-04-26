@@ -113,14 +113,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -133,14 +133,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHemmStridedBatchedFn,
@@ -152,14 +152,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasHemmStridedBatchedFn,
@@ -171,14 +171,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasHemmStridedBatchedFn,
@@ -190,14 +190,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         if(arg.bad_arg_all)
@@ -212,14 +212,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          beta,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasHemmStridedBatchedFn,
@@ -231,14 +231,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                          alpha,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          nullptr,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
@@ -253,14 +253,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              nullptr,
                              lda,
-                             strideA,
+                             stride_A,
                              dB,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              dC,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasHemmStridedBatchedFn,
@@ -272,14 +272,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              nullptr,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              dC,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasHemmStridedBatchedFn,
@@ -291,14 +291,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              dB,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              nullptr,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
             }
 
@@ -312,14 +312,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                         zero,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         nullptr,
                         ldb,
-                        strideB,
+                        stride_B,
                         one,
                         nullptr,
                         ldc,
-                        strideC,
+                        stride_C,
                         batch_count));
 
             // 64-bit interface test
@@ -334,14 +334,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                          zero,
                          nullptr,
                          c_i32_overflow,
-                         strideA,
+                         stride_A,
                          nullptr,
                          c_i32_overflow,
-                         strideB,
+                         stride_B,
                          one,
                          nullptr,
                          c_i32_overflow,
-                         strideC,
+                         stride_C,
                          c_i32_overflow));
         }
 
@@ -355,14 +355,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     batch_count));
         DAPI_CHECK(hipblasHemmStridedBatchedFn,
                    (handle,
@@ -373,14 +373,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     batch_count));
         DAPI_CHECK(hipblasHemmStridedBatchedFn,
                    (handle,
@@ -391,14 +391,14 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     0));
     }
 }
@@ -424,9 +424,16 @@ void testing_hemm_strided_batched(const Arguments& arg)
 
     size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
+    hipblasLocalHandle handle(arg);
+
+    hipblasStride stride_A = lda * dim_A * stride_scale;
+    hipblasStride stride_B = ldb * N * stride_scale;
+    hipblasStride stride_C = ldc * N * stride_scale;
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < dim_A || ldb < M || ldc < M || batch_count < 0)
+    bool invalid_size = M < 0 || N < 0 || lda < dim_A || ldb < M || ldc < M || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasHemmStridedBatchedFn,
@@ -449,10 +456,6 @@ void testing_hemm_strided_batched(const Arguments& arg)
                      batch_count));
         return;
     }
-
-    hipblasStride stride_A = lda * dim_A * stride_scale;
-    hipblasStride stride_B = ldb * N * stride_scale;
-    hipblasStride stride_C = ldc * N * stride_scale;
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory

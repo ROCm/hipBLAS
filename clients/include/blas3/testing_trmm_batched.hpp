@@ -462,8 +462,6 @@ void testing_trmm_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblasLocalHandle handle(arg);
-
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory
     host_batch_matrix<T> hA(K, K, lda, batch_count);

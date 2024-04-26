@@ -326,8 +326,8 @@ void testing_herk_batched(const Arguments& arg)
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, 1) : N);
-    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, 1) : N);
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory

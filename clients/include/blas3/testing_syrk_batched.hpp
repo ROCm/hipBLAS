@@ -307,16 +307,10 @@ void testing_syrk_batched(const Arguments& arg)
         return;
     }
 
-    double  gpu_time_used, hipblas_error_host, hipblas_error_device;
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-<<<<<<< HEAD
-    int64_t K1     = (transA == HIPBLAS_OP_N ? K : N);
-    size_t  A_size = lda * K1;
-    size_t  C_size = ldc * N;
-=======
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, 1) : N);
-    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, 1) : N);
->>>>>>> bb5854e... New allocator and initializer to Level 3 matrices
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory

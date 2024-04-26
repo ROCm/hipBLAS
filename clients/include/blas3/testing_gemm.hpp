@@ -284,10 +284,12 @@ void testing_gemm(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, 1);
-    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, 1) : M;
-    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, 1) : N;
-    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, 1);
+    hipblasLocalHandle handle(arg);
+
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, int64_t(1));
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, int64_t(1));
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || K < 0 || lda < A_row || ldb < B_row || ldc < M;

@@ -213,7 +213,10 @@ void testing_hemm(const Arguments& arg)
 
     size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
+    hipblasLocalHandle handle(arg);
+
     // check here to prevent undefined memory allocation error
+    bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A;
     if(M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A)
     {
         DAPI_EXPECT(
@@ -245,9 +248,7 @@ void testing_hemm(const Arguments& arg)
     CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
     CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
-    double             gpu_time_used, hipblas_error_host, hipblas_error_device;
-    hipblasLocalHandle handle(arg);
-
+    double gpu_time_used, hipblas_error_host, hipblas_error_device;
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_hermitian_matrix, true);
     hipblas_init_matrix(

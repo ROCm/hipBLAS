@@ -412,6 +412,8 @@ void testing_geam_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
+    hipblasLocalHandle handle(arg);
+
     int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
     int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
     int64_t B_row = transB == HIPBLAS_OP_N ? M : N;

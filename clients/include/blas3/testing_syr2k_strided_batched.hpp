@@ -114,14 +114,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
@@ -134,14 +134,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasSyrk2StridedBatchedFn,
@@ -153,14 +153,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasSyrk2StridedBatchedFn,
@@ -172,14 +172,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                      alpha,
                      dA,
                      lda,
-                     strideA,
+                     stride_A,
                      dB,
                      ldb,
-                     strideB,
+                     stride_B,
                      beta,
                      dC,
                      ldc,
-                     strideC,
+                     stride_C,
                      batch_count));
 
         if(arg.bad_arg_all)
@@ -194,14 +194,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                          nullptr,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          beta,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
             DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasSyrk2StridedBatchedFn,
@@ -213,14 +213,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                          alpha,
                          dA,
                          lda,
-                         strideA,
+                         stride_A,
                          dB,
                          ldb,
-                         strideB,
+                         stride_B,
                          nullptr,
                          dC,
                          ldc,
-                         strideC,
+                         stride_C,
                          batch_count));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
@@ -235,14 +235,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              nullptr,
                              lda,
-                             strideA,
+                             stride_A,
                              dB,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              dC,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasSyrk2StridedBatchedFn,
@@ -254,14 +254,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              nullptr,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              dC,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasSyrk2StridedBatchedFn,
@@ -273,14 +273,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                              alpha,
                              dA,
                              lda,
-                             strideA,
+                             stride_A,
                              dB,
                              ldb,
-                             strideB,
+                             stride_B,
                              beta,
                              nullptr,
                              ldc,
-                             strideC,
+                             stride_C,
                              batch_count));
             }
 
@@ -294,14 +294,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                         alpha,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         nullptr,
                         ldb,
-                        strideB,
+                        stride_B,
                         one,
                         nullptr,
                         ldc,
-                        strideC,
+                        stride_C,
                         batch_count));
 
             // If alpha == 0 && beta == 1, A, B, C may be nullptr
@@ -314,14 +314,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                         zero,
                         nullptr,
                         lda,
-                        strideA,
+                        stride_A,
                         nullptr,
                         ldb,
-                        strideB,
+                        stride_B,
                         one,
                         nullptr,
                         ldc,
-                        strideC,
+                        stride_C,
                         batch_count));
 
             // 64-bit interface test
@@ -336,14 +336,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                          zero,
                          nullptr,
                          c_i32_overflow,
-                         strideA,
+                         stride_A,
                          nullptr,
                          c_i32_overflow,
-                         strideB,
+                         stride_B,
                          one,
                          nullptr,
                          c_i32_overflow,
-                         strideC,
+                         stride_C,
                          c_i32_overflow));
         }
 
@@ -357,14 +357,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     batch_count));
         DAPI_CHECK(hipblasSyrk2StridedBatchedFn,
                    (handle,
@@ -375,14 +375,14 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
                     nullptr,
                     nullptr,
                     lda,
-                    strideA,
+                    stride_A,
                     nullptr,
                     ldb,
-                    strideB,
+                    stride_B,
                     nullptr,
                     nullptr,
                     ldc,
-                    strideC,
+                    stride_C,
                     0));
     }
 }
@@ -406,8 +406,8 @@ void testing_syr2k_strided_batched(const Arguments& arg)
     double             stride_scale = arg.stride_scale;
     int64_t            batch_count  = arg.batch_count;
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, 1) : N);
-    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, 1) : N);
+    size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     hipblasStride stride_A = lda * cols * stride_scale;
     hipblasStride stride_B = ldb * cols * stride_scale;

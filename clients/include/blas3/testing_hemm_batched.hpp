@@ -371,13 +371,12 @@ void testing_hemm_batched(const Arguments& arg)
 
     size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
 
+    hipblasLocalHandle handle(arg);
+
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
-    if(M < 0 || N < 0 || lda < dim_A || ldb < M || ldc < M || batch_count < 0)
-    {
-        return;
-    }
-    else if(batch_count == 0)
+    bool invalid_size = M < 0 || N < 0 || lda < dim_A || ldb < M || ldc < M || batch_count < 0;
+    if(invalid_size || !M || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasHemmBatchedFn,
