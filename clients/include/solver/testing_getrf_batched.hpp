@@ -48,9 +48,10 @@ void testing_getrf_batched_bad_arg(const Arguments& arg)
     int64_t            lda         = 102;
     int64_t            batch_count = 2;
     int64_t            A_size      = N * lda;
-    int64_t            Ipiv_size   = std::min(M, N) * batch_count;
+    int64_t            Ipiv_size   = std::min(M, N);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
     device_vector<int>     dIpiv(Ipiv_size);
     device_vector<int>     dInfo(batch_count);
 
@@ -99,7 +100,6 @@ void testing_getrf_batched(const Arguments& arg)
     int batch_count = arg.batch_count;
 
     hipblasStride strideP   = std::min(M, N);
-    size_t        A_size    = size_t(lda) * N;
     size_t        Ipiv_size = strideP * batch_count;
 
     // Check to prevent memory allocation error
@@ -113,22 +113,35 @@ void testing_getrf_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA1(A_size, 1, batch_count);
+    host_batch_matrix<T> hA(M, N, lda, batch_count);
+    host_batch_matrix<T> hA1(M, N, lda, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
     host_vector<int>     hIpiv1(Ipiv_size);
     host_vector<int>     hInfo(batch_count);
     host_vector<int>     hInfo1(batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hA1.memcheck());
+    CHECK_HIP_ERROR(hIpiv.memcheck());
+    CHECK_HIP_ERROR(hIpiv1.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
     device_vector<int>     dIpiv(Ipiv_size);
     device_vector<int>     dInfo(batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dIpiv.memcheck());
+    CHECK_DEVICE_ALLOCATION(dInfo.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
-    // Initialize hA on CPU
-    hipblas_init(hA, true);
+    // Initial hA on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+
     for(int b = 0; b < batch_count; b++)
     {
         // scale A to avoid singularities
@@ -158,8 +171,7 @@ void testing_getrf_batched(const Arguments& arg)
 
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hA1.transfer_from(dA));
-        CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hIpiv1.transfer_from(dIpiv));
         CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
