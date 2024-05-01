@@ -333,7 +333,7 @@ void testing_trsm_ex(const Arguments& arg)
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory
     host_matrix<T> hA(K, K, lda);
-    host_matrix<T> hB_host(K, K, lda);
+    host_matrix<T> hB_host(K, K, ldb);
     host_matrix<T> hB_device(M, N, ldb);
     host_matrix<T> hB_cpu(M, N, ldb);
 

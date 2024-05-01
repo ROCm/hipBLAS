@@ -436,7 +436,7 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory
     host_strided_batch_matrix<T> hA(K, K, lda, stride_A, batch_count);
-    host_strided_batch_matrix<T> hB_host(K, K, lda, stride_A, batch_count);
+    host_strided_batch_matrix<T> hB_host(M, N, ldb, stride_B, batch_count);
     host_strided_batch_matrix<T> hB_device(M, N, ldb, stride_B, batch_count);
     host_strided_batch_matrix<T> hB_cpu(M, N, ldb, stride_B, batch_count);
 

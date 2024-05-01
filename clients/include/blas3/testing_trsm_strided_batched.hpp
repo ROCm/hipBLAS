@@ -443,7 +443,8 @@ void testing_trsm_strided_batched(const Arguments& arg)
     hipblas_init_matrix(
         hB_host, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
 
-    for(int64_t b = 0; b < batch_count; b++)
+    //  make hA unit diagonal if diag == HIPBLAS_DIAG_UNIT
+    if(diag == HIPBLAS_DIAG_UNIT)
     {
         make_unit_diagonal(uplo, hA);
     }
