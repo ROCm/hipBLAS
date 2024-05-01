@@ -483,6 +483,11 @@ typedef enum
     = 142, /**< Multiply general matrix by symmetric, Hermitian or triangular matrix on the right. */
     HIPBLAS_SIDE_BOTH = 143
 } hipblasSideMode_t;
+#elif __cplusplus >= 201103L
+static_assert(HIPBLAS_SIDE_LEFT == 141, "Inconsistent declaration of HIPBLAS_SIDE_LEFT");
+static_assert(HIPBLAS_SIDE_RIGHT == 142, "Inconsistent declaration of HIPBLAS_SIDE_RIGHT");
+static_assert(HIPBLAS_SIDE_BOTH == 143, "Inconsistent declaration of HIPBLAS_SIDE_BOTH");
+#endif // HIPBLAS_SIDE_MODE_DECLARED
 
 typedef enum
 {
@@ -493,12 +498,6 @@ typedef enum
     HIPBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION, /* see cuBLAS documentation, not supported in rocBLAS */
     HIPBLAS_TENSOR_OP_MATH /* DEPRECATED, use Tensor Core operations with cuBLAS backend */
 } hipblasMath_t;
-
-#elif __cplusplus >= 201103L
-static_assert(HIPBLAS_SIDE_LEFT == 141, "Inconsistent declaration of HIPBLAS_SIDE_LEFT");
-static_assert(HIPBLAS_SIDE_RIGHT == 142, "Inconsistent declaration of HIPBLAS_SIDE_RIGHT");
-static_assert(HIPBLAS_SIDE_BOTH == 143, "Inconsistent declaration of HIPBLAS_SIDE_BOTH");
-#endif // HIPBLAS_SIDE_MODE_DECLARED
 
 #ifdef HIPBLAS_V2
 
