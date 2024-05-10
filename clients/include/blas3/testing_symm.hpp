@@ -55,7 +55,7 @@ void testing_symm_bad_arg(const Arguments& arg)
     hipblasSideMode_t side = HIPBLAS_SIDE_LEFT;
     hipblasFillMode_t uplo = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // Allocate device memory
     device_matrix<T> dA(dim_A, dim_A, lda);
@@ -210,7 +210,7 @@ void testing_symm(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasLocalHandle handle(arg);
 

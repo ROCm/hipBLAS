@@ -68,7 +68,7 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
     hipblasSideMode_t side        = HIPBLAS_SIDE_LEFT;
     hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasStride stride_A = dim_A * lda;
     hipblasStride stride_B = N * ldb;
@@ -422,7 +422,7 @@ void testing_hemm_strided_batched(const Arguments& arg)
     double            stride_scale = arg.stride_scale;
     int64_t           batch_count  = arg.batch_count;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasLocalHandle handle(arg);
 

@@ -48,7 +48,7 @@ void testing_getrf_batched_bad_arg(const Arguments& arg)
     int64_t            lda         = 102;
     int64_t            batch_count = 2;
     int64_t            A_size      = N * lda;
-    int64_t            Ipiv_size   = std::min(M, N);
+    int64_t            Ipiv_size   = std::min(M, N) * batch_count;
 
     // Allocate device memory
     device_batch_matrix<T> dA(M, N, lda, batch_count);

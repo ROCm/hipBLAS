@@ -66,7 +66,7 @@ void testing_hemm_batched_bad_arg(const Arguments& arg)
     hipblasSideMode_t side        = HIPBLAS_SIDE_LEFT;
     hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     // Allocate device memory
     device_batch_matrix<T> dA(dim_A, dim_A, lda, batch_count);
@@ -369,7 +369,7 @@ void testing_hemm_batched(const Arguments& arg)
     int64_t           ldc         = arg.ldc;
     int64_t           batch_count = arg.batch_count;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasLocalHandle handle(arg);
 

@@ -398,7 +398,7 @@ void testing_trsm_batched(const Arguments& arg)
         make_unit_diagonal(uplo, hA);
     }
 
-    for(int b = 0; b < batch_count; b++)
+    for(int64_t b = 0; b < batch_count; b++)
     {
         // Calculate hB = hA*hX;
         ref_trmm<T>(side,

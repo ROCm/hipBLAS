@@ -68,7 +68,7 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
     hipblasSideMode_t side        = HIPBLAS_SIDE_LEFT;
     hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasStride stride_A = dim_A * lda;
     hipblasStride stride_B = N * ldb;
@@ -425,7 +425,7 @@ void testing_symm_strided_batched(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? N : M);
+    size_t dim_A = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
     hipblasLocalHandle handle(arg);
 
