@@ -203,7 +203,7 @@ endif( )
 # Package specific CPACK vars
 if(HIP_PLATFORM STREQUAL amd)
   set(rocblas_minimum 4.2.0)
-  set(rocsolver_minimum 3.27.0)
+  set(rocsolver_minimum 3.26.0)
   rocm_package_add_dependencies(SHARED_DEPENDS "rocblas >= ${rocblas_minimum}" "rocsolver >= ${rocsolver_minimum}")
   rocm_package_add_rpm_dependencies(STATIC_DEPENDS "rocblas-static-devel >= ${rocblas_minimum}" "rocsolver-static-devel >= ${rocsolver_minimum}")
   rocm_package_add_deb_dependencies(STATIC_DEPENDS "rocblas-static-dev >= ${rocblas_minimum}" "rocsolver-static-dev >= ${rocsolver_minimum}")
