@@ -48,13 +48,12 @@ void testing_getrf_strided_batched_bad_arg(const Arguments& arg)
     int64_t            M           = N;
     int64_t            lda         = 102;
     int64_t            batch_count = 2;
-    int                Ipiv_size   = std::min(M, N);
     hipblasStride      strideA     = N * lda;
-    hipblasStride      strideP     = Ipiv_size;
+    hipblasStride      strideP     = std::min(M, N);
 
-    device_strided_batch_matrix<T>   dA(M, N, lda, strideA, batch_count);
-    device_strided_batch_matrix<int> dIpiv(1, Ipiv_size, 1, strideP, batch_count);
-    device_vector<int>               dInfo(batch_count);
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<int>             dIpiv(strideP * batch_count);
+    device_vector<int>             dInfo(batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrfStridedBatchedFn(
                               nullptr, N, dA, lda, strideA, dIpiv, strideP, dInfo, batch_count),
@@ -102,9 +101,9 @@ void testing_getrf_strided_batched(const Arguments& arg)
     int           lda          = arg.lda;
     int           batch_count  = arg.batch_count;
     double        stride_scale = arg.stride_scale;
-    int           Ipiv_size    = std::min(M, N);
     hipblasStride strideA      = size_t(lda) * N * stride_scale;
-    hipblasStride strideP      = Ipiv_size * stride_scale;
+    hipblasStride strideP      = std::min(M, N) * stride_scale;
+    size_t        Ipiv_size    = strideP * batch_count;
 
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || lda < M || batch_count < 0)
@@ -117,12 +116,12 @@ void testing_getrf_strided_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_strided_batch_matrix<T>   hA(M, N, lda, strideA, batch_count);
-    host_strided_batch_matrix<T>   hA1(M, N, lda, strideA, batch_count);
-    host_strided_batch_matrix<int> hIpiv(1, Ipiv_size, 1, strideP, batch_count);
-    host_strided_batch_matrix<int> hIpiv1(1, Ipiv_size, 1, strideP, batch_count);
-    host_vector<int>               hInfo(batch_count);
-    host_vector<int>               hInfo1(batch_count);
+    host_strided_batch_matrix<T> hA(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<T> hA1(M, N, lda, strideA, batch_count);
+    host_vector<int>             hIpiv(Ipiv_size);
+    host_vector<int>             hIpiv1(Ipiv_size);
+    host_vector<int>             hInfo(batch_count);
+    host_vector<int>             hInfo1(batch_count);
 
     // Check host memory allocation
     CHECK_HIP_ERROR(hA.memcheck());
@@ -130,9 +129,9 @@ void testing_getrf_strided_batched(const Arguments& arg)
     CHECK_HIP_ERROR(hIpiv.memcheck());
     CHECK_HIP_ERROR(hIpiv1.memcheck());
 
-    device_strided_batch_matrix<T>   dA(M, N, lda, strideA, batch_count);
-    device_strided_batch_matrix<int> dIpiv(1, Ipiv_size, 1, strideP, batch_count);
-    device_vector<int>               dInfo(batch_count);
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<int>             dIpiv(Ipiv_size);
+    device_vector<int>             dInfo(batch_count);
 
     // Check device memory allocation
     CHECK_DEVICE_ALLOCATION(dA.memcheck());
@@ -163,7 +162,7 @@ void testing_getrf_strided_batched(const Arguments& arg)
 
     // Copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
-    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * stride_scale * batch_count * sizeof(int)));
+    CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(int)));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     if(arg.unit_check || arg.norm_check)
@@ -185,7 +184,7 @@ void testing_getrf_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv[b]);
+            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);

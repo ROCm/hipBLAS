@@ -114,11 +114,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -132,11 +132,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -150,11 +150,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -168,11 +168,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -187,11 +187,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -205,11 +205,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      nullptr,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -225,9 +225,9 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      alpha,
                      nullptr,
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -241,11 +241,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
                      nullptr,
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
                      batch_count));
 
@@ -259,16 +259,16 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      M,
                      N,
                      alpha,
-                     dA,
+                     dA.ptr_on_device(),
                      lda,
-                     dB,
+                     dB.ptr_on_device(),
                      ldb,
                      nullptr,
                      ldOut,
                      batch_count));
 
         // quick return: if alpha == 0, both A & B can be nullptr
-        /*DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
+        DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
                     hipblasTrmmBatchedFn,
                     (handle,
                      side,
@@ -282,9 +282,9 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                      lda,
                      nullptr,
                      ldb,
-                     *dOut,
+                     (*dOut).ptr_on_device(),
                      ldOut,
-                     batch_count));*/
+                     batch_count));
 
         // quick return: if M == 0, then all ptrs can be nullptr
         DAPI_EXPECT(HIPBLAS_STATUS_SUCCESS,
@@ -394,11 +394,11 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
                          M,
                          N,
                          alpha,
-                         dA,
+                         dA.ptr_on_device(),
                          lda,
-                         dB,
+                         dB.ptr_on_device(),
                          ldb,
-                         *dOut,
+                         (*dOut).ptr_on_device(),
                          ldb + 1,
                          batch_count));
         }

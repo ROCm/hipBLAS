@@ -40,7 +40,7 @@ template <typename T>
 void setup_geqrf_strided_batched_testing(const Arguments&                arg,
                                          host_strided_batch_matrix<T>&   hA,
                                          device_strided_batch_matrix<T>& dA,
-                                         device_strided_batch_matrix<T>& dIpiv,
+                                         device_vector<T>&               dIpiv,
                                          int                             M,
                                          int                             N,
                                          int                             lda,
@@ -84,17 +84,19 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
     const int          N           = 101;
-    const int          Ipiv_size   = std::min(M, N);
+    int                K           = std::min(M, N);
     const int          lda         = 102;
     const int          batch_count = 2;
 
     hipblasStride strideA = size_t(lda) * N;
-    hipblasStride strideP = Ipiv_size;
+    hipblasStride strideP = K;
+
+    size_t Ipiv_size = strideP * batch_count;
 
     host_strided_batch_matrix<T> hA(M, N, lda, strideA, batch_count);
 
     device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
-    device_strided_batch_matrix<T> dIpiv(1, Ipiv_size, 1, strideP, batch_count);
+    device_vector<T>               dIpiv(Ipiv_size);
 
     int info = 0;
     int expectedInfo;
@@ -171,14 +173,16 @@ void testing_geqrf_strided_batched(const Arguments& arg)
 
     int    M            = arg.M;
     int    N            = arg.N;
-    int    Ipiv_size    = std::min(M, N);
+    int    K            = std::min(M, N);
     int    lda          = arg.lda;
     double stride_scale = arg.stride_scale;
     int    batch_count  = arg.batch_count;
 
     hipblasStride strideA = lda * N * stride_scale;
-    hipblasStride strideP = Ipiv_size * stride_scale;
-    int           info;
+    hipblasStride strideP = K * stride_scale;
+
+    int Ipiv_size = strideP * batch_count;
+    int info;
 
     hipblasLocalHandle handle(arg);
 
@@ -211,8 +215,8 @@ void testing_geqrf_strided_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_strided_batch_matrix<T> hA(M, N, lda, strideA, batch_count);
     host_strided_batch_matrix<T> hA1(M, N, lda, strideA, batch_count);
-    host_strided_batch_matrix<T> hIpiv(1, Ipiv_size, 1, strideP, batch_count);
-    host_strided_batch_matrix<T> hIpiv1(1, Ipiv_size, 1, strideP, batch_count);
+    host_vector<T>               hIpiv(Ipiv_size);
+    host_vector<T>               hIpiv1(Ipiv_size);
 
     // Check host memory allocation
     CHECK_HIP_ERROR(hA.memcheck());
@@ -221,7 +225,7 @@ void testing_geqrf_strided_batched(const Arguments& arg)
     CHECK_HIP_ERROR(hIpiv1.memcheck());
 
     device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
-    device_strided_batch_matrix<T> dIpiv(1, Ipiv_size, 1, strideP, batch_count);
+    device_vector<T>               dIpiv(Ipiv_size);
 
     // Check device memory allocation
     CHECK_DEVICE_ALLOCATION(dA.memcheck());
@@ -257,12 +261,11 @@ void testing_geqrf_strided_batched(const Arguments& arg)
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            ref_geqrf(M, N, hA[b], lda, hIpiv[b], work.data(), N);
+            ref_geqrf(M, N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), N);
         }
 
-        double e1 = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
-        double e2 = norm_check_general<T>(
-            'F', Ipiv_size, 1, Ipiv_size, strideP, hIpiv, hIpiv1, batch_count);
+        double e1     = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
+        double e2     = norm_check_general<T>('F', K, 1, K, strideP, hIpiv, hIpiv1, batch_count);
         hipblas_error = e1 + e2;
 
         if(arg.unit_check)
