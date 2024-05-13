@@ -578,7 +578,7 @@ void testing_gemm_strided_batched(const Arguments& arg)
 
         // device mode
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
-        CHECK_HIP_ERROR(dC.transfer_from(hC_host));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
         DAPI_CHECK(hipblasGemmStridedBatchedFn,
                    (handle,
                     transA,
@@ -598,7 +598,7 @@ void testing_gemm_strided_batched(const Arguments& arg)
                     ldc,
                     stride_C,
                     batch_count));
-        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         /* =====================================================================
                     CPU BLAS

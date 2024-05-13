@@ -70,8 +70,8 @@ void testing_herkx_strided_batched_bad_arg(const Arguments& arg)
     hipblasOperation_t transA      = HIPBLAS_OP_N;
     hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
     size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     hipblasStride stride_A = cols * lda;
     hipblasStride stride_B = cols * ldb;
@@ -433,8 +433,8 @@ void testing_herkx_strided_batched(const Arguments& arg)
     hipblasFillMode_t  uplo   = char2hipblas_fill(arg.uplo);
     hipblasOperation_t transA = char2hipblas_operation(arg.transA);
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
     size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     hipblasStride stride_A = lda * cols * stride_scale;
     hipblasStride stride_B = ldb * cols * stride_scale;

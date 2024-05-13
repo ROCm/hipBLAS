@@ -56,8 +56,8 @@ void testing_herkx_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasFillMode_t  uplo   = HIPBLAS_FILL_MODE_LOWER;
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
     size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     // Allocate device memory
     device_matrix<T> dA(rows, cols, lda);
@@ -253,8 +253,8 @@ void testing_herkx(const Arguments& arg)
         return;
     }
 
-    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
     size_t rows = (transA != HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
+    size_t cols = (transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N);
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
     // Allocate host memory
