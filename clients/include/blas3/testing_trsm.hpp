@@ -286,8 +286,7 @@ void testing_trsm(const Arguments& arg)
            CPU BLAS
         =================================================================== */
 
-        ref_trsm<T>(
-             side, uplo, transA, diag, M, N, h_alpha, (const T*)hA, lda, hB_cpu, ldb);
+        ref_trsm<T>(side, uplo, transA, diag, M, N, h_alpha, (const T*)hA, lda, hB_cpu, ldb);
 
         // if enable norm check, norm check is invasive
         real_t<T> eps       = std::numeric_limits<real_t<T>>::epsilon();
