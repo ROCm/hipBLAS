@@ -436,7 +436,7 @@ void testing_symm_strided_batched(const Arguments& arg)
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
     bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A || batch_count < 0;
-    if(M < 0 || N < 0 || lda < dim_A || ldb < M || ldc < M || batch_count < 0)
+    if(invalid_size || !M || !N || !batch_count)
     {
         DAPI_EXPECT(invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
                     hipblasSymmStridedBatchedFn,

@@ -217,7 +217,7 @@ void testing_hemm(const Arguments& arg)
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A;
-    if(M < 0 || N < 0 || ldc < M || ldb < M || lda < dim_A)
+    if(invalid_size || !M || !N)
     {
         DAPI_EXPECT(
             invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS,
