@@ -25,30 +25,6 @@
 
 #include "hipblas_init.hpp"
 
-//Temporary could be deleted
-/*template <typename T>
-void hipblas_init_matrix(const char      uplo,
-                         T               rand_gen(),
-                         host_vector<T>& A,
-                         int64_t          M,
-                         int64_t          N,
-                         int64_t          lda,
-                         hipblasStride   stride      = 0,
-                         int64_t         batch_count = 1)
-{
-    hipblas_fill_matrix_type(
-        hipblas_general_matrix, uplo, rand_gen(), A, M, N, lda, stride, batch_count);
-}
-
-template <typename T>
-void hipblas_init_matrix(
-    const char uplo, T rand_gen(), host_batch_vector<T>& A, size_t M, size_t N, size_t lda)
-{
-    for(int64_t b = 0; b < A.batch_count(); b++)
-        hipblas_fill_matrix_type(
-            hipblas_general_matrix, uplo, rand_gen(), (T*)A[b], M, N, lda, 0, 1);
-}*/
-
 //!
 //! @brief Initialize a host matrix.
 //! @param hA The host matrix.

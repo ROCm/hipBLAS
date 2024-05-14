@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,13 @@ inline void testname_getrs_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
-                                 host_batch_vector<T>&   hB,
-                                 host_batch_vector<T>&   hX,
+void setup_getrs_batched_testing(const Arguments&        arg,
+                                 host_batch_matrix<T>&   hA,
+                                 host_batch_matrix<T>&   hB,
+                                 host_batch_matrix<T>&   hX,
                                  host_vector<int>&       hIpiv,
-                                 device_batch_vector<T>& dA,
-                                 device_batch_vector<T>& dB,
+                                 device_batch_matrix<T>& dA,
+                                 device_batch_matrix<T>& dB,
                                  device_vector<int>&     dIpiv,
                                  int                     N,
                                  int                     lda,
@@ -49,14 +50,12 @@ void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
                                  int                     batch_count)
 {
     hipblasStride strideP   = N;
-    size_t        A_size    = size_t(lda) * N;
-    size_t        B_size    = size_t(ldb) * 1;
     size_t        Ipiv_size = strideP * batch_count;
 
-    // Initial hA, hB, hX on CPU
-    hipblas_init(hA, true);
-    hipblas_init(hX);
-    srand(1);
+    // Initial hA, hX on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hX, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
+
     hipblasOperation_t op = HIPBLAS_OP_N;
     for(int b = 0; b < batch_count; b++)
     {
@@ -85,6 +84,7 @@ void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
         }
     }
 
+    // Copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dB.transfer_from(hB));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
@@ -104,19 +104,17 @@ void testing_getrs_batched_bad_arg(const Arguments& arg)
     const int          ldb         = 102;
     const int          batch_count = 2;
 
-    const size_t A_size    = size_t(N) * lda;
-    const size_t B_size    = ldb;
     const size_t Ipiv_size = size_t(N) * batch_count;
 
     const hipblasOperation_t op = HIPBLAS_OP_N;
 
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hB(B_size, 1, batch_count);
-    host_batch_vector<T> hX(B_size, 1, batch_count);
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
+    host_batch_matrix<T> hB(N, 1, ldb, batch_count);
+    host_batch_matrix<T> hX(N, 1, ldb, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dB(B_size, 1, batch_count);
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
+    device_batch_matrix<T> dB(N, 1, ldb, batch_count);
     device_vector<int>     dIpiv(Ipiv_size);
     int                    info         = 0;
     int                    expectedInfo = 0;
@@ -127,7 +125,7 @@ void testing_getrs_batched_bad_arg(const Arguments& arg)
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
 
-    setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
+    setup_getrs_batched_testing(arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, -1, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
@@ -236,23 +234,34 @@ void testing_getrs_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hX(B_size, 1, batch_count);
-    host_batch_vector<T> hB(B_size, 1, batch_count);
-    host_batch_vector<T> hB1(B_size, 1, batch_count);
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
+    host_batch_matrix<T> hB(N, 1, ldb, batch_count);
+    host_batch_matrix<T> hB1(N, 1, ldb, batch_count);
+    host_batch_matrix<T> hX(N, 1, ldb, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
     host_vector<int>     hIpiv1(Ipiv_size);
     int                  info;
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dB(B_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
+    CHECK_HIP_ERROR(hB1.memcheck());
+    CHECK_HIP_ERROR(hX.memcheck());
+
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
+    device_batch_matrix<T> dB(N, 1, ldb, batch_count);
     device_vector<int>     dIpiv(Ipiv_size);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dIpiv.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
+    setup_getrs_batched_testing(arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
 
     if(arg.unit_check || arg.norm_check)
     {

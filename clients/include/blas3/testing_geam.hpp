@@ -59,12 +59,15 @@ void testing_geam_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
-    device_vector<T> dA(colsA * lda);
-    device_vector<T> dB(colsB * ldb);
-    device_vector<T> dC(N * ldc);
+    // Allocate device memory
+    device_matrix<T> dA(A_row, A_col, lda);
+    device_matrix<T> dB(B_row, B_col, ldb);
+    device_matrix<T> dC(M, N, ldc);
 
     device_vector<T> d_alpha(1), d_beta(1), d_zero(1);
     const T          h_alpha(1), h_beta(2), h_zero(0);
@@ -249,35 +252,13 @@ void testing_geam(const Arguments& arg)
     T h_alpha = arg.get_alpha<T>();
     T h_beta  = arg.get_beta<T>();
 
-    int64_t A_row, A_col, B_row, B_col;
-
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    if(transA == HIPBLAS_OP_N)
-    {
-        A_row = M;
-        A_col = N;
-    }
-    else
-    {
-        A_row = N;
-        A_col = M;
-    }
-    if(transB == HIPBLAS_OP_N)
-    {
-        B_row = M;
-        B_col = N;
-    }
-    else
-    {
-        B_row = N;
-        B_col = M;
-    }
-
-    size_t A_size = lda * A_col;
-    size_t B_size = ldb * B_col;
-    size_t C_size = ldc * N;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : N;
+    int64_t A_col = transA == HIPBLAS_OP_N ? N : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? M : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : M;
 
     // check here to prevent undefined memory allocation error
     bool invalid_size = M < 0 || N < 0 || lda < A_row || ldb < B_row || ldc < M;
@@ -301,32 +282,40 @@ void testing_geam(const Arguments& arg)
         return;
     }
 
-    // allocate memory on device
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dC(C_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(A_row, A_col, lda);
+    host_matrix<T> hB(B_row, B_col, ldb);
+    host_matrix<T> hC_host(M, N, ldc);
+    host_matrix<T> hC_device(M, N, ldc);
+    host_matrix<T> hC_cpu(M, N, ldc);
+
+    // Allocate device memory
+    device_matrix<T> dA(A_row, A_col, lda);
+    device_matrix<T> dB(B_row, B_col, ldb);
+    device_matrix<T> dC(M, N, ldc);
     device_vector<T> d_alpha(1);
     device_vector<T> d_beta(1);
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hC1(C_size);
-    host_vector<T> hC2(C_size);
-    host_vector<T> hC_copy(C_size);
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_matrix(hB, arg, B_row, B_col, ldb, 0, 1, hipblas_client_beta_sets_nan);
-    hipblas_init_matrix(hC1, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hB, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
-    hC2     = hC1;
-    hC_copy = hC1;
+    hC_device = hC_host;
+    hC_cpu    = hC_host;
 
     // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB.data(), sizeof(T) * B_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC1.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta, sizeof(T), hipMemcpyHostToDevice));
 
@@ -342,38 +331,39 @@ void testing_geam(const Arguments& arg)
                 hipblasGeamFn,
                 (handle, transA, transB, M, N, &h_alpha, dA, lda, &h_beta, dB, ldb, dC, ldc));
 
-            CHECK_HIP_ERROR(hipMemcpy(hC1.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hC_host.transfer_from(dC));
         }
         {
-            CHECK_HIP_ERROR(hipMemcpy(dC, hC2.data(), sizeof(T) * C_size, hipMemcpyHostToDevice));
+            CHECK_HIP_ERROR(dC.transfer_from(hC_device));
 
             // d_alpha and d_beta are device pointers
             CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
             DAPI_CHECK(hipblasGeamFn,
                        (handle, transA, transB, M, N, d_alpha, dA, lda, d_beta, dB, ldb, dC, ldc));
 
-            CHECK_HIP_ERROR(hipMemcpy(hC2.data(), dC, sizeof(T) * C_size, hipMemcpyDeviceToHost));
+            CHECK_HIP_ERROR(hC_device.transfer_from(dC));
         }
 
         /* =====================================================================
                 CPU BLAS
         =================================================================== */
         ref_geam(
-            transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_copy, ldc);
+            transA, transB, M, N, &h_alpha, (T*)hA, lda, &h_beta, (T*)hB, ldb, (T*)hC_cpu, ldc);
 
         // enable unit check, notice unit check is not invasive, but norm check is,
         // unit check and norm check can not be interchanged their order
         if(arg.unit_check)
         {
-            unit_check_general<T>(M, N, ldc, hC_copy.data(), hC1.data());
-            unit_check_general<T>(M, N, ldc, hC_copy.data(), hC2.data());
+            unit_check_general<T>(M, N, ldc, hC_cpu.data(), hC_host.data());
+            unit_check_general<T>(M, N, ldc, hC_cpu.data(), hC_device.data());
         }
 
         if(arg.norm_check)
         {
-            hipblas_error_host = norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC1.data());
+            hipblas_error_host
+                = norm_check_general<T>('F', M, N, ldc, hC_cpu.data(), hC_host.data());
             hipblas_error_device
-                = norm_check_general<T>('F', M, N, ldc, hC_copy.data(), hC2.data());
+                = norm_check_general<T>('F', M, N, ldc, hC_cpu.data(), hC_device.data());
         }
     }
 

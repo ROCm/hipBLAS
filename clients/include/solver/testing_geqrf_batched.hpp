@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,18 +37,19 @@ inline void testname_geqrf_batched(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-void setup_geqrf_batched_testing(host_batch_vector<T>&   hA,
-                                 host_batch_vector<T>&   hIpiv,
-                                 device_batch_vector<T>& dA,
-                                 device_batch_vector<T>& dIpiv,
+void setup_geqrf_batched_testing(const Arguments&        arg,
+                                 host_batch_matrix<T>&   hA,
+                                 host_batch_matrix<T>&   hIpiv,
+                                 device_batch_matrix<T>& dA,
+                                 device_batch_matrix<T>& dIpiv,
                                  int                     M,
                                  int                     N,
                                  int                     lda,
                                  int                     batch_count)
 {
     // Initial hA on CPU
-    hipblas_init(hA, true);
-    srand(1);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+
     for(int b = 0; b < batch_count; b++)
     {
         // scale A to avoid singularities
@@ -81,20 +82,20 @@ void testing_geqrf_batched_bad_arg(const Arguments& arg)
     const int          lda         = 102;
     const int          batch_count = 2;
     const size_t       A_size      = size_t(N) * lda;
-    const int          K           = std::min(M, N);
+    const int          Ipiv_size   = std::min(M, N);
 
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hIpiv(K, 1, batch_count);
+    host_batch_matrix<T> hA(M, N, lda, batch_count);
+    host_batch_matrix<T> hIpiv(1, Ipiv_size, 1, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dIpiv(K, 1, batch_count);
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
+    device_batch_matrix<T> dIpiv(1, Ipiv_size, 1, batch_count);
     int                    info = 0;
     int                    expectedInfo;
 
     T* const* dAp    = dA.ptr_on_device();
     T* const* dIpivp = dIpiv.ptr_on_device();
 
-    setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count);
+    setup_geqrf_batched_testing(arg, hA, hIpiv, dA, dIpiv, M, N, lda, batch_count);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGeqrfBatchedFn(handle, M, N, dAp, lda, dIpivp, nullptr, batch_count),
@@ -164,13 +165,11 @@ void testing_geqrf_batched(const Arguments& arg)
 
     int M           = arg.M;
     int N           = arg.N;
-    int K           = std::min(M, N);
+    int Ipiv_size   = std::min(M, N);
     int lda         = arg.lda;
     int batch_count = arg.batch_count;
 
-    size_t A_size    = size_t(lda) * N;
-    int    Ipiv_size = K;
-    int    info;
+    int info;
 
     hipblasLocalHandle handle(arg);
 
@@ -182,17 +181,27 @@ void testing_geqrf_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hA1(A_size, 1, batch_count);
-    host_batch_vector<T> hIpiv(Ipiv_size, 1, batch_count);
-    host_batch_vector<T> hIpiv1(Ipiv_size, 1, batch_count);
+    host_batch_matrix<T> hA(M, N, lda, batch_count);
+    host_batch_matrix<T> hA1(M, N, lda, batch_count);
+    host_batch_matrix<T> hIpiv(1, Ipiv_size, 1, batch_count);
+    host_batch_matrix<T> hIpiv1(1, Ipiv_size, 1, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dIpiv(Ipiv_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hA1.memcheck());
+    CHECK_HIP_ERROR(hIpiv.memcheck());
+    CHECK_HIP_ERROR(hIpiv1.memcheck());
+
+    device_batch_matrix<T> dA(M, N, lda, batch_count);
+    device_batch_matrix<T> dIpiv(1, Ipiv_size, 1, batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dIpiv.memcheck());
 
     double gpu_time_used, hipblas_error;
 
-    setup_geqrf_batched_testing(hA, hIpiv, dA, dIpiv, M, N, lda, batch_count);
+    setup_geqrf_batched_testing(arg, hA, hIpiv, dA, dIpiv, M, N, lda, batch_count);
 
     /* =====================================================================
            HIPBLAS

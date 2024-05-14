@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,8 +52,9 @@ void testing_trtri_batched_bad_arg(const Arguments& arg)
     hipblasFillMode_t uplo        = HIPBLAS_FILL_MODE_LOWER;
     hipblasDiagType_t diag        = HIPBLAS_DIAG_NON_UNIT;
 
-    device_batch_vector<T> dA(N * lda, 1, batch_count);
-    device_batch_vector<T> dinvA(N * lda, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
+    device_batch_matrix<T> dinvA(N, N, lda, batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasTrtriBatchedFn(nullptr,
                                                 uplo,
@@ -139,20 +140,28 @@ void testing_trtri_batched(const Arguments& arg)
     {
         return;
     }
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_batch_vector<T> hA(A_size, 1, batch_count);
-    host_batch_vector<T> hB(A_size, 1, batch_count);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<T> hA(N, N, lda, batch_count);
+    host_batch_matrix<T> hB(N, N, lda, batch_count);
 
-    device_batch_vector<T> dA(A_size, 1, batch_count);
-    device_batch_vector<T> dinvA(A_size, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dinvA.memcheck());
+    // Allocate device memory
+    device_batch_matrix<T> dA(N, N, lda, batch_count);
+    device_batch_matrix<T> dinvA(N, N, lda, batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dinvA.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
-    hipblas_init(hA, true);
+    // Initial Data on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_triangular_matrix, true);
 
     for(int b = 0; b < batch_count; b++)
     {
@@ -165,10 +174,7 @@ void testing_trtri_batched(const Arguments& arg)
 
                 if(j % 2)
                     hA[b][i + j * lda] *= -1;
-                if(uplo == HIPBLAS_FILL_MODE_LOWER && j > i)
-                    hA[b][i + j * lda] = 0.0f;
-                else if(uplo == HIPBLAS_FILL_MODE_UPPER && j < i)
-                    hA[b][i + j * lda] = 0.0f;
+
                 if(i == j)
                 {
                     if(diag == HIPBLAS_DIAG_UNIT)
@@ -181,6 +187,8 @@ void testing_trtri_batched(const Arguments& arg)
     }
 
     hB.copy_from(hA);
+
+    // copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dinvA.transfer_from(hA));
 

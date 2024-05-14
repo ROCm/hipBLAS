@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,35 +37,34 @@ inline void testname_getrs(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-void setup_getrs_testing(host_vector<T>&     hA,
-                         host_vector<T>&     hB,
-                         host_vector<T>&     hX,
+void setup_getrs_testing(const Arguments&    arg,
+                         host_matrix<T>&     hA,
+                         host_matrix<T>&     hB,
+                         host_matrix<T>&     hX,
                          host_vector<int>&   hIpiv,
-                         device_vector<T>&   dA,
-                         device_vector<T>&   dB,
+                         device_matrix<T>&   dA,
+                         device_matrix<T>&   dB,
                          device_vector<int>& dIpiv,
                          int                 N,
                          int                 lda,
                          int                 ldb)
 {
-    const size_t A_size    = size_t(N) * lda;
-    const size_t B_size    = ldb;
     const size_t Ipiv_size = N;
 
-    // Initial hA, hB, hX on CPU
-    srand(1);
-    hipblas_init<T>(hA, N, N, lda);
-    hipblas_init<T>(hX, N, 1, ldb);
+    // Initial hA, hX on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hX, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
 
+    T* A = (T*)hA;
     // scale A to avoid singularities
     for(int i = 0; i < N; i++)
     {
         for(int j = 0; j < N; j++)
         {
             if(i == j)
-                hA[i + j * lda] += 400;
+                A[i + j * lda] += 400;
             else
-                hA[i + j * lda] -= 4;
+                A[i + j * lda] -= 4;
         }
     }
 
@@ -83,8 +82,8 @@ void setup_getrs_testing(host_vector<T>&     hA,
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
     CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 }
 
@@ -99,26 +98,24 @@ void testing_getrs_bad_arg(const Arguments& arg)
     const int          nrhs      = 1;
     const int          lda       = 101;
     const int          ldb       = 102;
-    const size_t       A_size    = size_t(N) * lda;
-    const size_t       B_size    = ldb;
     const int          Ipiv_size = N;
 
     const hipblasOperation_t op = HIPBLAS_OP_N;
 
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hB(B_size);
-    host_vector<T>   hX(B_size);
+    host_matrix<T>   hA(N, N, lda);
+    host_matrix<T>   hB(N, 1, ldb);
+    host_matrix<T>   hX(N, 1, ldb);
     host_vector<int> hIpiv(Ipiv_size);
 
-    device_vector<T>   dA(A_size);
-    device_vector<T>   dB(B_size);
+    device_matrix<T>   dA(N, N, lda);
+    device_matrix<T>   dB(N, 1, ldb);
     device_vector<int> dIpiv(Ipiv_size);
     int                info = 0;
     int                expectedInfo;
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
+    setup_getrs_testing(arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
@@ -183,8 +180,6 @@ void testing_getrs(const Arguments& arg)
     int lda = arg.lda;
     int ldb = arg.ldb;
 
-    size_t A_size    = size_t(lda) * N;
-    size_t B_size    = ldb * 1;
     size_t Ipiv_size = N;
 
     // Check to prevent memory allocation error
@@ -194,23 +189,28 @@ void testing_getrs(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hX(B_size);
-    host_vector<T>   hB(B_size);
-    host_vector<T>   hB1(B_size);
+    host_matrix<T>   hA(N, N, lda);
+    host_matrix<T>   hX(N, 1, ldb);
+    host_matrix<T>   hB(N, 1, ldb);
+    host_matrix<T>   hB1(N, 1, ldb);
     host_vector<int> hIpiv(Ipiv_size);
     host_vector<int> hIpiv1(Ipiv_size);
     int              info;
 
-    device_vector<T>   dA(A_size);
-    device_vector<T>   dB(B_size);
+    device_matrix<T>   dA(N, N, lda);
+    device_matrix<T>   dB(N, 1, ldb);
     device_vector<int> dIpiv(Ipiv_size);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dIpiv.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
+    setup_getrs_testing(arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -220,7 +220,7 @@ void testing_getrs(const Arguments& arg)
         CHECK_HIPBLAS_ERROR(hipblasGetrsFn(handle, op, N, 1, dA, lda, dIpiv, dB, ldb, &info));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hB1, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hB1.transfer_from(dB));
         CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================

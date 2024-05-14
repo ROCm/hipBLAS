@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,11 +51,10 @@ void testing_gels_bad_arg(const Arguments& arg)
     const hipblasOperation_t opN   = HIPBLAS_OP_N;
     const hipblasOperation_t opBad = is_complex<T> ? HIPBLAS_OP_T : HIPBLAS_OP_C;
 
-    const size_t A_size = size_t(lda) * N;
-    const size_t B_size = size_t(ldb) * nrhs;
+    // Allocate device memory
+    device_matrix<T> dA(M, N, lda);
+    device_matrix<T> dB(M, nrhs, ldb);
 
-    device_vector<T>   dA(A_size);
-    device_vector<T>   dB(B_size);
     device_vector<int> dInfo(1);
     int                info = 0;
     int                expectedInfo;
@@ -166,34 +165,43 @@ void testing_gels(const Arguments& arg)
 
     hipblasOperation_t trans = char2hipblas_operation(transc);
 
-    size_t A_size = size_t(lda) * N;
-    size_t B_size = size_t(ldb) * nrhs;
-
     // Check to prevent memory allocation error
     if(M < 0 || N < 0 || nrhs < 0 || lda < M || ldb < M || ldb < N)
     {
         return;
     }
 
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB(B_size);
-    host_vector<T> hB_res(B_size);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_matrix<T> hA(M, N, lda);
+    host_matrix<T> hB(M, nrhs, ldb);
+    host_matrix<T> hB_res(M, nrhs, ldb);
     int            info, info_res;
     int            info_input(-1);
 
-    device_vector<T>   dA(A_size);
-    device_vector<T>   dB(B_size);
+    // Allocate device memory
+    device_matrix<T>   dA(M, N, lda);
+    device_matrix<T>   dB(M, nrhs, ldb);
     device_vector<int> dInfo(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dInfo.memcheck());
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
     // Initial hA, hB, hX on CPU
-    srand(1);
-    hipblas_init<T>(hA, true);
-    hipblas_init<T>(hB);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(hB, arg, hipblas_client_never_set_nan, hipblas_general_matrix, false, true);
     hB_res = hB;
+
+    T* A = (T*)hA;
 
     // scale A to avoid singularities
     for(int i = 0; i < N; i++)
@@ -201,15 +209,15 @@ void testing_gels(const Arguments& arg)
         for(int j = 0; j < N; j++)
         {
             if(i == j)
-                hA[i + j * lda] += 400;
+                A[i + j * lda] += 400;
             else
-                hA[i + j * lda] -= 4;
+                A[i + j * lda] -= 4;
         }
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -220,7 +228,7 @@ void testing_gels(const Arguments& arg)
             hipblasGelsFn(handle, trans, M, N, nrhs, dA, lda, dB, ldb, &info_input, dInfo));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hB_res, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hB_res.transfer_from(dB));
         CHECK_HIP_ERROR(hipMemcpy(&info_res, dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
