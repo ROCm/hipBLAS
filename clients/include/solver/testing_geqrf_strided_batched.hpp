@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,42 +37,40 @@ inline void testname_geqrf_strided_batched(const Arguments& arg, std::string& na
 }
 
 template <typename T>
-void setup_geqrf_strided_batched_testing(host_vector<T>&   hA,
-                                         device_vector<T>& dA,
-                                         device_vector<T>& dIpiv,
-                                         int               M,
-                                         int               N,
-                                         int               lda,
-                                         hipblasStride     strideA,
-                                         hipblasStride     strideP,
-                                         int               batch_count)
+void setup_geqrf_strided_batched_testing(const Arguments&                arg,
+                                         host_strided_batch_matrix<T>&   hA,
+                                         device_strided_batch_matrix<T>& dA,
+                                         device_vector<T>&               dIpiv,
+                                         int                             M,
+                                         int                             N,
+                                         int                             lda,
+                                         hipblasStride                   strideA,
+                                         hipblasStride                   strideP,
+                                         int                             batch_count)
 {
-    size_t A_size    = strideA * batch_count;
+    // Initial hA on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+
     size_t Ipiv_size = strideP * batch_count;
 
     // Initial hA on CPU
-    srand(1);
     for(int b = 0; b < batch_count; b++)
     {
-        T* hAb = hA.data() + b * strideA;
-
-        hipblas_init<T>(hAb, M, N, lda);
-
         // scale A to avoid singularities
         for(int i = 0; i < M; i++)
         {
             for(int j = 0; j < N; j++)
             {
                 if(i == j)
-                    hAb[i + j * lda] += 400;
+                    hA[b][i + j * lda] += 400;
                 else
-                    hAb[i + j * lda] -= 4;
+                    hA[b][i + j * lda] -= 4;
             }
         }
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(hipMemset(dIpiv, 0, Ipiv_size * sizeof(T)));
 }
 
@@ -86,23 +84,25 @@ void testing_geqrf_strided_batched_bad_arg(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     const int          M           = 100;
     const int          N           = 101;
-    const int          K           = std::min(M, N);
+    int                K           = std::min(M, N);
     const int          lda         = 102;
     const int          batch_count = 2;
 
-    hipblasStride strideA   = size_t(lda) * N;
-    hipblasStride strideP   = K;
-    size_t        A_size    = strideA * batch_count;
-    size_t        Ipiv_size = strideP * batch_count;
+    hipblasStride strideA = size_t(lda) * N;
+    hipblasStride strideP = K;
 
-    host_vector<T> hA(A_size);
+    size_t Ipiv_size = strideP * batch_count;
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dIpiv(Ipiv_size);
-    int              info = 0;
-    int              expectedInfo;
+    host_strided_batch_matrix<T> hA(M, N, lda, strideA, batch_count);
 
-    setup_geqrf_strided_batched_testing(hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<T>               dIpiv(Ipiv_size);
+
+    int info = 0;
+    int expectedInfo;
+
+    setup_geqrf_strided_batched_testing(
+        arg, hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasGeqrfStridedBatchedFn(
                               handle, M, N, dA, lda, strideA, dIpiv, strideP, nullptr, batch_count),
@@ -178,11 +178,11 @@ void testing_geqrf_strided_batched(const Arguments& arg)
     double stride_scale = arg.stride_scale;
     int    batch_count  = arg.batch_count;
 
-    hipblasStride strideA   = lda * N * stride_scale;
-    hipblasStride strideP   = K * stride_scale;
-    int           A_size    = strideA * batch_count;
-    int           Ipiv_size = strideP * batch_count;
-    int           info;
+    hipblasStride strideA = lda * N * stride_scale;
+    hipblasStride strideP = K * stride_scale;
+
+    int Ipiv_size = strideP * batch_count;
+    int info;
 
     hipblasLocalHandle handle(arg);
 
@@ -213,17 +213,28 @@ void testing_geqrf_strided_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hA1(A_size);
-    host_vector<T> hIpiv(Ipiv_size);
-    host_vector<T> hIpiv1(Ipiv_size);
+    host_strided_batch_matrix<T> hA(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<T> hA1(M, N, lda, strideA, batch_count);
+    host_vector<T>               hIpiv(Ipiv_size);
+    host_vector<T>               hIpiv1(Ipiv_size);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dIpiv(Ipiv_size);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hA1.memcheck());
+    CHECK_HIP_ERROR(hIpiv.memcheck());
+    CHECK_HIP_ERROR(hIpiv1.memcheck());
+
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<T>               dIpiv(Ipiv_size);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dIpiv.memcheck());
 
     double gpu_time_used, hipblas_error;
 
-    setup_geqrf_strided_batched_testing(hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
+    setup_geqrf_strided_batched_testing(
+        arg, hA, dA, dIpiv, M, N, lda, strideA, strideP, batch_count);
 
     /* =====================================================================
            HIPBLAS
@@ -232,8 +243,8 @@ void testing_geqrf_strided_batched(const Arguments& arg)
         handle, M, N, dA, lda, strideA, dIpiv, strideP, &info, batch_count));
 
     // Copy output from device to CPU
-    CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
-    CHECK_HIP_ERROR(hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(T), hipMemcpyDeviceToHost));
+    CHECK_HIP_ERROR(hIpiv1.transfer_from(dIpiv));
+    CHECK_HIP_ERROR(hA1.transfer_from(dA));
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -250,8 +261,7 @@ void testing_geqrf_strided_batched(const Arguments& arg)
         work = host_vector<T>(lwork);
         for(int b = 0; b < batch_count; b++)
         {
-            ref_geqrf(
-                M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP, work.data(), N);
+            ref_geqrf(M, N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), N);
         }
 
         double e1     = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);

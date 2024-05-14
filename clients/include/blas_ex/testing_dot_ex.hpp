@@ -207,8 +207,8 @@ void testing_dot_ex(const Arguments& arg)
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, true);
-    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false);
+    hipblas_init_vector(hx, arg, hipblas_client_alpha_sets_nan, true, false);
+    hipblas_init_vector(hy, arg, hipblas_client_alpha_sets_nan, false, true);
 
     // copy data from CPU to device
     CHECK_HIP_ERROR(dx.transfer_from(hx));

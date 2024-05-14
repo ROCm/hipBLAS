@@ -73,13 +73,14 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
     int64_t K        = side == HIPBLAS_SIDE_LEFT ? M : N;
     int64_t invAsize = TRSM_BLOCK * K;
 
-    hipblasStride strideA    = K * lda;
-    hipblasStride strideB    = N * ldb;
+    hipblasStride stride_A   = K * lda;
+    hipblasStride stride_B   = N * ldb;
     hipblasStride strideInvA = invAsize;
 
-    device_vector<T> dA(strideA * batch_count);
-    device_vector<T> dB(strideB * batch_count);
-    device_vector<T> dInvA(strideInvA * batch_count);
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(K, K, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(M, N, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, strideInvA, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1);
     const T          h_alpha(1), h_zero(0);
@@ -109,12 +110,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             alpha,
                                                             dA,
                                                             lda,
-                                                            strideA,
+                                                            stride_A,
                                                             dB,
                                                             ldb,
-                                                            strideB,
+                                                            stride_B,
                                                             batch_count,
-                                                            dInvA,
+                                                            dinvA,
                                                             invAsize,
                                                             strideInvA,
                                                             computeType),
@@ -130,12 +131,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             alpha,
                                                             dA,
                                                             lda,
-                                                            strideA,
+                                                            stride_A,
                                                             dB,
                                                             ldb,
-                                                            strideB,
+                                                            stride_B,
                                                             batch_count,
-                                                            dInvA,
+                                                            dinvA,
                                                             invAsize,
                                                             strideInvA,
                                                             computeType),
@@ -151,12 +152,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             alpha,
                                                             dA,
                                                             lda,
-                                                            strideA,
+                                                            stride_A,
                                                             dB,
                                                             ldb,
-                                                            strideB,
+                                                            stride_B,
                                                             batch_count,
-                                                            dInvA,
+                                                            dinvA,
                                                             invAsize,
                                                             strideInvA,
                                                             computeType),
@@ -172,12 +173,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                           alpha,
                                           dA,
                                           lda,
-                                          strideA,
+                                          stride_A,
                                           dB,
                                           ldb,
-                                          strideB,
+                                          stride_B,
                                           batch_count,
-                                          dInvA,
+                                          dinvA,
                                           invAsize,
                                           strideInvA,
                                           computeType),
@@ -193,12 +194,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                           alpha,
                                           dA,
                                           lda,
-                                          strideA,
+                                          stride_A,
                                           dB,
                                           ldb,
-                                          strideB,
+                                          stride_B,
                                           batch_count,
-                                          dInvA,
+                                          dinvA,
                                           invAsize,
                                           strideInvA,
                                           computeType),
@@ -214,12 +215,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             alpha,
                                                             dA,
                                                             lda,
-                                                            strideA,
+                                                            stride_A,
                                                             dB,
                                                             ldb,
-                                                            strideB,
+                                                            stride_B,
                                                             batch_count,
-                                                            dInvA,
+                                                            dinvA,
                                                             invAsize,
                                                             strideInvA,
                                                             HIPBLAS_R_16F),
@@ -235,12 +236,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             nullptr,
                                                             dA,
                                                             lda,
-                                                            strideA,
+                                                            stride_A,
                                                             dB,
                                                             ldb,
-                                                            strideB,
+                                                            stride_B,
                                                             batch_count,
-                                                            dInvA,
+                                                            dinvA,
                                                             invAsize,
                                                             strideInvA,
                                                             computeType),
@@ -258,12 +259,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                                 alpha,
                                                                 nullptr,
                                                                 lda,
-                                                                strideA,
+                                                                stride_A,
                                                                 dB,
                                                                 ldb,
-                                                                strideB,
+                                                                stride_B,
                                                                 batch_count,
-                                                                dInvA,
+                                                                dinvA,
                                                                 invAsize,
                                                                 strideInvA,
                                                                 computeType),
@@ -278,12 +279,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                                 alpha,
                                                                 dA,
                                                                 lda,
-                                                                strideA,
+                                                                stride_A,
                                                                 nullptr,
                                                                 ldb,
-                                                                strideB,
+                                                                stride_B,
                                                                 batch_count,
-                                                                dInvA,
+                                                                dinvA,
                                                                 invAsize,
                                                                 strideInvA,
                                                                 computeType),
@@ -301,12 +302,12 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                           zero,
                                                           nullptr,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           dB,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
-                                                          dInvA,
+                                                          dinvA,
                                                           invAsize,
                                                           strideInvA,
                                                           computeType));
@@ -322,10 +323,10 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                           nullptr,
                                                           nullptr,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           nullptr,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
                                                           nullptr,
                                                           invAsize,
@@ -341,10 +342,10 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                           nullptr,
                                                           nullptr,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           nullptr,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
                                                           nullptr,
                                                           invAsize,
@@ -360,10 +361,10 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                           nullptr,
                                                           nullptr,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           nullptr,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           0,
                                                           nullptr,
                                                           invAsize,
@@ -380,10 +381,10 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                           alpha,
                                                           dA,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           dB,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
                                                           nullptr,
                                                           invAsize,
@@ -414,11 +415,11 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
 
     int K = (side == HIPBLAS_SIDE_LEFT ? M : N);
 
-    hipblasStride strideA     = size_t(lda) * K * stride_scale;
-    hipblasStride strideB     = size_t(ldb) * N * stride_scale;
+    hipblasStride stride_A    = size_t(lda) * K * stride_scale;
+    hipblasStride stride_B    = size_t(ldb) * N * stride_scale;
     hipblasStride stride_invA = TRSM_BLOCK * size_t(K);
-    size_t        A_size      = strideA * batch_count;
-    size_t        B_size      = strideB * batch_count;
+    size_t        A_size      = stride_A * batch_count;
+    size_t        B_size      = stride_B * batch_count;
     size_t        invA_size   = stride_invA * batch_count;
 
     // check here to prevent undefined memory allocation error
@@ -431,53 +432,66 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
     {
         return;
     }
-    // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T> hA(A_size);
-    host_vector<T> hB_host(B_size);
-    host_vector<T> hB_device(B_size);
-    host_vector<T> hB_cpu(B_size);
 
-    device_vector<T> dA(A_size);
-    device_vector<T> dB(B_size);
-    device_vector<T> dinvA(invA_size);
-    device_vector<T> d_alpha(1);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_strided_batch_matrix<T> hA(K, K, lda, stride_A, batch_count);
+    host_strided_batch_matrix<T> hB_host(M, N, ldb, stride_B, batch_count);
+    host_strided_batch_matrix<T> hB_device(M, N, ldb, stride_B, batch_count);
+    host_strided_batch_matrix<T> hB_cpu(M, N, ldb, stride_B, batch_count);
+
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB_host.memcheck());
+    CHECK_HIP_ERROR(hB_device.memcheck());
+    CHECK_HIP_ERROR(hB_cpu.memcheck());
+
+    // Allocate device memory
+    device_strided_batch_matrix<T> dA(K, K, lda, stride_A, batch_count);
+    device_strided_batch_matrix<T> dB(M, N, ldb, stride_B, batch_count);
+    device_strided_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, stride_invA, batch_count);
+    device_vector<T>               d_alpha(1);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dinvA.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
 
     double             gpu_time_used, hipblas_error_host, hipblas_error_device;
     hipblasLocalHandle handle(arg);
 
-    // Initial hA on CPU
-    hipblas_init_matrix_type(hipblas_diagonally_dominant_triangular_matrix,
-                             (T*)hA,
-                             arg,
-                             K,
-                             K,
-                             lda,
-                             strideA,
-                             batch_count,
-                             hipblas_client_never_set_nan,
-                             true);
+    // Initial data on CPU
     hipblas_init_matrix(
-        hB_host, arg, M, N, ldb, strideB, batch_count, hipblas_client_never_set_nan);
+        hA, arg, hipblas_client_never_set_nan, hipblas_diagonally_dominant_triangular_matrix, true);
+    hipblas_init_matrix(hB_host, arg, hipblas_client_never_set_nan, hipblas_general_matrix);
+
+    if(diag == HIPBLAS_DIAG_UNIT)
+    {
+        make_unit_diagonal(uplo, hA);
+    }
 
     for(int b = 0; b < batch_count; b++)
     {
-        T* hAb = hA.data() + b * strideA;
-        T* hBb = hB_host.data() + b * strideB;
-
-        if(diag == HIPBLAS_DIAG_UNIT)
-        {
-            make_unit_diagonal(uplo, (T*)hAb, lda, K);
-        }
-
         // Calculate hB = hA*hX;
-        ref_trmm<T>(side, uplo, transA, diag, M, N, T(1.0) / h_alpha, (const T*)hAb, lda, hBb, ldb);
+        ref_trmm<T>(side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    T(1.0) / h_alpha,
+                    (const T*)hA[b],
+                    lda,
+                    hB_host[b],
+                    ldb);
     }
 
-    hB_device = hB_cpu = hB_host;
+    hB_device.copy_from(hB_host);
+    hB_cpu.copy_from(hB_host);
 
-    // copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(T) * A_size, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB_host, sizeof(T) * B_size, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha, sizeof(T), hipMemcpyHostToDevice));
 
     // calculate invA
@@ -493,7 +507,7 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                               uplo,
                                                               diag,
                                                               TRSM_BLOCK,
-                                                              dA + b * strideA,
+                                                              dA + b * stride_A,
                                                               lda,
                                                               sub_stride_A,
                                                               dinvA + b * stride_invA,
@@ -509,7 +523,7 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                               uplo,
                                               diag,
                                               K - TRSM_BLOCK * blocks,
-                                              dA + sub_stride_A * blocks + b * strideA,
+                                              dA + sub_stride_A * blocks + b * stride_A,
                                               lda,
                                               sub_stride_A,
                                               dinvA + sub_stride_invA * blocks + b * stride_invA,
@@ -535,10 +549,10 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                           &h_alpha,
                                                           dA,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           dB,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
                                                           dinvA,
                                                           invA_size,
@@ -546,8 +560,8 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                           arg.compute_type));
 
         // copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hB_host, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dB, hB_device, sizeof(T) * B_size, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hB_host.transfer_from(dB));
+        CHECK_HIP_ERROR(dB.transfer_from(hB_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         CHECK_HIPBLAS_ERROR(hipblasTrsmStridedBatchedExFn(handle,
@@ -560,34 +574,25 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                           d_alpha,
                                                           dA,
                                                           lda,
-                                                          strideA,
+                                                          stride_A,
                                                           dB,
                                                           ldb,
-                                                          strideB,
+                                                          stride_B,
                                                           batch_count,
                                                           dinvA,
                                                           invA_size,
                                                           stride_invA,
                                                           arg.compute_type));
 
-        CHECK_HIP_ERROR(hipMemcpy(hB_device, dB, sizeof(T) * B_size, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hB_device.transfer_from(dB));
 
         /* =====================================================================
            CPU BLAS
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            ref_trsm<T>(side,
-                        uplo,
-                        transA,
-                        diag,
-                        M,
-                        N,
-                        h_alpha,
-                        (const T*)hA.data() + b * strideA,
-                        lda,
-                        hB_cpu.data() + b * strideB,
-                        ldb);
+            ref_trsm<T>(
+                side, uplo, transA, diag, M, N, h_alpha, (const T*)hA[b], lda, hB_cpu[b], ldb);
         }
 
         // if enable norm check, norm check is invasive
@@ -595,9 +600,9 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
         double    tolerance = eps * 40 * M;
 
         hipblas_error_host
-            = norm_check_general<T>('F', M, N, ldb, strideB, hB_cpu, hB_host, batch_count);
+            = norm_check_general<T>('F', M, N, ldb, stride_B, hB_cpu, hB_host, batch_count);
         hipblas_error_device
-            = norm_check_general<T>('F', M, N, ldb, strideB, hB_cpu, hB_device, batch_count);
+            = norm_check_general<T>('F', M, N, ldb, stride_B, hB_cpu, hB_device, batch_count);
         if(arg.unit_check)
         {
             unit_check_error(hipblas_error_host, tolerance);
@@ -629,10 +634,10 @@ void testing_trsm_strided_batched_ex(const Arguments& arg)
                                                               d_alpha,
                                                               dA,
                                                               lda,
-                                                              strideA,
+                                                              stride_A,
                                                               dB,
                                                               ldb,
-                                                              strideB,
+                                                              stride_B,
                                                               batch_count,
                                                               dinvA,
                                                               invA_size,
