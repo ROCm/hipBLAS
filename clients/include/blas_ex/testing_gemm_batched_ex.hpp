@@ -86,12 +86,15 @@ void testing_gemm_batched_ex_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, int64_t(1));
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, int64_t(1));
 
-    device_batch_vector<Ti> dA(colsA * lda, 1, batch_count);
-    device_batch_vector<Ti> dB(colsB * ldb, 1, batch_count);
-    device_batch_vector<To> dC(N * ldc, 1, batch_count);
+    // Allocate device memory
+    device_batch_matrix<Ti> dA(A_row, A_col, lda, batch_count);
+    device_batch_matrix<Ti> dB(B_row, B_col, ldb, batch_count);
+    device_batch_matrix<To> dC(M, N, ldc, batch_count);
 
     device_vector<Tex> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
     Tex                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
@@ -403,43 +406,49 @@ void testing_gemm_batched_ex(const Arguments& arg)
                      algo));
     }
 
-    const size_t size_A = static_cast<size_t>(lda) * static_cast<size_t>(A_col);
-    const size_t size_B = static_cast<size_t>(ldb) * static_cast<size_t>(B_col);
-    const size_t size_C = static_cast<size_t>(ldc) * static_cast<size_t>(N);
+    // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
+    // Allocate host memory
+    host_batch_matrix<Ti> hA(A_row, A_col, lda, batch_count);
+    host_batch_matrix<Ti> hB(B_row, B_col, ldb, batch_count);
+    host_batch_matrix<To> hC_host(M, N, ldc, batch_count);
+    host_batch_matrix<To> hC_device(M, N, ldc, batch_count);
+    host_batch_matrix<To> hC_gold(M, N, ldc, batch_count);
 
-    device_batch_vector<Ti> dA(size_A, 1, batch_count);
-    device_batch_vector<Ti> dB(size_B, 1, batch_count);
-    device_batch_vector<To> dC(size_C, 1, batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hB.memcheck());
+    CHECK_HIP_ERROR(hC_host.memcheck());
+    CHECK_HIP_ERROR(hC_device.memcheck());
+    CHECK_HIP_ERROR(hC_gold.memcheck());
+
+    // Allocate device memory
+    device_batch_matrix<Ti> dA(A_row, A_col, lda, batch_count);
+    device_batch_matrix<Ti> dB(B_row, B_col, ldb, batch_count);
+    device_batch_matrix<To> dC(M, N, ldc, batch_count);
     device_vector<Tex>      d_alpha(1);
     device_vector<Tex>      d_beta(1);
 
-    CHECK_HIP_ERROR(dA.memcheck());
-    CHECK_HIP_ERROR(dB.memcheck());
-    CHECK_HIP_ERROR(dC.memcheck());
-
-    host_batch_vector<Ti> hA(size_A, 1, batch_count);
-    host_batch_vector<Ti> hB(size_B, 1, batch_count);
-    host_batch_vector<To> hC_host(size_C, 1, batch_count);
-    host_batch_vector<To> hC_device(size_C, 1, batch_count);
-    host_batch_vector<To> hC_gold(size_C, 1, batch_count);
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dB.memcheck());
+    CHECK_DEVICE_ALLOCATION(dC.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_alpha.memcheck());
+    CHECK_DEVICE_ALLOCATION(d_beta.memcheck());
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
-    hipblas_init_vector(hA, arg, hipblas_client_alpha_sets_nan, true);
-    hipblas_init_vector(hB, arg, hipblas_client_alpha_sets_nan);
-    hipblas_init_vector(hC_host, arg, hipblas_client_beta_sets_nan);
+    // Initial Data on CPU
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
+    hipblas_init_matrix(
+        hB, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
     hC_device.copy_from(hC_host);
     hC_gold.copy_from(hC_host);
 
     // Initial Data on CPU
-    srand(1);
-    for(int64_t b = 0; b < batch_count; b++)
-    {
-        CHECK_HIP_ERROR(dA.transfer_from(hA));
-        CHECK_HIP_ERROR(dB.transfer_from(hB));
-    }
-
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
     CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tex, sizeof(Tex), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tex, sizeof(Tex), hipMemcpyHostToDevice));

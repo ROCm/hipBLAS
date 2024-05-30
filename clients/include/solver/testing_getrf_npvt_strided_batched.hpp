@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,8 @@ void testing_getrf_npvt_strided_batched_bad_arg(const Arguments& arg)
     int64_t            batch_count = 2;
     hipblasStride      strideA     = N * lda;
 
-    device_vector<T>   dA(strideA * batch_count);
-    device_vector<int> dInfo(batch_count);
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<int>             dInfo(batch_count);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrfStridedBatchedFn(nullptr, N, dA, lda, strideA, nullptr, 0, dInfo, batch_count),
@@ -110,41 +110,47 @@ void testing_getrf_npvt_strided_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hA1(A_size);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hInfo(batch_count);
-    host_vector<int> hInfo1(batch_count);
+    host_strided_batch_matrix<T>   hA(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<T>   hA1(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<int> hIpiv(1, Ipiv_size, 1, strideP, batch_count);
+    host_vector<int>               hInfo(batch_count);
+    host_vector<int>               hInfo1(batch_count);
 
-    device_vector<T>   dA(A_size);
-    device_vector<int> dInfo(batch_count);
+    // Check host memory allocation
+    CHECK_HIP_ERROR(hA.memcheck());
+    CHECK_HIP_ERROR(hA1.memcheck());
+    CHECK_HIP_ERROR(hIpiv.memcheck());
+
+    device_strided_batch_matrix<T> dA(M, N, lda, strideA, batch_count);
+    device_vector<int>             dInfo(batch_count);
+
+    // Check device memory allocation
+    CHECK_DEVICE_ALLOCATION(dA.memcheck());
+    CHECK_DEVICE_ALLOCATION(dInfo.memcheck());
 
     double             gpu_time_used, hipblas_error;
     hipblasLocalHandle handle(arg);
 
     // Initial hA on CPU
-    srand(1);
+    hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
+
     for(int b = 0; b < batch_count; b++)
     {
-        T* hAb = hA.data() + b * strideA;
-
-        hipblas_init<T>(hAb, M, N, lda);
-
         // scale A to avoid singularities
         for(int i = 0; i < M; i++)
         {
             for(int j = 0; j < N; j++)
             {
                 if(i == j)
-                    hAb[i + j * lda] += 400;
+                    hA[b][i + j * lda] += 400;
                 else
-                    hAb[i + j * lda] -= 4;
+                    hA[b][i + j * lda] -= 4;
             }
         }
     }
 
     // Copy data from CPU to device
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA.data(), A_size * sizeof(T), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(hipMemset(dInfo, 0, batch_count * sizeof(int)));
 
     if(arg.unit_check || arg.norm_check)
@@ -156,7 +162,7 @@ void testing_getrf_npvt_strided_batched(const Arguments& arg)
             handle, N, dA, lda, strideA, nullptr, strideP, dInfo, batch_count));
 
         // Copy output from device to CPU
-        CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hA1.transfer_from(dA));
         CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
@@ -165,7 +171,7 @@ void testing_getrf_npvt_strided_batched(const Arguments& arg)
         =================================================================== */
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = ref_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv[b]);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);

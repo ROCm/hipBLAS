@@ -84,12 +84,15 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
     hipblasOperation_t transA = HIPBLAS_OP_N;
     hipblasOperation_t transB = HIPBLAS_OP_N;
 
-    int64_t colsA = transA == HIPBLAS_OP_N ? N : M;
-    int64_t colsB = transB == HIPBLAS_OP_N ? N : M;
+    int64_t A_row = transA == HIPBLAS_OP_N ? M : std::max(K, int64_t(1));
+    int64_t A_col = transA == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : M;
+    int64_t B_row = transB == HIPBLAS_OP_N ? std::max(K, int64_t(1)) : N;
+    int64_t B_col = transB == HIPBLAS_OP_N ? N : std::max(K, int64_t(1));
 
-    device_vector<Ti> dA(colsA * lda);
-    device_vector<Ti> dB(colsB * ldb);
-    device_vector<To> dC(N * ldc);
+    // Allocate device memory
+    device_matrix<Ti> dA(A_row, A_col, lda);
+    device_matrix<Ti> dB(B_row, B_col, ldb);
+    device_matrix<To> dC(M, N, ldc);
 
     device_vector<Tex> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
     Tex                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
@@ -390,39 +393,35 @@ void testing_gemm_ex(const Arguments& arg)
         return;
     }
 
-    const size_t size_A = static_cast<size_t>(lda) * static_cast<size_t>(A_col);
-    const size_t size_B = static_cast<size_t>(ldb) * static_cast<size_t>(B_col);
-    const size_t size_C = static_cast<size_t>(ldc) * static_cast<size_t>(N);
+    // Allocate host memory
+    host_matrix<Ti> hA(A_row, A_col, lda);
+    host_matrix<Ti> hB(B_row, B_col, ldb);
+    host_matrix<To> hC_host(M, N, ldc);
+    host_matrix<To> hC_device(M, N, ldc);
+    host_matrix<To> hC_gold(M, N, ldc);
 
-    // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<Ti> hA(size_A);
-    host_vector<Ti> hB(size_B);
-    host_vector<To> hC_host(size_C);
-    host_vector<To> hC_device(size_C);
-    host_vector<To> hC_gold(size_C);
-
-    device_vector<Ti>  dA(size_A);
-    device_vector<Ti>  dB(size_B);
-    device_vector<To>  dC(size_C);
+    // Allocate device memory
+    device_matrix<Ti>  dA(A_row, A_col, lda);
+    device_matrix<Ti>  dB(B_row, B_col, ldb);
+    device_matrix<To>  dC(M, N, ldc);
     device_vector<Tex> d_alpha(1);
     device_vector<Tex> d_beta(1);
 
     double gpu_time_used, hipblas_error_host, hipblas_error_device;
 
     // Initial Data on CPU
-    hipblas_init_matrix(hA, arg, A_row, A_col, lda, 0, 1, hipblas_client_alpha_sets_nan, true);
+    hipblas_init_matrix(hA, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, true);
     hipblas_init_matrix(
-        hB, arg, B_row, B_col, ldb, 0, 1, hipblas_client_alpha_sets_nan, false, true);
-    hipblas_init_matrix(hC_host, arg, M, N, ldc, 0, 1, hipblas_client_beta_sets_nan);
+        hB, arg, hipblas_client_alpha_sets_nan, hipblas_general_matrix, false, true);
+    hipblas_init_matrix(hC_host, arg, hipblas_client_beta_sets_nan, hipblas_general_matrix);
 
     hC_gold = hC_device = hC_host;
 
     // copy data from CPU to device
 
-    CHECK_HIP_ERROR(hipMemcpy(dA, hA, sizeof(Ti) * size_A, hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dB, hB, sizeof(Ti) * size_B, hipMemcpyHostToDevice));
-
-    CHECK_HIP_ERROR(hipMemcpy(dC, hC_host, sizeof(To) * size_C, hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(dA.transfer_from(hA));
+    CHECK_HIP_ERROR(dB.transfer_from(hB));
+    CHECK_HIP_ERROR(dC.transfer_from(hC_host));
     CHECK_HIP_ERROR(hipMemcpy(d_alpha, &h_alpha_Tex, sizeof(Tex), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(d_beta, &h_beta_Tex, sizeof(Tex), hipMemcpyHostToDevice));
 
@@ -486,8 +485,8 @@ void testing_gemm_ex(const Arguments& arg)
                         flags));
         }
 
-        CHECK_HIP_ERROR(hipMemcpy(hC_host, dC, sizeof(To) * size_C, hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(dC, hC_device, sizeof(To) * size_C, hipMemcpyHostToDevice));
+        CHECK_HIP_ERROR(hC_host.transfer_from(dC));
+        CHECK_HIP_ERROR(dC.transfer_from(hC_device));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         if(!arg.with_flags)
@@ -546,7 +545,7 @@ void testing_gemm_ex(const Arguments& arg)
                         flags));
         }
 
-        CHECK_HIP_ERROR(hipMemcpy(hC_device, dC, sizeof(To) * size_C, hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hC_device.transfer_from(dC));
 
         // reference BLAS
         ref_gemm<Ti, To, Tex>(transA,
