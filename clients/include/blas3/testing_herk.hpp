@@ -134,6 +134,23 @@ void testing_herk_bad_arg(const Arguments& arg)
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                             hipblasHerkFn,
                             (handle, uplo, transA, N, K, alpha, dA, lda, beta, nullptr, ldc));
+
+                // herk will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
+                // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasHerkFn,
+                            (handle,
+                             uplo,
+                             transA,
+                             c_i32_overflow,
+                             c_i32_overflow,
+                             zero,
+                             nullptr,
+                             c_i32_overflow,
+                             one,
+                             nullptr,
+                             c_i32_overflow));
             }
 
             // If k == 0 && beta == 1, A, C may be nullptr
@@ -143,23 +160,6 @@ void testing_herk_bad_arg(const Arguments& arg)
             // If alpha == 0 && beta == 1, A, C may be nullptr
             DAPI_CHECK(hipblasHerkFn,
                        (handle, uplo, transA, N, K, zero, nullptr, lda, one, nullptr, ldc));
-
-            // herk will quick-return with alpha == 0 && beta == 1. Here, c_i32_overflow will rollover in the case of 32-bit params,
-            // and quick-return with 64-bit params. This depends on implementation so only testing rocBLAS backend
-            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
-                                             : HIPBLAS_STATUS_INVALID_VALUE,
-                        hipblasHerkFn,
-                        (handle,
-                         uplo,
-                         transA,
-                         c_i32_overflow,
-                         c_i32_overflow,
-                         zero,
-                         nullptr,
-                         c_i32_overflow,
-                         one,
-                         nullptr,
-                         c_i32_overflow));
         }
 
         // If N == 0, can have nullptrs

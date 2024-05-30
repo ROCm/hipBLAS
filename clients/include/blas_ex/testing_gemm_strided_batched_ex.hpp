@@ -66,18 +66,21 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                 ? hipblasGemmStridedBatchedExWithFlagsFortran
                                                 : hipblasGemmStridedBatchedExWithFlags;
     auto hipblasGemmStridedBatchedExFn_64 = arg.api == FORTRAN_64
-                                                ? hipblasGemmStridedBatchedExWithFlagsFortran_64
+                                                ? hipblasGemmStridedBatchedExWithFlags_64Fortran
                                                 : hipblasGemmStridedBatchedExWithFlags_64;
 
     hipblasLocalHandle handle(arg);
 
-    hipblasDatatype_t    aType           = arg.a_type;
-    hipblasDatatype_t    bType           = arg.b_type;
-    hipblasDatatype_t    cType           = arg.c_type;
-    hipblasDatatype_t    computeType     = arg.compute_type;
-    hipblasComputeType_t computeTypeGemm = arg.compute_type_gemm;
-    hipblasGemmFlags_t   flags           = HIPBLAS_GEMM_FLAGS_NONE;
-    hipblasGemmAlgo_t    algo            = HIPBLAS_GEMM_DEFAULT;
+    hipblasDatatype_t aType = arg.a_type;
+    hipblasDatatype_t bType = arg.b_type;
+    hipblasDatatype_t cType = arg.c_type;
+#ifdef HIPBLAS_V2
+    hipblasComputeType_t computeType = arg.compute_type_gemm;
+#else
+    hipblasDatatype_t computeType  = arg.compute_type;
+#endif
+    hipblasGemmFlags_t flags = HIPBLAS_GEMM_FLAGS_NONE;
+    hipblasGemmAlgo_t  algo  = HIPBLAS_GEMM_DEFAULT;
 
     int64_t M           = 101;
     int64_t N           = 100;
@@ -138,11 +141,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                            dA, aType, lda, stride_A,
                            dB, bType, ldb, stride_B, beta,
                            dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                           computeTypeGemm,
-#else
                            computeType,
-#endif
                            algo, flags));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM, hipblasGemmStridedBatchedExFn, (handle,
@@ -151,11 +150,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                                             dA, aType, lda, stride_A,
                                             dB, bType, ldb, stride_B, beta,
                                             dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                            computeTypeGemm,
-#else
                                             computeType,
-#endif
                                             algo, flags));
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM, hipblasGemmStridedBatchedExFn, (handle, transA,
                                             (hipblasOperation_t)HIPBLAS_FILL_MODE_FULL,
@@ -163,22 +158,14 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                                             dA, aType, lda, stride_A,
                                             dB, bType, ldb, stride_B, beta,
                                             dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                            computeTypeGemm,
-#else
                                             computeType,
-#endif
                                             algo, flags));
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM, hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, K, alpha,
                                             dA, aType, lda, stride_A,
                                             dB, bType, ldb, stride_B, beta,
                                             dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                            computeTypeGemm,
-#else
                                             computeType,
-#endif
                                             (hipblasGemmAlgo_t)HIPBLAS_OP_N,
                                             flags));
 
@@ -190,11 +177,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                     dA, aType, lda, stride_A,
                     dB, bType, ldb, stride_B, nullptr,
                     dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                    computeTypeGemm,
-#else
                     computeType,
-#endif
                     algo, flags));
 
             if(pointer_mode == HIPBLAS_POINTER_MODE_HOST)
@@ -206,11 +189,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                         dA, aType, lda, stride_A,
                         dB, bType, ldb, stride_B, beta,
                         dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                        computeTypeGemm,
-#else
                         computeType,
-#endif
                         algo, flags));
 
                 // again, rocBLAS can handle this in device mode but shouldn't assume
@@ -218,60 +197,22 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                     nullptr, aType, lda, stride_A,
                                                     dB, bType, ldb, stride_B, beta,
                                                     dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                                    computeTypeGemm,
-#else
                                                     computeType,
-#endif
                                                     algo, flags));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, K, alpha,
                                                     dA, aType, lda, stride_A,
                                                     nullptr, bType, ldb, stride_B, beta,
                                                     dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                                    computeTypeGemm,
-#else
                                                     computeType,
-#endif
                                                     algo, flags));
                 DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE, hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, K, alpha,
                                                     dA, aType, lda, stride_A,
                                                     dB, bType, ldb, stride_B, beta,
                                                     nullptr, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                                    computeTypeGemm,
-#else
                                                     computeType,
-#endif
                                                     algo, flags));
-            }
 
-            // If alpha == 0, A and B can be nullptr
-            DAPI_CHECK(hipblasGemmStridedBatchedExFn, (
-                handle, transA, transB, M, N, K, zero,
-                nullptr, aType, lda, stride_A,
-                nullptr, bType, ldb, stride_B, beta,
-                dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                computeTypeGemm,
-#else
-                computeType,
-#endif
-                algo, flags));
-
-            // If K == 0, alpha, A, and B can be nullptr
-            DAPI_CHECK(hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, 0, nullptr,
-                                              nullptr, aType, lda, stride_A,
-                                              nullptr, bType, ldb, stride_B, beta,
-                                              dC, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                              computeTypeGemm,
-#else
-                                              computeType,
-#endif
-                                              algo, flags));
-
-            // 64-bit interface test
+                // 64-bit interface test
             DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasGemmStridedBatchedExFn,
@@ -279,6 +220,32 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                          transA,
                          transB,
                          c_i32_overflow,
+                         0,
+                         c_i32_overflow,
+                         zero,
+                         nullptr,
+                         aType,
+                         c_i32_overflow,
+                         stride_A,
+                         nullptr,
+                         bType,
+                         c_i32_overflow,
+                         stride_B,
+                         one,
+                         nullptr,
+                         cType,
+                         c_i32_overflow,
+                         stride_C,
+                         c_i32_overflow,
+                         computeType,
+                         algo, flags));
+                    DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                             : HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasGemmStridedBatchedExFn,
+                        (handle,
+                         transA,
+                         transB,
+                         0,
                          c_i32_overflow,
                          c_i32_overflow,
                          zero,
@@ -296,12 +263,26 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                          c_i32_overflow,
                          stride_C,
                          c_i32_overflow,
-#ifdef HIPBLAS_V2
-                         computeTypeGemm,
-#else
                          computeType,
-#endif
                          algo, flags));
+            }
+
+            // If alpha == 0, A and B can be nullptr
+            DAPI_CHECK(hipblasGemmStridedBatchedExFn, (
+                handle, transA, transB, M, N, K, zero,
+                nullptr, aType, lda, stride_A,
+                nullptr, bType, ldb, stride_B, beta,
+                dC, cType, ldc, stride_C, batch_count,
+                computeType,
+                algo, flags));
+
+            // If K == 0, alpha, A, and B can be nullptr
+            DAPI_CHECK(hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, 0, nullptr,
+                                              nullptr, aType, lda, stride_A,
+                                              nullptr, bType, ldb, stride_B, beta,
+                                              dC, cType, ldc, stride_C, batch_count,
+                                              computeType,
+                                              algo, flags));
         }
 
         // If M == 0 || N == 0 || batch_count == 0, can have nullptrs
@@ -309,31 +290,19 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
                                           nullptr, aType, lda, stride_A,
                                           nullptr, bType, ldb, stride_B, nullptr,
                                           nullptr, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                          computeTypeGemm,
-#else
                                           computeType,
-#endif
                                           algo, flags));
         DAPI_CHECK(hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, 0, K, nullptr,
                                           nullptr, aType, lda, stride_A,
                                           nullptr, bType, ldb, stride_B, nullptr,
                                           nullptr, cType, ldc, stride_C, batch_count,
-#ifdef HIPBLAS_V2
-                                          computeTypeGemm,
-#else
                                           computeType,
-#endif
                                           algo, flags));
         DAPI_CHECK(hipblasGemmStridedBatchedExFn, (handle, transA, transB, M, N, K, nullptr,
                                           nullptr, aType, lda, stride_A,
                                           nullptr, bType, ldb, stride_B, nullptr,
                                           nullptr, cType, ldc, stride_C, 0,
-#ifdef HIPBLAS_V2
-                                          computeTypeGemm,
-#else
                                           computeType,
-#endif
                                           algo, flags));
 
         // clang-format on
@@ -343,12 +312,17 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
 template <typename Ti, typename To = Ti, typename Tex = To>
 void testing_gemm_strided_batched_ex(const Arguments& arg)
 {
-    auto hipblasGemmStridedBatchedExFn    = arg.api == FORTRAN
-                                                ? hipblasGemmStridedBatchedExWithFlagsFortran
-                                                : hipblasGemmStridedBatchedExWithFlags;
-    auto hipblasGemmStridedBatchedExFn_64 = arg.api == FORTRAN_64
-                                                ? hipblasGemmStridedBatchedExWithFlagsFortran_64
-                                                : hipblasGemmStridedBatchedExWithFlags_64;
+    auto hipblasGemmStridedBatchedExFn
+        = arg.api == FORTRAN ? hipblasGemmStridedBatchedExFortran : hipblasGemmStridedBatchedEx;
+    auto hipblasGemmStridedBatchedExWithFlagsFn = arg.api == FORTRAN
+                                                      ? hipblasGemmStridedBatchedExWithFlagsFortran
+                                                      : hipblasGemmStridedBatchedExWithFlags;
+    auto hipblasGemmStridedBatchedExFn_64       = arg.api == FORTRAN_64
+                                                      ? hipblasGemmStridedBatchedEx_64Fortran
+                                                      : hipblasGemmStridedBatchedEx_64;
+    auto hipblasGemmStridedBatchedExWithFlagsFn_64
+        = arg.api == FORTRAN_64 ? hipblasGemmStridedBatchedExWithFlags_64Fortran
+                                : hipblasGemmStridedBatchedExWithFlags_64;
 
     hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
@@ -361,12 +335,15 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
     int64_t            ldb    = arg.ldb;
     int64_t            ldc    = arg.ldc;
 
-    hipblasDatatype_t    a_type            = arg.a_type;
-    hipblasDatatype_t    b_type            = arg.b_type;
-    hipblasDatatype_t    c_type            = arg.c_type;
-    hipblasDatatype_t    compute_type      = arg.compute_type;
-    hipblasComputeType_t compute_type_gemm = arg.compute_type_gemm;
-    hipblasGemmFlags_t   flags             = hipblasGemmFlags_t(arg.flags);
+    hipblasDatatype_t a_type = arg.a_type;
+    hipblasDatatype_t b_type = arg.b_type;
+    hipblasDatatype_t c_type = arg.c_type;
+#ifdef HIPBLAS_V2
+    hipblasComputeType_t compute_type = arg.compute_type_gemm;
+#else
+    hipblasDatatype_t compute_type = arg.compute_type;
+#endif
+    hipblasGemmFlags_t flags = hipblasGemmFlags_t(arg.flags);
 
     int64_t batch_count = arg.batch_count;
 
@@ -416,12 +393,10 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                      ldc,
                      stride_C,
                      batch_count,
-#ifdef HIPBLAS_V2
-                     compute_type_gemm,
-#else
                      compute_type,
-#endif
                      algo));
+
+        return;
     }
 
     // Naming: `h` is in CPU (host) memory(eg hA), `d` is in GPU (device) memory (eg dA).
@@ -505,11 +480,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                         ldc,
                         stride_C,
                         batch_count,
-#ifdef HIPBLAS_V2
-                        compute_type_gemm,
-#else
                         compute_type,
-#endif
                         algo));
         }
         else
@@ -536,11 +507,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                         ldc,
                         stride_C,
                         batch_count,
-#ifdef HIPBLAS_V2
-                        compute_type_gemm,
-#else
                         compute_type,
-#endif
                         algo,
                         flags));
         }
@@ -573,11 +540,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                         ldc,
                         stride_C,
                         batch_count,
-#ifdef HIPBLAS_V2
-                        compute_type_gemm,
-#else
                         compute_type,
-#endif
                         algo));
         }
         else
@@ -604,11 +567,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                         ldc,
                         stride_C,
                         batch_count,
-#ifdef HIPBLAS_V2
-                        compute_type_gemm,
-#else
                         compute_type,
-#endif
                         algo,
                         flags));
         }
@@ -696,11 +655,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                                ldc,
                                stride_C,
                                batch_count,
-#ifdef HIPBLAS_V2
-                               compute_type_gemm,
-#else
                                compute_type,
-#endif
                                algo));
             }
             else
@@ -727,11 +682,7 @@ void testing_gemm_strided_batched_ex(const Arguments& arg)
                                ldc,
                                stride_C,
                                batch_count,
-#ifdef HIPBLAS_V2
-                               compute_type_gemm,
-#else
                                compute_type,
-#endif
                                algo,
                                flags));
             }
