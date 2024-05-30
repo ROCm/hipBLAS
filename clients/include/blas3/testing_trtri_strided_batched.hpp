@@ -156,9 +156,16 @@ void testing_trtri_strided_batched(const Arguments& arg)
     int           ldinvA   = lda;
     hipblasStride stride_A = lda * N * stride_scale;
 
-    // check here to prevent undefined memory allocation error
-    if(N < 0 || lda < 0 || lda < N || batch_count < 0)
+    hipblasLocalHandle handle(arg);
+
+    // argument sanity check, quick return if input parameters are invalid before allocating invalid
+    bool invalid_size = N < 0 || lda < N || batch_count < 0;
+    if(invalid_size || lda == 0 || N == 0 || batch_count == 0)
     {
+        EXPECT_HIPBLAS_STATUS(
+            hipblasTrtriStridedBatchedFn(
+                handle, uplo, diag, N, nullptr, lda, stride_A, nullptr, lda, stride_A, batch_count),
+            invalid_size ? HIPBLAS_STATUS_INVALID_VALUE : HIPBLAS_STATUS_SUCCESS);
         return;
     }
 
@@ -178,8 +185,7 @@ void testing_trtri_strided_batched(const Arguments& arg)
     CHECK_DEVICE_ALLOCATION(dA.memcheck());
     CHECK_DEVICE_ALLOCATION(dinvA.memcheck());
 
-    double             gpu_time_used, hipblas_error;
-    hipblasLocalHandle handle(arg);
+    double gpu_time_used, hipblas_error;
 
     // Initial Data on CPU
     hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_triangular_matrix, true);
