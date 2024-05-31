@@ -35606,29 +35606,8 @@ hipblasStatus_t hipblasGemmEx_64(hipblasHandle_t    handle,
                                  hipblasGemmAlgo_t  algo)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    return hipblasConvertStatus(cublasGemmEx_64((cublasHandle_t)handle,
-                                                hipblasConvertOperation(transa),
-                                                hipblasConvertOperation(transb),
-                                                m,
-                                                n,
-                                                k,
-                                                alpha,
-                                                A,
-                                                hipblasConvertDatatype(a_type),
-                                                lda,
-                                                B,
-                                                hipblasConvertDatatype(b_type),
-                                                ldb,
-                                                beta,
-                                                C,
-                                                hipblasConvertDatatype(c_type),
-                                                ldc,
-                                                hipblasConvertDatatype(compute_type),
-                                                hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -35657,30 +35636,8 @@ hipblasStatus_t hipblasGemmExWithFlags_64(hipblasHandle_t    handle,
                                           hipblasGemmFlags_t flags)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    // flags are ignored, call original function
-    return hipblasConvertStatus(cublasGemmEx_64((cublasHandle_t)handle,
-                                                hipblasConvertOperation(transa),
-                                                hipblasConvertOperation(transb),
-                                                m,
-                                                n,
-                                                k,
-                                                alpha,
-                                                A,
-                                                hipblasConvertDatatype(a_type),
-                                                lda,
-                                                B,
-                                                hipblasConvertDatatype(b_type),
-                                                ldb,
-                                                beta,
-                                                C,
-                                                hipblasConvertDatatype(c_type),
-                                                ldc,
-                                                hipblasConvertDatatype(compute_type),
-                                                hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -35811,30 +35768,8 @@ hipblasStatus_t hipblasGemmBatchedEx_64(hipblasHandle_t    handle,
                                         hipblasGemmAlgo_t  algo)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    return hipblasConvertStatus(cublasGemmBatchedEx_64((cublasHandle_t)handle,
-                                                       hipblasConvertOperation(transa),
-                                                       hipblasConvertOperation(transb),
-                                                       m,
-                                                       n,
-                                                       k,
-                                                       alpha,
-                                                       A,
-                                                       hipblasConvertDatatype(a_type),
-                                                       lda,
-                                                       B,
-                                                       hipblasConvertDatatype(b_type),
-                                                       ldb,
-                                                       beta,
-                                                       C,
-                                                       hipblasConvertDatatype(c_type),
-                                                       ldc,
-                                                       batch_count,
-                                                       hipblasConvertDatatype(compute_type),
-                                                       hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -35864,31 +35799,8 @@ hipblasStatus_t hipblasGemmBatchedExWithFlags_64(hipblasHandle_t    handle,
                                                  hipblasGemmFlags_t flags)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    // flags are ignored, call original function
-    return hipblasConvertStatus(cublasGemmBatchedEx_64((cublasHandle_t)handle,
-                                                       hipblasConvertOperation(transa),
-                                                       hipblasConvertOperation(transb),
-                                                       m,
-                                                       n,
-                                                       k,
-                                                       alpha,
-                                                       A,
-                                                       hipblasConvertDatatype(a_type),
-                                                       lda,
-                                                       B,
-                                                       hipblasConvertDatatype(b_type),
-                                                       ldb,
-                                                       beta,
-                                                       C,
-                                                       hipblasConvertDatatype(c_type),
-                                                       ldc,
-                                                       batch_count,
-                                                       hipblasConvertDatatype(compute_type),
-                                                       hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -36026,33 +35938,8 @@ hipblasStatus_t hipblasGemmStridedBatchedEx_64(hipblasHandle_t    handle,
                                                hipblasGemmAlgo_t  algo)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    return hipblasConvertStatus(cublasGemmStridedBatchedEx_64((cublasHandle_t)handle,
-                                                              hipblasConvertOperation(transa),
-                                                              hipblasConvertOperation(transb),
-                                                              m,
-                                                              n,
-                                                              k,
-                                                              alpha,
-                                                              A,
-                                                              hipblasConvertDatatype(a_type),
-                                                              lda,
-                                                              stride_A,
-                                                              B,
-                                                              hipblasConvertDatatype(b_type),
-                                                              ldb,
-                                                              stride_B,
-                                                              beta,
-                                                              C,
-                                                              hipblasConvertDatatype(c_type),
-                                                              ldc,
-                                                              stride_C,
-                                                              batch_count,
-                                                              hipblasConvertDatatype(compute_type),
-                                                              hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
@@ -36085,34 +35972,8 @@ hipblasStatus_t hipblasGemmStridedBatchedExWithFlags_64(hipblasHandle_t    handl
                                                         hipblasGemmFlags_t flags)
 try
 {
-#if CUBLAS_VER_MAJOR >= 12
-    // flags are ignored, call original function
-    return hipblasConvertStatus(cublasGemmStridedBatchedEx_64((cublasHandle_t)handle,
-                                                              hipblasConvertOperation(transa),
-                                                              hipblasConvertOperation(transb),
-                                                              m,
-                                                              n,
-                                                              k,
-                                                              alpha,
-                                                              A,
-                                                              hipblasConvertDatatype(a_type),
-                                                              lda,
-                                                              stride_A,
-                                                              B,
-                                                              hipblasConvertDatatype(b_type),
-                                                              ldb,
-                                                              stride_B,
-                                                              beta,
-                                                              C,
-                                                              hipblasConvertDatatype(c_type),
-                                                              ldc,
-                                                              stride_C,
-                                                              batch_count,
-                                                              hipblasConvertDatatype(compute_type),
-                                                              hipblasConvertGemmAlgo(algo)));
-#else
+    // not supported - only _v2 version with hipblasComputeType_t is supported
     return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
 }
 catch(...)
 {
