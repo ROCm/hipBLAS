@@ -228,6 +228,7 @@ void testing_gemm_batched_ex_bad_arg(const Arguments& arg)
                          c_i32_overflow,
                          computeType,
                          algo, flags));
+
                         DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
                                              : HIPBLAS_STATUS_INVALID_VALUE,
                         hipblasGemmBatchedExFn,
