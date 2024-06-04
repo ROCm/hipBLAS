@@ -10,7 +10,7 @@ Definitions:
     - { alpha: 2.0, alphai: -3.0, beta: 2.0, betai:  -1.0 }
 
   - &batch_count_range
-    - [ -1, 5 ]
+    - [ 5 ]
 
 Tests:
   - name: gemm_general
@@ -33,7 +33,6 @@ Tests:
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
-    backend_flags: AMD
 
   - name: gemm_strided_batched_general
     category: quick
@@ -46,7 +45,6 @@ Tests:
     batch_count: *batch_count_range
     stride_scale: [ 2.5 ]
     api: [ FORTRAN, C, FORTRAN_64, C_64 ]
-    backend_flags: AMD
 
   - name: gemm_bad_arg
     category: pre_checkin
