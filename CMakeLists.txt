@@ -49,7 +49,14 @@ if (NOT WIN32)
     set( fortran_language "Fortran" )
 endif( )
 
-project( hipblas LANGUAGES CXX ${fortran_language} )
+# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
+option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
+
+if( NOT BUILD_SHARED_LIBS )
+    project( hipblas LANGUAGES C CXX ${fortran_language} )
+else()
+    project( hipblas LANGUAGES CXX ${fortran_language} )
+endif()
 
 if (NOT python)
     set(python "python3") # default for linux
@@ -76,9 +83,6 @@ option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
 if( BUILD_WITH_SOLVER )
     add_definitions( -D__HIP_PLATFORM_SOLVER__ )
 endif( )
-
-# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
-option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Deprecated USE_CUDA option
 if(DEFINED USE_CUDA)
