@@ -10,7 +10,7 @@ Definitions:
     - { alpha: 3.0, alphai:  1.0, beta: 1.0, betai: -1.0 }
 
   - &batch_count_range
-    - [ -1, 5 ]
+    - [ 5 ]
 
   - &gemm_flags
     - [ 0, 4 ]
@@ -26,7 +26,7 @@ Tests:
     transB: [ 'N', 'T', 'C' ]
     matrix_size: *size_range
     alpha_beta: *alpha_beta_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_ex_amd
     category: quick
@@ -40,7 +40,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     batch_count: 2
     stride_scale: 1.0
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     with_flags: 1
     flags: *gemm_flags
     backend_flags: AMD
@@ -56,7 +56,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_strided_batched_ex_general
     category: quick
@@ -70,7 +70,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
     stride_scale: [ 2.5 ]
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_ex_bad_arg
     category: pre_checkin
@@ -81,7 +81,7 @@ Tests:
       - gemm_ex_bad_arg: *hpa_half_precision
       - gemm_batched_ex_bad_arg: *hpa_half_precision
       - gemm_strided_batched_ex_bad_arg: *hpa_half_precision
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: gemm_ex_bad_arg
@@ -90,7 +90,7 @@ Tests:
       - gemm_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
       - gemm_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
       - gemm_strided_batched_ex_bad_arg: *single_double_precisions_complex_real_gemm_ex
-    api: [ FORTRAN, C ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     bad_arg_all: false
     backend_flags: NVIDIA
 ...

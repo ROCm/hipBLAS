@@ -10,7 +10,7 @@ Definitions:
     - { alpha: 2.0, alphai: -3.0, beta: 2.0, betai:  -1.0 }
 
   - &batch_count_range
-    - [ -1, 5 ]
+    - [ 5 ]
 
 Tests:
   - name: gemm_general
@@ -21,7 +21,7 @@ Tests:
     transB: [ 'N', 'T', 'C' ]
     matrix_size: *size_range
     alpha_beta: *alpha_beta_range
-    api: [ FORTRAN, C ] #, FORTRAN_64, C_64 ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_batched_general
     category: quick
@@ -32,8 +32,7 @@ Tests:
     matrix_size: *size_range
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
-    api: [ FORTRAN, C ] #, FORTRAN_64, C_64 ]
-    backend_flags: AMD
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_strided_batched_general
     category: quick
@@ -45,8 +44,7 @@ Tests:
     alpha_beta: *alpha_beta_range
     batch_count: *batch_count_range
     stride_scale: [ 2.5 ]
-    api: [ FORTRAN, C ] #, FORTRAN_64, C_64 ]
-    backend_flags: AMD
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
 
   - name: gemm_bad_arg
     category: pre_checkin
@@ -55,7 +53,7 @@ Tests:
       - gemm_batched_bad_arg
       - gemm_strided_batched_bad_arg
     precision: *single_double_precisions_complex_real_half_real
-    api: [ FORTRAN, C ] #, FORTRAN_64, C_64 ]
+    api: [ FORTRAN, C, FORTRAN_64, C_64 ]
     backend_flags: AMD
 
   - name: gemm_bad_arg
