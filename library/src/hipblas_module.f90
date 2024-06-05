@@ -23656,6 +23656,206 @@ module hipblas
         end function hipblasGemmStridedBatchedExWithFlags
     end interface
 
+    ! gemmEx_64
+    interface
+        function hipblasGemmEx_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+                               b, b_type, ldb, beta, c, c_type, ldc, &
+                               compute_type, algo) &
+            bind(c, name='hipblasGemmEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmEx_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        end function hipblasGemmEx_64
+    end interface
+
+    interface
+        function hipblasGemmExWithFlags_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+                                        b, b_type, ldb, beta, c, c_type, ldc, &
+                                        compute_type, algo, flags) &
+            bind(c, name='hipblasGemmExWithFlags_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmExWithFlags_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
+        end function hipblasGemmExWithFlags_64
+    end interface
+
+    interface
+        function hipblasGemmBatchedEx_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+                                      b, b_type, ldb, beta, c, c_type, ldc, &
+                                      batch_count, compute_type, algo) &
+            bind(c, name='hipblasGemmBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        end function hipblasGemmBatchedEx_64
+    end interface
+
+    interface
+        function hipblasGemmBatchedExWithFlags_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, &
+                                               b, b_type, ldb, beta, c, c_type, ldc, &
+                                               batch_count, compute_type, algo, flags) &
+            bind(c, name='hipblasGemmBatchedExWithFlags_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmBatchedExWithFlags_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
+        end function hipblasGemmBatchedExWithFlags_64
+    end interface
+
+    interface
+        function hipblasGemmStridedBatchedEx_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
+                                             b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
+                                             batch_count, compute_type, algo) &
+            bind(c, name='hipblasGemmStridedBatchedEx_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmStridedBatchedEx_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_a
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            integer(c_int64_t), value :: stride_b
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(c_int64_t), value :: stride_c
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+        end function hipblasGemmStridedBatchedEx_64
+    end interface
+
+    interface
+        function hipblasGemmStridedBatchedExWithFlags_64(handle, transA, transB, m, n, k, alpha, a, a_type, lda, stride_a, &
+                                                      b, b_type, ldb, stride_b, beta, c, c_type, ldc, stride_c, &
+                                                      batch_count, compute_type, algo, flags) &
+            bind(c, name='hipblasGemmStridedBatchedExWithFlags_64')
+            use iso_c_binding
+            use hipblas_enums
+            implicit none
+            integer(kind(HIPBLAS_STATUS_SUCCESS)) :: hipblasGemmStridedBatchedExWithFlags_64
+            type(c_ptr), value :: handle
+            integer(kind(HIPBLAS_OP_N)), value :: transA
+            integer(kind(HIPBLAS_OP_N)), value :: transB
+            integer(c_int64_t), value :: m
+            integer(c_int64_t), value :: n
+            integer(c_int64_t), value :: k
+            type(c_ptr), value :: alpha
+            type(c_ptr), value :: a
+            integer(kind(HIPBLAS_R_16F)), value :: a_type
+            integer(c_int64_t), value :: lda
+            integer(c_int64_t), value :: stride_a
+            type(c_ptr), value :: b
+            integer(kind(HIPBLAS_R_16F)), value :: b_type
+            integer(c_int64_t), value :: ldb
+            integer(c_int64_t), value :: stride_b
+            type(c_ptr), value :: beta
+            type(c_ptr), value :: c
+            integer(kind(HIPBLAS_R_16F)), value :: c_type
+            integer(c_int64_t), value :: ldc
+            integer(c_int64_t), value :: stride_c
+            integer(c_int64_t), value :: batch_count
+            integer(kind(HIPBLAS_R_16F)), value :: compute_type
+            integer(kind(HIPBLAS_GEMM_DEFAULT)), value :: algo
+            integer(kind(HIPBLAS_GEMM_FLAGS_NONE)), value :: flags
+        end function hipblasGemmStridedBatchedExWithFlags_64
+    end interface
+
     ! trsmEx
     interface
         function hipblasTrsmEx(handle, side, uplo, transA, diag, m, n, alpha, A, lda, &

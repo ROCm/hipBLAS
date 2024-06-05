@@ -31247,6 +31247,89 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_v2(hipblasHandle_t      ha
                                                          hipblasGemmAlgo_t    algo,
                                                          hipblasGemmFlags_t   flags);
 
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_64(hipblasHandle_t    handle,
+                                                hipblasOperation_t transA,
+                                                hipblasOperation_t transB,
+                                                int64_t            m,
+                                                int64_t            n,
+                                                int64_t            k,
+                                                const void*        alpha,
+                                                const void*        A,
+                                                hipblasDatatype_t  aType,
+                                                int64_t            lda,
+                                                const void*        B,
+                                                hipblasDatatype_t  bType,
+                                                int64_t            ldb,
+                                                const void*        beta,
+                                                void*              C,
+                                                hipblasDatatype_t  cType,
+                                                int64_t            ldc,
+                                                hipblasDatatype_t  computeType,
+                                                hipblasGemmAlgo_t  algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmEx_v2_64(hipblasHandle_t      handle,
+                                                   hipblasOperation_t   transA,
+                                                   hipblasOperation_t   transB,
+                                                   int64_t              m,
+                                                   int64_t              n,
+                                                   int64_t              k,
+                                                   const void*          alpha,
+                                                   const void*          A,
+                                                   hipDataType          aType,
+                                                   int64_t              lda,
+                                                   const void*          B,
+                                                   hipDataType          bType,
+                                                   int64_t              ldb,
+                                                   const void*          beta,
+                                                   void*                C,
+                                                   hipDataType          cType,
+                                                   int64_t              ldc,
+                                                   hipblasComputeType_t computeType,
+                                                   hipblasGemmAlgo_t    algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_64(hipblasHandle_t    handle,
+                                                         hipblasOperation_t transA,
+                                                         hipblasOperation_t transB,
+                                                         int64_t            m,
+                                                         int64_t            n,
+                                                         int64_t            k,
+                                                         const void*        alpha,
+                                                         const void*        A,
+                                                         hipblasDatatype_t  aType,
+                                                         int64_t            lda,
+                                                         const void*        B,
+                                                         hipblasDatatype_t  bType,
+                                                         int64_t            ldb,
+                                                         const void*        beta,
+                                                         void*              C,
+                                                         hipblasDatatype_t  cType,
+                                                         int64_t            ldc,
+                                                         hipblasDatatype_t  computeType,
+                                                         hipblasGemmAlgo_t  algo,
+                                                         hipblasGemmFlags_t flags);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmExWithFlags_v2_64(hipblasHandle_t      handle,
+                                                            hipblasOperation_t   transA,
+                                                            hipblasOperation_t   transB,
+                                                            int64_t              m,
+                                                            int64_t              n,
+                                                            int64_t              k,
+                                                            const void*          alpha,
+                                                            const void*          A,
+                                                            hipDataType          aType,
+                                                            int64_t              lda,
+                                                            const void*          B,
+                                                            hipDataType          bType,
+                                                            int64_t              ldb,
+                                                            const void*          beta,
+                                                            void*                C,
+                                                            hipDataType          cType,
+                                                            int64_t              ldc,
+                                                            hipblasComputeType_t computeType,
+                                                            hipblasGemmAlgo_t    algo,
+                                                            hipblasGemmFlags_t   flags);
+
 /*! \brief BLAS EX API
     \details
     gemmBatchedEx performs one of the batched matrix-matrix operations
@@ -31529,6 +31612,93 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags_v2(hipblasHandle_t 
                                                                 hipblasComputeType_t computeType,
                                                                 hipblasGemmAlgo_t    algo,
                                                                 hipblasGemmFlags_t   flags);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_64(hipblasHandle_t    handle,
+                                                       hipblasOperation_t transA,
+                                                       hipblasOperation_t transB,
+                                                       int64_t            m,
+                                                       int64_t            n,
+                                                       int64_t            k,
+                                                       const void*        alpha,
+                                                       const void*        A[],
+                                                       hipblasDatatype_t  aType,
+                                                       int64_t            lda,
+                                                       const void*        B[],
+                                                       hipblasDatatype_t  bType,
+                                                       int64_t            ldb,
+                                                       const void*        beta,
+                                                       void*              C[],
+                                                       hipblasDatatype_t  cType,
+                                                       int64_t            ldc,
+                                                       int64_t            batchCount,
+                                                       hipblasDatatype_t  computeType,
+                                                       hipblasGemmAlgo_t  algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedEx_v2_64(hipblasHandle_t      handle,
+                                                          hipblasOperation_t   transA,
+                                                          hipblasOperation_t   transB,
+                                                          int64_t              m,
+                                                          int64_t              n,
+                                                          int64_t              k,
+                                                          const void*          alpha,
+                                                          const void*          A[],
+                                                          hipDataType          aType,
+                                                          int64_t              lda,
+                                                          const void*          B[],
+                                                          hipDataType          bType,
+                                                          int64_t              ldb,
+                                                          const void*          beta,
+                                                          void*                C[],
+                                                          hipDataType          cType,
+                                                          int64_t              ldc,
+                                                          int64_t              batchCount,
+                                                          hipblasComputeType_t computeType,
+                                                          hipblasGemmAlgo_t    algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags_64(hipblasHandle_t    handle,
+                                                                hipblasOperation_t transA,
+                                                                hipblasOperation_t transB,
+                                                                int64_t            m,
+                                                                int64_t            n,
+                                                                int64_t            k,
+                                                                const void*        alpha,
+                                                                const void*        A[],
+                                                                hipblasDatatype_t  aType,
+                                                                int64_t            lda,
+                                                                const void*        B[],
+                                                                hipblasDatatype_t  bType,
+                                                                int64_t            ldb,
+                                                                const void*        beta,
+                                                                void*              C[],
+                                                                hipblasDatatype_t  cType,
+                                                                int64_t            ldc,
+                                                                int64_t            batchCount,
+                                                                hipblasDatatype_t  computeType,
+                                                                hipblasGemmAlgo_t  algo,
+                                                                hipblasGemmFlags_t flags);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmBatchedExWithFlags_v2_64(hipblasHandle_t      handle,
+                                                                   hipblasOperation_t   transA,
+                                                                   hipblasOperation_t   transB,
+                                                                   int64_t              m,
+                                                                   int64_t              n,
+                                                                   int64_t              k,
+                                                                   const void*          alpha,
+                                                                   const void*          A[],
+                                                                   hipDataType          aType,
+                                                                   int64_t              lda,
+                                                                   const void*          B[],
+                                                                   hipDataType          bType,
+                                                                   int64_t              ldb,
+                                                                   const void*          beta,
+                                                                   void*                C[],
+                                                                   hipDataType          cType,
+                                                                   int64_t              ldc,
+                                                                   int64_t              batchCount,
+                                                                   hipblasComputeType_t computeType,
+                                                                   hipblasGemmAlgo_t    algo,
+                                                                   hipblasGemmFlags_t   flags);
 
 /*! \brief BLAS EX API
 
@@ -31848,6 +32018,107 @@ HIPBLAS_EXPORT hipblasStatus_t
                                             hipblasComputeType_t computeType,
                                             hipblasGemmAlgo_t    algo,
                                             hipblasGemmFlags_t   flags);
+
+// 64-bit interface
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_64(hipblasHandle_t    handle,
+                                                              hipblasOperation_t transA,
+                                                              hipblasOperation_t transB,
+                                                              int64_t            m,
+                                                              int64_t            n,
+                                                              int64_t            k,
+                                                              const void*        alpha,
+                                                              const void*        A,
+                                                              hipblasDatatype_t  aType,
+                                                              int64_t            lda,
+                                                              hipblasStride      strideA,
+                                                              const void*        B,
+                                                              hipblasDatatype_t  bType,
+                                                              int64_t            ldb,
+                                                              hipblasStride      strideB,
+                                                              const void*        beta,
+                                                              void*              C,
+                                                              hipblasDatatype_t  cType,
+                                                              int64_t            ldc,
+                                                              hipblasStride      strideC,
+                                                              int64_t            batchCount,
+                                                              hipblasDatatype_t  computeType,
+                                                              hipblasGemmAlgo_t  algo);
+
+HIPBLAS_EXPORT hipblasStatus_t hipblasGemmStridedBatchedEx_v2_64(hipblasHandle_t      handle,
+                                                                 hipblasOperation_t   transA,
+                                                                 hipblasOperation_t   transB,
+                                                                 int64_t              m,
+                                                                 int64_t              n,
+                                                                 int64_t              k,
+                                                                 const void*          alpha,
+                                                                 const void*          A,
+                                                                 hipDataType          aType,
+                                                                 int64_t              lda,
+                                                                 hipblasStride        strideA,
+                                                                 const void*          B,
+                                                                 hipDataType          bType,
+                                                                 int64_t              ldb,
+                                                                 hipblasStride        strideB,
+                                                                 const void*          beta,
+                                                                 void*                C,
+                                                                 hipDataType          cType,
+                                                                 int64_t              ldc,
+                                                                 hipblasStride        strideC,
+                                                                 int64_t              batchCount,
+                                                                 hipblasComputeType_t computeType,
+                                                                 hipblasGemmAlgo_t    algo);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasGemmStridedBatchedExWithFlags_64(hipblasHandle_t    handle,
+                                            hipblasOperation_t transA,
+                                            hipblasOperation_t transB,
+                                            int64_t            m,
+                                            int64_t            n,
+                                            int64_t            k,
+                                            const void*        alpha,
+                                            const void*        A,
+                                            hipblasDatatype_t  aType,
+                                            int64_t            lda,
+                                            hipblasStride      strideA,
+                                            const void*        B,
+                                            hipblasDatatype_t  bType,
+                                            int64_t            ldb,
+                                            hipblasStride      strideB,
+                                            const void*        beta,
+                                            void*              C,
+                                            hipblasDatatype_t  cType,
+                                            int64_t            ldc,
+                                            hipblasStride      strideC,
+                                            int64_t            batchCount,
+                                            hipblasDatatype_t  computeType,
+                                            hipblasGemmAlgo_t  algo,
+                                            hipblasGemmFlags_t flags);
+
+HIPBLAS_EXPORT hipblasStatus_t
+    hipblasGemmStridedBatchedExWithFlags_v2_64(hipblasHandle_t      handle,
+                                               hipblasOperation_t   transA,
+                                               hipblasOperation_t   transB,
+                                               int64_t              m,
+                                               int64_t              n,
+                                               int64_t              k,
+                                               const void*          alpha,
+                                               const void*          A,
+                                               hipDataType          aType,
+                                               int64_t              lda,
+                                               hipblasStride        strideA,
+                                               const void*          B,
+                                               hipDataType          bType,
+                                               int64_t              ldb,
+                                               hipblasStride        strideB,
+                                               const void*          beta,
+                                               void*                C,
+                                               hipDataType          cType,
+                                               int64_t              ldc,
+                                               hipblasStride        strideC,
+                                               int64_t              batchCount,
+                                               hipblasComputeType_t computeType,
+                                               hipblasGemmAlgo_t    algo,
+                                               hipblasGemmFlags_t   flags);
 
 /*! BLAS EX API
 
@@ -34783,9 +35054,17 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t
 #define hipblasGemmBatchedEx hipblasGemmBatchedEx_v2
 #define hipblasGemmStridedBatchedEx hipblasGemmStridedBatchedEx_v2
 
+#define hipblasGemmEx_64 hipblasGemmEx_v2_64
+#define hipblasGemmBatchedEx_64 hipblasGemmBatchedEx_v2_64
+#define hipblasGemmStridedBatchedEx_64 hipblasGemmStridedBatchedEx_v2_64
+
 #define hipblasGemmExWithFlags hipblasGemmExWithFlags_v2
 #define hipblasGemmBatchedExWithFlags hipblasGemmBatchedExWithFlags_v2
 #define hipblasGemmStridedBatchedExWithFlags hipblasGemmStridedBatchedExWithFlags_v2
+
+#define hipblasGemmExWithFlags_64 hipblasGemmExWithFlags_v2_64
+#define hipblasGemmBatchedExWithFlags_64 hipblasGemmBatchedExWithFlags_v2_64
+#define hipblasGemmStridedBatchedExWithFlags_64 hipblasGemmStridedBatchedExWithFlags_v2_64
 
 #define hipblasAxpyEx hipblasAxpyEx_v2
 #define hipblasAxpyBatchedEx hipblasAxpyBatchedEx_v2

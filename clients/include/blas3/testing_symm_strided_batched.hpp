@@ -300,6 +300,28 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
                              ldc,
                              stride_C,
                              batch_count));
+
+                // 64-bit interface test
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasSymmStridedBatchedFn,
+                            (handle,
+                             side,
+                             uplo,
+                             c_i32_overflow,
+                             c_i32_overflow,
+                             zero,
+                             nullptr,
+                             c_i32_overflow,
+                             stride_A,
+                             nullptr,
+                             c_i32_overflow,
+                             stride_B,
+                             one,
+                             nullptr,
+                             c_i32_overflow,
+                             stride_C,
+                             c_i32_overflow));
             }
 
             // alpha == 0 && beta == 1, can have all nullptrs
@@ -321,28 +343,6 @@ void testing_symm_strided_batched_bad_arg(const Arguments& arg)
                         ldc,
                         stride_C,
                         batch_count));
-
-            // 64-bit interface test
-            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
-                                             : HIPBLAS_STATUS_INVALID_VALUE,
-                        hipblasSymmStridedBatchedFn,
-                        (handle,
-                         side,
-                         uplo,
-                         c_i32_overflow,
-                         c_i32_overflow,
-                         zero,
-                         nullptr,
-                         c_i32_overflow,
-                         stride_A,
-                         nullptr,
-                         c_i32_overflow,
-                         stride_B,
-                         one,
-                         nullptr,
-                         c_i32_overflow,
-                         stride_C,
-                         c_i32_overflow));
         }
 
         // If M == 0 || N == 0  batch_count == 0, can have nullptrs

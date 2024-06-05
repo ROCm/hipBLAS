@@ -229,6 +229,23 @@ void testing_herk_batched_bad_arg(const Arguments& arg)
                              nullptr,
                              ldc,
                              batch_count));
+
+                // 64-bit interface test
+                DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
+                                                 : HIPBLAS_STATUS_INVALID_VALUE,
+                            hipblasHerkBatchedFn,
+                            (handle,
+                             uplo,
+                             transA,
+                             c_i32_overflow,
+                             c_i32_overflow,
+                             zero,
+                             nullptr,
+                             c_i32_overflow,
+                             one,
+                             nullptr,
+                             c_i32_overflow,
+                             c_i32_overflow));
             }
 
             // If k == 0 && beta == 1, A, C may be nullptr
@@ -240,23 +257,6 @@ void testing_herk_batched_bad_arg(const Arguments& arg)
             DAPI_CHECK(
                 hipblasHerkBatchedFn,
                 (handle, uplo, transA, N, K, zero, nullptr, lda, one, nullptr, ldc, batch_count));
-
-            // 64-bit interface test
-            DAPI_EXPECT((arg.api & c_API_64) ? HIPBLAS_STATUS_SUCCESS
-                                             : HIPBLAS_STATUS_INVALID_VALUE,
-                        hipblasHerkBatchedFn,
-                        (handle,
-                         uplo,
-                         transA,
-                         c_i32_overflow,
-                         c_i32_overflow,
-                         zero,
-                         nullptr,
-                         c_i32_overflow,
-                         one,
-                         nullptr,
-                         c_i32_overflow,
-                         c_i32_overflow));
         }
 
         // If N == 0 batch_count == 0, can have nullptrs

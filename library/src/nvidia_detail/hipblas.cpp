@@ -35584,6 +35584,522 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
+// gemm_ex
+hipblasStatus_t hipblasGemmEx_64(hipblasHandle_t    handle,
+                                 hipblasOperation_t transa,
+                                 hipblasOperation_t transb,
+                                 int64_t            m,
+                                 int64_t            n,
+                                 int64_t            k,
+                                 const void*        alpha,
+                                 const void*        A,
+                                 hipblasDatatype_t  a_type,
+                                 int64_t            lda,
+                                 const void*        B,
+                                 hipblasDatatype_t  b_type,
+                                 int64_t            ldb,
+                                 const void*        beta,
+                                 void*              C,
+                                 hipblasDatatype_t  c_type,
+                                 int64_t            ldc,
+                                 hipblasDatatype_t  compute_type,
+                                 hipblasGemmAlgo_t  algo)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmExWithFlags_64(hipblasHandle_t    handle,
+                                          hipblasOperation_t transa,
+                                          hipblasOperation_t transb,
+                                          int64_t            m,
+                                          int64_t            n,
+                                          int64_t            k,
+                                          const void*        alpha,
+                                          const void*        A,
+                                          hipblasDatatype_t  a_type,
+                                          int64_t            lda,
+                                          const void*        B,
+                                          hipblasDatatype_t  b_type,
+                                          int64_t            ldb,
+                                          const void*        beta,
+                                          void*              C,
+                                          hipblasDatatype_t  c_type,
+                                          int64_t            ldc,
+                                          hipblasDatatype_t  compute_type,
+                                          hipblasGemmAlgo_t  algo,
+                                          hipblasGemmFlags_t flags)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmEx_v2_64(hipblasHandle_t      handle,
+                                    hipblasOperation_t   transa,
+                                    hipblasOperation_t   transb,
+                                    int64_t              m,
+                                    int64_t              n,
+                                    int64_t              k,
+                                    const void*          alpha,
+                                    const void*          A,
+                                    hipDataType          a_type,
+                                    int64_t              lda,
+                                    const void*          B,
+                                    hipDataType          b_type,
+                                    int64_t              ldb,
+                                    const void*          beta,
+                                    void*                C,
+                                    hipDataType          c_type,
+                                    int64_t              ldc,
+                                    hipblasComputeType_t compute_type,
+                                    hipblasGemmAlgo_t    algo)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasGemmEx_64((cublasHandle_t)handle,
+                                                hipblasConvertOperation(transa),
+                                                hipblasConvertOperation(transb),
+                                                m,
+                                                n,
+                                                k,
+                                                alpha,
+                                                A,
+                                                hipblasConvertDatatype_v2(a_type),
+                                                lda,
+                                                B,
+                                                hipblasConvertDatatype_v2(b_type),
+                                                ldb,
+                                                beta,
+                                                C,
+                                                hipblasConvertDatatype_v2(c_type),
+                                                ldc,
+                                                hipblasConvertComputeType(compute_type),
+                                                hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmExWithFlags_v2_64(hipblasHandle_t      handle,
+                                             hipblasOperation_t   transa,
+                                             hipblasOperation_t   transb,
+                                             int64_t              m,
+                                             int64_t              n,
+                                             int64_t              k,
+                                             const void*          alpha,
+                                             const void*          A,
+                                             hipDataType          a_type,
+                                             int64_t              lda,
+                                             const void*          B,
+                                             hipDataType          b_type,
+                                             int64_t              ldb,
+                                             const void*          beta,
+                                             void*                C,
+                                             hipDataType          c_type,
+                                             int64_t              ldc,
+                                             hipblasComputeType_t compute_type,
+                                             hipblasGemmAlgo_t    algo,
+                                             hipblasGemmFlags_t   flags)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    // flags are ignored, call original function
+    return hipblasConvertStatus(cublasGemmEx_64((cublasHandle_t)handle,
+                                                hipblasConvertOperation(transa),
+                                                hipblasConvertOperation(transb),
+                                                m,
+                                                n,
+                                                k,
+                                                alpha,
+                                                A,
+                                                hipblasConvertDatatype_v2(a_type),
+                                                lda,
+                                                B,
+                                                hipblasConvertDatatype_v2(b_type),
+                                                ldb,
+                                                beta,
+                                                C,
+                                                hipblasConvertDatatype_v2(c_type),
+                                                ldc,
+                                                hipblasConvertComputeType(compute_type),
+                                                hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedEx_64(hipblasHandle_t    handle,
+                                        hipblasOperation_t transa,
+                                        hipblasOperation_t transb,
+                                        int64_t            m,
+                                        int64_t            n,
+                                        int64_t            k,
+                                        const void*        alpha,
+                                        const void*        A[],
+                                        hipblasDatatype_t  a_type,
+                                        int64_t            lda,
+                                        const void*        B[],
+                                        hipblasDatatype_t  b_type,
+                                        int64_t            ldb,
+                                        const void*        beta,
+                                        void*              C[],
+                                        hipblasDatatype_t  c_type,
+                                        int64_t            ldc,
+                                        int64_t            batch_count,
+                                        hipblasDatatype_t  compute_type,
+                                        hipblasGemmAlgo_t  algo)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedExWithFlags_64(hipblasHandle_t    handle,
+                                                 hipblasOperation_t transa,
+                                                 hipblasOperation_t transb,
+                                                 int64_t            m,
+                                                 int64_t            n,
+                                                 int64_t            k,
+                                                 const void*        alpha,
+                                                 const void*        A[],
+                                                 hipblasDatatype_t  a_type,
+                                                 int64_t            lda,
+                                                 const void*        B[],
+                                                 hipblasDatatype_t  b_type,
+                                                 int64_t            ldb,
+                                                 const void*        beta,
+                                                 void*              C[],
+                                                 hipblasDatatype_t  c_type,
+                                                 int64_t            ldc,
+                                                 int64_t            batch_count,
+                                                 hipblasDatatype_t  compute_type,
+                                                 hipblasGemmAlgo_t  algo,
+                                                 hipblasGemmFlags_t flags)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedEx_v2_64(hipblasHandle_t      handle,
+                                           hipblasOperation_t   transa,
+                                           hipblasOperation_t   transb,
+                                           int64_t              m,
+                                           int64_t              n,
+                                           int64_t              k,
+                                           const void*          alpha,
+                                           const void*          A[],
+                                           hipDataType          a_type,
+                                           int64_t              lda,
+                                           const void*          B[],
+                                           hipDataType          b_type,
+                                           int64_t              ldb,
+                                           const void*          beta,
+                                           void*                C[],
+                                           hipDataType          c_type,
+                                           int64_t              ldc,
+                                           int64_t              batch_count,
+                                           hipblasComputeType_t compute_type,
+                                           hipblasGemmAlgo_t    algo)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(cublasGemmBatchedEx_64((cublasHandle_t)handle,
+                                                       hipblasConvertOperation(transa),
+                                                       hipblasConvertOperation(transb),
+                                                       m,
+                                                       n,
+                                                       k,
+                                                       alpha,
+                                                       A,
+                                                       hipblasConvertDatatype_v2(a_type),
+                                                       lda,
+                                                       B,
+                                                       hipblasConvertDatatype_v2(b_type),
+                                                       ldb,
+                                                       beta,
+                                                       C,
+                                                       hipblasConvertDatatype_v2(c_type),
+                                                       ldc,
+                                                       batch_count,
+                                                       hipblasConvertComputeType(compute_type),
+                                                       hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmBatchedExWithFlags_v2_64(hipblasHandle_t      handle,
+                                                    hipblasOperation_t   transa,
+                                                    hipblasOperation_t   transb,
+                                                    int64_t              m,
+                                                    int64_t              n,
+                                                    int64_t              k,
+                                                    const void*          alpha,
+                                                    const void*          A[],
+                                                    hipDataType          a_type,
+                                                    int64_t              lda,
+                                                    const void*          B[],
+                                                    hipDataType          b_type,
+                                                    int64_t              ldb,
+                                                    const void*          beta,
+                                                    void*                C[],
+                                                    hipDataType          c_type,
+                                                    int64_t              ldc,
+                                                    int64_t              batch_count,
+                                                    hipblasComputeType_t compute_type,
+                                                    hipblasGemmAlgo_t    algo,
+                                                    hipblasGemmFlags_t   flags)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    // flags are ignored, call original function
+    return hipblasConvertStatus(cublasGemmBatchedEx_64((cublasHandle_t)handle,
+                                                       hipblasConvertOperation(transa),
+                                                       hipblasConvertOperation(transb),
+                                                       m,
+                                                       n,
+                                                       k,
+                                                       alpha,
+                                                       A,
+                                                       hipblasConvertDatatype_v2(a_type),
+                                                       lda,
+                                                       B,
+                                                       hipblasConvertDatatype_v2(b_type),
+                                                       ldb,
+                                                       beta,
+                                                       C,
+                                                       hipblasConvertDatatype_v2(c_type),
+                                                       ldc,
+                                                       batch_count,
+                                                       hipblasConvertComputeType(compute_type),
+                                                       hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedEx_64(hipblasHandle_t    handle,
+                                               hipblasOperation_t transa,
+                                               hipblasOperation_t transb,
+                                               int64_t            m,
+                                               int64_t            n,
+                                               int64_t            k,
+                                               const void*        alpha,
+                                               const void*        A,
+                                               hipblasDatatype_t  a_type,
+                                               int64_t            lda,
+                                               hipblasStride      stride_A,
+                                               const void*        B,
+                                               hipblasDatatype_t  b_type,
+                                               int64_t            ldb,
+                                               hipblasStride      stride_B,
+                                               const void*        beta,
+                                               void*              C,
+                                               hipblasDatatype_t  c_type,
+                                               int64_t            ldc,
+                                               hipblasStride      stride_C,
+                                               int64_t            batch_count,
+                                               hipblasDatatype_t  compute_type,
+                                               hipblasGemmAlgo_t  algo)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedExWithFlags_64(hipblasHandle_t    handle,
+                                                        hipblasOperation_t transa,
+                                                        hipblasOperation_t transb,
+                                                        int64_t            m,
+                                                        int64_t            n,
+                                                        int64_t            k,
+                                                        const void*        alpha,
+                                                        const void*        A,
+                                                        hipblasDatatype_t  a_type,
+                                                        int64_t            lda,
+                                                        hipblasStride      stride_A,
+                                                        const void*        B,
+                                                        hipblasDatatype_t  b_type,
+                                                        int64_t            ldb,
+                                                        hipblasStride      stride_B,
+                                                        const void*        beta,
+                                                        void*              C,
+                                                        hipblasDatatype_t  c_type,
+                                                        int64_t            ldc,
+                                                        hipblasStride      stride_C,
+                                                        int64_t            batch_count,
+                                                        hipblasDatatype_t  compute_type,
+                                                        hipblasGemmAlgo_t  algo,
+                                                        hipblasGemmFlags_t flags)
+try
+{
+    // not supported - only _v2 version with hipblasComputeType_t is supported
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedEx_v2_64(hipblasHandle_t      handle,
+                                                  hipblasOperation_t   transa,
+                                                  hipblasOperation_t   transb,
+                                                  int64_t              m,
+                                                  int64_t              n,
+                                                  int64_t              k,
+                                                  const void*          alpha,
+                                                  const void*          A,
+                                                  hipDataType          a_type,
+                                                  int64_t              lda,
+                                                  hipblasStride        stride_A,
+                                                  const void*          B,
+                                                  hipDataType          b_type,
+                                                  int64_t              ldb,
+                                                  hipblasStride        stride_B,
+                                                  const void*          beta,
+                                                  void*                C,
+                                                  hipDataType          c_type,
+                                                  int64_t              ldc,
+                                                  hipblasStride        stride_C,
+                                                  int64_t              batch_count,
+                                                  hipblasComputeType_t compute_type,
+                                                  hipblasGemmAlgo_t    algo)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    return hipblasConvertStatus(
+        cublasGemmStridedBatchedEx_64((cublasHandle_t)handle,
+                                      hipblasConvertOperation(transa),
+                                      hipblasConvertOperation(transb),
+                                      m,
+                                      n,
+                                      k,
+                                      alpha,
+                                      A,
+                                      hipblasConvertDatatype_v2(a_type),
+                                      lda,
+                                      stride_A,
+                                      B,
+                                      hipblasConvertDatatype_v2(b_type),
+                                      ldb,
+                                      stride_B,
+                                      beta,
+                                      C,
+                                      hipblasConvertDatatype_v2(c_type),
+                                      ldc,
+                                      stride_C,
+                                      batch_count,
+                                      hipblasConvertComputeType(compute_type),
+                                      hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t hipblasGemmStridedBatchedExWithFlags_v2_64(hipblasHandle_t      handle,
+                                                           hipblasOperation_t   transa,
+                                                           hipblasOperation_t   transb,
+                                                           int64_t              m,
+                                                           int64_t              n,
+                                                           int64_t              k,
+                                                           const void*          alpha,
+                                                           const void*          A,
+                                                           hipDataType          a_type,
+                                                           int64_t              lda,
+                                                           hipblasStride        stride_A,
+                                                           const void*          B,
+                                                           hipDataType          b_type,
+                                                           int64_t              ldb,
+                                                           hipblasStride        stride_B,
+                                                           const void*          beta,
+                                                           void*                C,
+                                                           hipDataType          c_type,
+                                                           int64_t              ldc,
+                                                           hipblasStride        stride_C,
+                                                           int64_t              batch_count,
+                                                           hipblasComputeType_t compute_type,
+                                                           hipblasGemmAlgo_t    algo,
+                                                           hipblasGemmFlags_t   flags)
+try
+{
+#if CUBLAS_VER_MAJOR >= 12
+    // flags are ignored, call original function
+    return hipblasConvertStatus(
+        cublasGemmStridedBatchedEx_64((cublasHandle_t)handle,
+                                      hipblasConvertOperation(transa),
+                                      hipblasConvertOperation(transb),
+                                      m,
+                                      n,
+                                      k,
+                                      alpha,
+                                      A,
+                                      hipblasConvertDatatype_v2(a_type),
+                                      lda,
+                                      stride_A,
+                                      B,
+                                      hipblasConvertDatatype_v2(b_type),
+                                      ldb,
+                                      stride_B,
+                                      beta,
+                                      C,
+                                      hipblasConvertDatatype_v2(c_type),
+                                      ldc,
+                                      stride_C,
+                                      batch_count,
+                                      hipblasConvertComputeType(compute_type),
+                                      hipblasConvertGemmAlgo(algo)));
+#else
+    return HIPBLAS_STATUS_NOT_SUPPORTED;
+#endif
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
 // trsm_ex
 hipblasStatus_t hipblasTrsmEx(hipblasHandle_t    handle,
                               hipblasSideMode_t  side,
