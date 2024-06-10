@@ -439,6 +439,28 @@ void hipblas_init_vector_trig(T* x, int64_t N, int64_t incx, bool seedReset = fa
         x[j * incx] = T(seedReset ? cos(j * incx) : sin(j * incx));
 }
 
+/* ============================================================================================ */
+/*! \brief  Initialize an array with zero */
+
+template <typename T, typename U>
+void hipblas_init_vector_zero(U& hx)
+{
+    int64_t N      = hx.n();
+    int64_t incx   = hx.inc();
+    int64_t stride = hx.stride();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for(size_t batch_index = 0; batch_index < hx.batch_count(); batch_index++)
+    {
+        auto* x = hx[batch_index];
+
+        for(size_t j = 0; j < N; ++j)
+            x[j * incx] = T(0.0);
+    }
+}
+
 /* ============================================================================ */
 /* \brief For testing purposes, to convert a regular matrix to a banded matrix. */
 template <typename T>
