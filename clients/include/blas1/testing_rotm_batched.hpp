@@ -127,9 +127,7 @@ void testing_rotm_batched(const Arguments& arg)
     hipblas_init_vector(hdata, arg, hipblas_client_alpha_sets_nan, false);
 
     for(int64_t b = 0; b < batch_count; b++)
-    {
         ref_rotmg<T>(&hdata[b][0], &hdata[b][1], &hdata[b][2], &hdata[b][3], hparam[b]);
-    }
 
     constexpr int FLAG_COUNT        = 4;
     const T       FLAGS[FLAG_COUNT] = {-1, 0, 1, -2};
