@@ -92,6 +92,12 @@ if(DEFINED USE_CUDA)
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
+if( NOT BUILD_SHARED_LIBS )
+    # potentially a bug in hip, if AMDGPU_TARGETS is not set, it uses amdgpu-arch to find
+    # archs on the machine, but doesn't work with static builds
+    # trying this workaround out for now
+    set (AMDGPU_TARGETS "gfx000")
+endif()
 find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
 
 # support for cuda backend with hip < 6.0
@@ -202,7 +208,11 @@ endif( )
 
 # Package specific CPACK vars
 if(HIP_PLATFORM STREQUAL amd)
-  rocm_package_add_dependencies(DEPENDS "rocblas >= 4.3.0" "rocsolver >= 3.27.0")
+  set(rocblas_minimum 4.3.0)
+  set(rocsolver_minimum 3.27.0)
+  rocm_package_add_dependencies(SHARED_DEPENDS "rocblas >= ${rocblas_minimum}" "rocsolver >= ${rocsolver_minimum}")
+  rocm_package_add_rpm_dependencies(STATIC_DEPENDS "rocblas-static-devel >= ${rocblas_minimum}" "rocsolver-static-devel >= ${rocsolver_minimum}")
+  rocm_package_add_deb_dependencies(STATIC_DEPENDS "rocblas-static-dev >= ${rocblas_minimum}" "rocsolver-static-dev >= ${rocsolver_minimum}")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
@@ -301,4 +311,3 @@ if(BUILD_CODE_COVERAGE)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
 endif()
-
