@@ -61,7 +61,7 @@ def parse_args():
                         help='Code coverage build. Requires Debug (-g|--debug) or RelWithDebInfo mode (-k|--relwithdebinfo), (optional, default: False)')
 
     parser.add_argument(      '--compiler', type=str, required=False, default=None, dest='compiler',
-                        help='Spcify path to host compiler.')
+                        help='Spcify path to host compiler. Default is amdclang++.')
 
     parser.add_argument('--cuda', '--use-cuda', dest='use_cuda', required=False, default=False, action='store_true',
                         help='[DEPRECATED] Build library for CUDA backend. Deprecated, use HIP_PLATFORM environment variable to override default which is determined by `hipconfig --platform`')
@@ -118,7 +118,7 @@ def parse_args():
                         help='[DEPRECATED] Linux only: Build hipBLAS using hipcc compiler. Deprecated, use --compiler instead.')
 
     parser.add_argument(      '--no-hip-clang', dest='use_hipcc_compiler', required=False, default=True, action='store_false',
-                        help='[DEPRECATED] Linux only: Build hipBLAS with g++ compiler instead of hipcc compiler. Deprecated, use --compiler instead.')
+                        help='[DEPRECATED] Linux only: Build hipBLAS with default amdclang++ compiler instead of hipcc compiler. Deprecated, use --compiler instead.')
 
     parser.add_argument('-v', '--verbose', required=False, default = False, action='store_true',
                         help='Verbose build (optional, default: False)')
@@ -268,13 +268,10 @@ def config_cmd():
     if args.compiler is not None:
         cmake_options.append(f"-DCMAKE_CXX_COMPILER={args.compiler}")
 
-    # windows defaults to clang++ in toolchain
+    # amdclang++ default in linux toolchain, clang++ in windows toolchain
     if os.name != "nt" and args.compiler is None:
         if args.use_hipcc_compiler:
             cmake_options.append(f"-DCMAKE_CXX_COMPILER={rocm_path}/bin/hipcc")
-        else:
-            # default to g++ for now
-            cmake_options.append(f"-DCMAKE_CXX_COMPILER=g++")
 
     if args.static_lib:
         cmake_options.append( f"-DBUILD_SHARED_LIBS=OFF" )
