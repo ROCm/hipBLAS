@@ -11,8 +11,7 @@ else()
 endif()
 
 set(CMAKE_CXX_COMPILER "${rocm_bin}/clang++.exe")
-set(CMAKE_C_COMPILER "${rocm_bin}/clang.exe")
- 
+
 if (NOT python)
   set(python "python") # take default for windows
 endif()
@@ -23,7 +22,6 @@ endif()
 #set(CMAKE_Fortran_PREPROCESS_SOURCE "<CMAKE_Fortran_COMPILER> -E <INCLUDES> <FLAGS> -cpp <SOURCE> -o <PREPROCESSED_SOURCE>")
 
 # TODO remove, just to speed up slow cmake
-#set(CMAKE_C_COMPILER_WORKS 1)
 #set(CMAKE_CXX_COMPILER_WORKS 1)
 #set(CMAKE_Fortran_COMPILER_WORKS 1)
 

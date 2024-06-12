@@ -567,7 +567,7 @@ fi
 
 # this can be removed and be done in rmake.py once --cuda flag support is gone
 if [[ "${build_cuda}" != true ]]; then
-  export HIP_PLATFORM="$(hipconfig --platform)"
+  export HIP_PLATFORM="$(${rocm_path}/bin/hipconfig --platform)"
 fi
 
 if [[ "${rmake_invoked}" == false ]]; then
