@@ -18,9 +18,6 @@ if (NOT DEFINED ENV{FC} AND NOT CMAKE_Fortran_COMPILER)
   set(CMAKE_Fortran_COMPILER "gfortran")
 endif()
 
-# relying on path for backward compatibility
-# set(CMAKE_CXX_COMPILER "${rocm_bin}/hipcc")
-
 if (CONFIG_NO_COMPILER_CHECKS)
   set(CMAKE_CXX_COMPILER_WORKS 1)
   set(CMAKE_Fortran_COMPILER_WORKS 1)

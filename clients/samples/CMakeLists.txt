@@ -31,7 +31,7 @@ add_executable( hipblas-example-hip-complex-her2 example_hip_complex_her2.cpp ${
 add_executable( hipblas-example-hgemm-half example_hgemm_hip_half.cpp ${hipblas_samples_common})
 add_executable( hipblas-example-gemmEx_v2 example_gemm_ex_v2.cpp ${hipblas_samples_common})
 
-if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/amdclang\\+\\+$")
   add_executable( hipblas-example-hgemm example_hgemm.cpp ${hipblas_samples_common} )
 endif( )
 
@@ -49,8 +49,6 @@ if(HIP_PLATFORM STREQUAL amd)
 # We test for C99 compatibility in the example_c.c test
 set_source_files_properties(example_c.c PROPERTIES LANGUAGE CXX)
 set_source_files_properties(example_c.c PROPERTIES COMPILE_FLAGS "-xc -std=c99")
-# needed for hipcc to find hip includes for C example
-target_compile_options(hipblas-example-c PRIVATE -I${HIP_INCLUDE_DIRS})
 
 # We test for C++11 compatibility in one of the samples
 #set_source_files_properties(example_sgemm_strided_batched.cpp PROPERTIES COMPILE_FLAGS "-std=c++11")
@@ -63,7 +61,7 @@ if( NOT TARGET hipblas )
 endif( )
 
 list (APPEND hipblas-example-executables hipblas-example-sscal hipblas-example-scal-ex-v2 hipblas-example-strmm hipblas-example-sgemm hipblas-example-sgemm-strided-batched hipblas-example-gemmEx_v2 hipblas-example-hip-complex-her2 hipblas-example-hgemm-half hipblas-example-c ${sample_list_fortran} )
-if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" OR CMAKE_CXX_COMPILER MATCHES ".*/amdclang\\+\\+$")
   list (APPEND hipblas-example-executables hipblas-example-hgemm)
 endif( )
 if(HIP_PLATFORM STREQUAL amd)
