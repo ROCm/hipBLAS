@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,9 +32,6 @@ set( gtest_git_tag "release-1.11.0" CACHE STRING "URL to download gtest from" )
 
 if( MSVC )
   list( APPEND gtest_cmake_args -Dgtest_force_shared_crt=ON )
-# else( )
-  # GTEST_USE_OWN_TR1_TUPLE necessary to compile with hipcc
-  # list( APPEND gtest_cmake_args -DGTEST_USE_OWN_TR1_TUPLE=1 )
 endif( )
 
 if( CMAKE_CONFIGURATION_TYPES )

@@ -408,7 +408,7 @@ declare -a cmake_client_options
 # check if we have a modern version of getopt that can handle whitespace and long parameters
 getopt -T
 if [[ $? -eq 4 ]]; then
-  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer, --options :rhickndgb: -- "$@")
+  GETOPT_PARSE=$(getopt --name "${0}" --longoptions help,install,clients,no-solver,dependencies,debug,relwithdebinfo,cmake_install,cuda,use-cuda,installcuda,installcudaversion:,rmake_invoked,rocblas:,rocblas-path:,rocsolver-path:,address-sanitizer:, --options :rhickndgb: -- "$@")
 else
   echo "Need a new version of getopt"
   exit 1
@@ -478,6 +478,8 @@ while true; do
     --prefix)
         install_prefix=${2}
         shift 2 ;;
+    --address-sanitizer)
+        shift 2 ;;
     --rmake_invoked)
         rmake_invoked=true
         shift ;;
@@ -516,7 +518,7 @@ fc="gfortran"
 # #################################################
 if [[ "${install_dependencies}" == true ]]; then
 
-  CMAKE_VERSION=$(cmake --version | grep -oP '(?<=version )[^ ]*' )
+  CMAKE_VERSION=$(${cmake_executable} --version | grep -oP '(?<=version )[^ ]*' )
 
   install_packages
 

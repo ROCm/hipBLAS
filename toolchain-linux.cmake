@@ -11,15 +11,12 @@ endif()
 
 # relying on env and path for backward compatibility with external recipes
 if (NOT DEFINED ENV{CXX} AND NOT CMAKE_CXX_COMPILER)
-  set(CMAKE_CXX_COMPILER "${rocm_bin}/hipcc")
+  set(CMAKE_CXX_COMPILER "${rocm_bin}/amdclang++")
 endif()
 
 if (NOT DEFINED ENV{FC} AND NOT CMAKE_Fortran_COMPILER)
   set(CMAKE_Fortran_COMPILER "gfortran")
 endif()
-
-# relying on path for backward compatibility
-# set(CMAKE_CXX_COMPILER "${rocm_bin}/hipcc")
 
 if (CONFIG_NO_COMPILER_CHECKS)
   set(CMAKE_CXX_COMPILER_WORKS 1)
