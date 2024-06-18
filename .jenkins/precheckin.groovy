@@ -24,9 +24,9 @@ def runCI =
         prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER']
     }
 
-    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('hipcc'))
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('g++'))
     {
-        buildCommand += ' --compiler=hipcc'
+        buildCommand += ' --compiler=g++'
     }
     else if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('clang'))
     {
@@ -34,7 +34,7 @@ def runCI =
     }
     else
     {
-        buildCommand += ' --compiler=g++'
+        // buildCommand += ' --compiler=amdclang++' # leave as default
     }
 
     //customize for project

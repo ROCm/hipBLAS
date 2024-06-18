@@ -195,16 +195,6 @@ if(HIP_PLATFORM STREQUAL amd)
     target_link_libraries( hipblas_v2-test PRIVATE hip::${CUSTOM_TARGET} )
   endif( )
 
-  if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
-# hip-clang needs specific flag to turn on pthread and m
-    target_link_libraries( hipblas-test PRIVATE -lpthread -lm )
-    target_link_libraries( hipblas_v2-test PRIVATE -lpthread -lm )
-
-    if(BUILD_ADDRESS_SANITIZER)
-      target_link_libraries( hipblas-test PRIVATE -fuse-ld=lld -lgfortran )
-      target_link_libraries( hipblas_v2-test PRIVATE -fuse-ld=lld -lgfortran )
-    endif()
-  endif()
 else( )
   target_include_directories( hipblas-test
     PRIVATE
