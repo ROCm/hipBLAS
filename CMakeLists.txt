@@ -92,12 +92,6 @@ if(DEFINED USE_CUDA)
 endif()
 
 # Hip headers required of all clients; clients use hip to allocate device memory
-if( NOT BUILD_SHARED_LIBS )
-    # potentially a bug in hip, if AMDGPU_TARGETS is not set, it uses amdgpu-arch to find
-    # archs on the machine, but doesn't work with static builds
-    # trying this workaround out for now
-    set (AMDGPU_TARGETS "gfx000")
-endif()
 find_package( hip CONFIG PATHS ${HIP_DIR} ${ROCM_PATH} /opt/rocm )
 
 # support for cuda backend with hip < 6.0
