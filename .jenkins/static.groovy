@@ -18,11 +18,11 @@ def runCI =
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
-        prj.libraryDependencies = ['rocBLAS']
+        prj.libraryDependencies = ['rocBLAS', 'hipBLAS-common']
     }
     else
     {
-        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER', 'rocPRIM']
+        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER', 'rocPRIM', 'hipBLAS-common']
     }
 
     // Define test architectures, optional rocm version argument is available
