@@ -345,7 +345,7 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
 #endif
             for(size_t i = 0; i < M; ++i)
                 for(size_t j = 0; j < N; ++j)
-                    A[i + j * lda] = T(seedReset ? cos(i + j * lda) : sin(i + j * lda));
+                    A[i + j * lda] = T(seedReset ? cos(i + j * M  ) : sin(i + j * M  ));
         }
         else if(matrix_type == hipblas_hermitian_matrix)
         {
@@ -355,7 +355,7 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
             for(size_t i = 0; i < N; ++i)
                 for(size_t j = 0; j <= i; ++j)
                 {
-                    auto value = T(seedReset ? cos(i + j * lda) : sin(i + j * lda));
+                    auto value = T(seedReset ? cos(i + j * N  ) : sin(i + j * N  ));
 
                     if(i == j)
                         A[j + i * lda] = hipblas_real(value);
@@ -384,7 +384,7 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
             for(size_t i = 0; i < N; ++i)
                 for(size_t j = 0; j <= i; ++j)
                 {
-                    auto value = T(seedReset ? cos(i + j * lda) : sin(i + j * lda));
+                    auto value = T(seedReset ? cos(i + j * N  ) : sin(i + j * N  ));
                     if(i == j)
                         A[j + i * lda] = value;
                     else if(uplo == 'U')
@@ -414,8 +414,8 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
                 {
                     auto value
                         = uplo == 'U'
-                              ? (j >= i ? T(seedReset ? cos(i + j * lda) : sin(i + j * lda)) : T(0))
-                              : (j <= i ? T(seedReset ? cos(i + j * lda) : sin(i + j * lda))
+                              ? (j >= i ? T(seedReset ? cos(i + j * M  ) : sin(i + j * M  )) : T(0))
+                              : (j <= i ? T(seedReset ? cos(i + j * M  ) : sin(i + j * M  ))
                                         : T(0));
                     A[i + j * lda] = value;
                 }
@@ -436,7 +436,7 @@ void hipblas_init_vector_trig(T* x, int64_t N, int64_t incx, bool seedReset = fa
 #pragma omp parallel for
 #endif
     for(int64_t j = 0; j < N; ++j)
-        x[j * incx] = T(seedReset ? cos(j * incx) : sin(j * incx));
+        x[j * incx] = T(seedReset ? cos(j       ) : sin(j       ));
 }
 
 /* ============================================================================================ */
