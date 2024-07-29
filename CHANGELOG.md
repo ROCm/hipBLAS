@@ -3,6 +3,16 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
+## (Unreleased) hipBLAS 2.3.0
+
+### Added 
+
+* Level 3 functions have additional ILP64 API for both C and FORTRAN (_64 name suffix) with int64_t function arguments. 
+
+### Changed 
+
+* amdclang used as default compiler instead of g++ 
+
 ## hipBLAS 2.2.0 for ROCm 6.2.0
 
 ### Additions
