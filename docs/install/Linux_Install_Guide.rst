@@ -5,7 +5,7 @@
 .. _install:
 
 ***********************
-Building and Installing
+Installation and Building for Linux
 ***********************
 
 Prerequisites
@@ -13,7 +13,7 @@ Prerequisites
 
 * If using the rocBLAS backend on an AMD machine:
 
-  * A ROCm enabled platform. Find more information on the :doc:`System requirements (Linux) <rocm-install-on-linux:reference/system-requirements>` page, or the :doc:`System requirements (Windows) <rocm-install-on-windows:reference/system-requirements>` page.
+  * A ROCm enabled platform. Find more information on the :doc:`System requirements (Linux) <rocm-install-on-linux:reference/system-requirements>` page.
   * A compatible version of rocBLAS.
   * A compatible version of rocSOLVER and its dependencies, rocSPARSE and rocPRIM, for full functionality.
 
