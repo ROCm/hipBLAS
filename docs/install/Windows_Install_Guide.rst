@@ -63,7 +63,7 @@ For example for you can use the following to download rocBLAS:
 
 git clone -b release/rocm-rel-x.y https://github.com/ROCm/hipBLAS.git
 
-Replace x.y in the above command with the version of the HIP SDK installed on your machine. For example, if yo uhave HIP 6.2 installed, then use ``-b release/rocm-rel-6.2``. You can add the SDK tools to your path with an entry such as:
+Replace x.y in the above command with the version of the HIP SDK installed on your machine. For example, if you have HIP 6.2 installed, then use ``-b release/rocm-rel-6.2``. You can add the SDK tools to your path with an entry such as:
 
 ::
 
