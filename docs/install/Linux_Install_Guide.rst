@@ -2,7 +2,7 @@
   :description: hipBLAS documentation and API reference library
   :keywords: hipBLAS, rocBLAS, BLAS, ROCm, API, Linear Algebra, documentation
 
-.. _install:
+.. _linux-install:
 
 ***********************
 Installation and Building for Linux
