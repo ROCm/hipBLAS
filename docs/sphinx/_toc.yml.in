@@ -4,7 +4,8 @@ root: index
 subtrees:
 - caption: Installation
   entries:
-    - file: install
+    - file: install/Linux_Install_Guide
+    - file: install/Windows_Install_Guide
 - caption: How to
   entries:
     - file: orga
