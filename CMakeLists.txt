@@ -73,6 +73,8 @@ option( BUILD_VERBOSE "Output additional build information" OFF )
 
 option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
 
+option(BUILD_SOLVER_TESTS "Build additional tests to cover LAPACK functionality provided by rocSOLVER with AMD backend" ON)
+
 if( BUILD_WITH_SOLVER )
     add_definitions( -D__HIP_PLATFORM_SOLVER__ )
 endif( )
@@ -124,7 +126,6 @@ if(BUILD_ADDRESS_SANITIZER)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -shared-libasan")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -shared-libasan")
 endif()
-
 
 # FOR HANDLING ENABLE/DISABLE OPTIONAL BACKWARD COMPATIBILITY for FILE/FOLDER REORG
 option(BUILD_FILE_REORG_BACKWARD_COMPATIBILITY "Build with file/folder reorg with backward compatibility enabled" OFF)

@@ -391,6 +391,7 @@ install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
 build_solver=true
+build_solver_tests=true
 build_release=true
 install_cuda=false
 cuda_version_install=default
@@ -443,6 +444,7 @@ while true; do
         shift ;;
     -n|--no-solver)
         build_solver=false
+        build_solver_tests=false
         shift ;;
     -g|--debug)
         build_release=false

@@ -3916,7 +3916,7 @@ void ref_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
  * ===========================================================================
  */
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
 
 class ipiv_wrapper : public host_vector<int64_t>
 {

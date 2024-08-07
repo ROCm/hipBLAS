@@ -94,8 +94,9 @@ endif()
 
 if( BUILD_CLIENTS_TESTS OR BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_SAMPLES )
   if( NOT WIN32 )
-    if( BUILD_WITH_SOLVER )
+    if( BUILD_SOLVER_TESTS )
       add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients_solver})
+
     else()
       add_library(hipblas_fortran_client STATIC ${hipblas_f90_source_clients_no_solver})
     endif()

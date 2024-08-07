@@ -97,7 +97,7 @@ set(hipblas_test_source
   blas_ex/gemm_ex_gtest.cpp
 )
 
-if( BUILD_WITH_SOLVER )
+if( BUILD_SOLVER_TESTS )
   set( hipblas_solver_test_source
     solver/getrf_gtest.cpp
     solver/getrs_gtest.cpp
@@ -178,6 +178,11 @@ target_compile_options(hipblas_v2-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMO
 
 target_compile_definitions( hipblas-test PRIVATE ${COMMON_DEFINES} )
 target_compile_definitions( hipblas_v2-test PRIVATE ${COMMON_DEFINES} HIPBLAS_V2 )
+
+if(BUILD_SOLVER_TESTS)
+  target_compile_definitions(hipblas-test PRIVATE -DBUILD_SOLVER_TESTS)
+  target_compile_definitions(hipblas_v2-test PRIVATE -DBUILD_SOLVER_TESTS)
+endif()
 
 target_link_libraries( hipblas-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-test PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
@@ -275,7 +280,7 @@ set( HIPBLAS_L3_YAML_DATA blas3/dgmm_gtest.yaml blas3/geam_gtest.yaml blas3/gemm
 set( HIPBLAS_EX_YAML_DATA blas_ex/axpy_ex_gtest.yaml blas_ex/dot_ex_gtest.yaml blas_ex/nrm2_ex_gtest.yaml
                           blas_ex/rot_ex_gtest.yaml blas_ex/scal_ex_gtest.yaml blas_ex/gemm_ex_gtest.yaml blas_ex/trsm_ex_gtest.yaml )
 
-if( BUILD_WITH_SOLVER )
+if( BUILD_SOLVER_TESTS )
   set( HIPBLAS_SOLVER_YAML_DATA solver/gels_gtest.yaml solver/geqrf_gtest.yaml solver/getrf_gtest.yaml solver/getri_gtest.yaml solver/getrs_gtest.yaml )
 endif()
 

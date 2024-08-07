@@ -292,11 +292,16 @@ def config_cmd():
         if os.environ['HIP_PLATFORM'] == 'amd':
             cmake_options.append( f"-DLINK_BLIS=ON")
 
-
+    # In an upcoming change, build_solver will be OFF by default, and rocSOLVER will not be
+    # enabled at build time. This will be overriden by a new rmake/install param --solver-at-buildtime (name TBD).
+    # The --no-solver flag will be changed to turn off the building of rocSOLVER tests and will not impact
+    # finding rocSOLVER at runtime.
     if args.build_solver:
-        cmake_options.append (f"-DBUILD_WITH_SOLVER=ON")
+        cmake_options.append(f"-DBUILD_WITH_SOLVER=ON")
+        cmake_options.append(f"-DBUILD_SOLVER_TESTS=ON")
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
+        cmake_options.append(f"-DBUILD_SOLVER_TESTS=OFF")
 
     if args.rocblas_path is not None:
         # "Custom" rocblas
