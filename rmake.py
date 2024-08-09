@@ -318,6 +318,10 @@ def config_cmd():
         raw_rocsolver_path = cmake_path(args.rocsolver_path)
         rocsolver_path_cmake =  f'"{raw_rocsolver_path}"'
 
+    raw_hipblas_common_path = cmake_path("C:/hipSDK")
+    hipblas_common_path = f'"{raw_hipblas_common_path}"'
+
+    cmake_options.append( f"-DHIPBLAS-COMMON_PATH={hipblas_common_path}")
     cmake_options.append( f"-DROCBLAS_PATH={rocblas_path_cmake}")
     cmake_options.append( f"-DROCSOLVER_PATH={rocsolver_path_cmake}")
 
