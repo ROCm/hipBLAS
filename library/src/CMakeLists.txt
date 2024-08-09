@@ -67,7 +67,7 @@ add_library( roc::hipblas ALIAS hipblas )
 set(static_depends)
 
 if( WIN32 )
-  find_package( hipblas-common REQUIRED CONFIG PATHS ${HIPBLAS-COMMON_PATH})
+  find_package( hipblas-common REQUIRED CONFIG PATHS "C:/hipSDK")
 else()
   find_package( hipblas-common REQUIRED CONFIG PATHS /opt/rocm)
 endif()
