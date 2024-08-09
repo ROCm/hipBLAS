@@ -67,9 +67,9 @@ add_library( roc::hipblas ALIAS hipblas )
 set(static_depends)
 
 if( WIN32 )
-  find_package( hipblas-common REQUIRED CONFIG PATHS /opt/rocm)
-else()
   find_package( hipblas-common REQUIRED CONFIG PATHS ${HIPBLAS-COMMON_PATH})
+else()
+  find_package( hipblas-common REQUIRED CONFIG PATHS /opt/rocm)
 endif()
 
 # Build hipblas from source on AMD platform
