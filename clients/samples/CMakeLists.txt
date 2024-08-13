@@ -21,6 +21,8 @@
 
 set( hipblas_samples_common ../common/utility.cpp )
 
+find_package( hipblas-common REQUIRED CONFIG PATHS ${ROCM_PATH})
+
 add_executable( hipblas-example-sscal example_sscal.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-scal-ex-v2 example_scal_ex_v2.cpp ${hipblas_samples_common} )
 add_executable( hipblas-example-sgemm example_sgemm.cpp ${hipblas_samples_common} )
