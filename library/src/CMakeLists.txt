@@ -66,6 +66,10 @@ add_library( roc::hipblas ALIAS hipblas )
 
 set(static_depends)
 
+if(NOT BUILD_WITH_SOLVER)
+  target_link_libraries(hipblas PRIVATE $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>) # TODO: is this right?
+endif()
+
 # Build hipblas from source on AMD platform
 if(HIP_PLATFORM STREQUAL amd)
   if( NOT TARGET rocblas )

@@ -71,16 +71,22 @@ rocm_setup_version( VERSION ${VERSION_STRING} )
 
 option( BUILD_VERBOSE "Output additional build information" OFF )
 
-option( BUILD_WITH_SOLVER "Add additional functions from rocSOLVER" ON )
+# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
+option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
+
+if(BUILD_SHARED_LIBS)
+    set(BUILD_WITH_SOLVER_DEFAULT OFF)
+else()
+    set(BUILD_WITH_SOLVER_DEFAULT ON)
+endif()
+
+option( BUILD_WITH_SOLVER "Build hipBLAS with LAPACK functionality as provided by rocSOLVER available at build time (requires installed rocSOLVER dependency; only with AMD backend)" "${BUILD_WITH_SOLVER_DEFAULT}" )
 
 option(BUILD_SOLVER_TESTS "Build additional tests to cover LAPACK functionality provided by rocSOLVER with AMD backend" ON)
 
 if( BUILD_WITH_SOLVER )
     add_definitions( -D__HIP_PLATFORM_SOLVER__ )
 endif( )
-
-# BUILD_SHARED_LIBS is a cmake built-in; we make it an explicit option such that it shows in cmake-gui
-option( BUILD_SHARED_LIBS "Build hipBLAS as a shared library" ON )
 
 # Deprecated USE_CUDA option
 if(DEFINED USE_CUDA)
@@ -203,11 +209,17 @@ endif( )
 
 # Package specific CPACK vars
 if(HIP_PLATFORM STREQUAL amd)
+  if(BUILD_WITH_SOLVER)
+    set(rocsolver_minimum 3.27.0)
+    rocm_package_add_dependencies(SHARED_DEPENDS "rocsolver >= ${rocsolver_minimum}")
+    rocm_package_add_rpm_dependencies(STATIC_DEPENDS "rocsolver-static-devel >= ${rocsolver_minimum}")
+    rocm_package_add_deb_dependencies(STATIC_DEPENDS "rocsolver-static-dev >= ${rocsolver_minimum}")
+  endif()
+
   set(rocblas_minimum 4.3.0)
-  set(rocsolver_minimum 3.27.0)
-  rocm_package_add_dependencies(SHARED_DEPENDS "rocblas >= ${rocblas_minimum}" "rocsolver >= ${rocsolver_minimum}")
-  rocm_package_add_rpm_dependencies(STATIC_DEPENDS "rocblas-static-devel >= ${rocblas_minimum}" "rocsolver-static-devel >= ${rocsolver_minimum}")
-  rocm_package_add_deb_dependencies(STATIC_DEPENDS "rocblas-static-dev >= ${rocblas_minimum}" "rocsolver-static-dev >= ${rocsolver_minimum}")
+  rocm_package_add_dependencies(SHARED_DEPENDS "rocblas >= ${rocblas_minimum}")
+  rocm_package_add_rpm_dependencies(STATIC_DEPENDS "rocblas-static-devel >= ${rocblas_minimum}")
+  rocm_package_add_deb_dependencies(STATIC_DEPENDS "rocblas-static-dev >= ${rocblas_minimum}")
 endif( )
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
