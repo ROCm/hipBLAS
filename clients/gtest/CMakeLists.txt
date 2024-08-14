@@ -31,8 +31,6 @@ if( NOT TARGET hipblas )
   find_package( hipblas REQUIRED CONFIG PATHS /opt/rocm/hipblas )
 endif( )
 
-find_package( hipblas-common REQUIRED CONFIG PATHS ${ROCM_PATH})
-
 if(EXISTS  "${BUILD_DIR}/deps/deps-install/lib/libgtest.a")
   set( GTEST_ROOT "${BUILD_DIR}/deps/deps-install")
 endif()

@@ -82,12 +82,6 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 include( build-options )
 
-if( WIN32 )
-  find_package( hipblas-common REQUIRED CONFIG PATHS "C:/hipSDK")
-else()
-  find_package( hipblas-common REQUIRED CONFIG PATHS /opt/rocm)
-endif()
-
 if( NOT WIN32 )
     set(hipblas_f90_source_clients_no_solver
       include/hipblas_fortran_no_solver_module.f90

@@ -138,6 +138,7 @@ target_include_directories( hipblas
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/hipblas>
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+          $<BUILD_INTERFACE:${HIPBLAS-COMMON_INCLUDE_DIRS}>
   PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}
@@ -187,6 +188,7 @@ if(HIP_PLATFORM STREQUAL amd)
     rocm_export_targets(
         TARGETS roc::hipblas
 	DEPENDS PACKAGE hip
+  DEPENDS PACKAGE HIP roc::hipblas-common
 	STATIC_DEPENDS ${static_depends}
 	NAMESPACE roc::
     )
