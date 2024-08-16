@@ -66,6 +66,8 @@ add_library( roc::hipblas ALIAS hipblas )
 
 set(static_depends)
 
+find_package( hipblas-common REQUIRED CONFIG PATHS ${ROCM_PATH})
+
 # Build hipblas from source on AMD platform
 if(HIP_PLATFORM STREQUAL amd)
   if( NOT TARGET rocblas )
@@ -136,6 +138,7 @@ target_include_directories( hipblas
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include/hipblas>
           $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+          $<BUILD_INTERFACE:${HIPBLAS-COMMON_INCLUDE_DIRS}>
   PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/include
           ${CMAKE_CURRENT_SOURCE_DIR}
@@ -185,6 +188,7 @@ if(HIP_PLATFORM STREQUAL amd)
     rocm_export_targets(
         TARGETS roc::hipblas
 	DEPENDS PACKAGE hip
+  DEPENDS PACKAGE HIP roc::hipblas-common
 	STATIC_DEPENDS ${static_depends}
 	NAMESPACE roc::
     )
