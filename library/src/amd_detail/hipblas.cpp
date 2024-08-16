@@ -22,12 +22,10 @@
  * ************************************************************************ */
 #define ROCBLAS_NO_DEPRECATED_WARNINGS
 #include "hipblas.h"
+#include "dlopen/load_rocsolver.hpp"
 #include "exceptions.hpp"
 #include "limits.h"
 #include "rocblas/rocblas.h"
-#ifdef __HIP_PLATFORM_SOLVER__
-#include "rocsolver/rocsolver.h"
-#endif
 #include <algorithm>
 #include <functional>
 #include <hip/library_types.h>
@@ -362,6 +360,10 @@ try
 {
     if(!handle)
         return HIPBLAS_STATUS_HANDLE_IS_NULLPTR;
+
+    // if we don't have solver at build-time, we will be using
+    // dlopen to load it at runtime here
+    try_load_rocsolver();
 
     // Create the rocBLAS handle
     return hipblasConvertStatus(rocblas_create_handle((rocblas_handle*)handle));
@@ -46029,8 +46031,6 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
-#ifdef __HIP_PLATFORM_SOLVER__
-
 //--------------------------------------------------------------------------------------
 //rocSOLVER functions
 //--------------------------------------------------------------------------------------
@@ -46082,6 +46082,11 @@ hipblasStatus_t hipblasSgetrf(
     hipblasHandle_t handle, const int n, float* A, const int lda, int* ipiv, int* info)
 try
 {
+    // should only try to load on first invocation,
+    // otherwise return static result
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(
             rocsolver_sgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
@@ -46098,6 +46103,9 @@ hipblasStatus_t hipblasDgetrf(
     hipblasHandle_t handle, const int n, double* A, const int lda, int* ipiv, int* info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(
             rocsolver_dgetrf((rocblas_handle)handle, n, n, A, lda, ipiv, info)));
@@ -46114,6 +46122,9 @@ hipblasStatus_t hipblasCgetrf(
     hipblasHandle_t handle, const int n, hipblasComplex* A, const int lda, int* ipiv, int* info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_cgetrf(
             (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info)));
@@ -46134,6 +46145,9 @@ hipblasStatus_t hipblasZgetrf(hipblasHandle_t       handle,
                               int*                  info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_zgetrf(
             (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info)));
@@ -46150,6 +46164,9 @@ hipblasStatus_t hipblasCgetrf_v2(
     hipblasHandle_t handle, const int n, hipComplex* A, const int lda, int* ipiv, int* info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_cgetrf(
             (rocblas_handle)handle, n, n, (rocblas_float_complex*)A, lda, ipiv, info)));
@@ -46166,6 +46183,9 @@ hipblasStatus_t hipblasZgetrf_v2(
     hipblasHandle_t handle, const int n, hipDoubleComplex* A, const int lda, int* ipiv, int* info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_zgetrf(
             (rocblas_handle)handle, n, n, (rocblas_double_complex*)A, lda, ipiv, info)));
@@ -46188,6 +46208,9 @@ hipblasStatus_t hipblasSgetrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_sgetrf_batched(
             (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
@@ -46209,6 +46232,9 @@ hipblasStatus_t hipblasDgetrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_dgetrf_batched(
             (rocblas_handle)handle, n, n, A, lda, ipiv, n, info, batch_count)));
@@ -46230,6 +46256,9 @@ hipblasStatus_t hipblasCgetrfBatched(hipblasHandle_t       handle,
                                      const int             batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetrf_batched((rocblas_handle)handle,
@@ -46259,6 +46288,9 @@ hipblasStatus_t hipblasZgetrfBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
@@ -46288,6 +46320,9 @@ hipblasStatus_t hipblasCgetrfBatched_v2(hipblasHandle_t   handle,
                                         const int         batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetrf_batched((rocblas_handle)handle,
@@ -46317,6 +46352,9 @@ hipblasStatus_t hipblasZgetrfBatched_v2(hipblasHandle_t         handle,
                                         const int               batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetrf_batched((rocblas_handle)handle,
@@ -46349,6 +46387,9 @@ hipblasStatus_t hipblasSgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_sgetrf_strided_batched(
             (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
@@ -46372,6 +46413,9 @@ hipblasStatus_t hipblasDgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_dgetrf_strided_batched(
             (rocblas_handle)handle, n, n, A, lda, strideA, ipiv, strideP, info, batch_count)));
@@ -46395,6 +46439,9 @@ hipblasStatus_t hipblasCgetrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
@@ -46434,6 +46481,9 @@ hipblasStatus_t hipblasZgetrfStridedBatched(hipblasHandle_t       handle,
                                             const int             batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
@@ -46473,6 +46523,9 @@ hipblasStatus_t hipblasCgetrfStridedBatched_v2(hipblasHandle_t     handle,
                                                const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetrf_strided_batched((rocblas_handle)handle,
@@ -46512,6 +46565,9 @@ hipblasStatus_t hipblasZgetrfStridedBatched_v2(hipblasHandle_t     handle,
                                                const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetrf_strided_batched((rocblas_handle)handle,
@@ -46553,6 +46609,9 @@ hipblasStatus_t hipblasSgetrs(hipblasHandle_t          handle,
                               int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46594,6 +46653,9 @@ hipblasStatus_t hipblasDgetrs(hipblasHandle_t          handle,
                               int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46635,6 +46697,9 @@ hipblasStatus_t hipblasCgetrs(hipblasHandle_t          handle,
                               int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46684,6 +46749,9 @@ hipblasStatus_t hipblasZgetrs(hipblasHandle_t          handle,
                               int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46733,6 +46801,9 @@ hipblasStatus_t hipblasCgetrs_v2(hipblasHandle_t          handle,
                                  int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46782,6 +46853,9 @@ hipblasStatus_t hipblasZgetrs_v2(hipblasHandle_t          handle,
                                  int*                     info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46833,6 +46907,9 @@ hipblasStatus_t hipblasSgetrsBatched(hipblasHandle_t          handle,
                                      const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46887,6 +46964,9 @@ hipblasStatus_t hipblasDgetrsBatched(hipblasHandle_t          handle,
                                      const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46941,6 +47021,9 @@ hipblasStatus_t hipblasCgetrsBatched(hipblasHandle_t          handle,
                                      const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -46995,6 +47078,9 @@ hipblasStatus_t hipblasZgetrsBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47049,6 +47135,9 @@ hipblasStatus_t hipblasCgetrsBatched_v2(hipblasHandle_t          handle,
                                         const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47103,6 +47192,9 @@ hipblasStatus_t hipblasZgetrsBatched_v2(hipblasHandle_t          handle,
                                         const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47161,6 +47253,9 @@ hipblasStatus_t hipblasSgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47220,6 +47315,9 @@ hipblasStatus_t hipblasDgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47279,6 +47377,9 @@ hipblasStatus_t hipblasCgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47338,6 +47439,9 @@ hipblasStatus_t hipblasZgetrsStridedBatched(hipblasHandle_t          handle,
                                             const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47397,6 +47501,9 @@ hipblasStatus_t hipblasCgetrsStridedBatched_v2(hipblasHandle_t          handle,
                                                const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47456,6 +47563,9 @@ hipblasStatus_t hipblasZgetrsStridedBatched_v2(hipblasHandle_t          handle,
                                                const int                batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T && trans != HIPBLAS_OP_C)
@@ -47511,6 +47621,9 @@ hipblasStatus_t hipblasSgetriBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_sgetri_outofplace_batched(
             (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
@@ -47534,6 +47647,9 @@ hipblasStatus_t hipblasDgetriBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(hipblasConvertStatus(rocsolver_dgetri_outofplace_batched(
             (rocblas_handle)handle, n, A, lda, ipiv, n, C, ldc, info, batch_count)));
@@ -47557,6 +47673,9 @@ hipblasStatus_t hipblasCgetriBatched(hipblasHandle_t       handle,
                                      const int             batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetri_outofplace_batched((rocblas_handle)handle,
@@ -47596,6 +47715,9 @@ hipblasStatus_t hipblasZgetriBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetri_outofplace_batched((rocblas_handle)handle,
@@ -47635,6 +47757,9 @@ hipblasStatus_t hipblasCgetriBatched_v2(hipblasHandle_t   handle,
                                         const int         batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_cgetri_outofplace_batched((rocblas_handle)handle,
@@ -47674,6 +47799,9 @@ hipblasStatus_t hipblasZgetriBatched_v2(hipblasHandle_t         handle,
                                         const int               batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(ipiv != nullptr)
         return HIPBLAS_DEMAND_ALLOC(
             hipblasConvertStatus(rocsolver_zgetri_outofplace_batched((rocblas_handle)handle,
@@ -47712,6 +47840,9 @@ hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
                               int*            info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47744,6 +47875,9 @@ hipblasStatus_t hipblasDgeqrf(hipblasHandle_t handle,
                               int*            info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47776,6 +47910,9 @@ hipblasStatus_t hipblasCgeqrf(hipblasHandle_t handle,
                               int*            info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47813,6 +47950,9 @@ hipblasStatus_t hipblasZgeqrf(hipblasHandle_t       handle,
                               int*                  info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47850,6 +47990,9 @@ hipblasStatus_t hipblasCgeqrf_v2(hipblasHandle_t handle,
                                  int*            info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47887,6 +48030,9 @@ hipblasStatus_t hipblasZgeqrf_v2(hipblasHandle_t   handle,
                                  int*              info)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47926,6 +48072,9 @@ hipblasStatus_t hipblasSgeqrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47961,6 +48110,9 @@ hipblasStatus_t hipblasDgeqrfBatched(hipblasHandle_t handle,
                                      const int       batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -47996,6 +48148,9 @@ hipblasStatus_t hipblasCgeqrfBatched(hipblasHandle_t       handle,
                                      const int             batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48037,6 +48192,9 @@ hipblasStatus_t hipblasZgeqrfBatched(hipblasHandle_t             handle,
                                      const int                   batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48078,6 +48236,9 @@ hipblasStatus_t hipblasCgeqrfBatched_v2(hipblasHandle_t   handle,
                                         const int         batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48119,6 +48280,9 @@ hipblasStatus_t hipblasZgeqrfBatched_v2(hipblasHandle_t         handle,
                                         const int               batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48163,6 +48327,9 @@ hipblasStatus_t hipblasSgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48200,6 +48367,9 @@ hipblasStatus_t hipblasDgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48237,6 +48407,9 @@ hipblasStatus_t hipblasCgeqrfStridedBatched(hipblasHandle_t     handle,
                                             const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48282,6 +48455,9 @@ hipblasStatus_t hipblasZgeqrfStridedBatched(hipblasHandle_t       handle,
                                             const int             batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48327,6 +48503,9 @@ hipblasStatus_t hipblasCgeqrfStridedBatched_v2(hipblasHandle_t     handle,
                                                const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48372,6 +48551,9 @@ hipblasStatus_t hipblasZgeqrfStridedBatched_v2(hipblasHandle_t     handle,
                                                const int           batch_count)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(m < 0)
@@ -48419,6 +48601,9 @@ hipblasStatus_t hipblasSgels(hipblasHandle_t    handle,
                              int*               deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -48471,6 +48656,9 @@ hipblasStatus_t hipblasDgels(hipblasHandle_t    handle,
                              int*               deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -48523,6 +48711,9 @@ hipblasStatus_t hipblasCgels(hipblasHandle_t    handle,
                              int*               deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48575,6 +48766,9 @@ hipblasStatus_t hipblasZgels(hipblasHandle_t       handle,
                              int*                  deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48627,6 +48821,9 @@ hipblasStatus_t hipblasCgels_v2(hipblasHandle_t    handle,
                                 int*               deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48679,6 +48876,9 @@ hipblasStatus_t hipblasZgels_v2(hipblasHandle_t    handle,
                                 int*               deviceInfo)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48733,6 +48933,9 @@ hipblasStatus_t hipblasSgelsBatched(hipblasHandle_t    handle,
                                     const int          batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -48790,6 +48993,9 @@ hipblasStatus_t hipblasDgelsBatched(hipblasHandle_t    handle,
                                     const int          batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -48847,6 +49053,9 @@ hipblasStatus_t hipblasCgelsBatched(hipblasHandle_t       handle,
                                     const int             batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48904,6 +49113,9 @@ hipblasStatus_t hipblasZgelsBatched(hipblasHandle_t             handle,
                                     const int                   batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -48961,6 +49173,9 @@ hipblasStatus_t hipblasCgelsBatched_v2(hipblasHandle_t    handle,
                                        const int          batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49018,6 +49233,9 @@ hipblasStatus_t hipblasZgelsBatched_v2(hipblasHandle_t         handle,
                                        const int               batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49078,6 +49296,9 @@ hipblasStatus_t hipblasSgelsStridedBatched(hipblasHandle_t     handle,
                                            const int           batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -49139,6 +49360,9 @@ hipblasStatus_t hipblasDgelsStridedBatched(hipblasHandle_t     handle,
                                            const int           batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_T)
@@ -49200,6 +49424,9 @@ hipblasStatus_t hipblasCgelsStridedBatched(hipblasHandle_t     handle,
                                            const int           batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49261,6 +49488,9 @@ hipblasStatus_t hipblasZgelsStridedBatched(hipblasHandle_t       handle,
                                            const int             batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49322,6 +49552,9 @@ hipblasStatus_t hipblasCgelsStridedBatched_v2(hipblasHandle_t     handle,
                                               const int           batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49383,6 +49616,9 @@ hipblasStatus_t hipblasZgelsStridedBatched_v2(hipblasHandle_t     handle,
                                               const int           batchCount)
 try
 {
+    if(!try_load_rocsolver())
+        return HIPBLAS_STATUS_NOT_SUPPORTED;
+
     if(info == NULL)
         return HIPBLAS_STATUS_INVALID_VALUE;
     else if(trans != HIPBLAS_OP_N && trans != HIPBLAS_OP_C)
@@ -49427,8 +49663,6 @@ catch(...)
 {
     return hipblas_exception_to_status();
 }
-
-#endif
 
 // gemm
 hipblasStatus_t hipblasHgemm(hipblasHandle_t    handle,

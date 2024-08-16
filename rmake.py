@@ -295,14 +295,14 @@ def config_cmd():
         if os.environ['HIP_PLATFORM'] == 'amd':
             cmake_options.append( f"-DLINK_BLIS=ON")
 
-    if args.build_solver_tests
+    if args.build_solver_tests:
         cmake_options.append(f"-DBUILD_SOLVER_TESTS=ON")
-    else
+    else:
         cmake_options.append(f"-DBUILD_SOLVER_TESTS=OFF")
 
-    if args.solver_buildtime
+    if args.solver_buildtime:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=ON")
-    else
+    else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 
     if args.rocblas_path is not None:

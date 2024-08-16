@@ -39,7 +39,7 @@ endfunction( )
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
 if(HIP_PLATFORM STREQUAL amd)
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/dlopen/load_rocsolver.cpp" )
 else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
 endif( )
@@ -67,7 +67,7 @@ add_library( roc::hipblas ALIAS hipblas )
 set(static_depends)
 
 if(NOT BUILD_WITH_SOLVER)
-  target_link_libraries(hipblas PRIVATE $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>) # TODO: is this right?
+  target_link_libraries(hipblas PRIVATE $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
 endif()
 
 # Build hipblas from source on AMD platform

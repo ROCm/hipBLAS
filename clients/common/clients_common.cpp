@@ -934,24 +934,34 @@ struct perf_blas_axpy_ex<
     Tx,
     Ty,
     Tex,
-    std::enable_if_t<(std::is_same_v<Ta, float> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty>
-                      && std::is_same_v<Ty, Tex>)
-                     || (std::is_same_v<Ta, double> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
-                     || (std::is_same_v<Ta, hipblasHalf> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
-                     || (std::is_same_v<Ta, hipblasComplex> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
-                     || (std::is_same_v<Ta, hipblasDoubleComplex> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
-                     || (std::is_same_v<Ta, hipblasHalf> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Tex, float>)
-                     || (std::is_same_v<Ta, float> && std::is_same_v<Tx, hipblasHalf>
-                         && std::is_same_v<Ta, Tex> && std::is_same_v<Tx, Ty>)
-                     || (std::is_same_v<Ta, hipblasBfloat16> && std::is_same_v<Ta, Tx>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Tex, float>)
-                     || (std::is_same_v<Ta, float> && std::is_same_v<Tx, hipblasBfloat16>
-                         && std::is_same_v<Tx, Ty> && std::is_same_v<Ta, Tex>)>>
+    std::enable_if_t<
+        (std::is_same_v<
+             Ta,
+             float> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+        || (std::is_same_v<
+                Ta,
+                double> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+        || (std::is_same_v<
+                Ta,
+                hipblasHalf> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+        || (std::is_same_v<
+                Ta,
+                hipblasComplex> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+        || (std::is_same_v<
+                Ta,
+                hipblasDoubleComplex> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+        || (std::is_same_v<
+                Ta,
+                hipblasHalf> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Tex, float>)
+        || (std::is_same_v<
+                Ta,
+                float> && std::is_same_v<Tx, hipblasHalf> && std::is_same_v<Ta, Tex> && std::is_same_v<Tx, Ty>)
+        || (std::is_same_v<
+                Ta,
+                hipblasBfloat16> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Tex, float>)
+        || (std::is_same_v<
+                Ta,
+                float> && std::is_same_v<Tx, hipblasBfloat16> && std::is_same_v<Tx, Ty> && std::is_same_v<Ta, Tex>)>>
     : hipblas_test_valid
 {
     void operator()(const Arguments& arg)
