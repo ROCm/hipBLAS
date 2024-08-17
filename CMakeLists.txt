@@ -84,10 +84,6 @@ option( BUILD_WITH_SOLVER "Build hipBLAS with LAPACK functionality as provided b
 
 option(BUILD_SOLVER_TESTS "Build additional tests to cover LAPACK functionality provided by rocSOLVER with AMD backend" ON)
 
-if( BUILD_WITH_SOLVER )
-    add_definitions( -D__HIP_PLATFORM_SOLVER__ )
-endif( )
-
 # Deprecated USE_CUDA option
 if(DEFINED USE_CUDA)
   if(USE_CUDA)

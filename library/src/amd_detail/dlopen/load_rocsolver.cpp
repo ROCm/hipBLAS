@@ -24,6 +24,8 @@
 #include "load_rocsolver.hpp"
 #include "load_function.hpp"
 
+#ifndef BUILD_WITH_SOLVER
+
 #define LOAD_FN(FN_)                              \
     do                                            \
     {                                             \
@@ -201,6 +203,8 @@ static bool load_rocsolver()
 }
 
 #undef LOAD_FN
+
+#endif // BUILD_WITH_SOLVER
 
 bool try_load_rocsolver()
 {

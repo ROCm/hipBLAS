@@ -96,7 +96,7 @@ def parse_args():
     parser.add_argument('-n', '--no-solver', dest='build_solver_tests', required=False, default=True, action='store_false',
                         help='Build without rocSOLVER-based tests enabled. hipBLAS will still try to load rocSOLVER at runtime with AMD backend.')
 
-    parser.add_argument('--solver-buildtime', dest='solver_buildtime', required=False, default=False,
+    parser.add_argument('--solver-buildtime', dest='solver_buildtime', required=False, default=False, action='store_true',
                         help='Build with rocSOLVER functionality enabled at build time.')
 
     parser.add_argument( '-r', '--relocatable', required=False, default=False, action='store_true',

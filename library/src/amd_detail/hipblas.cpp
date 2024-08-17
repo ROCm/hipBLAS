@@ -47840,6 +47840,7 @@ hipblasStatus_t hipblasSgeqrf(hipblasHandle_t handle,
                               int*            info)
 try
 {
+
     if(!try_load_rocsolver())
         return HIPBLAS_STATUS_NOT_SUPPORTED;
 
