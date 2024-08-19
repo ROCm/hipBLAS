@@ -114,16 +114,6 @@ in the table below.
 |                                           | directory, you do not    |
 |                                           | need the -i flag.        |
 +-------------------------------------------+--------------------------+
-| ``python3 rmake.py -n``                   | Build library without    |
-|                                           | functionality provided   |
-|                                           | by rocSOLVER.            |
-|                                           | rocSOLVER, rocSPARSE,    |
-|                                           | and rocPRIM dependencies |
-|                                           | will not be needed.      |
-|                                           | This flag has no effect  |
-|                                           | when building with cuda  |
-|                                           | backend.                 |
-+-------------------------------------------+--------------------------+
 
 
 Build library dependencies + client dependencies + library + client
@@ -192,6 +182,13 @@ in the table below.
 |                                           | hipBLAS in your local    |
 |                                           | directory, you do not    |
 |                                           | need the -i flag.        |
++-------------------------------------------+--------------------------+
+| ``python3 rmake.py -nc``                  | Build library and client |
+|                                           | in your local directory. |
+|                                           | Functionality provided   |
+|                                           | by rocSOLVER will not    |
+|                                           | be available in the      |
+|                                           | clients.                 |
 +-------------------------------------------+--------------------------+
 
 Dependencies for building library
