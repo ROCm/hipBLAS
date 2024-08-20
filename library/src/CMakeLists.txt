@@ -184,20 +184,20 @@ rocm_install_targets(
 )
 #         PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 
-if(HIP_PLATFORM STREQUAL amd)
-    rocm_export_targets(
-        TARGETS roc::hipblas
-	DEPENDS PACKAGE hip
-  DEPENDS PACKAGE HIP roc::hipblas-common
-	STATIC_DEPENDS ${static_depends}
-	NAMESPACE roc::
-    )
+if(HIP_PLATFORM STREQUAL amd )
+  rocm_export_targets(
+    TARGETS roc::hipblas
+    DEPENDS PACKAGE hip
+    DEPENDS PACKAGE hipblas-common
+    STATIC_DEPENDS ${static_depends}
+    NAMESPACE roc::
+  )
 else( )
-    rocm_export_targets(
-        TARGETS roc::hipblas
-	DEPENDS PACKAGE HIP
-	NAMESPACE roc::
-    )
+  rocm_export_targets(
+    TARGETS roc::hipblas
+    DEPENDS PACKAGE HIP
+    NAMESPACE roc::
+  )
 endif( )
 
 # Force installation of .f90 module files
