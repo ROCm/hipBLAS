@@ -113,12 +113,12 @@ fp_rocsolver_zgels_strided_batched g_rocsolver_zgels_strided_batched;
 static bool load_rocsolver()
 {
 #ifdef WIN32
-    void* handle = LoadLibraryW(L"librocsolver.dll");
+    void* handle = LoadLibraryW(L"rocsolver.dll");
 #else
 
     // RTLD_NOW to load symbols now to avoid performance hit later
     // RTLD_GLOBAL to load geqrf_ptr_batched declared symbols in hipblas.cpp
-    void* handle = dlopen("librocsolver.so", RTLD_NOW | RTLD_GLOBAL);
+    void* handle = dlopen("librocsolver.so.0", RTLD_NOW | RTLD_GLOBAL);
     char* err    = dlerror();
 #endif
 
@@ -208,7 +208,7 @@ static bool load_rocsolver()
 
 bool try_load_rocsolver()
 {
-#ifndef __HIP_PLATFORM_SOLVER__
+#ifndef BUILD_WITH_SOLVER
     static bool result = load_rocsolver();
     return result;
 #else

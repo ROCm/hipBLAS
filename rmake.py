@@ -300,7 +300,7 @@ def config_cmd():
     else:
         cmake_options.append(f"-DBUILD_SOLVER_TESTS=OFF")
 
-    if args.solver_buildtime:
+    if args.solver_buildtime or args.static_lib:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=ON")
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
