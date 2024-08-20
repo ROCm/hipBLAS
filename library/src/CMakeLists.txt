@@ -196,6 +196,7 @@ else( )
   rocm_export_targets(
     TARGETS roc::hipblas
     DEPENDS PACKAGE HIP
+    DEPENDS PACKAGE hipblas-common
     NAMESPACE roc::
   )
 endif( )
