@@ -84,6 +84,7 @@ if(HIP_PLATFORM STREQUAL amd)
 
   if(NOT BUILD_WITH_SOLVER)
     target_link_libraries(hipblas PRIVATE $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
+    set_property(TARGET hipblas APPEND PROPERTY BUILD_RPATH ${ROCSOLVER_PATH}/lib)
   endif()
 
   list(APPEND static_depends PACKAGE rocblas)
