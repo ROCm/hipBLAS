@@ -195,7 +195,7 @@ install_packages( )
 
     # Do not install rocsolver if --rocsolver_path flag is set,
     if [[ -z ${rocsolver_path+foo} ]]; then
-      if [[ "${build_solver}" == true ]]; then
+      if [[ "${solver_buildtime}" == true ]]; then
         library_dependencies_ubuntu+=( "rocsolver-dev" )
         library_dependencies_centos_rhel+=( "rocsolver-devel" )
         library_dependencies_centos_rhel_8+=( "rocsolver-devel" )
@@ -374,7 +374,9 @@ cat <<EOF
 
     -k,  --relwithdebinfo         Build in release debug mode, equivalent to set CMAKE_BUILD_TYPE=RelWithDebInfo. (Default build type is Release)
 
-    -n, --no-solver               Build hipLBAS library without rocSOLVER dependency
+    -n, --no-solver               Build without rocSOLVER-based tests enabled. hipBLAS will still try to load rocSOLVER at runtime with AMD backend.
+
+    --solver-buildtime            Build with rocSOLVER functionality enabled at built time with AMD backend.
 
     --rocblas-path <blasdir>      Specify path to an existing rocBLAS install directory (e.g. /src/rocBLAS/build/release/rocblas-install).
 
@@ -390,7 +392,8 @@ install_package=false
 install_dependencies=false
 install_prefix=hipblas-install
 build_clients=false
-build_solver=true
+solver_buildtime=true
+build_solver_tests=true
 build_release=true
 install_cuda=false
 cuda_version_install=default
@@ -442,7 +445,10 @@ while true; do
         build_clients=true
         shift ;;
     -n|--no-solver)
-        build_solver=false
+        build_solver_tests=false
+        shift ;;
+    --solver-buildtime)
+        solver_buildtime=true
         shift ;;
     -g|--debug)
         build_release=false

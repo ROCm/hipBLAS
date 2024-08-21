@@ -39,7 +39,7 @@ endfunction( )
 prepend_path( ".." hipblas_headers_public relative_hipblas_headers_public )
 
 if(HIP_PLATFORM STREQUAL amd)
-  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" )
+  set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/hipblas.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/amd_detail/dlopen/load_rocsolver.cpp" )
 else( )
   set( hipblas_source "${CMAKE_CURRENT_SOURCE_DIR}/nvidia_detail/hipblas.cpp" )
 endif( )
@@ -82,6 +82,11 @@ if(HIP_PLATFORM STREQUAL amd)
     endif( )
   endif( )
 
+  if(NOT BUILD_WITH_SOLVER)
+    target_link_libraries(hipblas PRIVATE $<$<PLATFORM_ID:Linux>:${CMAKE_DL_LIBS}>)
+    set_property(TARGET hipblas APPEND PROPERTY BUILD_RPATH ${ROCSOLVER_PATH}/lib)
+  endif()
+
   list(APPEND static_depends PACKAGE rocblas)
   target_link_libraries( hipblas PRIVATE roc::rocblas )
   target_link_libraries( hipblas PUBLIC hip::host )
@@ -92,6 +97,8 @@ if(HIP_PLATFORM STREQUAL amd)
       if( CUSTOM_ROCSOLVER)
         set ( ENV{rocsolver_DIR} ${CUSTOM_ROCSOLVER})
         find_package( rocsolver REQUIRED CONFIG NO_CMAKE_PATH )
+
+        target_compile_definitions(hipblas PRIVATE -DBUILD_WITH_SOLVER)
 
         # in case of using custom rocsolver and not custom rocblas, we need to have
         # custom rocsolver include directories before rocblas/hip include directories

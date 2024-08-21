@@ -93,8 +93,11 @@ def parse_args():
     parser.add_argument('-k', '--relwithdebinfo', required=False, default = False, action='store_true',
                         help='Build in Release with Debug Info (optional, default: False)')
 
-    parser.add_argument('-n', '--no-solver', dest='build_solver', required=False, default=True, action='store_false',
-                        help='Build hipLBAS library without rocSOLVER dependency')
+    parser.add_argument('-n', '--no-solver', dest='build_solver_tests', required=False, default=True, action='store_false',
+                        help='Build without rocSOLVER-based tests enabled. hipBLAS will still try to load rocSOLVER at runtime with AMD backend.')
+
+    parser.add_argument('--solver-buildtime', dest='solver_buildtime', required=False, default=False, action='store_true',
+                        help='Build with rocSOLVER functionality enabled at build time.')
 
     parser.add_argument( '-r', '--relocatable', required=False, default=False, action='store_true',
                         help='Linux only: Add RUNPATH (based on ROCM_RPATH) and remove ldconf entry.')
@@ -292,9 +295,13 @@ def config_cmd():
         if os.environ['HIP_PLATFORM'] == 'amd':
             cmake_options.append( f"-DLINK_BLIS=ON")
 
+    if args.build_solver_tests:
+        cmake_options.append(f"-DBUILD_SOLVER_TESTS=ON")
+    else:
+        cmake_options.append(f"-DBUILD_SOLVER_TESTS=OFF")
 
-    if args.build_solver:
-        cmake_options.append (f"-DBUILD_WITH_SOLVER=ON")
+    if args.solver_buildtime or args.static_lib:
+        cmake_options.append(f"-DBUILD_WITH_SOLVER=ON")
     else:
         cmake_options.append(f"-DBUILD_WITH_SOLVER=OFF")
 

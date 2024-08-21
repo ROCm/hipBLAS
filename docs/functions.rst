@@ -111,6 +111,12 @@ Some functions in hipBLAS may use atomic operations to increase performance whic
 By default, the rocBLAS backend allows the use of atomics while the cuBLAS backend disallows the use of atomics. To set the desired behavior, users should call
 :any:`hipblasSetAtomicsMode`. Please see the rocBLAS or cuBLAS documentation for more information regarding specifics of atomic operations in the backend library.
 
+LAPACK Functionality
+====================
+
+LAPACK functionality is provided by the rocSOLVER library when running with AMD backend. By default, hipBLAS tries to find the rocSOLVER dependency
+at runtime using dlopen(). If rocSOLVER cannot be found, this functionality will return HIPBLAS_STATUS_NOT_SUPPORTED.
+
 *************
 hipBLAS Types
 *************

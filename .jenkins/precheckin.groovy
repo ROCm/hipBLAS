@@ -15,13 +15,18 @@ def runCI =
 
     def prj  = new rocProject('hipBLAS', 'PreCheckin')
 
-    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolverClients"))
     {
         prj.libraryDependencies = ['rocBLAS', 'hipBLAS-common']
     }
     else
     {
         prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER', 'hipBLAS-common']
+    }
+
+    if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("solverBuildtime"))
+    {
+        buildCommand += ' --solver-buildtime'
     }
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('g++'))

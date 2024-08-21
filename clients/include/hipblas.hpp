@@ -11884,7 +11884,7 @@ namespace
     MAP2CF_V2(hipblasTrtriStridedBatched, hipblasComplex, hipblasCtrtriStridedBatched);
     MAP2CF_V2(hipblasTrtriStridedBatched, hipblasDoubleComplex, hipblasZtrtriStridedBatched);
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
 
     // getrf
     template <typename T, bool FORTRAN = false>

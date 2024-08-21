@@ -100,6 +100,11 @@ target_compile_options(hipblas_v2-bench PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMM
 target_compile_definitions( hipblas-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} ${BLIS_DEFINES} )
 target_compile_definitions( hipblas_v2-bench PRIVATE HIPBLAS_BENCH ${COMMON_DEFINES} ${BLIS_DEFINES} HIPBLAS_V2 )
 
+if(BUILD_SOLVER_TESTS)
+  target_compile_definitions(hipblas-bench PRIVATE -DBUILD_SOLVER_TESTS)
+  target_compile_definitions(hipblas_v2-bench PRIVATE -DBUILD_SOLVER_TESTS)
+endif()
+
 target_link_libraries( hipblas-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 target_link_libraries( hipblas_v2-bench PRIVATE ${BLAS_LIBRARY} ${COMMON_LINK_LIBS} )
 if (NOT WIN32)

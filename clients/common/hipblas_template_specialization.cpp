@@ -13798,7 +13798,7 @@ hipblasStatus_t hipblasZgeamStridedBatchedCast_64(hipblasHandle_t             ha
                                          batchCount);
 }
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
 
 // getrf
 hipblasStatus_t hipblasCgetrfCast(

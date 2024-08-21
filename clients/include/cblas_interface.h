@@ -798,7 +798,7 @@ void ref_trmm(hipblasSideMode_t  side,
  * ===========================================================================
  */
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
 
 // potrf
 template <typename T>

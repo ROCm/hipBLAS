@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -221,7 +221,7 @@
 #include "blas_ex/testing_trsm_ex.hpp"
 #include "blas_ex/testing_trsm_strided_batched_ex.hpp"
 // solver functions
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
 #include "solver/testing_gels.hpp"
 #include "solver/testing_gels_batched.hpp"
 #include "solver/testing_gels_strided_batched.hpp"
@@ -459,7 +459,7 @@ void get_test_name(const Arguments& arg, std::string& name)
         {"trtri_batched", testname_trtri_batched},
         {"trtri_strided_batched", testname_trtri_strided_batched},
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
         {"geqrf", testname_geqrf},
         {"geqrf_batched", testname_geqrf_batched},
         {"geqrf_strided_batched", testname_geqrf_strided_batched},
@@ -677,7 +677,7 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, float>{} || std::is_same
             {"trsm_strided_batched", testing_trsm_strided_batched<T>},
             {"trsm_strided_batched_ex", testing_trsm_strided_batched_ex<T>},
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
             {"geqrf", testing_geqrf<T>},
             {"geqrf_batched", testing_geqrf_batched<T>},
             {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
@@ -899,7 +899,7 @@ struct perf_blas<
             {"trmm_batched", testing_trmm_batched<T>},
             {"trmm_strided_batched", testing_trmm_strided_batched<T>},
 
-#ifdef __HIP_PLATFORM_SOLVER__
+#ifdef BUILD_SOLVER_TESTS
             {"geqrf", testing_geqrf<T>},
             {"geqrf_batched", testing_geqrf_batched<T>},
             {"geqrf_strided_batched", testing_geqrf_strided_batched<T>},
