@@ -14,6 +14,7 @@ Prerequisites
 * If using the rocBLAS backend on an AMD machine:
 
   * A ROCm enabled platform. Find more information on the :doc:`System requirements (Linux) <rocm-install-on-linux:reference/system-requirements>` page.
+  * A compatible version of hipblas-common.
   * A compatible version of rocBLAS.
   * A compatible version of rocSOLVER and its dependencies, rocSPARSE and rocPRIM, for full functionality.
 
@@ -161,8 +162,8 @@ in the table below.
 Dependencies for building library
 ==================================
 
-Use ``rmake.py`` with ``-d`` option to install dependencies required to build the library. This will not install the rocBLAS, rocSOLVER, rocSPARSE, and rocPRIM dependencies.
-When building hipBLAS it is important to note version dependencies of other libraries. The rocBLAS and rocSOLVER versions needed for an AMD backend build are listed in the top level CMakeLists.txt file.
+Use ``rmake.py`` with ``-d`` option to install dependencies required to build the library. This will not install the hipblas-common, rocBLAS, rocSOLVER, rocSPARSE, and rocPRIM dependencies.
+When building hipBLAS it is important to note version dependencies of other libraries. The hipblas-common, rocBLAS and rocSOLVER versions needed for an AMD backend build are listed in the top level CMakeLists.txt file.
 rocSPARSE and rocPRIM are currently dependencies of rocSOLVER. To build these libraries from source, please visit the :doc:`rocBLAS Documentation <rocBLAS:index>`,
 :doc:`rocSOLVER Documentation <rocSOLVER:index>`, :doc:`rocSPARSE Documentation <rocSPARSE:index>`, and :doc:`rocPRIM Documentation <rocPRIM:index>`.
 
