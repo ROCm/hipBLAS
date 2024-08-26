@@ -24,7 +24,7 @@ def runCI =
     }
     else
     {
-        prj.libraryDependencies = ['hipBLAS-common', 'hipBLASLt', 'rocBLAS', 'rocSPARSE', 'rocSOLVER',]
+        prj.libraryDependencies = ['rocPRIM', 'hipBLAS-common', 'hipBLASLt', 'rocBLAS', 'rocSPARSE', 'rocSOLVER']
     }
 
     // Define test architectures, optional rocm version argument is available
