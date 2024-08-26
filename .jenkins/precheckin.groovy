@@ -17,11 +17,11 @@ def runCI =
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains("noSolver"))
     {
-        prj.libraryDependencies = ['rocBLAS', 'hipBLAS-common']
+        prj.libraryDependencies = ['hipBLAS-common', 'hipBLASLt', 'rocBLAS']
     }
     else
     {
-        prj.libraryDependencies = ['rocBLAS', 'rocSPARSE', 'rocSOLVER', 'hipBLAS-common']
+        prj.libraryDependencies = ['hipBLAS-common', 'hipBLASLt', 'rocBLAS', 'rocSPARSE', 'rocSOLVER',]
     }
 
     if (env.BRANCH_NAME ==~ /PR-\d+/ && pullRequest.labels.contains('g++'))
