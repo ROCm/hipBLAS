@@ -166,7 +166,7 @@ install_packages( )
   local library_dependencies_centos_rhel=( "epel-release" "make" "gcc-c++" "rpm-build" )
   local library_dependencies_centos_rhel_8=( "epel-release" "make" "gcc-c++" "rpm-build" )
   local library_dependencies_fedora=( "make" "gcc-c++" "libcxx-devel" "rpm-build" )
-  local library_dependencies_sles=( "make" "gcc-c++" "libcxxtools9" "rpm-build" )
+  local library_dependencies_sles=( "make" "gcc-c++" "rpm-build" )
 
   if [[ $HIP_PLATFORM == "nvidia" ]]; then
     # Ideally, this could be cuda-cublas-dev, but the package name has a version number in it
@@ -248,6 +248,11 @@ install_packages( )
 
     sles|opensuse-leap)
 #     elevate_if_not_root zypper -y update
+      if (( "${VERSION_ID%%.*}" >= "15" )); then
+        library_dependencies_sles+=( "libcxxtools10" )
+      else
+        library_dependencies_sles+=( "libcxxtools9" )
+      fi
       install_zypper_packages "${library_dependencies_sles[@]}"
       ;;
     *)
