@@ -41,7 +41,7 @@ void setup_getrs_strided_batched_testing(const Arguments&                arg,
                                          host_strided_batch_matrix<T>&   hA,
                                          host_strided_batch_matrix<T>&   hB,
                                          host_strided_batch_matrix<T>&   hX,
-                                         host_vector<int>&               hIpiv,
+                                         host_vector<int64_t>&           hIpiv64,
                                          device_strided_batch_matrix<T>& dA,
                                          device_strided_batch_matrix<T>& dB,
                                          device_vector<int>&             dIpiv,
@@ -56,6 +56,8 @@ void setup_getrs_strided_batched_testing(const Arguments&                arg,
     size_t A_size    = strideA * batch_count;
     size_t B_size    = strideB * batch_count;
     size_t Ipiv_size = strideP * batch_count;
+
+    host_vector<int> hIpiv32(Ipiv_size);
 
     // Initial hA, hX on CPU
     hipblas_init_matrix(hA, arg, hipblas_client_never_set_nan, hipblas_general_matrix, true);
@@ -80,7 +82,7 @@ void setup_getrs_strided_batched_testing(const Arguments&                arg,
         ref_gemm<T>(op, op, N, 1, N, (T)1, hA[b], lda, hX[b], ldb, (T)0, hB[b], ldb);
 
         // LU factorize hA on the CPU
-        int info = ref_getrf<T>(N, N, hA[b], lda, hIpiv.data() + b * strideP);
+        int info = ref_getrf<T>(N, N, hA[b], lda, hIpiv64.data() + b * strideP);
         if(info != 0)
         {
             std::cerr << "LU decomposition failed" << std::endl;
@@ -89,10 +91,13 @@ void setup_getrs_strided_batched_testing(const Arguments&                arg,
         }
     }
 
+    for(int i = 0; i < Ipiv_size; i++)
+        hIpiv32[i] = hIpiv64[i];
+
     // Copy data from CPU to device
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dB.transfer_from(hB));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv32, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 }
 
 template <typename T>
@@ -118,7 +123,7 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
     host_strided_batch_matrix<T> hA(N, N, lda, strideA, batch_count);
     host_strided_batch_matrix<T> hB(N, 1, ldb, strideB, batch_count);
     host_strided_batch_matrix<T> hX(N, 1, ldb, strideB, batch_count);
-    host_vector<int>             hIpiv(Ipiv_size);
+    host_vector<int64_t>         hIpiv64(Ipiv_size);
 
     device_strided_batch_matrix<T> dA(N, N, lda, strideA, batch_count);
     device_strided_batch_matrix<T> dB(N, 1, ldb, strideB, batch_count);
@@ -129,8 +134,21 @@ void testing_getrs_strided_batched_bad_arg(const Arguments& arg)
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
 
-    setup_getrs_strided_batched_testing(
-        arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count);
+    setup_getrs_strided_batched_testing(arg,
+                                        hA,
+                                        hB,
+                                        hX,
+                                        hIpiv64,
+                                        dA,
+                                        dB,
+                                        dIpiv,
+                                        N,
+                                        lda,
+                                        ldb,
+                                        strideA,
+                                        strideB,
+                                        strideP,
+                                        batch_count);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsStridedBatchedFn(handle,
                                                        op,
@@ -357,7 +375,7 @@ void testing_getrs_strided_batched(const Arguments& arg)
     host_strided_batch_matrix<T> hB1(N, 1, ldb, strideB, batch_count);
     host_strided_batch_matrix<T> hX(N, 1, ldb, strideB, batch_count);
     host_vector<int>             hIpiv(Ipiv_size);
-    host_vector<int>             hIpiv1(Ipiv_size);
+    host_vector<int64_t>         hIpiv64(Ipiv_size);
     int                          info;
 
     // Check host memory allocation
@@ -379,8 +397,21 @@ void testing_getrs_strided_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    setup_getrs_strided_batched_testing(
-        arg, hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, strideA, strideB, strideP, batch_count);
+    setup_getrs_strided_batched_testing(arg,
+                                        hA,
+                                        hB,
+                                        hX,
+                                        hIpiv64,
+                                        dA,
+                                        dB,
+                                        dIpiv,
+                                        N,
+                                        lda,
+                                        ldb,
+                                        strideA,
+                                        strideB,
+                                        strideP,
+                                        batch_count);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -405,14 +436,17 @@ void testing_getrs_strided_batched(const Arguments& arg)
         // copy output from device to CPU
         CHECK_HIP_ERROR(hB1.transfer_from(dB));
         CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+            hipMemcpy(hIpiv.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
         for(int b = 0; b < batch_count; b++)
         {
-            ref_getrs('N', N, 1, hA[b], lda, hIpiv.data() + b * strideP, hB[b], ldb);
+            ref_getrs('N', N, 1, hA[b], lda, hIpiv64.data() + b * strideP, hB[b], ldb);
         }
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, strideB, hB, hB1, batch_count);
