@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -118,12 +118,12 @@ void testing_getrf_strided_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hA1(A_size);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hIpiv1(Ipiv_size);
-    host_vector<int> hInfo(batch_count);
-    host_vector<int> hInfo1(batch_count);
+    host_vector<T>       hA(A_size);
+    host_vector<T>       hA1(A_size);
+    host_vector<int>     hIpiv(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
+    host_vector<int>     hInfo(batch_count);
+    host_vector<int>     hInfo1(batch_count);
 
     device_vector<T>   dA(A_size);
     device_vector<int> dIpiv(Ipiv_size);
@@ -169,16 +169,19 @@ void testing_getrf_strided_batched(const Arguments& arg)
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hA1.data(), dA, A_size * sizeof(T), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+            hipMemcpy(hIpiv.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = ref_getrf(M, N, hA.data() + b * strideA, lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA.data() + b * strideA, lda, hIpiv64.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, strideA, hA, hA1, batch_count);
