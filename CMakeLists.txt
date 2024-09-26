@@ -212,7 +212,8 @@ if(HIP_PLATFORM STREQUAL amd)
 endif( )
 
 set(hipblas_common_minimum 1.0.0)
-rocm_package_add_dependencies(DEPENDS "hipblas-common >= ${hipblas_common_minimum}")
+rocm_package_add_rpm_dependencies(DEPENDS "hipblas-common-devel >= ${hipblas_common_minimum}")
+rocm_package_add_deb_dependencies(DEPENDS "hipblas-common-dev >= ${hipblas_common_minimum}")
 
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
 set( CPACK_RPM_PACKAGE_LICENSE "MIT")
