@@ -95,12 +95,12 @@ void testing_getrf(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_matrix<T>   hA(M, N, lda);
-    host_matrix<T>   hA1(M, N, lda);
-    host_matrix<int> hIpiv(1, Ipiv_size, 1);
-    host_matrix<int> hIpiv1(1, Ipiv_size, 1);
-    host_vector<int> hInfo(1);
-    host_vector<int> hInfo1(1);
+    host_matrix<T>       hA(M, N, lda);
+    host_matrix<T>       hA1(M, N, lda);
+    host_matrix<int>     hIpiv(1, Ipiv_size, 1);
+    host_matrix<int64_t> hIpiv64(1, Ipiv_size, 1);
+    host_vector<int>     hInfo(1);
+    host_vector<int>     hInfo1(1);
 
     // Allocate device memory
     device_matrix<T>   dA(M, N, lda);
@@ -145,13 +145,16 @@ void testing_getrf(const Arguments& arg)
 
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hA1.transfer_from(dA));
-        CHECK_HIP_ERROR(hIpiv1.transfer_from(dIpiv));
+        CHECK_HIP_ERROR(hIpiv.transfer_from(dIpiv));
         CHECK_HIP_ERROR(hipMemcpy(hInfo1, dInfo, sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-        hInfo[0] = ref_getrf(M, N, hA.data(), lda, hIpiv.data());
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[0][i] = hIpiv[0][i];
+
+        hInfo[0] = ref_getrf(M, N, hA.data(), lda, hIpiv64.data());
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1);
         if(arg.unit_check)
