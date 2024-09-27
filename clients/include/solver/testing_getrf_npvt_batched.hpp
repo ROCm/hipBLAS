@@ -111,7 +111,7 @@ void testing_getrf_npvt_batched(const Arguments& arg)
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
     host_batch_matrix<T> hA(M, N, lda, batch_count);
     host_batch_matrix<T> hA1(M, N, lda, batch_count);
-    host_vector<int>     hIpiv(Ipiv_size);
+    host_vector<int64_t> hIpiv(Ipiv_size);
     host_vector<int>     hInfo(batch_count);
     host_vector<int>     hInfo1(batch_count);
 
