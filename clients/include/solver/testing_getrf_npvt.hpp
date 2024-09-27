@@ -88,11 +88,11 @@ void testing_getrf_npvt(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_matrix<T>   hA(M, N, lda);
-    host_matrix<T>   hA1(M, N, lda);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hInfo(1);
-    host_vector<int> hInfo1(1);
+    host_matrix<T>       hA(M, N, lda);
+    host_matrix<T>       hA1(M, N, lda);
+    host_vector<int64_t> hIpiv(Ipiv_size);
+    host_vector<int>     hInfo(1);
+    host_vector<int>     hInfo1(1);
 
     // Allocate device memory
     device_matrix<T>   dA(M, N, lda);
