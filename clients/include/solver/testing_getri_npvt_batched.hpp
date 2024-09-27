@@ -157,9 +157,9 @@ void testing_getri_npvt_batched(const Arguments& arg)
     host_batch_matrix<T> hC(M, N, lda, batch_count);
     host_batch_matrix<T> hA1(M, N, lda, batch_count);
 
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hInfo(batch_count);
-    host_vector<int> hInfo1(batch_count);
+    host_vector<int64_t> hIpiv(Ipiv_size);
+    host_vector<int>     hInfo(batch_count);
+    host_vector<int>     hInfo1(batch_count);
 
     // Check host memory allocation
     CHECK_HIP_ERROR(hA.memcheck());
@@ -197,8 +197,8 @@ void testing_getri_npvt_batched(const Arguments& arg)
         }
 
         // perform LU factorization on A
-        int* hIpivb = hIpiv.data() + b * strideP;
-        hInfo[b]    = ref_getrf(M, N, hA[b], lda, hIpivb);
+        int64_t* hIpivb = hIpiv.data() + b * strideP;
+        hInfo[b]        = ref_getrf(M, N, hA[b], lda, hIpivb);
     }
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
