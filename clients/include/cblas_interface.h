@@ -790,22 +790,32 @@ void ref_trmm(hipblasSideMode_t  side,
 
 // potrf
 template <typename T>
-int ref_potrf(char uplo, int m, T* A, int lda);
+int64_t ref_potrf(char uplo, int64_t m, T* A, int64_t lda);
 
 template <typename T>
-int ref_getrf(int m, int n, T* A, int lda, int* ipiv);
+int64_t ref_getrf(int64_t m, int64_t n, T* A, int64_t lda, int64_t* ipiv);
 
 template <typename T>
-int ref_getrs(char trans, int n, int nrhs, T* A, int lda, int* ipiv, T* B, int ldb);
+int64_t ref_getrs(
+    char trans, int64_t n, int64_t nrhs, T* A, int64_t lda, int64_t* ipiv, T* B, int64_t ldb);
 
 template <typename T>
-int ref_getri(int n, T* A, int lda, int* ipiv, T* work, int lwork);
+int64_t ref_getri(int64_t n, T* A, int64_t lda, int64_t* ipiv, T* work, int64_t lwork);
 
 template <typename T>
-int ref_geqrf(int m, int n, T* A, int lda, T* tau, T* work, int lwork);
+int64_t ref_geqrf(int64_t m, int64_t n, T* A, int64_t lda, T* tau, T* work, int64_t lwork);
 
 template <typename T>
-int ref_gels(char trans, int m, int n, int nrhs, T* A, int lda, T* B, int ldb, T* work, int lwork);
+int64_t ref_gels(char    trans,
+                 int64_t m,
+                 int64_t n,
+                 int64_t nrhs,
+                 T*      A,
+                 int64_t lda,
+                 T*      B,
+                 int64_t ldb,
+                 T*      work,
+                 int64_t lwork);
 
 #endif
 

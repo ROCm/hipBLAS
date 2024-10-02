@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,11 +89,11 @@ void testing_getrf_npvt(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hA1(A_size);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hInfo(1);
-    host_vector<int> hInfo1(1);
+    host_vector<T>       hA(A_size);
+    host_vector<T>       hA1(A_size);
+    host_vector<int64_t> hIpiv(Ipiv_size);
+    host_vector<int>     hInfo(1);
+    host_vector<int>     hInfo1(1);
 
     device_vector<T>   dA(A_size);
     device_vector<int> dInfo(1);

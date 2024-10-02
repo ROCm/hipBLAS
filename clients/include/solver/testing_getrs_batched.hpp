@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ template <typename T>
 void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
                                  host_batch_vector<T>&   hB,
                                  host_batch_vector<T>&   hX,
-                                 host_vector<int>&       hIpiv,
+                                 host_vector<int64_t>&   hIpiv64,
                                  device_batch_vector<T>& dA,
                                  device_batch_vector<T>& dB,
                                  device_vector<int>&     dIpiv,
@@ -48,10 +48,11 @@ void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
                                  int                     ldb,
                                  int                     batch_count)
 {
-    hipblasStride strideP   = N;
-    size_t        A_size    = size_t(lda) * N;
-    size_t        B_size    = size_t(ldb) * 1;
-    size_t        Ipiv_size = strideP * batch_count;
+    hipblasStride    strideP   = N;
+    size_t           A_size    = size_t(lda) * N;
+    size_t           B_size    = size_t(ldb) * 1;
+    size_t           Ipiv_size = strideP * batch_count;
+    host_vector<int> hIpiv32(Ipiv_size);
 
     // Initial hA, hB, hX on CPU
     hipblas_init(hA, true);
@@ -76,7 +77,7 @@ void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
         ref_gemm<T>(op, op, N, 1, N, (T)1, hA[b], lda, hX[b], ldb, (T)0, hB[b], ldb);
 
         // LU factorize hA on the CPU
-        int info = ref_getrf<T>(N, N, hA[b], lda, hIpiv.data() + b * strideP);
+        int info = ref_getrf<T>(N, N, hA[b], lda, hIpiv64.data() + b * strideP);
         if(info != 0)
         {
             std::cerr << "LU decomposition failed" << std::endl;
@@ -85,9 +86,13 @@ void setup_getrs_batched_testing(host_batch_vector<T>&   hA,
         }
     }
 
+    for(int i = 0; i < Ipiv_size; i++)
+        hIpiv32[i] = hIpiv64[i];
+
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dB.transfer_from(hB));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(
+        hipMemcpy(dIpiv, hIpiv32.data(), Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 }
 
 template <typename T>
@@ -113,7 +118,7 @@ void testing_getrs_batched_bad_arg(const Arguments& arg)
     host_batch_vector<T> hA(A_size, 1, batch_count);
     host_batch_vector<T> hB(B_size, 1, batch_count);
     host_batch_vector<T> hX(B_size, 1, batch_count);
-    host_vector<int>     hIpiv(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
 
     device_batch_vector<T> dA(A_size, 1, batch_count);
     device_batch_vector<T> dB(B_size, 1, batch_count);
@@ -127,7 +132,7 @@ void testing_getrs_batched_bad_arg(const Arguments& arg)
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
 
-    setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
+    setup_getrs_batched_testing(hA, hB, hX, hIpiv64, dA, dB, dIpiv, N, lda, ldb, batch_count);
 
     EXPECT_HIPBLAS_STATUS(
         hipblasGetrsBatchedFn(handle, op, -1, nrhs, dAp, lda, dIpiv, dBp, ldb, &info, batch_count),
@@ -241,7 +246,7 @@ void testing_getrs_batched(const Arguments& arg)
     host_batch_vector<T> hB(B_size, 1, batch_count);
     host_batch_vector<T> hB1(B_size, 1, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
-    host_vector<int>     hIpiv1(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
     int                  info;
 
     device_batch_vector<T> dA(A_size, 1, batch_count);
@@ -252,7 +257,7 @@ void testing_getrs_batched(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    setup_getrs_batched_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb, batch_count);
+    setup_getrs_batched_testing(hA, hB, hX, hIpiv64, dA, dB, dIpiv, N, lda, ldb, batch_count);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -274,15 +279,18 @@ void testing_getrs_batched(const Arguments& arg)
         // copy output from device to CPU
         CHECK_HIP_ERROR(hB1.transfer_from(dB));
         CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+            hipMemcpy(hIpiv.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
 
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
         for(int b = 0; b < batch_count; b++)
         {
-            ref_getrs('N', N, 1, hA[b], lda, hIpiv.data() + b * strideP, hB[b], ldb);
+            ref_getrs('N', N, 1, hA[b], lda, hIpiv64.data() + b * strideP, hB[b], ldb);
         }
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB, hB1, batch_count);

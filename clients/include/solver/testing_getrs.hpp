@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
  * SOFTWARE.
  *
  * ************************************************************************ */
-
-#include "gtest/gtest.h"
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -37,20 +35,22 @@ inline void testname_getrs(const Arguments& arg, std::string& name)
 }
 
 template <typename T>
-void setup_getrs_testing(host_vector<T>&     hA,
-                         host_vector<T>&     hB,
-                         host_vector<T>&     hX,
-                         host_vector<int>&   hIpiv,
-                         device_vector<T>&   dA,
-                         device_vector<T>&   dB,
-                         device_vector<int>& dIpiv,
-                         int                 N,
-                         int                 lda,
-                         int                 ldb)
+void setup_getrs_testing(host_vector<T>&       hA,
+                         host_vector<T>&       hB,
+                         host_vector<T>&       hX,
+                         host_vector<int64_t>& hIpiv64,
+                         device_vector<T>&     dA,
+                         device_vector<T>&     dB,
+                         device_vector<int>&   dIpiv,
+                         int                   N,
+                         int                   lda,
+                         int                   ldb)
 {
     const size_t A_size    = size_t(N) * lda;
     const size_t B_size    = ldb;
     const size_t Ipiv_size = N;
+
+    host_vector<int> hIpiv32(Ipiv_size);
 
     // Initial hA, hB, hX on CPU
     srand(1);
@@ -74,7 +74,7 @@ void setup_getrs_testing(host_vector<T>&     hA,
     ref_gemm<T>(opN, opN, N, 1, N, (T)1, hA.data(), lda, hX.data(), ldb, (T)0, hB.data(), ldb);
 
     // LU factorize hA on the CPU
-    int info = ref_getrf<T>(N, N, hA.data(), lda, hIpiv.data());
+    int info = ref_getrf<T>(N, N, hA.data(), lda, hIpiv64.data());
     if(info != 0)
     {
         std::cerr << "LU decomposition failed" << std::endl;
@@ -82,10 +82,13 @@ void setup_getrs_testing(host_vector<T>&     hA,
         unit_check_general(1, 1, 1, &expectedInfo, &info);
     }
 
+    for(int i = 0; i < Ipiv_size; i++)
+        hIpiv32[i] = hIpiv64[i];
+
     // Copy data from CPU to device
     CHECK_HIP_ERROR(hipMemcpy(dA, hA, A_size * sizeof(T), hipMemcpyHostToDevice));
     CHECK_HIP_ERROR(hipMemcpy(dB, hB, B_size * sizeof(T), hipMemcpyHostToDevice));
-    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
+    CHECK_HIP_ERROR(hipMemcpy(dIpiv, hIpiv32, Ipiv_size * sizeof(int), hipMemcpyHostToDevice));
 }
 
 template <typename T>
@@ -105,10 +108,10 @@ void testing_getrs_bad_arg(const Arguments& arg)
 
     const hipblasOperation_t op = HIPBLAS_OP_N;
 
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hB(B_size);
-    host_vector<T>   hX(B_size);
-    host_vector<int> hIpiv(Ipiv_size);
+    host_vector<T>       hA(A_size);
+    host_vector<T>       hB(B_size);
+    host_vector<T>       hX(B_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);
@@ -118,7 +121,7 @@ void testing_getrs_bad_arg(const Arguments& arg)
 
     // Need initialization code because even with bad params we call roc/cu-solver
     // so want to give reasonable data
-    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
+    setup_getrs_testing(hA, hB, hX, hIpiv64, dA, dB, dIpiv, N, lda, ldb);
 
     EXPECT_HIPBLAS_STATUS(hipblasGetrsFn(handle, op, N, nrhs, dA, lda, dIpiv, dB, ldb, nullptr),
                           HIPBLAS_STATUS_INVALID_VALUE);
@@ -194,13 +197,13 @@ void testing_getrs(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_vector<T>   hA(A_size);
-    host_vector<T>   hX(B_size);
-    host_vector<T>   hB(B_size);
-    host_vector<T>   hB1(B_size);
-    host_vector<int> hIpiv(Ipiv_size);
-    host_vector<int> hIpiv1(Ipiv_size);
-    int              info;
+    host_vector<T>       hA(A_size);
+    host_vector<T>       hX(B_size);
+    host_vector<T>       hB(B_size);
+    host_vector<T>       hB1(B_size);
+    host_vector<int>     hIpiv(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
+    int                  info;
 
     device_vector<T>   dA(A_size);
     device_vector<T>   dB(B_size);
@@ -210,7 +213,7 @@ void testing_getrs(const Arguments& arg)
     hipblasLocalHandle handle(arg);
     hipblasOperation_t op = HIPBLAS_OP_N;
 
-    setup_getrs_testing(hA, hB, hX, hIpiv, dA, dB, dIpiv, N, lda, ldb);
+    setup_getrs_testing(hA, hB, hX, hIpiv64, dA, dB, dIpiv, N, lda, ldb);
 
     if(arg.unit_check || arg.norm_check)
     {
@@ -221,12 +224,15 @@ void testing_getrs(const Arguments& arg)
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hipMemcpy(hB1, dB, B_size * sizeof(T), hipMemcpyDeviceToHost));
-        CHECK_HIP_ERROR(hipMemcpy(hIpiv1, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+        CHECK_HIP_ERROR(hipMemcpy(hIpiv, dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
-        ref_getrs('N', N, 1, hA.data(), lda, hIpiv.data(), hB.data(), ldb);
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
+        ref_getrs('N', N, 1, hA.data(), lda, hIpiv64.data(), hB.data(), ldb);
 
         hipblas_error = norm_check_general<T>('F', N, 1, ldb, hB.data(), hB1.data());
 

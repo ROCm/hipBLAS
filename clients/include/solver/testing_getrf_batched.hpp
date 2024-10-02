@@ -116,7 +116,7 @@ void testing_getrf_batched(const Arguments& arg)
     host_batch_vector<T> hA(A_size, 1, batch_count);
     host_batch_vector<T> hA1(A_size, 1, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
-    host_vector<int>     hIpiv1(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
     host_vector<int>     hInfo(batch_count);
     host_vector<int>     hInfo1(batch_count);
 
@@ -159,16 +159,19 @@ void testing_getrf_batched(const Arguments& arg)
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hA1.transfer_from(dA));
         CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+            hipMemcpy(hIpiv.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
         for(int b = 0; b < batch_count; b++)
         {
-            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv.data() + b * strideP);
+            hInfo[b] = ref_getrf(M, N, hA[b], lda, hIpiv64.data() + b * strideP);
         }
 
         hipblas_error = norm_check_general<T>('F', M, N, lda, hA, hA1, batch_count);
