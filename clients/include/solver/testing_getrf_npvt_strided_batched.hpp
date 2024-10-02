@@ -110,11 +110,11 @@ void testing_getrf_npvt_strided_batched(const Arguments& arg)
     }
 
     // Naming: dK is in GPU (device) memory. hK is in CPU (host) memory
-    host_strided_batch_matrix<T>   hA(M, N, lda, strideA, batch_count);
-    host_strided_batch_matrix<T>   hA1(M, N, lda, strideA, batch_count);
-    host_strided_batch_matrix<int> hIpiv(1, Ipiv_size, 1, strideP, batch_count);
-    host_vector<int>               hInfo(batch_count);
-    host_vector<int>               hInfo1(batch_count);
+    host_strided_batch_matrix<T>       hA(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<T>       hA1(M, N, lda, strideA, batch_count);
+    host_strided_batch_matrix<int64_t> hIpiv(1, Ipiv_size, 1, strideP, batch_count);
+    host_vector<int>                   hInfo(batch_count);
+    host_vector<int>                   hInfo1(batch_count);
 
     // Check host memory allocation
     CHECK_HIP_ERROR(hA.memcheck());

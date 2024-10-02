@@ -163,7 +163,7 @@ void testing_getri_batched(const Arguments& arg)
     host_batch_matrix<T> hC(M, N, lda, batch_count);
     host_batch_matrix<T> hA1(M, N, lda, batch_count);
     host_vector<int>     hIpiv(Ipiv_size);
-    host_vector<int>     hIpiv1(Ipiv_size);
+    host_vector<int64_t> hIpiv64(Ipiv_size);
     host_vector<int>     hInfo(batch_count);
     host_vector<int>     hInfo1(batch_count);
 
@@ -205,9 +205,12 @@ void testing_getri_batched(const Arguments& arg)
         }
 
         // perform LU factorization on A
-        int* hIpivb = hIpiv.data() + b * strideP;
-        hInfo[b]    = ref_getrf(M, N, hA[b], lda, hIpivb);
+        int64_t* hIpivb = hIpiv64.data() + b * strideP;
+        hInfo[b]        = ref_getrf(M, N, hA[b], lda, hIpivb);
     }
+
+    for(int i = 0; i < Ipiv_size; i++)
+        hIpiv[i] = hIpiv64[i];
 
     CHECK_HIP_ERROR(dA.transfer_from(hA));
     CHECK_HIP_ERROR(dC.transfer_from(hC));
@@ -232,23 +235,26 @@ void testing_getri_batched(const Arguments& arg)
         // Copy output from device to CPU
         CHECK_HIP_ERROR(hA1.transfer_from(dC));
         CHECK_HIP_ERROR(
-            hipMemcpy(hIpiv1.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
+            hipMemcpy(hIpiv.data(), dIpiv, Ipiv_size * sizeof(int), hipMemcpyDeviceToHost));
         CHECK_HIP_ERROR(
             hipMemcpy(hInfo1.data(), dInfo, batch_count * sizeof(int), hipMemcpyDeviceToHost));
 
         /* =====================================================================
            CPU LAPACK
         =================================================================== */
+        for(int i = 0; i < Ipiv_size; i++)
+            hIpiv64[i] = hIpiv[i];
+
         for(int b = 0; b < batch_count; b++)
         {
             // Workspace query
             host_vector<T> work(1);
-            ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), -1);
+            ref_getri(N, hA[b], lda, hIpiv64.data() + b * strideP, work.data(), -1);
             int lwork = type2int(work[0]);
 
             // Perform inversion
             work     = host_vector<T>(lwork);
-            hInfo[b] = ref_getri(N, hA[b], lda, hIpiv.data() + b * strideP, work.data(), lwork);
+            hInfo[b] = ref_getri(N, hA[b], lda, hIpiv64.data() + b * strideP, work.data(), lwork);
 
             hipblas_error = norm_check_general<T>('F', M, N, lda, hA[b], hA1[b]);
             if(arg.unit_check)
