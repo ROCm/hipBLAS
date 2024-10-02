@@ -117,6 +117,9 @@ void testing_trmm_bad_arg(const Arguments& arg)
              *dOut,
              ldOut));
 
+        // Temporarily remove this test with CUDA backend as there seems to be a change
+        // in the return status around CUDA 12.
+#ifndef __HIP_PLATFORM_NVCC__
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasTrmmFn,
                     (handle,
@@ -133,6 +136,7 @@ void testing_trmm_bad_arg(const Arguments& arg)
                      ldb,
                      *dOut,
                      ldOut));
+#endif
 
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_ENUM,
                     hipblasTrmmFn,
