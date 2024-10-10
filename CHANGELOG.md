@@ -5,10 +5,11 @@ Documentation for hipBLAS is available at
 
 ## hipBLAS 2.2.0 for ROCm 6.2.0
 
-### Additions
+### Added
 
 * Level 2 functions have additional ILP64 API for both C and FORTRAN (_64 name suffix) with int64_t function arguments
 * Level 1 "_ex" functions have additional ILP64 API
+* Support for the gfx1034 architecture
 
 ### Changes
 
