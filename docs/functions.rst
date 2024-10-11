@@ -111,6 +111,11 @@ Some functions in hipBLAS may use atomic operations to increase performance whic
 By default, the rocBLAS backend allows the use of atomics while the cuBLAS backend disallows the use of atomics. To set the desired behavior, users should call
 :any:`hipblasSetAtomicsMode`. Please see the rocBLAS or cuBLAS documentation for more information regarding specifics of atomic operations in the backend library.
 
+Graph Support for hipBLAS
+=========================
+
+Graph support for hipBLAS is the same as that in the rocBLAS or cuBLAS backend. If rocBLAS is the backend, see rocBLAS documentation. If cuBLAS is the backend, see cuBLAS documentation.
+
 *************
 hipBLAS Types
 *************
