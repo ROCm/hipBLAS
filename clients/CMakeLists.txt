@@ -116,17 +116,47 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
 
   # if it fails to find OpenMP compile and link flags in strange configurations it can just use non-parallel reference computation
   # if there is no omp.h to find the client compilation will fail and this should be obvious, used to be REQUIRED
-  find_package(OpenMP)
+  if( CMAKE_CXX_COMPILER MATCHES ".*/hipcc$" )
+    find_package(OpenMP)
+    if (TARGET OpenMP::OpenMP_CXX)
+      set( LIBOMP_FOUND OpenMP::OpenMP_CXX)
+      get_filename_component(LIBOMP_PATH "${OpenMP_omp_LIBRARY}" PATH)
+    endif()
+  # Support for using gnu as cmake compiler.
+  else()
+    # Discover path to amdclang
+    get_filename_component(AMDCLANG_PATH "${HIP_HIPCC_EXECUTABLE}/../amdclang" REALPATH)
+    get_filename_component(AMDCLANG_DIR "${AMDCLANG_PATH}" DIRECTORY)
+    set(AMDCLANG_LIBDIR "${AMDCLANG_DIR}/../lib")
+    # libomp.so may be in a target subdirectory directory.
+    execute_process(
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      COMMAND bash -c "${AMDCLANG_DIR}/amdclang --version | grep -oP '(?<=Target: ).+'"
+      OUTPUT_VARIABLE LLVM_TARGET_TRIPLE
+    )
+    find_library(LIBOMP_FOUND omp PATHS ${AMDCLANG_LIBDIR} PATH_SUFFIXES ${LLVM_TARGET_TRIPLE} NO_DEFAULT_PATH)
+    if (LIBOMP_FOUND)
+      get_filename_component(LIBOMP_PATH "${LIBOMP_FOUND}" PATH)
+    endif()
+  endif()
 
-  if (TARGET OpenMP::OpenMP_CXX)
-    set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
-    if(HIP_PLATFORM STREQUAL amd)
-      list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
-      if (NOT WIN32)
-        list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
-      else()
-        list( APPEND COMMON_LINK_LIBS "libomp")
-      endif()
+  if(LIBOMP_FOUND)
+    # LIBOMP_FOUND will contain full path to libomp.so
+    set( COMMON_LINK_LIBS ${LIBOMP_FOUND})
+    if(NOT WIN32)
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${LIBOMP_PATH}")
+    endif()
+  # If cmake cannot find the proper libomp.so, use HIP_CLANG_ROOT as fallback.
+  else()
+    # Add library search paths.
+    list( APPEND COMMON_LINK_LIBS "-L\"${AMDCLANG_LIBDIR}/${LLVM_TARGET_TRIPLE}\"")
+    list( APPEND COMMON_LINK_LIBS "-L\"${AMDCLANG_LIBDIR}\"")
+    if(NOT WIN32)
+      # Add rpath.
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${AMDCLANG_LIBDIR}/${LLVM_TARGET_TRIPLE}")
+      list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${AMDCLANG_LIBDIR} -lomp")
+    else()
+      list( APPEND COMMON_LINK_LIBS "libomp")
     endif()
   endif()
 
