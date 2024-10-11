@@ -114,7 +114,7 @@ By default, the rocBLAS backend allows the use of atomics while the cuBLAS backe
 Graph Support for hipBLAS
 =========================
 
-Graph support for hipBLAS is the same as that in the rocBLAS or cuBLAS backend. If rocBLAS is the backend, see rocBLAS documentation. If cuBLAS is the backend, see cuBLAS documentation.
+Graph support (also referred to stream capture support) for hipBLAS depends on the backend in use. if rocBLAS is the backend, refer to rocBLAS documentation. Similarly, if cuBLAS is the backend, refer to cuBLAS documentation.
 
 *************
 hipBLAS Types
