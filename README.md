@@ -10,8 +10,9 @@ To use hipBLAS, you must first install rocBLAS, rocSPARSE, and rocSOLVER or cuBL
 
 ## Documentation
 
-Documentation for hipBLAS is available at
-[https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
+> [!NOTE]
+> The published hipBLAS documentation is available at [hipBLAS](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/index.html) in an organized, easy-to-read format, with search and a table of contents. The documentation source files reside in the hipBLAS/docs folder of this repository. As with all ROCm projects, the documentation is open source. For more information, see [Contribute to ROCm documentation](https://rocm.docs.amd.com/en/latest/contribute/contributing.html).
+
 
 To build our documentation locally, use the following code:
 
