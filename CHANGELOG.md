@@ -3,7 +3,7 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.3.0
+## hipBLAS 2.3.0 for ROCm 6.3.0
 
 ### Added
 
@@ -12,6 +12,7 @@ Documentation for hipBLAS is available at
 ### Changed
 
 * amdclang is used as the default compiler instead of g++
+* Added a dependency on the hipblas-common package
 
 ## hipBLAS 2.2.0 for ROCm 6.2.0
 
