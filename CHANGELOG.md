@@ -9,7 +9,7 @@ Documentation for hipBLAS is available at
 
 * Updated build dependencies
 
-### Fixed
+### Resolved issues
 
 * Fixed Windows reference library interface for rocSOLVER functions for hipBLAS clients
 
