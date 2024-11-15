@@ -3,6 +3,16 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
+## (Unreleased) hipBLAS 2.4.0
+
+### Changed
+
+* Updated build dependencies
+
+### Resolved issues
+
+* Fixed Windows reference library interface for rocSOLVER functions for hipBLAS clients
+
 ## hipBLAS 2.3.0 for ROCm 6.3.0
 
 ### Added
