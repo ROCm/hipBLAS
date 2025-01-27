@@ -182,6 +182,9 @@ Similarly, if CUDA cuBLAS is the backend, see the cuBLAS documentation.
 hipBLAS types
 *************
 
+For information about the ``hipblasStatus_t``, ``hipblasComputeType_t``, and ``hipblasOperation_t`` enumerations,
+see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/develop/library/include/hipblas-common.h>`_ GitHub repository.
+
 Definitions
 ===========
 
@@ -219,11 +222,16 @@ Enumeration constants have numbering that is consistent with CBLAS, ACML, and mo
 
 hipblasStatus_t
 -----------------
-.. doxygenenum:: hipblasStatus_t
+
+For information about ``hipblasStatus_t``,
+see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/develop/library/include/hipblas-common.h>`_ GitHub repository.
 
 hipblasOperation_t
 ------------------
-.. doxygenenum:: hipblasOperation_t
+
+For information about ``hipblasOperation_t``,
+see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/develop/library/include/hipblas-common.h>`_ GitHub repository.
+
 
 hipblasPointerMode_t
 --------------------
@@ -247,7 +255,10 @@ hipblasDatatype_t
 
 hipblasComputeType_t
 --------------------
-.. doxygenenum:: hipblasComputeType_t
+
+For information about ``hipblasComputeType_t``,
+see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/develop/library/include/hipblas-common.h>`_ GitHub repository.
+
 
 hipblasGemmAlgo_t
 ------------------
