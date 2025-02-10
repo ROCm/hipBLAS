@@ -8,7 +8,7 @@
 Installing and building for Microsoft Windows
 *********************************************
 
-This topic covers how to install hipBLAS on Windows from a package and how to build and install it from the source code.
+This topic covers how to install hipBLAS on Microsoft Windows from a package and how to build and install it from the source code.
 For a list of installation prerequisites, see :doc:`hipBLAS prerequisites <prerequisites>`.
 
 Installing prebuilt packages
@@ -71,7 +71,7 @@ You can add the SDK tools to your path with an entry such as:
 Building the library and library dependencies
 ---------------------------------------------
 
-The root of the hipBLAS repository includes a helper Python script named ``rmake.py`` that lets you build and install hipBLAS
+The root of the hipBLAS repository includes a helper Python script named ``rmake.py`` which lets you build and install hipBLAS
 with a single command. It accepts several options but has a hard-coded configuration
 that you can override by invoking ``cmake`` directly. However, it's a great way to get started quickly and serves
 as an example of how to build and install hipBLAS.
@@ -88,7 +88,7 @@ in this table:
    "``python3 rmake.py -d``", "Build the library dependencies and library in your local directory. The ``-d`` flag only has to be used once. For subsequent invocations of ``rmake.py`` it's not necessary to rebuild the dependencies."
    "``python3 rmake.py``", "Build the library in your local directory. It is assumed the dependencies have been built."
    "``python3 rmake.py -i``", "Build the library, then build and install the hipBLAS package in ``C:\\hipSDK``. You will be prompted for admin access. This installs it for all users. To restrict hipBLAS to your local directory, do not use the ``-i`` flag."
-   "``python3 rmake.py -n``", "Build the library without the functionality provided by rocSOLVER. The rocSOLVER, rocSPARSE, and rocPRIM dependencies will not be required. This flag has no effect when building with a CUDA backend."
+   "``python3 rmake.py -n``", "Build the library without the functionality provided by rocSOLVER. The rocSOLVER, rocSPARSE, and rocPRIM dependencies will not be required. This flag has no effect when building with a NVIDIA CUDA backend."
 
 
 Building the library, client, and library and client dependencies
