@@ -8,8 +8,8 @@
 hipBLAS documentation
 ********************************************************************
 
-hipBLAS is a Basic Linear Algebra Subprograms (BLAS) marshaling library with
-support for multiple backends. It lies between the application and a "worker" BLAS library,
+hipBLAS is a Basic Linear Algebra Subprograms (BLAS) marshaling library that
+supports multiple backends. It lies between the application and a "worker" BLAS library,
 marshalling inputs into the backend library and results back to the application.
 hipBLAS exports an interface that does not require client changes, regardless of the
 chosen backend. Currently, it supports :doc:`rocBLAS <rocblas:index>` and

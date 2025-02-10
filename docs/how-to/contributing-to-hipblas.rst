@@ -1,6 +1,6 @@
 .. meta::
   :description: How to contribute to hipBLAS
-  :keywords: hipBLAS, rocBLAS, BLAS, ROCm, API, Linear Algebra, documentation, contribution
+  :keywords: hipBLAS, rocBLAS, BLAS, ROCm, API, contribution
 
 .. _contribute:
 
@@ -9,15 +9,15 @@ Contributing to hipBLAS
 ********************************************************************
 
 This topic explains how to contribute to the hipBLAS code base, including coding
-and pull request (PR) guidelines, along with information on static code analysis.
+and pull request (PR) guidelines and information about static code analysis.
 
 Pull request guidelines
 =======================
 
 The hipBLAS code contribution guidelines closely follow the `GitHub
 pull requests <https://help.github.com/articles/using-pull-requests/>`__ model.
-The hipBLAS repository follows a workflow which dictates a ``release`` branch, from which releases are cut, and a
-``develop`` branch which serves as an integration branch for new code. Pull requests should
+The hipBLAS repository follows a workflow that dictates a ``release`` branch, from which releases are cut, and a
+``develop`` branch, which serves as an integration branch for new code. Pull requests should
 adhere to these guidelines:
 
 *  Target the **develop** branch for integration.
@@ -29,7 +29,7 @@ adhere to these guidelines:
 Coding guidelines:
 ==================
 
-*  Do not use unnamed namespaces inside of header files.
+*  Don't use unnamed namespaces inside of header files.
 *  Use either ``template`` or ``inline`` (or both) for functions defined outside of classes in header files.
 *  Do not declare namespace-scope (not ``class``-scope) functions ``static`` inside of header files
    unless:
@@ -44,7 +44,7 @@ Coding guidelines:
       ``static`` ``class`` member functions defined in header files are okay.
 
 *  Use ``static`` for ``constexpr`` ``template`` variables until C++17. After C++17,
-   ``constexpr`` variables become ``inline`` variables, and can therefore be defined in multiple compilation units.
+   ``constexpr`` variables become ``inline`` variables and can be defined in multiple compilation units.
    It is okay if the ``constexpr`` variables remain ``static`` in C++17, but it means there might
    be some redundancy between compilation units.
 
@@ -52,7 +52,7 @@ Code format
 -----------
 
 C and C++ code is formatted using ``clang-format``. To run ``clang-format``,
-use the version in the ``/opt/rocm/llvm/bin`` directory. Do not use your
+use the version in the ``/opt/rocm/llvm/bin`` directory. Don't use your
 system's built-in ``clang-format``, because it might be an older version that
 could generate different results.
 

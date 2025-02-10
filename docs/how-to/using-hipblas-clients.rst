@@ -42,7 +42,7 @@ as shown in the output below:
    transA,transB,M,N,K,alpha,lda,ldb,beta,ldc,hipblas-Gflops,us
    N,N,4096,4096,4096,1,4096,4096,0,4096,11941.5,11509.4
 
-A useful way of finding the parameters that can be used with ``./hipblas-bench -f gemm`` is to turn on logging
+A helpful way of finding the parameters that can be used with ``./hipblas-bench -f gemm`` is to turn on logging
 by setting the environment variable ``ROCBLAS_LAYER=2``. For example, if you run this command:
 
 .. code-block:: bash
@@ -70,13 +70,13 @@ then run the command without logging enabled to measure performance.
    hipblas-bench also provides the flag ``-v 1`` for correctness checks.
 
 If multiple arguments or functions need to be benchmarked,
-hipblas-bench provides support for data-driven benchmarks using a YAML-format specification file.
+hipblas-bench supports data-driven benchmarks using a YAML-format specification file.
 
 .. code-block:: bash
 
    ./hipblas-bench --yaml <file>.yaml
 
-As an example, ``hipblas_smoke.yaml`` is a YAML file that is used to run a smoke test.
+For example, ``hipblas_smoke.yaml`` is a YAML file used to run a smoke test.
 However, other examples can be found in the `rocBLAS <https://github.com/ROCm/rocBLAS>`_ GitHub repository.
 
 hipblas-test

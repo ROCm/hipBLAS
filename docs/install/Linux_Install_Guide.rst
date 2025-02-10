@@ -8,17 +8,17 @@
 Installing and building for Linux
 ***********************************
 
-This topic discusses how to install hipBLAS from a package and how to build and install it from the source code.
+This topic discusses how to install hipBLAS on Linux from a package and how to build and install it from the source code.
 For a list of installation prerequisites, see :doc:`hipBLAS prerequisites <prerequisites>`.
 
-Installing pre-built packages
+Installing prebuilt packages
 =============================
 
-You can manually download the pre-built hipBLAS packages from :doc:`ROCm's native package manager <rocm-install-on-linux:install/quick-start>`
+You can manually download the prebuilt hipBLAS packages from the :doc:`ROCm native package manager <rocm-install-on-linux:install/quick-start>`
 or by clicking the `GitHub releases tab <https://github.com/ROCm/hipBLAS/releases>`_.
 The versions on GitHub might be more recent. Release notes are available for each release on the releases tab.
 
-To download the pre-built package, use this command:
+To download the prebuilt package, use this command:
 
 .. code-block:: shell
 
@@ -28,16 +28,16 @@ Building hipBLAS from source
 ============================
 
 When building hipBLAS from source, you can choose to build only the library and its dependencies or include the client and its
-dependencies as well.
+dependencies.
 
 Building the library and library dependencies
 ---------------------------------------------
 
-The root directory of this repository contains the helper Python script ``rmake.py`` that lets you build and install
+The root directory of this repository contains the helper Python script ``rmake.py`` which lets you build and install
 hipBLAS with a single command. It accepts several options but has a hard-coded configuration
 that you can override by invoking ``cmake`` directly. However, it's a great way to get started quickly and
 serves as an example of how to build and install hipBLAS.
-A few commands in the script require ``sudo`` access, so it might prompt you for a password.
+A few commands in the script require ``sudo`` access, which might prompt you for a password.
 
 The install script determines the build platform by querying ``hipconfig --platform``. This value can be explicitly defined
 by setting the environment variable ``HIP_PLATFORM`` to ``HIP_PLATFORM=amd`` or ``HIP_PLATFORM=nvidia``.
@@ -53,7 +53,7 @@ in this table.
    "``python3 rmake.py -d``", "Build the library dependencies and library in your local directory. The ``-d`` flag only has to be used once. For subsequent invocations of ``rmake.py``, it is not necessary to rebuild the dependencies."
    "``python3 rmake.py``", "Build the library in your local directory. It is assumed the dependencies have been built."
    "``python3 rmake.py -i``", "Build the library, then build and  install the hipBLAS package in  ``/opt/rocm/hipblas``. You will be prompted for sudo access. This installs it for all users. To restrict hipBLAS to your local directory, do not use the  ``-i`` flag. "
-   "``python3 rmake.py -n``", "Build the library without the functionality provided by rocSOLVER. The rocSOLVER, rocSPARSE, and rocPRIM dependencies will not be required. This flag has no effect when building with a CUDA backend."
+   "``python3 rmake.py -n``", "Build the library without the functionality provided by rocSOLVER. The rocSOLVER, rocSPARSE, and rocPRIM dependencies will not be required. This flag has no effect when building with a NVIDIA CUDA backend."
 
 Building the library, client, and all dependencies
 -------------------------------------------------------------------
@@ -140,7 +140,7 @@ These clients have the following dependencies:
 * `LAPACK <https://github.com/Reference-LAPACK>`_: LAPACK itself adds a dependency on a Fortran compiler
 * `GoogleTest <https://github.com/google/googletest>`_
 
-Unfortunately, GoogleTest and LAPACK are more difficult to install. Many distributions
+GoogleTest and LAPACK are more difficult to install. Many distributions
 do not provide a GoogleTest package with pre-compiled libraries,
 and the LAPACK packages do not have the necessary CMake config files for CMake to link to the library.
 hipBLAS provides a CMake script that builds these dependencies from source.

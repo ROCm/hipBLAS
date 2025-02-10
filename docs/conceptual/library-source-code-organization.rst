@@ -8,7 +8,7 @@
 Library source code organization
 **********************************
 
-The hipBLAS code is split into several parts:
+The hipBLAS code is split into the following sections:
 
 * The ``library`` directory, which contains all source code for the library
 * The ``clients`` directory, which contains all test code and the code to build clients
@@ -78,7 +78,7 @@ Infrastructure
 The following utilities support the hipBLAS infrastructure:
 
 *  CMake is used to build and package hipBLAS. There are ``CMakeLists.txt`` files throughout the code.
-*  Doxygen, Breathe, Sphinx, and ReadTheDocs are used to generate the documentation. The following sources supply
+*  Doxygen, Breathe, Sphinx, and ReadTheDocs generate the documentation. The following sources supply
    content for the documentation:
 
    *  Doxygen comments in the include files in the ``library/include`` directory 

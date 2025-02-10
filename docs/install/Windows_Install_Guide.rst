@@ -4,17 +4,17 @@
 
 .. _windows-install:
 
-***********************************
-Installing and building for Windows
-***********************************
+*********************************************
+Installing and building for Microsoft Windows
+*********************************************
 
 This topic covers how to install hipBLAS on Windows from a package and how to build and install it from the source code.
 For a list of installation prerequisites, see :doc:`hipBLAS prerequisites <prerequisites>`.
 
-Installing pre-built packages
+Installing prebuilt packages
 =============================
 
-hipBLAS can be installed on Windows 10 or 11 using the AMD HIP SDK installer.
+hipBLAS can be installed on Windows 10 or 11 using the :doc:`AMD HIP SDK installer <rocm-install-on-windows:index>`.
 
 The simplest way to use hipBLAS in your code is to use CMake. To install hipBLAS on Windows, follow these steps:
 
@@ -35,14 +35,14 @@ The simplest way to use hipBLAS in your code is to use CMake. To install hipBLAS
 Building and installing hipBLAS
 ===============================
 
-Most users do not need to build hipBLAS from source because it can be used after installing the pre-built packages as described above.
+Most users do not need to build hipBLAS from source because it can be used after installing the prebuilt packages as described above.
 If necessary, users can follow these instructions to build hipBLAS from source.
 
 Download the hipBLAS source code
 --------------------------------
 
 The hipBLAS source code is available on the `hipBLAS GitHub <https://github.com/ROCm/hipBLAS>`_.
-The version of the ROCm HIP SDK might be shown in the default installation path,
+The ROCm HIP SDK version might be shown in the default installation path,
 but you can run the HIP SDK compiler to display the version from the ``bin/`` folder:
 
 ::
@@ -75,7 +75,7 @@ The root of the hipBLAS repository includes a helper Python script named ``rmake
 with a single command. It accepts several options but has a hard-coded configuration
 that you can override by invoking ``cmake`` directly. However, it's a great way to get started quickly and serves
 as an example of how to build and install hipBLAS.
-A few commands in the script require administrator access, so it might prompt you for a password.
+A few commands in the script require administrator access, so you might be prompted for a password.
 
 Common examples showing how to use ``rmake.py`` to build the library dependencies and library are listed
 in this table:
