@@ -38,7 +38,7 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
     platform.runCommand(this, command)
 }
 
-def runTestCommand (platform, project, boolean rocmExamples)
+def runTestCommand (platform, project, boolean rocmExamples=false)
 {
     String sudo = auxiliary.sudo(platform.jenkinsLabel)
     String stagingDir = "${project.paths.project_build_prefix}/build/release/clients/staging"
