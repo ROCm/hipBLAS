@@ -3,7 +3,7 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.4.0
+## hipBLAS 2.4.0 for ROCm 6.4.0
 
 ### Changed
 
