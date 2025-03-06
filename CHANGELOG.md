@@ -7,7 +7,7 @@ Documentation for hipBLAS is available at
 
 ### Added
 
-* Added hipblasSetWorkspace() API
+* Added the `hipblasSetWorkspace()` API
 
 ### Changed
 
@@ -19,12 +19,12 @@ Documentation for hipBLAS is available at
 
 ### Resolved issues
 
-* Build time `CMake` configuration for dependency on `hipBLAS-common` fixed
+* The build time `CMake` configuration for the dependency on `hipBLAS-common` is fixed
 
 ### Upcoming changes
 
-* Deprecated hipblasDatatype_t will be replaced with hipDataType in the near future as announced in hipBLAS 2.0.0
-* Deprecated hipblasComplex types will be replaced with hipComplex types in the near future as announced in hipBLAS 2.0.0
+* The deprecated `hipblasDatatype_t` will be replaced with `hipDataType` in the near future, as announced in hipBLAS 2.0.0
+* The deprecated `hipblasComplex` types will be replaced with `hipComplex` types in the near future, as announced in hipBLAS 2.0.0
 
 ##  hipBLAS 2.4.0 for ROCm 6.4.0
 
