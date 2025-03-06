@@ -3,7 +3,30 @@
 Documentation for hipBLAS is available at
 [https://rocm.docs.amd.com/projects/hipBLAS/en/latest/](https://rocm.docs.amd.com/projects/hipBLAS/en/latest/).
 
-## (Unreleased) hipBLAS 2.4.0
+## (Unreleased) hipBLAS 2.5.0
+
+### Added
+
+* Added hipblasSetWorkspace() API
+
+### Changed
+
+* Documentation updates
+
+### Removed
+
+* Support code for non-production gfx targets
+
+### Resolved issues
+
+* Build time `CMake` configuration for dependency on `hipBLAS-common` fixed
+
+### Upcoming changes
+
+* Deprecated hipblasDatatype_t will be replaced with hipDataType in the near future as announced in hipBLAS 2.0.0
+* Deprecated hipblasComplex types will be replaced with hipComplex types in the near future as announced in hipBLAS 2.0.0
+
+##  hipBLAS 2.4.0 for ROCm 6.4.0
 
 ### Changed
 
