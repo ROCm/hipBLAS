@@ -2483,34 +2483,6 @@ catch(...)
 }
 
 hipblasStatus_t hipblasCcopy(
-    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy)
-try
-{
-    return hipblasConvertStatus(
-        cublasCcopy((cublasHandle_t)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
-}
-catch(...)
-{
-    return hipblas_exception_to_status();
-}
-
-hipblasStatus_t hipblasZcopy(hipblasHandle_t             handle,
-                             int                         n,
-                             const hipblasDoubleComplex* x,
-                             int                         incx,
-                             hipblasDoubleComplex*       y,
-                             int                         incy)
-try
-{
-    return hipblasConvertStatus(cublasZcopy(
-        (cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
-}
-catch(...)
-{
-    return hipblas_exception_to_status();
-}
-
-hipblasStatus_t hipblasCcopy_v2(
     hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy)
 try
 {
@@ -2522,7 +2494,7 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
-hipblasStatus_t hipblasZcopy_v2(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZcopy(hipblasHandle_t         handle,
                                 int                     n,
                                 const hipDoubleComplex* x,
                                 int                     incx,
@@ -2569,47 +2541,7 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
-hipblasStatus_t hipblasCcopy_64(hipblasHandle_t       handle,
-                                int64_t               n,
-                                const hipblasComplex* x,
-                                int64_t               incx,
-                                hipblasComplex*       y,
-                                int64_t               incy)
-try
-{
-#if CUBLAS_VER_MAJOR >= 12
-    return hipblasConvertStatus(
-        cublasCcopy_64((cublasHandle_t)handle, n, (cuComplex*)x, incx, (cuComplex*)y, incy));
-#else
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
-}
-catch(...)
-{
-    return hipblas_exception_to_status();
-}
-
-hipblasStatus_t hipblasZcopy_64(hipblasHandle_t             handle,
-                                int64_t                     n,
-                                const hipblasDoubleComplex* x,
-                                int64_t                     incx,
-                                hipblasDoubleComplex*       y,
-                                int64_t                     incy)
-try
-{
-#if CUBLAS_VER_MAJOR >= 12
-    return hipblasConvertStatus(cublasZcopy_64(
-        (cublasHandle_t)handle, n, (cuDoubleComplex*)x, incx, (cuDoubleComplex*)y, incy));
-#else
-    return HIPBLAS_STATUS_NOT_SUPPORTED;
-#endif
-}
-catch(...)
-{
-    return hipblas_exception_to_status();
-}
-
-hipblasStatus_t hipblasCcopy_v2_64(hipblasHandle_t   handle,
+hipblasStatus_t hipblasCcopy_64(hipblasHandle_t   handle,
                                    int64_t           n,
                                    const hipComplex* x,
                                    int64_t           incx,
@@ -2629,7 +2561,7 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
-hipblasStatus_t hipblasZcopy_v2_64(hipblasHandle_t         handle,
+hipblasStatus_t hipblasZcopy_64(hipblasHandle_t         handle,
                                    int64_t                 n,
                                    const hipDoubleComplex* x,
                                    int64_t                 incx,

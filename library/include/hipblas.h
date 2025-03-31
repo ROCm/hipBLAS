@@ -2274,19 +2274,9 @@ HIPBLAS_EXPORT hipblasStatus_t
     hipblasDcopy(hipblasHandle_t handle, int n, const double* x, int incx, double* y, int incy);
 
 HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy(
-    hipblasHandle_t handle, int n, const hipblasComplex* x, int incx, hipblasComplex* y, int incy);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t             handle,
-                                            int                         n,
-                                            const hipblasDoubleComplex* x,
-                                            int                         incx,
-                                            hipblasDoubleComplex*       y,
-                                            int                         incy);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_v2(
     hipblasHandle_t handle, int n, const hipComplex* x, int incx, hipComplex* y, int incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_v2(hipblasHandle_t         handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy(hipblasHandle_t         handle,
                                                int                     n,
                                                const hipDoubleComplex* x,
                                                int                     incx,
@@ -2300,28 +2290,14 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScopy_64(
 HIPBLAS_EXPORT hipblasStatus_t hipblasDcopy_64(
     hipblasHandle_t handle, int64_t n, const double* x, int64_t incx, double* y, int64_t incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_64(hipblasHandle_t       handle,
-                                               int64_t               n,
-                                               const hipblasComplex* x,
-                                               int64_t               incx,
-                                               hipblasComplex*       y,
-                                               int64_t               incy);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_64(hipblasHandle_t             handle,
-                                               int64_t                     n,
-                                               const hipblasDoubleComplex* x,
-                                               int64_t                     incx,
-                                               hipblasDoubleComplex*       y,
-                                               int64_t                     incy);
-
-HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_v2_64(hipblasHandle_t   handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasCcopy_64(hipblasHandle_t   handle,
                                                   int64_t           n,
                                                   const hipComplex* x,
                                                   int64_t           incx,
                                                   hipComplex*       y,
                                                   int64_t           incy);
 
-HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_v2_64(hipblasHandle_t         handle,
+HIPBLAS_EXPORT hipblasStatus_t hipblasZcopy_64(hipblasHandle_t         handle,
                                                   int64_t                 n,
                                                   const hipDoubleComplex* x,
                                                   int64_t                 incx,
@@ -35123,11 +35099,6 @@ HIPBLAS_EXPORT hipblasStatus_t hipblasScalStridedBatchedEx_v2_64(hipblasHandle_t
 #define hipblasZaxpyStridedBatched hipblasZaxpyStridedBatched_v2
 #define hipblasCaxpyStridedBatched_64 hipblasCaxpyStridedBatched_v2_64
 #define hipblasZaxpyStridedBatched_64 hipblasZaxpyStridedBatched_v2_64
-
-#define hipblasCcopy hipblasCcopy_v2
-#define hipblasZcopy hipblasZcopy_v2
-#define hipblasCcopy_64 hipblasCcopy_v2_64
-#define hipblasZcopy_64 hipblasZcopy_v2_64
 
 #define hipblasCcopyBatched hipblasCcopyBatched_v2
 #define hipblasZcopyBatched hipblasZcopyBatched_v2
