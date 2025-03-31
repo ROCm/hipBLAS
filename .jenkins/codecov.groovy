@@ -114,6 +114,6 @@ ci: {
             properties(auxiliary.addCommonProperties(property))
     }
 
-    String hostBuildCommand = './install.sh -k -c'
+    String hostBuildCommand = './install.sh -k --codecoverage -c'
     setupCI(urlJobName, jobNameList, hostBuildCommand, runCI, 'g++')
 }
