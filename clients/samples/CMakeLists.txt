@@ -1,5 +1,5 @@
 # ########################################################################
-# Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+# Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -72,8 +72,7 @@ if(HIP_PLATFORM STREQUAL amd)
 endif()
 
 target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
-target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF -DHIPBLAS_V2 )
-target_compile_options( hipblas-example-scal-ex-v2 PRIVATE -DHIPBLAS_V2)
+target_compile_options( hipblas-example-gemmEx_v2 PRIVATE -DHIPBLAS_USE_HIP_HALF )
 
 # HIP on Windows: xhip is required with clang++ to get __half defined
 if ( WIN32 )

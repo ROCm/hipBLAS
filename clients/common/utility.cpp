@@ -80,12 +80,12 @@ char type2char<double>()
 }
 
 //  template<>
-//  char type2char<hipblasComplex>(){
+//  char type2char<hipComplex>(){
 //      return 'c';
 //  }
 
 //  template<>
-//  char type2char<hipblasDoubleComplex>(){
+//  char type2char<hipDoubleComplex>(){
 //      return 'z';
 //  }
 
@@ -102,15 +102,15 @@ int type2int<double>(double val)
 }
 
 template <>
-int type2int<hipblasComplex>(hipblasComplex val)
+int type2int<hipComplex>(hipComplex val)
 {
-    return (int)val.real();
+    return (int)hipblasReal(val);
 }
 
 template <>
-int type2int<hipblasDoubleComplex>(hipblasDoubleComplex val)
+int type2int<hipDoubleComplex>(hipDoubleComplex val)
 {
-    return (int)val.real();
+    return (int)hipblasReal(val);
 }
 
 /* ============================================================================================ */

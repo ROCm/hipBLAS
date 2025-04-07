@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,15 +76,8 @@ void testing_set_get_matrix_async(const Arguments& arg)
     hipblas_init<T>(ha, rows, cols, lda);
     hipblas_init<T>(hb, rows, cols, ldb);
     hb_ref = hb;
-    for(int i = 0; i < cols * ldc; i++)
-    {
-        hc[i] = 100 + i;
-    };
-    CHECK_HIP_ERROR(hipMemcpy(dc, hc.data(), sizeof(T) * ldc * cols, hipMemcpyHostToDevice));
-    for(int i = 0; i < cols * ldc; i++)
-    {
-        hc[i] = 99.0;
-    };
+
+    CHECK_HIP_ERROR(hipMemset(dc, 100, sizeof(T) * ldc * cols));
 
     /* =====================================================================
            HIPBLAS

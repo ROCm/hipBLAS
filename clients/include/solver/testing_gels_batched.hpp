@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -245,8 +245,8 @@ void testing_gels_batched(const Arguments& arg)
     host_batch_matrix<T> hA(M, N, lda, batch_count);
     host_batch_matrix<T> hB(M, nrhs, ldb, batch_count);
     host_batch_matrix<T> hB_res(M, nrhs, ldb, batch_count);
-    host_vector<T>       info_res(batch_count);
-    host_vector<T>       info(batch_count);
+    host_vector<int>       info_res(batch_count);
+    host_vector<int>       info(batch_count);
     int                  info_input(-1);
 
     // Check host memory allocation

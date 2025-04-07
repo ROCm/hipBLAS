@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -178,7 +178,9 @@ void hipblas_init_matrix(hipblas_matrix_type matrix_type, const char uplo, T ran
                 {
                     auto value = rand_gen();
                     if(i == j)
-                        A[j + i * lda] = hipblas_real(value);
+                    {
+                        A[j + i * lda] = hipblasSetReal<T>(hipblasReal(value));
+                    }
                     else if(uplo == 'U')
                     {
                         A[j + i * lda] = value;
@@ -192,7 +194,7 @@ void hipblas_init_matrix(hipblas_matrix_type matrix_type, const char uplo, T ran
                     else
                     {
                         A[j + i * lda] = value;
-                        A[i + j * lda] = hipblas_conjugate(value);
+                        A[i + j * lda] = hipblasConj(value);
                     }
                 }
         }
@@ -358,7 +360,9 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
                     auto value = T(seedReset ? cos(i + j * N) : sin(i + j * N));
 
                     if(i == j)
-                        A[j + i * lda] = hipblas_real(value);
+                    {
+                        A[j + i * lda] = hipblasSetReal<T>(hipblasReal(value));
+                    }
                     else if(uplo == 'U')
                     {
                         A[j + i * lda] = value;
@@ -372,7 +376,7 @@ void hipblas_init_matrix_trig(hipblas_matrix_type matrix_type,
                     else
                     {
                         A[j + i * lda] = value;
-                        A[i + j * lda] = hipblas_conjugate(value);
+                        A[i + j * lda] = hipblasConj(value);
                     }
                 }
         }

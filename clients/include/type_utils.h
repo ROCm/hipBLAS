@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,117 @@
 
 #ifdef __cplusplus
 
+/* =============================================================================================== */
+/* Complex / real helpers.                                                                         */
+template <typename T>
+static constexpr bool is_complex = false;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipComplex> = true;
+
+template <>
+HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipDoubleComplex> = true;
+
+// Get base types from complex types.
+template <typename T, typename = void>
+struct real_t_impl
+{
+    using type = T;
+};
+
+template <typename T>
+struct real_t_impl<T, std::enable_if_t<std::is_same_v<T, hipComplex>>>
+{
+    using type = float;
+};
+
+template <typename T>
+struct real_t_impl<T, std::enable_if_t<std::is_same_v<T, hipDoubleComplex>>>
+{
+    using type = double;
+};
+
+template <typename T>
+struct real_t_impl<std::complex<T>>
+{
+    using type = T;
+};
+
+template <typename T>
+using real_t = typename real_t_impl<T>::type;
+
+template <typename T>
+inline real_t<T> hipblasReal(T& x)
+{
+    return x;
+}
+
+template <>
+inline float hipblasReal(hipComplex& x)
+{
+    return hipCrealf(x);
+}
+
+template <>
+inline double hipblasReal(hipDoubleComplex& x)
+{
+    return hipCreal(x);
+}
+
+template <typename T>
+inline real_t<T> hipblasImag(T& x)
+{
+    return real_t<T>(0);
+}
+
+template <>
+inline float hipblasImag(hipComplex& x)
+{
+    return hipCimagf(x);
+}
+
+template <>
+inline double hipblasImag(hipDoubleComplex& x)
+{
+    return hipCimag(x);
+}
+
+template <typename T>
+inline T hipblasSetReal(real_t<T> r)
+{
+    return r;
+}
+
+template <>
+inline hipComplex hipblasSetReal(float r)
+{
+    return {r, 0};
+}
+
+template <>
+inline hipDoubleComplex hipblasSetReal(double r)
+{
+    return {r, 0};
+}
+
+template <typename T>
+inline T hipblasConj(const T& z)
+{
+    return z;
+}
+
+template <typename T>
+inline hipComplex hipblasConj(const hipComplex& z)
+{
+    return hipConjf(z);
+}
+
+template <typename T>
+inline hipDoubleComplex hipblasConj(const hipDoubleComplex& z)
+{
+    return hipConj(z);
+}
+
 // Return true if value is NaN
 template <typename T>
 inline bool hipblas_isnan(T)
@@ -62,13 +173,13 @@ inline bool hipblas_isnan(hipblasHalf arg)
     auto half_data = static_cast<unsigned short>(arg);
     return (~(half_data)&0x7c00) == 0 && (half_data & 0x3ff) != 0;
 }
-inline bool hipblas_isnan(hipblasComplex arg)
+inline bool hipblas_isnan(hipComplex arg)
 {
-    return std::isnan(arg.real()) || std::isnan(arg.imag());
+    return std::isnan(hipblasReal(arg)) || std::isnan(hipblasImag(arg));
 }
-inline bool hipblas_isnan(hipblasDoubleComplex arg)
+inline bool hipblas_isnan(hipDoubleComplex arg)
 {
-    return std::isnan(arg.real()) || std::isnan(arg.imag());
+    return std::isnan(hipblasReal(arg)) || std::isnan(hipblasImag(arg));
 }
 
 inline hipblasHalf float_to_half(float val)
@@ -168,12 +279,12 @@ inline float hipblas_abs(const float& x)
     return x < 0 ? -x : x;
 }
 
-inline double hipblas_abs(const hipblasComplex& x)
+inline double hipblas_abs(const hipComplex& x)
 {
     return std::abs(reinterpret_cast<const std::complex<float>&>(x));
 }
 
-inline double hipblas_abs(const hipblasDoubleComplex& x)
+inline double hipblas_abs(const hipDoubleComplex& x)
 {
     return std::abs(reinterpret_cast<const std::complex<double>&>(x));
 }
@@ -186,66 +297,6 @@ inline int hipblas_abs(const int& x)
 inline int64_t hipblas_abs(const int64_t& x)
 {
     return x < 0 ? -x : x;
-}
-
-/* =============================================================================================== */
-/* Complex / real helpers.                                                                         */
-template <typename T>
-static constexpr bool is_complex = false;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipblasComplex> = true;
-
-template <>
-HIPBLAS_CLANG_STATIC constexpr bool is_complex<hipblasDoubleComplex> = true;
-
-// Get base types from complex types.
-template <typename T, typename = void>
-struct real_t_impl
-{
-    using type = T;
-};
-
-template <typename T>
-struct real_t_impl<T, std::enable_if_t<is_complex<T>>>
-{
-    using type = decltype(T{}.real());
-};
-
-template <typename T>
-struct real_t_impl<std::complex<T>>
-{
-    using type = T;
-};
-
-template <typename T>
-using real_t = typename real_t_impl<T>::type;
-
-// Conjugate a value. For most types, simply return argument; for
-// hipblasComplex and hipblasDoubleComplex, return std::conj(z)
-template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
-__device__ __host__ inline T hipblas_conjugate(const T& z)
-{
-    return z;
-}
-
-template <typename T, std::enable_if_t<is_complex<T>, int> = 0>
-__device__ __host__ inline T hipblas_conjugate(const T& z)
-{
-    return std::conj(z);
-}
-
-// hipblasComplex and hipblasDoubleComplex, return real
-template <typename T, std::enable_if_t<!is_complex<T>, int> = 0>
-__device__ __host__ inline T hipblas_real(const T& z)
-{
-    return z;
-}
-
-template <typename T, std::enable_if_t<is_complex<T>, int> = 0>
-__device__ __host__ inline T hipblas_real(const T& z)
-{
-    return std::real(z);
 }
 
 #endif // __cplusplus

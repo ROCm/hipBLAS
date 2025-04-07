@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -205,7 +205,9 @@ void testing_trtri_strided_batched(const Arguments& arg)
                 if(i == j)
                 {
                     if(diag == HIPBLAS_DIAG_UNIT)
-                        hA[b][i + j * lda] = 1.0;
+                    {
+                        hA[b][i + j * lda] = hipblasSetReal<T>(1.0);
+                    }
                     else
                         hA[b][i + j * lda] *= 100.0;
                 }

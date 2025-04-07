@@ -176,7 +176,7 @@ rocblas_datatype hipblasConvertDatatype(hipDataType type)
     case HIP_C_64F:
         return rocblas_datatype_f64_c;
 
-    case HIP_R_8I:f
+    case HIP_R_8I:
         return rocblas_datatype_i8_r;
 
     case HIP_R_8U:
@@ -8612,7 +8612,7 @@ catch(...)
     return hipblas_exception_to_status();
 }
 
-hipblasStatus_t hipblasCgemvStridedBatchedhipblasHandle_t    handle,
+hipblasStatus_t hipblasCgemvStridedBatched(hipblasHandle_t    handle,
                                               hipblasOperation_t trans,
                                               int                m,
                                               int                n,

@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -80,15 +80,15 @@
 #define ASSERT_FLOAT_COMPLEX_EQ(a, b)        \
     do                                       \
     {                                        \
-        ASSERT_FLOAT_EQ(a.real(), b.real()); \
-        ASSERT_FLOAT_EQ(a.imag(), b.imag()); \
+        ASSERT_FLOAT_EQ(hipblasReal(a), hipblasReal(b)); \
+        ASSERT_FLOAT_EQ(hipblasImag(a), hipblasImag(b)); \
     } while(0)
 
 #define ASSERT_DOUBLE_COMPLEX_EQ(a, b)        \
     do                                        \
     {                                         \
-        ASSERT_DOUBLE_EQ(a.real(), b.real()); \
-        ASSERT_DOUBLE_EQ(a.imag(), b.imag()); \
+        ASSERT_DOUBLE_EQ(hipblasReal(a), hipblasReal(b)); \
+        ASSERT_DOUBLE_EQ(hipblasImag(a), hipblasImag(b)); \
     } while(0)
 
 template <>
@@ -118,28 +118,28 @@ void unit_check_general(int64_t M, int64_t N, int64_t lda, double* hCPU, double*
 
 template <>
 void unit_check_general(
-    int64_t M, int64_t N, int64_t lda, hipblasComplex* hCPU, hipblasComplex* hGPU)
+    int64_t M, int64_t N, int64_t lda, hipComplex* hCPU, hipComplex* hGPU)
 {
 #ifdef GOOGLE_TEST
     for(int64_t j = 0; j < N; j++)
         for(int64_t i = 0; i < M; i++)
         {
-            ASSERT_FLOAT_EQ(hCPU[i + j * lda].real(), hGPU[i + j * lda].real());
-            ASSERT_FLOAT_EQ(hCPU[i + j * lda].imag(), hGPU[i + j * lda].imag());
+            ASSERT_FLOAT_EQ(hipblasReal(hCPU[i + j * lda]), hipblasReal(hGPU[i + j * lda]));
+            ASSERT_FLOAT_EQ(hipblasImag(hCPU[i + j * lda]), hipblasImag(hGPU[i + j * lda]));
         }
 #endif
 }
 
 template <>
 void unit_check_general(
-    int64_t M, int64_t N, int64_t lda, hipblasDoubleComplex* hCPU, hipblasDoubleComplex* hGPU)
+    int64_t M, int64_t N, int64_t lda, hipDoubleComplex* hCPU, hipDoubleComplex* hGPU)
 {
 #ifdef GOOGLE_TEST
     for(int64_t j = 0; j < N; j++)
         for(int64_t i = 0; i < M; i++)
         {
-            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].real(), hGPU[i + j * lda].real());
-            ASSERT_DOUBLE_EQ(hCPU[i + j * lda].imag(), hGPU[i + j * lda].imag());
+            ASSERT_DOUBLE_EQ(hipblasReal(hCPU[i + j * lda]), hipblasReal(hGPU[i + j * lda]));
+            ASSERT_DOUBLE_EQ(hipblasImag(hCPU[i + j * lda]), hipblasImag(hGPU[i + j * lda]));
         }
 #endif
 }
@@ -208,8 +208,8 @@ void unit_check_general(int64_t          M,
                         int64_t          N,
                         int64_t          batch_count,
                         int64_t          lda,
-                        hipblasComplex** hCPU,
-                        hipblasComplex** hGPU)
+                        hipComplex** hCPU,
+                        hipComplex** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -219,8 +219,8 @@ void unit_check_general(int64_t                M,
                         int64_t                N,
                         int64_t                batch_count,
                         int64_t                lda,
-                        hipblasDoubleComplex** hCPU,
-                        hipblasDoubleComplex** hGPU)
+                        hipDoubleComplex** hCPU,
+                        hipDoubleComplex** hGPU)
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
@@ -286,8 +286,8 @@ void unit_check_general(int64_t                     M,
                         int64_t                     N,
                         int64_t                     batch_count,
                         int64_t                     lda,
-                        host_vector<hipblasComplex> hCPU[],
-                        host_vector<hipblasComplex> hGPU[])
+                        host_vector<hipComplex> hCPU[],
+                        host_vector<hipComplex> hGPU[])
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -297,8 +297,8 @@ void unit_check_general(int64_t                           M,
                         int64_t                           N,
                         int64_t                           batch_count,
                         int64_t                           lda,
-                        host_vector<hipblasDoubleComplex> hCPU[],
-                        host_vector<hipblasDoubleComplex> hGPU[])
+                        host_vector<hipDoubleComplex> hCPU[],
+                        host_vector<hipDoubleComplex> hGPU[])
 {
     UNIT_CHECK_B(M, N, batch_count, lda, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
@@ -358,8 +358,8 @@ void unit_check_general(int64_t         M,
                         int64_t         batch_count,
                         int64_t         lda,
                         hipblasStride   strideA,
-                        hipblasComplex* hCPU,
-                        hipblasComplex* hGPU)
+                        hipComplex* hCPU,
+                        hipComplex* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_FLOAT_COMPLEX_EQ);
 }
@@ -370,8 +370,8 @@ void unit_check_general(int64_t               M,
                         int64_t               batch_count,
                         int64_t               lda,
                         hipblasStride         strideA,
-                        hipblasDoubleComplex* hCPU,
-                        hipblasDoubleComplex* hGPU)
+                        hipDoubleComplex* hCPU,
+                        hipDoubleComplex* hGPU)
 {
     UNIT_CHECK(M, N, batch_count, lda, strideA, hCPU, hGPU, ASSERT_DOUBLE_COMPLEX_EQ);
 }
