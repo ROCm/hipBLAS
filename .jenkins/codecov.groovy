@@ -69,7 +69,7 @@ def runCI =
         commonGroovy.runPackageCommand(platform, project, jobName, label, "release-debug")
     }
 
-    buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, packageCommand)
+    buildProject(prj, formatCheck, nodes.dockerArray, compileCommand, testCommand, null)
 }
 
 def setupCI(urlJobName, jobNameList, buildCommand, runCI, label)
