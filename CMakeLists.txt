@@ -297,7 +297,7 @@ if(BUILD_CODE_COVERAGE)
     COMMAND chmod +x llvm-gcov.sh
     COMMAND lcov --directory ${CMAKE_BINARY_DIR} --base-directory ${CMAKE_SOURCE_DIR} --gcov-tool ${CMAKE_BINARY_DIR}/llvm-gcov.sh --capture -o lcoverage/raw_main_coverage.info
     COMMAND lcov --ignore-errors unused --remove lcoverage/raw_main_coverage.info "'/opt/*'" "'/usr/*'" -o lcoverage/main_coverage.info
-    COMMAND genhtml lcoverage/main_coverage.info --output-directory lcoverage
+    COMMAND genhtml lcoverage/main_coverage.info --output-directory lcoverage --prefix ${CMAKE_SOURCE_DIR}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
 
