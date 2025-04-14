@@ -30,11 +30,10 @@ def runCompileCommand(platform, project, jobName, boolean sameOrg=false)
 
     def command = """#!/usr/bin/env bash
                 set -x
-                pushd ${project.paths.project_build_prefix}
+                cd ${project.paths.project_build_prefix}
                 ${getDependenciesCommand}
                 ${centos}
                 LD_LIBRARY_PATH=/opt/rocm/lib ${project.paths.build_command}
-                popd
                 """
     platform.runCommand(this, command)
 }
@@ -55,9 +54,8 @@ def runTestCommand (platform, project)
     String gtestCommonEnv = "HIPBLAS_CLIENT_RAM_GB_LIMIT=95"
     def command = """#!/usr/bin/env bash
                     set -x
-                    pushd ${stagingDir}
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes
-                    popd
                 """
 
     platform.runCommand(this, command)
@@ -67,18 +65,16 @@ def runTestCommand (platform, project)
     // using hipblasDatatype_t, and hipblas_v2-test will be testing the upcoming interfaces.
     def v2TestCommand = """#!/usr/bin/env bash
                     set -x
-                    pushd ${stagingDir}
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas_v2-test --gtest_output=xml --gtest_color=yes
-                    popd
                 """
 
     platform.runCommand(this, v2TestCommand)
 
     def yamlTestCommand = """#!/usr/bin/env bash
                     set -x
-                    pushd ${stagingDir}
+                    cd ${stagingDir}
                     ${sudo} LD_LIBRARY_PATH=/opt/rocm/lib ${gtestCommonEnv} GTEST_LISTENER=NO_PASS_LINE_IN_LOG ./hipblas-test --gtest_output=xml --gtest_color=yes --yaml hipblas_smoke.yaml
-                    popd
                 """
     platform.runCommand(this, yamlTestCommand)
     junit "${stagingDir}/*.xml"
@@ -91,11 +87,10 @@ def runCoverageCommand (platform, project, String cmdDir = "release-debug")
 
     def command = """#!/usr/bin/env bash
                 set -x
-                pushd ${project.paths.project_build_prefix}/build/${cmdDir}
+                cd ${project.paths.project_build_prefix}/build/${cmdDir}
                 export LD_LIBRARY_PATH=/opt/rocm/lib/
                 ${centos7Workaround}
                 GTEST_LISTENER=NO_PASS_LINE_IN_LOG make coverage_cleanup coverage GTEST_FILTER=-*known_bug*
-                popd
             """
 
     platform.runCommand(this, command)
