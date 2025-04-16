@@ -288,20 +288,19 @@ if(BUILD_CODE_COVERAGE)
   # Prepare coverage output
   # This little script is generated because the option '--gcov-tool <program name>' of lcov cannot take arguments.
   #
-  add_custom_target(coverage_output
+  add_custom_target(coverage
     DEPENDS coverage_analysis
     COMMAND mkdir -p lcoverage
     COMMAND echo "\\#!/bin/bash" > llvm-gcov.sh
     COMMAND echo "\\# THIS FILE HAS BEEN GENERATED" >> llvm-gcov.sh
     COMMAND printf "exec /opt/rocm/llvm/bin/llvm-cov gcov $$\\@" >> llvm-gcov.sh
     COMMAND chmod +x llvm-gcov.sh
-    COMMAND lcov -v --directory . --base-directory . --gcov-tool ${CMAKE_BINARY_DIR}/llvm-gcov.sh --capture -o lcoverage/raw_main_coverage.info
-    COMMAND lcov -v --ignore-errors unused --remove lcoverage/raw_main_coverage.info "'/opt/*'" "'/usr/*'" -o lcoverage/main_coverage.info
-    COMMAND genhtml --ignore-errors source lcoverage/main_coverage.info --output-directory lcoverage --prefix ${CMAKE_SOURCE_DIR}
+    COMMAND lcov --verbose --directory . --base-directory . --gcov-tool ./llvm-gcov.sh --capture -o ./lcoverage/raw_main_coverage.info
+    COMMAND lcov --verbose --ignore-errors unused --remove ./lcoverage/raw_main_coverage.info "'/opt/*'" "'/usr/*'" -o ./lcoverage/main_coverage.info
+    COMMAND genhtml --ignore-errors source ./lcoverage/main_coverage.info --output-directory ./lcoverage --prefix ${CMAKE_SOURCE_DIR}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
 
-  add_custom_target(coverage DEPENDS coverage_output)
 
   #
   # Coverage cleanup
