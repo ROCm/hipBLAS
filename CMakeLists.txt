@@ -295,8 +295,13 @@ if(BUILD_CODE_COVERAGE)
     COMMAND echo "\\# THIS FILE HAS BEEN GENERATED" >> llvm-gcov.sh
     COMMAND printf "exec /opt/rocm/llvm/bin/llvm-cov gcov $$\\@" >> llvm-gcov.sh
     COMMAND chmod +x llvm-gcov.sh
-    COMMAND lcov --verbose --directory . --base-directory . --gcov-tool ./llvm-gcov.sh --capture -o ./lcoverage/raw_main_coverage.info
-    COMMAND lcov --verbose --ignore-errors unused --remove ./lcoverage/raw_main_coverage.info "'/opt/*'" "'/usr/*'" -o ./lcoverage/main_coverage.info
+    # source path substitute adjustment only for CI
+    get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
+    get_filename_component(GRANDPARENT_DIR ${PARENT_DIR} DIRECTORY)
+    set(base_path ${GRANDPARENT_DIR})
+    set(hash_path ${CMAKE_SOURCE_DIR})
+    COMMAND lcov --directory . --base-directory . --gcov-tool ./llvm-gcov.sh --capture --substitute 's#${base_path}#${hash_path}#g' -o ./lcoverage/raw_main_coverage.info
+    COMMAND lcov --ignore-errors unused --remove ./lcoverage/raw_main_coverage.info "'/opt/*'" "'/usr/*'" -o ./lcoverage/main_coverage.info
     COMMAND genhtml --ignore-errors source ./lcoverage/main_coverage.info --output-directory ./lcoverage --prefix ${CMAKE_SOURCE_DIR}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
