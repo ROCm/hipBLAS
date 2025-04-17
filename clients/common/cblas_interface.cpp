@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,14 +46,14 @@ extern "C" {
 
 void spotrf_(char* uplo, int64_t* m, float* A, int64_t* lda, int64_t* info);
 void dpotrf_(char* uplo, int64_t* m, double* A, int64_t* lda, int64_t* info);
-void cpotrf_(char* uplo, int64_t* m, hipblasComplex* A, int64_t* lda, int64_t* info);
-void zpotrf_(char* uplo, int64_t* m, hipblasDoubleComplex* A, int64_t* lda, int64_t* info);
+void cpotrf_(char* uplo, int64_t* m, std::complex<float>* A, int64_t* lda, int64_t* info);
+void zpotrf_(char* uplo, int64_t* m, std::complex<double>* A, int64_t* lda, int64_t* info);
 
 void sgetrf_(int64_t* m, int64_t* n, float* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 void dgetrf_(int64_t* m, int64_t* n, double* A, int64_t* lda, int64_t* ipiv, int64_t* info);
-void cgetrf_(int64_t* m, int64_t* n, hipblasComplex* A, int64_t* lda, int64_t* ipiv, int64_t* info);
+void cgetrf_(int64_t* m, int64_t* n, std::complex<float>* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 void zgetrf_(
-    int64_t* m, int64_t* n, hipblasDoubleComplex* A, int64_t* lda, int64_t* ipiv, int64_t* info);
+    int64_t* m, int64_t* n, std::complex<double>* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 
 void sgetrs_(char*    trans,
              int64_t* n,
@@ -76,19 +76,19 @@ void dgetrs_(char*    trans,
 void cgetrs_(char*           trans,
              int64_t*        n,
              int64_t*        nrhs,
-             hipblasComplex* A,
+             std::complex<float>* A,
              int64_t*        lda,
              int64_t*        ipiv,
-             hipblasComplex* B,
+             std::complex<float>* B,
              int64_t*        ldb,
              int64_t*        info);
 void zgetrs_(char*                 trans,
              int64_t*              n,
              int64_t*              nrhs,
-             hipblasDoubleComplex* A,
+             std::complex<double>* A,
              int64_t*              lda,
              int64_t*              ipiv,
-             hipblasDoubleComplex* B,
+             std::complex<double>* B,
              int64_t*              ldb,
              int64_t*              info);
 
@@ -102,17 +102,17 @@ void dgetri_(int64_t* n,
              int64_t* lwork,
              int64_t* info);
 void cgetri_(int64_t*        n,
-             hipblasComplex* A,
+             std::complex<float>* A,
              int64_t*        lda,
              int64_t*        ipiv,
-             hipblasComplex* work,
+             std::complex<float>* work,
              int64_t*        lwork,
              int64_t*        info);
 void zgetri_(int64_t*              n,
-             hipblasDoubleComplex* A,
+             std::complex<double>* A,
              int64_t*              lda,
              int64_t*              ipiv,
-             hipblasDoubleComplex* work,
+             std::complex<double>* work,
              int64_t*              lwork,
              int64_t*              info);
 
@@ -134,18 +134,18 @@ void dgeqrf_(int64_t* m,
              int64_t* info);
 void cgeqrf_(int64_t*        m,
              int64_t*        n,
-             hipblasComplex* A,
+             std::complex<float>* A,
              int64_t*        lda,
-             hipblasComplex* tau,
-             hipblasComplex* work,
+             std::complex<float>* tau,
+             std::complex<float>* work,
              int64_t*        lwork,
              int64_t*        info);
 void zgeqrf_(int64_t*              m,
              int64_t*              n,
-             hipblasDoubleComplex* A,
+             std::complex<double>* A,
              int64_t*              lda,
-             hipblasDoubleComplex* tau,
-             hipblasDoubleComplex* work,
+             std::complex<double>* tau,
+             std::complex<double>* work,
              int64_t*              lwork,
              int64_t*              info);
 
@@ -175,76 +175,76 @@ void cgels_(char*           trans,
             int64_t*        m,
             int64_t*        n,
             int64_t*        nrhs,
-            hipblasComplex* A,
+            std::complex<float>* A,
             int64_t*        lda,
-            hipblasComplex* B,
+            std::complex<float>* B,
             int64_t*        ldb,
-            hipblasComplex* work,
+            std::complex<float>* work,
             int64_t*        lwork,
             int64_t*        info);
 void zgels_(char*                 trans,
             int64_t*              m,
             int64_t*              n,
             int64_t*              nrhs,
-            hipblasDoubleComplex* A,
+            std::complex<double>* A,
             int64_t*              lda,
-            hipblasDoubleComplex* B,
+            std::complex<double>* B,
             int64_t*              ldb,
-            hipblasDoubleComplex* work,
+            std::complex<double>* work,
             int64_t*              lwork,
             int64_t*              info);
 
 /*
 void strtri_(char* uplo, char* diag, int64_t* n, float* A, int64_t* lda, int64_t* info);
 void dtrtri_(char* uplo, char* diag, int64_t* n, double* A, int64_t* lda, int64_t* info);
-void ctrtri_(char* uplo, char* diag, int64_t* n, hipblasComplex* A, int64_t* lda, int64_t* info);
-void ztrtri_(char* uplo, char* diag, int64_t* n, hipblasDoubleComplex* A, int64_t* lda, int64_t* info);
+void ctrtri_(char* uplo, char* diag, int64_t* n, std::complex<float>* A, int64_t* lda, int64_t* info);
+void ztrtri_(char* uplo, char* diag, int64_t* n, std::complex<double>* A, int64_t* lda, int64_t* info);
 
 void cspr_(
-    char* uplo, int64_t* n, hipblasComplex* alpha, hipblasComplex* x, int64_t* incx, hipblasComplex* A);
+    char* uplo, int64_t* n, std::complex<float>* alpha, std::complex<float>* x, int64_t* incx, std::complex<float>* A);
 
 void zspr_(char*                 uplo,
            int64_t*                  n,
-           hipblasDoubleComplex* alpha,
-           hipblasDoubleComplex* x,
+           std::complex<double>* alpha,
+           std::complex<double>* x,
            int64_t*                  incx,
-           hipblasDoubleComplex* A);
+           std::complex<double>* A);
 
 void csyr_(char*           uplo,
            int64_t*            n,
-           hipblasComplex* alpha,
-           hipblasComplex* x,
+           std::complex<float>* alpha,
+           std::complex<float>* x,
            int64_t*            incx,
-           hipblasComplex* a,
+           std::complex<float>* a,
            int64_t*            lda);
 void zsyr_(char*                 uplo,
            int64_t*                  n,
-           hipblasDoubleComplex* alpha,
-           hipblasDoubleComplex* x,
+           std::complex<double>* alpha,
+           std::complex<double>* x,
            int64_t*                  incx,
-           hipblasDoubleComplex* a,
+           std::complex<double>* a,
            int64_t*                  lda);
 
 void csymv_(char*           uplo,
             int64_t*            n,
-            hipblasComplex* alpha,
-            hipblasComplex* A,
+            std::complex<float>* alpha,
+            std::complex<float>* A,
             int64_t*            lda,
-            hipblasComplex* x,
+            std::complex<float>* x,
             int64_t*            incx,
-            hipblasComplex* beta,
-            hipblasComplex* y,
+            std::complex<float>* beta,
+            std::complex<float>* y,
             int64_t*            incy);
 
 void zsymv_(char*                 uplo,
             int64_t*                  n,
-            hipblasDoubleComplex* alpha,
-            hipblasDoubleComplex* A,
+            std::complex<double>* alpha,
+            std::complex<double>* A,
             int64_t*                  lda,
-            hipblasDoubleComplex* x,
+            std::complex<double>* x,
             int64_t*                  incx,
-            hipblasDoubleComplex* beta,
-            hipblasDoubleComplex* y,
+            std::complex<double>* beta,
+            std::complex<double>* y,
             int64_t*                  incy);
 */
 
@@ -380,22 +380,22 @@ void ref_axpy<double, double>(
 }
 
 template <>
-void ref_axpy<hipblasComplex, hipblasComplex>(int64_t               n,
-                                              const hipblasComplex  alpha,
-                                              const hipblasComplex* x,
+void ref_axpy<std::complex<float>, std::complex<float>>(int64_t               n,
+                                              const std::complex<float>  alpha,
+                                              const std::complex<float>* x,
                                               int64_t               incx,
-                                              hipblasComplex*       y,
+                                              std::complex<float>*       y,
                                               int64_t               incy)
 {
     cblas_caxpy(n, &alpha, x, incx, y, incy);
 }
 
 template <>
-void ref_axpy<hipblasDoubleComplex, hipblasDoubleComplex>(int64_t                     n,
-                                                          const hipblasDoubleComplex  alpha,
-                                                          const hipblasDoubleComplex* x,
+void ref_axpy<std::complex<double>, std::complex<double>>(int64_t                     n,
+                                                          const std::complex<double>  alpha,
+                                                          const std::complex<double>* x,
                                                           int64_t                     incx,
-                                                          hipblasDoubleComplex*       y,
+                                                          std::complex<double>*       y,
                                                           int64_t                     incy)
 {
     cblas_zaxpy(n, &alpha, x, incx, y, incy);
@@ -515,33 +515,33 @@ void ref_scal<double>(int64_t n, const double alpha, double* x, int64_t incx)
 }
 
 template <>
-void ref_scal<hipblasComplex>(int64_t              n,
-                              const hipblasComplex alpha,
-                              hipblasComplex*      x,
+void ref_scal<std::complex<float>>(int64_t              n,
+                              const std::complex<float> alpha,
+                              std::complex<float>*      x,
                               int64_t              incx)
 {
     cblas_cscal(n, &alpha, x, incx);
 }
 
 template <>
-void ref_scal<hipblasComplex, float>(int64_t n, const float alpha, hipblasComplex* x, int64_t incx)
+void ref_scal<std::complex<float>, float>(int64_t n, const float alpha, std::complex<float>* x, int64_t incx)
 {
     cblas_csscal(n, alpha, x, incx);
 }
 
 template <>
-void ref_scal<hipblasDoubleComplex>(int64_t                    n,
-                                    const hipblasDoubleComplex alpha,
-                                    hipblasDoubleComplex*      x,
+void ref_scal<std::complex<double>>(int64_t                    n,
+                                    const std::complex<double> alpha,
+                                    std::complex<double>*      x,
                                     int64_t                    incx)
 {
     cblas_zscal(n, &alpha, x, incx);
 }
 
 template <>
-void ref_scal<hipblasDoubleComplex, double>(int64_t               n,
+void ref_scal<std::complex<double>, double>(int64_t               n,
                                             const double          alpha,
-                                            hipblasDoubleComplex* x,
+                                            std::complex<double>* x,
                                             int64_t               incx)
 {
     cblas_zdscal(n, alpha, x, incx);
@@ -561,15 +561,15 @@ void ref_copy<double>(int64_t n, double* x, int64_t incx, double* y, int64_t inc
 }
 
 template <>
-void ref_copy<hipblasComplex>(
-    int64_t n, hipblasComplex* x, int64_t incx, hipblasComplex* y, int64_t incy)
+void ref_copy<std::complex<float>>(
+    int64_t n, std::complex<float>* x, int64_t incx, std::complex<float>* y, int64_t incy)
 {
     cblas_ccopy(n, x, incx, y, incy);
 }
 
 template <>
-void ref_copy<hipblasDoubleComplex>(
-    int64_t n, hipblasDoubleComplex* x, int64_t incx, hipblasDoubleComplex* y, int64_t incy)
+void ref_copy<std::complex<double>>(
+    int64_t n, std::complex<double>* x, int64_t incx, std::complex<double>* y, int64_t incy)
 {
     cblas_zcopy(n, x, incx, y, incy);
 }
@@ -588,15 +588,15 @@ void ref_swap<double>(int64_t n, double* x, int64_t incx, double* y, int64_t inc
 }
 
 template <>
-void ref_swap<hipblasComplex>(
-    int64_t n, hipblasComplex* x, int64_t incx, hipblasComplex* y, int64_t incy)
+void ref_swap<std::complex<float>>(
+    int64_t n, std::complex<float>* x, int64_t incx, std::complex<float>* y, int64_t incy)
 {
     cblas_cswap(n, x, incx, y, incy);
 }
 
 template <>
-void ref_swap<hipblasDoubleComplex>(
-    int64_t n, hipblasDoubleComplex* x, int64_t incx, hipblasDoubleComplex* y, int64_t incy)
+void ref_swap<std::complex<double>>(
+    int64_t n, std::complex<double>* x, int64_t incx, std::complex<double>* y, int64_t incy)
 {
     cblas_zswap(n, x, incx, y, incy);
 }
@@ -659,23 +659,23 @@ void ref_dot<double>(
 }
 
 template <>
-void ref_dot<hipblasComplex>(int64_t               n,
-                             const hipblasComplex* x,
+void ref_dot<std::complex<float>>(int64_t               n,
+                             const std::complex<float>* x,
                              int64_t               incx,
-                             const hipblasComplex* y,
+                             const std::complex<float>* y,
                              int64_t               incy,
-                             hipblasComplex*       result)
+                             std::complex<float>*       result)
 {
     cblas_cdotu_sub(n, x, incx, y, incy, result);
 }
 
 template <>
-void ref_dot<hipblasDoubleComplex>(int64_t                     n,
-                                   const hipblasDoubleComplex* x,
+void ref_dot<std::complex<double>>(int64_t                     n,
+                                   const std::complex<double>* x,
                                    int64_t                     incx,
-                                   const hipblasDoubleComplex* y,
+                                   const std::complex<double>* y,
                                    int64_t                     incy,
-                                   hipblasDoubleComplex*       result)
+                                   std::complex<double>*       result)
 {
     cblas_zdotu_sub(n, x, incx, y, incy, result);
 }
@@ -721,23 +721,23 @@ void ref_dotc<double>(
 }
 
 template <>
-void ref_dotc<hipblasComplex>(int64_t               n,
-                              const hipblasComplex* x,
+void ref_dotc<std::complex<float>>(int64_t               n,
+                              const std::complex<float>* x,
                               int64_t               incx,
-                              const hipblasComplex* y,
+                              const std::complex<float>* y,
                               int64_t               incy,
-                              hipblasComplex*       result)
+                              std::complex<float>*       result)
 {
     cblas_cdotc_sub(n, x, incx, y, incy, result);
 }
 
 template <>
-void ref_dotc<hipblasDoubleComplex>(int64_t                     n,
-                                    const hipblasDoubleComplex* x,
+void ref_dotc<std::complex<double>>(int64_t                     n,
+                                    const std::complex<double>* x,
                                     int64_t                     incx,
-                                    const hipblasDoubleComplex* y,
+                                    const std::complex<double>* y,
                                     int64_t                     incy,
-                                    hipblasDoubleComplex*       result)
+                                    std::complex<double>*       result)
 {
     cblas_zdotc_sub(n, x, incx, y, incy, result);
 }
@@ -790,8 +790,8 @@ void ref_nrm2<double, double>(int64_t n, const double* x, int64_t incx, double* 
 }
 
 template <>
-void ref_nrm2<hipblasComplex, float>(int64_t               n,
-                                     const hipblasComplex* x,
+void ref_nrm2<std::complex<float>, float>(int64_t               n,
+                                     const std::complex<float>* x,
                                      int64_t               incx,
                                      float*                result)
 {
@@ -799,8 +799,8 @@ void ref_nrm2<hipblasComplex, float>(int64_t               n,
 }
 
 template <>
-void ref_nrm2<hipblasDoubleComplex, double>(int64_t                     n,
-                                            const hipblasDoubleComplex* x,
+void ref_nrm2<std::complex<double>, double>(int64_t                     n,
+                                            const std::complex<double>* x,
                                             int64_t                     incx,
                                             double*                     result)
 {
@@ -813,36 +813,36 @@ void ref_nrm2<hipblasDoubleComplex, double>(int64_t                     n,
 // LAPACK fortran library functionality
 extern "C" {
 void crot_(const int64_t*        n,
-           hipblasComplex*       cx,
+           std::complex<float>*       cx,
            const int64_t*        incx,
-           hipblasComplex*       cy,
+           std::complex<float>*       cy,
            const int64_t*        incy,
            const float*          c,
-           const hipblasComplex* s);
+           const std::complex<float>* s);
 void csrot_(const int64_t*  n,
-            hipblasComplex* cx,
+            std::complex<float>* cx,
             const int64_t*  incx,
-            hipblasComplex* cy,
+            std::complex<float>* cy,
             const int64_t*  incy,
             const float*    c,
             const float*    s);
 void zrot_(const int64_t*              n,
-           hipblasDoubleComplex*       cx,
+           std::complex<double>*       cx,
            const int64_t*              incx,
-           hipblasDoubleComplex*       cy,
+           std::complex<double>*       cy,
            const int64_t*              incy,
            const double*               c,
-           const hipblasDoubleComplex* s);
+           const std::complex<double>* s);
 void zdrot_(const int64_t*        n,
-            hipblasDoubleComplex* cx,
+            std::complex<double>* cx,
             const int64_t*        incx,
-            hipblasDoubleComplex* cy,
+            std::complex<double>* cy,
             const int64_t*        incy,
             const double*         c,
             const double*         s);
 
-void crotg_(hipblasComplex* a, hipblasComplex* b, float* c, hipblasComplex* s);
-void zrotg_(hipblasDoubleComplex* a, hipblasDoubleComplex* b, double* c, hipblasDoubleComplex* s);
+void crotg_(std::complex<float>* a, std::complex<float>* b, float* c, std::complex<float>* s);
+void zrotg_(std::complex<double>* a, std::complex<double>* b, double* c, std::complex<double>* s);
 }
 
 // rot
@@ -936,67 +936,67 @@ void ref_rot<double>(
 }
 
 template <>
-void ref_rot<hipblasComplex>(int64_t         n,
-                             hipblasComplex* x,
+void ref_rot<std::complex<float>>(int64_t         n,
+                             std::complex<float>* x,
                              int64_t         incx,
-                             hipblasComplex* y,
+                             std::complex<float>* y,
                              int64_t         incy,
-                             hipblasComplex  c,
-                             hipblasComplex  s)
+                             std::complex<float>  c,
+                             std::complex<float>  s)
 {
     float c_real = std::real(c);
     lapack_xrot(n, x, incx, y, incy, c_real, s);
 }
 
 template <>
-void ref_rot<hipblasComplex, float>(int64_t         n,
-                                    hipblasComplex* x,
+void ref_rot<std::complex<float>, float>(int64_t         n,
+                                    std::complex<float>* x,
                                     int64_t         incx,
-                                    hipblasComplex* y,
+                                    std::complex<float>* y,
                                     int64_t         incy,
                                     float           c,
-                                    hipblasComplex  s)
+                                    std::complex<float>  s)
 {
     lapack_xrot(n, x, incx, y, incy, c, s);
 }
 
 template <>
-void ref_rot<hipblasComplex, float, float>(
-    int64_t n, hipblasComplex* x, int64_t incx, hipblasComplex* y, int64_t incy, float c, float s)
+void ref_rot<std::complex<float>, float, float>(
+    int64_t n, std::complex<float>* x, int64_t incx, std::complex<float>* y, int64_t incy, float c, float s)
 {
     lapack_xrot(n, x, incx, y, incy, c, s);
 }
 
 template <>
-void ref_rot<hipblasDoubleComplex>(int64_t               n,
-                                   hipblasDoubleComplex* x,
+void ref_rot<std::complex<double>>(int64_t               n,
+                                   std::complex<double>* x,
                                    int64_t               incx,
-                                   hipblasDoubleComplex* y,
+                                   std::complex<double>* y,
                                    int64_t               incy,
-                                   hipblasDoubleComplex  c,
-                                   hipblasDoubleComplex  s)
+                                   std::complex<double>  c,
+                                   std::complex<double>  s)
 {
     double c_real = std::real(c);
     lapack_xrot(n, x, incx, y, incy, c_real, s);
 }
 
 template <>
-void ref_rot<hipblasDoubleComplex, double>(int64_t               n,
-                                           hipblasDoubleComplex* x,
+void ref_rot<std::complex<double>, double>(int64_t               n,
+                                           std::complex<double>* x,
                                            int64_t               incx,
-                                           hipblasDoubleComplex* y,
+                                           std::complex<double>* y,
                                            int64_t               incy,
                                            double                c,
-                                           hipblasDoubleComplex  s)
+                                           std::complex<double>  s)
 {
     lapack_xrot(n, x, incx, y, incy, c, s);
 }
 
 template <>
-void ref_rot<hipblasDoubleComplex, double, double>(int64_t               n,
-                                                   hipblasDoubleComplex* x,
+void ref_rot<std::complex<double>, double, double>(int64_t               n,
+                                                   std::complex<double>* x,
                                                    int64_t               incx,
-                                                   hipblasDoubleComplex* y,
+                                                   std::complex<double>* y,
                                                    int64_t               incy,
                                                    double                c,
                                                    double                s)
@@ -1018,19 +1018,19 @@ void ref_rotg<double>(double* a, double* b, double* c, double* s)
 }
 
 template <>
-void ref_rotg<hipblasComplex, float>(hipblasComplex* a,
-                                     hipblasComplex* b,
+void ref_rotg<std::complex<float>, float>(std::complex<float>* a,
+                                     std::complex<float>* b,
                                      float*          c,
-                                     hipblasComplex* s)
+                                     std::complex<float>* s)
 {
     lapack_xrotg(*a, *b, *c, *s);
 }
 
 template <>
-void ref_rotg<hipblasDoubleComplex, double>(hipblasDoubleComplex* a,
-                                            hipblasDoubleComplex* b,
+void ref_rotg<std::complex<double>, double>(std::complex<double>* a,
+                                            std::complex<double>* b,
                                             double*               c,
-                                            hipblasDoubleComplex* s)
+                                            std::complex<double>* s)
 {
     lapack_xrotg(*a, *b, *c, *s);
 }
@@ -1050,8 +1050,8 @@ void ref_asum<double, double>(int64_t n, const double* x, int64_t incx, double* 
 }
 
 template <>
-void ref_asum<hipblasComplex, float>(int64_t               n,
-                                       const hipblasComplex* x,
+void ref_asum<std::complex<float>, float>(int64_t               n,
+                                       const std::complex<float>* x,
                                        int64_t               incx,
                                        float*                result)
 {
@@ -1059,8 +1059,8 @@ void ref_asum<hipblasComplex, float>(int64_t               n,
 }
 
 template <>
-void ref_asum<hipblasDoubleComplex, double>(int64_t                     n,
-                                              const hipblasDoubleComplex* x,
+void ref_asum<std::complex<double>, double>(int64_t                     n,
+                                              const std::complex<double>* x,
                                               int64_t                     incx,
                                               double*                     result)
 {
@@ -1086,14 +1086,14 @@ void ref_iamax<double>(int64_t n, const double* x, int64_t incx, int64_t* result
 }
 
 template <>
-void ref_iamax<hipblasComplex>(int64_t n, const hipblasComplex* x, int64_t incx, int64_t* result)
+void ref_iamax<std::complex<float>>(int64_t n, const std::complex<float>* x, int64_t incx, int64_t* result)
 {
     *result = (int64_t)cblas_icamax(n, x, incx);
 }
 
 template <>
-void ref_iamax<hipblasDoubleComplex>(int64_t                     n,
-                                     const hipblasDoubleComplex* x,
+void ref_iamax<std::complex<double>>(int64_t                     n,
+                                     const std::complex<double>* x,
                                      int64_t                     incx,
                                      int64_t*                    result)
 {
@@ -1110,13 +1110,13 @@ double hipblas_magnitude(T val)
 }
 
 template <>
-double hipblas_magnitude(hipblasComplex val)
+double hipblas_magnitude(std::complex<float> val)
 {
     return std::abs(val.real()) + std::abs(val.imag());
 }
 
 template <>
-double hipblas_magnitude(hipblasDoubleComplex val)
+double hipblas_magnitude(std::complex<double> val)
 {
     return std::abs(val.real()) + std::abs(val.imag());
 }
@@ -1155,14 +1155,14 @@ void ref_iamin<double>(int64_t n, const double* x, int64_t incx, int64_t* result
 }
 
 template <>
-void ref_iamin<hipblasComplex>(int64_t n, const hipblasComplex* x, int64_t incx, int64_t* result)
+void ref_iamin<std::complex<float>>(int64_t n, const std::complex<float>* x, int64_t incx, int64_t* result)
 {
     *result = (int64_t)ref_iamin_helper(n, x, incx);
 }
 
 template <>
-void ref_iamin<hipblasDoubleComplex>(int64_t                     n,
-                                     const hipblasDoubleComplex* x,
+void ref_iamin<std::complex<double>>(int64_t                     n,
+                                     const std::complex<double>* x,
                                      int64_t                     incx,
                                      int64_t*                    result)
 {
@@ -1240,18 +1240,18 @@ void ref_gbmv<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gbmv<hipblasComplex>(hipblasOperation_t transA,
+void ref_gbmv<std::complex<float>>(hipblasOperation_t transA,
                               int64_t            m,
                               int64_t            n,
                               int64_t            kl,
                               int64_t            ku,
-                              hipblasComplex     alpha,
-                              hipblasComplex*    A,
+                              std::complex<float>     alpha,
+                              std::complex<float>*    A,
                               int64_t            lda,
-                              hipblasComplex*    x,
+                              std::complex<float>*    x,
                               int64_t            incx,
-                              hipblasComplex     beta,
-                              hipblasComplex*    y,
+                              std::complex<float>     beta,
+                              std::complex<float>*    y,
                               int64_t            incy)
 {
     cblas_cgbmv(CblasColMajor,
@@ -1271,18 +1271,18 @@ void ref_gbmv<hipblasComplex>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gbmv<hipblasDoubleComplex>(hipblasOperation_t    transA,
+void ref_gbmv<std::complex<double>>(hipblasOperation_t    transA,
                                     int64_t               m,
                                     int64_t               n,
                                     int64_t               kl,
                                     int64_t               ku,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* A,
                                     int64_t               lda,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* y,
                                     int64_t               incy)
 {
     cblas_zgbmv(CblasColMajor,
@@ -1337,16 +1337,16 @@ void ref_gemv<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemv<hipblasComplex>(hipblasOperation_t transA,
+void ref_gemv<std::complex<float>>(hipblasOperation_t transA,
                               int64_t            m,
                               int64_t            n,
-                              hipblasComplex     alpha,
-                              hipblasComplex*    A,
+                              std::complex<float>     alpha,
+                              std::complex<float>*    A,
                               int64_t            lda,
-                              hipblasComplex*    x,
+                              std::complex<float>*    x,
                               int64_t            incx,
-                              hipblasComplex     beta,
-                              hipblasComplex*    y,
+                              std::complex<float>     beta,
+                              std::complex<float>*    y,
                               int64_t            incy)
 {
     cblas_cgemv(
@@ -1354,16 +1354,16 @@ void ref_gemv<hipblasComplex>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemv<hipblasDoubleComplex>(hipblasOperation_t    transA,
+void ref_gemv<std::complex<double>>(hipblasOperation_t    transA,
                                     int64_t               m,
                                     int64_t               n,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* A,
                                     int64_t               lda,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* y,
                                     int64_t               incy)
 {
     cblas_zgemv(
@@ -1400,56 +1400,56 @@ void ref_ger<double, false>(int64_t m,
 }
 
 template <>
-void ref_ger<hipblasComplex, false>(int64_t         m,
+void ref_ger<std::complex<float>, false>(int64_t         m,
                                     int64_t         n,
-                                    hipblasComplex  alpha,
-                                    hipblasComplex* x,
+                                    std::complex<float>  alpha,
+                                    std::complex<float>* x,
                                     int64_t         incx,
-                                    hipblasComplex* y,
+                                    std::complex<float>* y,
                                     int64_t         incy,
-                                    hipblasComplex* A,
+                                    std::complex<float>* A,
                                     int64_t         lda)
 {
     cblas_cgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void ref_ger<hipblasComplex, true>(int64_t         m,
+void ref_ger<std::complex<float>, true>(int64_t         m,
                                    int64_t         n,
-                                   hipblasComplex  alpha,
-                                   hipblasComplex* x,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* x,
                                    int64_t         incx,
-                                   hipblasComplex* y,
+                                   std::complex<float>* y,
                                    int64_t         incy,
-                                   hipblasComplex* A,
+                                   std::complex<float>* A,
                                    int64_t         lda)
 {
     cblas_cgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void ref_ger<hipblasDoubleComplex, false>(int64_t               m,
+void ref_ger<std::complex<double>, false>(int64_t               m,
                                           int64_t               n,
-                                          hipblasDoubleComplex  alpha,
-                                          hipblasDoubleComplex* x,
+                                          std::complex<double>  alpha,
+                                          std::complex<double>* x,
                                           int64_t               incx,
-                                          hipblasDoubleComplex* y,
+                                          std::complex<double>* y,
                                           int64_t               incy,
-                                          hipblasDoubleComplex* A,
+                                          std::complex<double>* A,
                                           int64_t               lda)
 {
     cblas_zgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void ref_ger<hipblasDoubleComplex, true>(int64_t               m,
+void ref_ger<std::complex<double>, true>(int64_t               m,
                                          int64_t               n,
-                                         hipblasDoubleComplex  alpha,
-                                         hipblasDoubleComplex* x,
+                                         std::complex<double>  alpha,
+                                         std::complex<double>* x,
                                          int64_t               incx,
-                                         hipblasDoubleComplex* y,
+                                         std::complex<double>* y,
                                          int64_t               incy,
-                                         hipblasDoubleComplex* A,
+                                         std::complex<double>* A,
                                          int64_t               lda)
 {
     cblas_zgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
@@ -1457,32 +1457,32 @@ void ref_ger<hipblasDoubleComplex, true>(int64_t               m,
 
 // hbmv
 template <>
-void ref_hbmv<hipblasComplex>(hipblasFillMode_t uplo,
+void ref_hbmv<std::complex<float>>(hipblasFillMode_t uplo,
                               int64_t           n,
                               int64_t           k,
-                              hipblasComplex    alpha,
-                              hipblasComplex*   A,
+                              std::complex<float>    alpha,
+                              std::complex<float>*   A,
                               int64_t           lda,
-                              hipblasComplex*   x,
+                              std::complex<float>*   x,
                               int64_t           incx,
-                              hipblasComplex    beta,
-                              hipblasComplex*   y,
+                              std::complex<float>    beta,
+                              std::complex<float>*   y,
                               int64_t           incy)
 {
     cblas_chbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, &alpha, A, lda, x, incx, &beta, y, incy);
 }
 
 template <>
-void ref_hbmv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+void ref_hbmv<std::complex<double>>(hipblasFillMode_t     uplo,
                                     int64_t               n,
                                     int64_t               k,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* A,
                                     int64_t               lda,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* y,
                                     int64_t               incy)
 {
     cblas_zhbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, &alpha, A, lda, x, incx, &beta, y, incy);
@@ -1490,30 +1490,30 @@ void ref_hbmv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
 
 // hemv
 template <>
-void ref_hemv<hipblasComplex>(hipblasFillMode_t uplo,
+void ref_hemv<std::complex<float>>(hipblasFillMode_t uplo,
                               int64_t           n,
-                              hipblasComplex    alpha,
-                              hipblasComplex*   A,
+                              std::complex<float>    alpha,
+                              std::complex<float>*   A,
                               int64_t           lda,
-                              hipblasComplex*   x,
+                              std::complex<float>*   x,
                               int64_t           incx,
-                              hipblasComplex    beta,
-                              hipblasComplex*   y,
+                              std::complex<float>    beta,
+                              std::complex<float>*   y,
                               int64_t           incy)
 {
     cblas_chemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
 }
 
 template <>
-void ref_hemv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+void ref_hemv<std::complex<double>>(hipblasFillMode_t     uplo,
                                     int64_t               n,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* A,
                                     int64_t               lda,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* y,
                                     int64_t               incy)
 {
     cblas_zhemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
@@ -1521,24 +1521,24 @@ void ref_hemv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
 
 // her
 template <>
-void ref_her<hipblasComplex, float>(hipblasFillMode_t uplo,
+void ref_her<std::complex<float>, float>(hipblasFillMode_t uplo,
                                     int64_t           n,
                                     float             alpha,
-                                    hipblasComplex*   x,
+                                    std::complex<float>*   x,
                                     int64_t           incx,
-                                    hipblasComplex*   A,
+                                    std::complex<float>*   A,
                                     int64_t           lda)
 {
     cblas_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
 
 template <>
-void ref_her<hipblasDoubleComplex, double>(hipblasFillMode_t     uplo,
+void ref_her<std::complex<double>, double>(hipblasFillMode_t     uplo,
                                            int64_t               n,
                                            double                alpha,
-                                           hipblasDoubleComplex* x,
+                                           std::complex<double>* x,
                                            int64_t               incx,
-                                           hipblasDoubleComplex* A,
+                                           std::complex<double>* A,
                                            int64_t               lda)
 {
     cblas_zher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
@@ -1546,28 +1546,28 @@ void ref_her<hipblasDoubleComplex, double>(hipblasFillMode_t     uplo,
 
 // her2
 template <>
-void ref_her2<hipblasComplex>(hipblasFillMode_t uplo,
+void ref_her2<std::complex<float>>(hipblasFillMode_t uplo,
                               int64_t           n,
-                              hipblasComplex    alpha,
-                              hipblasComplex*   x,
+                              std::complex<float>    alpha,
+                              std::complex<float>*   x,
                               int64_t           incx,
-                              hipblasComplex*   y,
+                              std::complex<float>*   y,
                               int64_t           incy,
-                              hipblasComplex*   A,
+                              std::complex<float>*   A,
                               int64_t           lda)
 {
     cblas_cher2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void ref_her2<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+void ref_her2<std::complex<double>>(hipblasFillMode_t     uplo,
                                     int64_t               n,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>* y,
                                     int64_t               incy,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>* A,
                                     int64_t               lda)
 {
     cblas_zher2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, A, lda);
@@ -1575,28 +1575,28 @@ void ref_her2<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
 
 // hpmv
 template <>
-void ref_hpmv<hipblasComplex>(hipblasFillMode_t uplo,
+void ref_hpmv<std::complex<float>>(hipblasFillMode_t uplo,
                               int64_t           n,
-                              hipblasComplex    alpha,
-                              hipblasComplex*   AP,
-                              hipblasComplex*   x,
+                              std::complex<float>    alpha,
+                              std::complex<float>*   AP,
+                              std::complex<float>*   x,
                               int64_t           incx,
-                              hipblasComplex    beta,
-                              hipblasComplex*   y,
+                              std::complex<float>    beta,
+                              std::complex<float>*   y,
                               int64_t           incy)
 {
     cblas_chpmv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, AP, x, incx, &beta, y, incy);
 }
 
 template <>
-void ref_hpmv<hipblasDoubleComplex>(hipblasFillMode_t     uplo,
+void ref_hpmv<std::complex<double>>(hipblasFillMode_t     uplo,
                                     int64_t               n,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* AP,
-                                    hipblasDoubleComplex* x,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* AP,
+                                    std::complex<double>* x,
                                     int64_t               incx,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* y,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* y,
                                     int64_t               incy)
 {
     cblas_zhpmv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, AP, x, incx, &beta, y, incy);
@@ -1607,9 +1607,9 @@ template <>
 void ref_hpr(hipblasFillMode_t uplo,
              int64_t           n,
              float             alpha,
-             hipblasComplex*   x,
+             std::complex<float>*   x,
              int64_t           incx,
-             hipblasComplex*   AP)
+             std::complex<float>*   AP)
 {
     cblas_chpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
 }
@@ -1618,9 +1618,9 @@ template <>
 void ref_hpr(hipblasFillMode_t     uplo,
              int64_t               n,
              double                alpha,
-             hipblasDoubleComplex* x,
+             std::complex<double>* x,
              int64_t               incx,
-             hipblasDoubleComplex* AP)
+             std::complex<double>* AP)
 {
     cblas_zhpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
 }
@@ -1629,12 +1629,12 @@ void ref_hpr(hipblasFillMode_t     uplo,
 template <>
 void ref_hpr2(hipblasFillMode_t uplo,
               int64_t           n,
-              hipblasComplex    alpha,
-              hipblasComplex*   x,
+              std::complex<float>    alpha,
+              std::complex<float>*   x,
               int64_t           incx,
-              hipblasComplex*   y,
+              std::complex<float>*   y,
               int64_t           incy,
-              hipblasComplex*   AP)
+              std::complex<float>*   AP)
 {
     cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
 }
@@ -1642,12 +1642,12 @@ void ref_hpr2(hipblasFillMode_t uplo,
 template <>
 void ref_hpr2(hipblasFillMode_t     uplo,
               int64_t               n,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* x,
+              std::complex<double>  alpha,
+              std::complex<double>* x,
               int64_t               incx,
-              hipblasDoubleComplex* y,
+              std::complex<double>* y,
               int64_t               incy,
-              hipblasDoubleComplex* AP)
+              std::complex<double>* AP)
 {
     cblas_zhpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
 }
@@ -1730,10 +1730,10 @@ void ref_spr(hipblasFillMode_t uplo, int64_t n, double alpha, double* x, int64_t
 template <>
 void ref_spr(hipblasFillMode_t uplo,
              int64_t           n,
-             hipblasComplex    alpha,
-             hipblasComplex*   x,
+             std::complex<float>    alpha,
+             std::complex<float>*   x,
              int64_t           incx,
-             hipblasComplex*   AP)
+             std::complex<float>*   AP)
 {
     lapack_xspr(uplo, n, alpha, x, incx, AP);
 }
@@ -1741,10 +1741,10 @@ void ref_spr(hipblasFillMode_t uplo,
 template <>
 void ref_spr(hipblasFillMode_t     uplo,
              int64_t               n,
-             hipblasDoubleComplex  alpha,
-             hipblasDoubleComplex* x,
+             std::complex<double>  alpha,
+             std::complex<double>* x,
              int64_t               incx,
-             hipblasDoubleComplex* AP)
+             std::complex<double>* AP)
 {
     lapack_xspr(uplo, n, alpha, x, incx, AP);
 }
@@ -1810,13 +1810,13 @@ void ref_symv(hipblasFillMode_t uplo,
 template <>
 void ref_symv(hipblasFillMode_t uplo,
               int64_t           n,
-              hipblasComplex    alpha,
-              hipblasComplex*   A,
+              std::complex<float>    alpha,
+              std::complex<float>*   A,
               int64_t           lda,
-              hipblasComplex*   x,
+              std::complex<float>*   x,
               int64_t           incx,
-              hipblasComplex    beta,
-              hipblasComplex*   y,
+              std::complex<float>    beta,
+              std::complex<float>*   y,
               int64_t           incy)
 {
     lapack_xsymv(uplo, n, alpha, A, lda, x, incx, beta, y, incy);
@@ -1825,13 +1825,13 @@ void ref_symv(hipblasFillMode_t uplo,
 template <>
 void ref_symv(hipblasFillMode_t     uplo,
               int64_t               n,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>  alpha,
+              std::complex<double>* A,
               int64_t               lda,
-              hipblasDoubleComplex* x,
+              std::complex<double>* x,
               int64_t               incx,
-              hipblasDoubleComplex  beta,
-              hipblasDoubleComplex* y,
+              std::complex<double>  beta,
+              std::complex<double>* y,
               int64_t               incy)
 {
     lapack_xsymv(uplo, n, alpha, A, lda, x, incx, beta, y, incy);
@@ -1860,10 +1860,10 @@ void ref_syr<double>(hipblasFillMode_t uplo,
 template <>
 void ref_syr(hipblasFillMode_t uplo,
              int64_t           n,
-             hipblasComplex    alpha,
-             hipblasComplex*   xa,
+             std::complex<float>    alpha,
+             std::complex<float>*   xa,
              int64_t           incx,
-             hipblasComplex*   A,
+             std::complex<float>*   A,
              int64_t           lda)
 {
     lapack_xsyr(uplo, n, alpha, xa, incx, A, lda);
@@ -1872,10 +1872,10 @@ void ref_syr(hipblasFillMode_t uplo,
 template <>
 void ref_syr(hipblasFillMode_t     uplo,
              int64_t               n,
-             hipblasDoubleComplex  alpha,
-             hipblasDoubleComplex* xa,
+             std::complex<double>  alpha,
+             std::complex<double>* xa,
              int64_t               incx,
-             hipblasDoubleComplex* A,
+             std::complex<double>* A,
              int64_t               lda)
 {
     lapack_xsyr(uplo, n, alpha, xa, incx, A, lda);
@@ -1914,12 +1914,12 @@ void ref_syr2(hipblasFillMode_t uplo,
 template <>
 void ref_syr2(hipblasFillMode_t uplo,
               int64_t           n,
-              hipblasComplex    alpha,
-              hipblasComplex*   x,
+              std::complex<float>    alpha,
+              std::complex<float>*   x,
               int64_t           incx,
-              hipblasComplex*   y,
+              std::complex<float>*   y,
               int64_t           incy,
-              hipblasComplex*   A,
+              std::complex<float>*   A,
               int64_t           lda)
 {
     lapack_xsyr2(uplo, n, alpha, x, incx, y, incy, A, lda);
@@ -1928,12 +1928,12 @@ void ref_syr2(hipblasFillMode_t uplo,
 template <>
 void ref_syr2(hipblasFillMode_t     uplo,
               int64_t               n,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* x,
+              std::complex<double>  alpha,
+              std::complex<double>* x,
               int64_t               incx,
-              hipblasDoubleComplex* y,
+              std::complex<double>* y,
               int64_t               incy,
-              hipblasDoubleComplex* A,
+              std::complex<double>* A,
               int64_t               lda)
 {
     lapack_xsyr2(uplo, n, alpha, x, incx, y, incy, A, lda);
@@ -1987,14 +1987,14 @@ void ref_tbmv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tbmv<hipblasComplex>(hipblasFillMode_t     uplo,
+void ref_tbmv<std::complex<float>>(hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
                               int64_t               k,
-                              const hipblasComplex* A,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       x,
+                              std::complex<float>*       x,
                               int64_t               incx)
 {
     cblas_ctbmv(CblasColMajor,
@@ -2010,14 +2010,14 @@ void ref_tbmv<hipblasComplex>(hipblasFillMode_t     uplo,
 }
 
 template <>
-void ref_tbmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
+void ref_tbmv<std::complex<double>>(hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
                                     int64_t                     k,
-                                    const hipblasDoubleComplex* A,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       x,
+                                    std::complex<double>*       x,
                                     int64_t                     incx)
 {
     cblas_ztbmv(CblasColMajor,
@@ -2080,14 +2080,14 @@ void ref_tbsv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tbsv<hipblasComplex>(hipblasFillMode_t     uplo,
+void ref_tbsv<std::complex<float>>(hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
                               int64_t               k,
-                              const hipblasComplex* A,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       x,
+                              std::complex<float>*       x,
                               int64_t               incx)
 {
     cblas_ctbsv(CblasColMajor,
@@ -2103,14 +2103,14 @@ void ref_tbsv<hipblasComplex>(hipblasFillMode_t     uplo,
 }
 
 template <>
-void ref_tbsv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
+void ref_tbsv<std::complex<double>>(hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
                                     int64_t                     k,
-                                    const hipblasDoubleComplex* A,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       x,
+                                    std::complex<double>*       x,
                                     int64_t                     incx)
 {
     cblas_ztbsv(CblasColMajor,
@@ -2157,8 +2157,8 @@ void ref_tpmv(hipblasFillMode_t     uplo,
               hipblasOperation_t    transA,
               hipblasDiagType_t     diag,
               int64_t               m,
-              const hipblasComplex* A,
-              hipblasComplex*       x,
+              const std::complex<float>* A,
+              std::complex<float>*       x,
               int64_t               incx)
 {
     cblas_ctpmv(
@@ -2170,8 +2170,8 @@ void ref_tpmv(hipblasFillMode_t           uplo,
               hipblasOperation_t          transA,
               hipblasDiagType_t           diag,
               int64_t                     m,
-              const hipblasDoubleComplex* A,
-              hipblasDoubleComplex*       x,
+              const std::complex<double>* A,
+              std::complex<double>*       x,
               int64_t                     incx)
 {
     cblas_ztpmv(
@@ -2210,8 +2210,8 @@ void ref_tpsv(hipblasFillMode_t     uplo,
               hipblasOperation_t    transA,
               hipblasDiagType_t     diag,
               int64_t               n,
-              const hipblasComplex* AP,
-              hipblasComplex*       x,
+              const std::complex<float>* AP,
+              std::complex<float>*       x,
               int64_t               incx)
 {
     cblas_ctpsv(
@@ -2223,8 +2223,8 @@ void ref_tpsv(hipblasFillMode_t           uplo,
               hipblasOperation_t          transA,
               hipblasDiagType_t           diag,
               int64_t                     n,
-              const hipblasDoubleComplex* AP,
-              hipblasDoubleComplex*       x,
+              const std::complex<double>* AP,
+              std::complex<double>*       x,
               int64_t                     incx)
 {
     cblas_ztpsv(
@@ -2275,13 +2275,13 @@ void ref_trmv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_trmv<hipblasComplex>(hipblasFillMode_t     uplo,
+void ref_trmv<std::complex<float>>(hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
-                              const hipblasComplex* A,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       x,
+                              std::complex<float>*       x,
                               int64_t               incx)
 {
     cblas_ctrmv(CblasColMajor,
@@ -2296,13 +2296,13 @@ void ref_trmv<hipblasComplex>(hipblasFillMode_t     uplo,
 }
 
 template <>
-void ref_trmv<hipblasDoubleComplex>(hipblasFillMode_t           uplo,
+void ref_trmv<std::complex<double>>(hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
-                                    const hipblasDoubleComplex* A,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       x,
+                                    std::complex<double>*       x,
                                     int64_t                     incx)
 {
     cblas_ztrmv(CblasColMajor,
@@ -2362,14 +2362,14 @@ void ref_trsv<double>(hipblasHandle_t    handle,
 }
 
 template <>
-void ref_trsv<hipblasComplex>(hipblasHandle_t       handle,
+void ref_trsv<std::complex<float>>(hipblasHandle_t       handle,
                               hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
-                              const hipblasComplex* A,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       x,
+                              std::complex<float>*       x,
                               int64_t               incx)
 {
     cblas_ctrsv(CblasColMajor,
@@ -2384,14 +2384,14 @@ void ref_trsv<hipblasComplex>(hipblasHandle_t       handle,
 }
 
 template <>
-void ref_trsv<hipblasDoubleComplex>(hipblasHandle_t             handle,
+void ref_trsv<std::complex<double>>(hipblasHandle_t             handle,
                                     hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
-                                    const hipblasDoubleComplex* A,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       x,
+                                    std::complex<double>*       x,
                                     int64_t                     incx)
 {
     cblas_ztrsv(CblasColMajor,
@@ -2436,10 +2436,13 @@ void ref_geam_helper(hipblasOperation_t transA,
         {
             T a_val = A[i * inc1_A + j * inc2_A];
             T b_val = B[i * inc1_B + j * inc2_B];
-            if(transA == HIPBLAS_OP_C)
-                a_val = std::conj(a_val);
-            if(transB == HIPBLAS_OP_C)
-                b_val = std::conj(b_val);
+            if constexpr(is_complex<T>)
+            {
+                if(transA == HIPBLAS_OP_C)
+                    a_val = std::conj(a_val);
+                if(transB == HIPBLAS_OP_C)
+                    b_val = std::conj(b_val);
+            }
             C[i + j * ldc] = alpha * a_val + beta * b_val;
         }
     }
@@ -2506,11 +2509,11 @@ template <>
 void ref_dgmm(hipblasSideMode_t     side,
               int64_t               M,
               int64_t               N,
-              const hipblasComplex* A,
+              const std::complex<float>* A,
               int64_t               lda,
-              const hipblasComplex* x,
+              const std::complex<float>* x,
               int64_t               incx,
-              hipblasComplex*       C,
+              std::complex<float>*       C,
               int64_t               ldc)
 {
     ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
@@ -2520,11 +2523,11 @@ template <>
 void ref_dgmm(hipblasSideMode_t           side,
               int64_t                     M,
               int64_t                     N,
-              const hipblasDoubleComplex* A,
+              const std::complex<double>* A,
               int64_t                     lda,
-              const hipblasDoubleComplex* x,
+              const std::complex<double>* x,
               int64_t                     incx,
-              hipblasDoubleComplex*       C,
+              std::complex<double>*       C,
               int64_t                     ldc)
 {
     ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
@@ -2570,13 +2573,13 @@ void ref_geam(hipblasOperation_t transa,
               hipblasOperation_t transb,
               int64_t            m,
               int64_t            n,
-              hipblasComplex*    alpha,
-              hipblasComplex*    A,
+              std::complex<float>*    alpha,
+              std::complex<float>*    A,
               int64_t            lda,
-              hipblasComplex*    beta,
-              hipblasComplex*    B,
+              std::complex<float>*    beta,
+              std::complex<float>*    B,
               int64_t            ldb,
-              hipblasComplex*    C,
+              std::complex<float>*    C,
               int64_t            ldc)
 {
     return ref_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
@@ -2587,13 +2590,13 @@ void ref_geam(hipblasOperation_t    transa,
               hipblasOperation_t    transb,
               int64_t               m,
               int64_t               n,
-              hipblasDoubleComplex* alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>* alpha,
+              std::complex<double>* A,
               int64_t               lda,
-              hipblasDoubleComplex* beta,
-              hipblasDoubleComplex* B,
+              std::complex<double>* beta,
+              std::complex<double>* B,
               int64_t               ldb,
-              hipblasDoubleComplex* C,
+              std::complex<double>* C,
               int64_t               ldc)
 {
     return ref_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
@@ -2955,18 +2958,18 @@ void ref_gemm<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemm<hipblasComplex>(hipblasOperation_t transA,
+void ref_gemm<std::complex<float>>(hipblasOperation_t transA,
                               hipblasOperation_t transB,
                               int64_t            m,
                               int64_t            n,
                               int64_t            k,
-                              hipblasComplex     alpha,
-                              hipblasComplex*    A,
+                              std::complex<float>     alpha,
+                              std::complex<float>*    A,
                               int64_t            lda,
-                              hipblasComplex*    B,
+                              std::complex<float>*    B,
                               int64_t            ldb,
-                              hipblasComplex     beta,
-                              hipblasComplex*    C,
+                              std::complex<float>     beta,
+                              std::complex<float>*    C,
                               int64_t            ldc)
 {
     //just directly cast, since transA, transB are integers in the enum
@@ -2987,18 +2990,18 @@ void ref_gemm<hipblasComplex>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemm<hipblasDoubleComplex>(hipblasOperation_t    transA,
+void ref_gemm<std::complex<double>>(hipblasOperation_t    transA,
                                     hipblasOperation_t    transB,
                                     int64_t               m,
                                     int64_t               n,
                                     int64_t               k,
-                                    hipblasDoubleComplex  alpha,
-                                    hipblasDoubleComplex* A,
+                                    std::complex<double>  alpha,
+                                    std::complex<double>* A,
                                     int64_t               lda,
-                                    hipblasDoubleComplex* B,
+                                    std::complex<double>* B,
                                     int64_t               ldb,
-                                    hipblasDoubleComplex  beta,
-                                    hipblasDoubleComplex* C,
+                                    std::complex<double>  beta,
+                                    std::complex<double>* C,
                                     int64_t               ldc)
 {
     cblas_zgemm(CblasColMajor,
@@ -3081,13 +3084,13 @@ void ref_hemm(hipblasSideMode_t side,
               hipblasFillMode_t uplo,
               int64_t           m,
               int64_t           n,
-              hipblasComplex    alpha,
-              hipblasComplex*   A,
+              std::complex<float>    alpha,
+              std::complex<float>*   A,
               int64_t           lda,
-              hipblasComplex*   B,
+              std::complex<float>*   B,
               int64_t           ldb,
-              hipblasComplex    beta,
-              hipblasComplex*   C,
+              std::complex<float>    beta,
+              std::complex<float>*   C,
               int64_t           ldc)
 {
     cblas_chemm(CblasColMajor,
@@ -3110,13 +3113,13 @@ void ref_hemm(hipblasSideMode_t     side,
               hipblasFillMode_t     uplo,
               int64_t               m,
               int64_t               n,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>  alpha,
+              std::complex<double>* A,
               int64_t               lda,
-              hipblasDoubleComplex* B,
+              std::complex<double>* B,
               int64_t               ldb,
-              hipblasDoubleComplex  beta,
-              hipblasDoubleComplex* C,
+              std::complex<double>  beta,
+              std::complex<double>* C,
               int64_t               ldc)
 {
     cblas_zhemm(CblasColMajor,
@@ -3141,10 +3144,10 @@ void ref_herk(hipblasFillMode_t  uplo,
               int64_t            n,
               int64_t            k,
               float              alpha,
-              hipblasComplex*    A,
+              std::complex<float>*    A,
               int64_t            lda,
               float              beta,
-              hipblasComplex*    C,
+              std::complex<float>*    C,
               int64_t            ldc)
 {
     cblas_cherk(CblasColMajor,
@@ -3166,10 +3169,10 @@ void ref_herk(hipblasFillMode_t     uplo,
               int64_t               n,
               int64_t               k,
               double                alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>* A,
               int64_t               lda,
               double                beta,
-              hipblasDoubleComplex* C,
+              std::complex<double>* C,
               int64_t               ldc)
 {
     cblas_zherk(CblasColMajor,
@@ -3274,13 +3277,13 @@ void ref_herkx(hipblasFillMode_t  uplo,
                hipblasOperation_t transA,
                int64_t            n,
                int64_t            k,
-               hipblasComplex     alpha,
-               hipblasComplex*    A,
+               std::complex<float>     alpha,
+               std::complex<float>*    A,
                int64_t            lda,
-               hipblasComplex*    B,
+               std::complex<float>*    B,
                int64_t            ldb,
                float              beta,
-               hipblasComplex*    C,
+               std::complex<float>*    C,
                int64_t            ldc)
 {
     ref_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
@@ -3291,13 +3294,13 @@ void ref_herkx(hipblasFillMode_t     uplo,
                hipblasOperation_t    transA,
                int64_t               n,
                int64_t               k,
-               hipblasDoubleComplex  alpha,
-               hipblasDoubleComplex* A,
+               std::complex<double>  alpha,
+               std::complex<double>* A,
                int64_t               lda,
-               hipblasDoubleComplex* B,
+               std::complex<double>* B,
                int64_t               ldb,
                double                beta,
-               hipblasDoubleComplex* C,
+               std::complex<double>* C,
                int64_t               ldc)
 {
     ref_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
@@ -3309,13 +3312,13 @@ void ref_her2k(hipblasFillMode_t  uplo,
                hipblasOperation_t transA,
                int64_t            n,
                int64_t            k,
-               hipblasComplex     alpha,
-               hipblasComplex*    A,
+               std::complex<float>     alpha,
+               std::complex<float>*    A,
                int64_t            lda,
-               hipblasComplex*    B,
+               std::complex<float>*    B,
                int64_t            ldb,
                float              beta,
-               hipblasComplex*    C,
+               std::complex<float>*    C,
                int64_t            ldc)
 {
     cblas_cher2k(CblasColMajor,
@@ -3338,13 +3341,13 @@ void ref_her2k(hipblasFillMode_t     uplo,
                hipblasOperation_t    transA,
                int64_t               n,
                int64_t               k,
-               hipblasDoubleComplex  alpha,
-               hipblasDoubleComplex* A,
+               std::complex<double>  alpha,
+               std::complex<double>* A,
                int64_t               lda,
-               hipblasDoubleComplex* B,
+               std::complex<double>* B,
                int64_t               ldb,
                double                beta,
-               hipblasDoubleComplex* C,
+               std::complex<double>* C,
                int64_t               ldc)
 {
     cblas_zher2k(CblasColMajor,
@@ -3426,13 +3429,13 @@ void ref_symm(hipblasSideMode_t side,
               hipblasFillMode_t uplo,
               int64_t           m,
               int64_t           n,
-              hipblasComplex    alpha,
-              hipblasComplex*   A,
+              std::complex<float>    alpha,
+              std::complex<float>*   A,
               int64_t           lda,
-              hipblasComplex*   B,
+              std::complex<float>*   B,
               int64_t           ldb,
-              hipblasComplex    beta,
-              hipblasComplex*   C,
+              std::complex<float>    beta,
+              std::complex<float>*   C,
               int64_t           ldc)
 {
     cblas_csymm(CblasColMajor,
@@ -3455,13 +3458,13 @@ void ref_symm(hipblasSideMode_t     side,
               hipblasFillMode_t     uplo,
               int64_t               m,
               int64_t               n,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>  alpha,
+              std::complex<double>* A,
               int64_t               lda,
-              hipblasDoubleComplex* B,
+              std::complex<double>* B,
               int64_t               ldb,
-              hipblasDoubleComplex  beta,
-              hipblasDoubleComplex* C,
+              std::complex<double>  beta,
+              std::complex<double>* C,
               int64_t               ldc)
 {
     cblas_zsymm(CblasColMajor,
@@ -3535,11 +3538,11 @@ void ref_syrk(hipblasFillMode_t  uplo,
               hipblasOperation_t transA,
               int64_t            n,
               int64_t            k,
-              hipblasComplex     alpha,
-              hipblasComplex*    A,
+              std::complex<float>     alpha,
+              std::complex<float>*    A,
               int64_t            lda,
-              hipblasComplex     beta,
-              hipblasComplex*    C,
+              std::complex<float>     beta,
+              std::complex<float>*    C,
               int64_t            ldc)
 {
     cblas_csyrk(CblasColMajor,
@@ -3560,11 +3563,11 @@ void ref_syrk(hipblasFillMode_t     uplo,
               hipblasOperation_t    transA,
               int64_t               n,
               int64_t               k,
-              hipblasDoubleComplex  alpha,
-              hipblasDoubleComplex* A,
+              std::complex<double>  alpha,
+              std::complex<double>* A,
               int64_t               lda,
-              hipblasDoubleComplex  beta,
-              hipblasDoubleComplex* C,
+              std::complex<double>  beta,
+              std::complex<double>* C,
               int64_t               ldc)
 {
     cblas_zsyrk(CblasColMajor,
@@ -3644,13 +3647,13 @@ void ref_syr2k(hipblasFillMode_t  uplo,
                hipblasOperation_t transA,
                int64_t            n,
                int64_t            k,
-               hipblasComplex     alpha,
-               hipblasComplex*    A,
+               std::complex<float>     alpha,
+               std::complex<float>*    A,
                int64_t            lda,
-               hipblasComplex*    B,
+               std::complex<float>*    B,
                int64_t            ldb,
-               hipblasComplex     beta,
-               hipblasComplex*    C,
+               std::complex<float>     beta,
+               std::complex<float>*    C,
                int64_t            ldc)
 {
     cblas_csyr2k(CblasColMajor,
@@ -3673,13 +3676,13 @@ void ref_syr2k(hipblasFillMode_t     uplo,
                hipblasOperation_t    transA,
                int64_t               n,
                int64_t               k,
-               hipblasDoubleComplex  alpha,
-               hipblasDoubleComplex* A,
+               std::complex<double>  alpha,
+               std::complex<double>* A,
                int64_t               lda,
-               hipblasDoubleComplex* B,
+               std::complex<double>* B,
                int64_t               ldb,
-               hipblasDoubleComplex  beta,
-               hipblasDoubleComplex* C,
+               std::complex<double>  beta,
+               std::complex<double>* C,
                int64_t               ldc)
 {
     cblas_zsyr2k(CblasColMajor,
@@ -3759,16 +3762,16 @@ void ref_trsm<double>(hipblasSideMode_t  side,
 }
 
 template <>
-void ref_trsm<hipblasComplex>(hipblasSideMode_t     side,
+void ref_trsm<std::complex<float>>(hipblasSideMode_t     side,
                               hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
                               int64_t               n,
-                              hipblasComplex        alpha,
-                              const hipblasComplex* A,
+                              std::complex<float>        alpha,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       B,
+                              std::complex<float>*       B,
                               int64_t               ldb)
 {
     cblas_ctrsm(CblasColMajor,
@@ -3786,16 +3789,16 @@ void ref_trsm<hipblasComplex>(hipblasSideMode_t     side,
 }
 
 template <>
-void ref_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+void ref_trsm<std::complex<double>>(hipblasSideMode_t           side,
                                     hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
                                     int64_t                     n,
-                                    hipblasDoubleComplex        alpha,
-                                    const hipblasDoubleComplex* A,
+                                    std::complex<double>        alpha,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       B,
+                                    std::complex<double>*       B,
                                     int64_t                     ldb)
 {
     cblas_ztrsm(CblasColMajor,
@@ -3828,14 +3831,14 @@ void ref_trtri<double>(char uplo, char diag, int64_t n, double* A, int64_t lda)
 }
 
 template <>
-void ref_trtri<hipblasComplex>(char uplo, char diag, int64_t n, hipblasComplex* A, int64_t lda)
+void ref_trtri<std::complex<float>>(char uplo, char diag, int64_t n, std::complex<float>* A, int64_t lda)
 {
     lapack_xtrtri(uplo, diag, n, A, lda);
 }
 
 template <>
-void ref_trtri<hipblasDoubleComplex>(
-    char uplo, char diag, int64_t n, hipblasDoubleComplex* A, int64_t lda)
+void ref_trtri<std::complex<double>>(
+    char uplo, char diag, int64_t n, std::complex<double>* A, int64_t lda)
 {
     lapack_xtrtri(uplo, diag, n, A, lda);
 }
@@ -3898,16 +3901,16 @@ void ref_trmm<double>(hipblasSideMode_t  side,
 }
 
 template <>
-void ref_trmm<hipblasComplex>(hipblasSideMode_t     side,
+void ref_trmm<std::complex<float>>(hipblasSideMode_t     side,
                               hipblasFillMode_t     uplo,
                               hipblasOperation_t    transA,
                               hipblasDiagType_t     diag,
                               int64_t               m,
                               int64_t               n,
-                              hipblasComplex        alpha,
-                              const hipblasComplex* A,
+                              std::complex<float>        alpha,
+                              const std::complex<float>* A,
                               int64_t               lda,
-                              hipblasComplex*       B,
+                              std::complex<float>*       B,
                               int64_t               ldb)
 {
     cblas_ctrmm(CblasColMajor,
@@ -3925,16 +3928,16 @@ void ref_trmm<hipblasComplex>(hipblasSideMode_t     side,
 }
 
 template <>
-void ref_trmm<hipblasDoubleComplex>(hipblasSideMode_t           side,
+void ref_trmm<std::complex<double>>(hipblasSideMode_t           side,
                                     hipblasFillMode_t           uplo,
                                     hipblasOperation_t          transA,
                                     hipblasDiagType_t           diag,
                                     int64_t                     m,
                                     int64_t                     n,
-                                    hipblasDoubleComplex        alpha,
-                                    const hipblasDoubleComplex* A,
+                                    std::complex<double>        alpha,
+                                    const std::complex<double>* A,
                                     int64_t                     lda,
-                                    hipblasDoubleComplex*       B,
+                                    std::complex<double>*       B,
                                     int64_t                     ldb)
 {
     cblas_ztrmm(CblasColMajor,
@@ -3989,7 +3992,7 @@ int64_t ref_potrf(char uplo, int64_t m, double* A, int64_t lda)
 }
 
 template <>
-int64_t ref_potrf(char uplo, int64_t m, hipblasComplex* A, int64_t lda)
+int64_t ref_potrf(char uplo, int64_t m, std::complex<float>* A, int64_t lda)
 {
     int64_t info;
 
@@ -4003,7 +4006,7 @@ int64_t ref_potrf(char uplo, int64_t m, hipblasComplex* A, int64_t lda)
 }
 
 template <>
-int64_t ref_potrf(char uplo, int64_t m, hipblasDoubleComplex* A, int64_t lda)
+int64_t ref_potrf(char uplo, int64_t m, std::complex<double>* A, int64_t lda)
 {
     int64_t info;
 
@@ -4047,29 +4050,29 @@ int64_t ref_getrf<double>(int64_t m, int64_t n, double* A, int64_t lda, int64_t*
 
 template <>
 int64_t
-    ref_getrf<hipblasComplex>(int64_t m, int64_t n, hipblasComplex* A, int64_t lda, int64_t* ipiv)
+    ref_getrf<std::complex<float>>(int64_t m, int64_t n, std::complex<float>* A, int64_t lda, int64_t* ipiv)
 {
     int64_t info;
 
 #ifdef FLA_ENABLE_ILP64
     info = LAPACKE_cgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_float*)A, lda, ipiv);
 #else
-    cgetrf_(&m, &n, (hipblasComplex*)A, &lda, ipiv, &info);
+    cgetrf_(&m, &n, (std::complex<float>*)A, &lda, ipiv, &info);
 #endif
 
     return info;
 }
 
 template <>
-int64_t ref_getrf<hipblasDoubleComplex>(
-    int64_t m, int64_t n, hipblasDoubleComplex* A, int64_t lda, int64_t* ipiv)
+int64_t ref_getrf<std::complex<double>>(
+    int64_t m, int64_t n, std::complex<double>* A, int64_t lda, int64_t* ipiv)
 {
     int64_t info;
 
 #ifdef FLA_ENABLE_ILP64
     info = LAPACKE_zgetrf(LAPACK_COL_MAJOR, m, n, (lapack_complex_double*)A, lda, ipiv);
 #else
-    zgetrf_(&m, &n, (hipblasDoubleComplex*)A, &lda, ipiv, &info);
+    zgetrf_(&m, &n, (std::complex<double>*)A, &lda, ipiv, &info);
 #endif
 
     return info;
@@ -4119,13 +4122,13 @@ int64_t ref_getrs<double>(char     trans,
 }
 
 template <>
-int64_t ref_getrs<hipblasComplex>(char            trans,
+int64_t ref_getrs<std::complex<float>>(char            trans,
                                   int64_t         n,
                                   int64_t         nrhs,
-                                  hipblasComplex* A,
+                                  std::complex<float>* A,
                                   int64_t         lda,
                                   int64_t*        ipiv,
-                                  hipblasComplex* B,
+                                  std::complex<float>* B,
                                   int64_t         ldb)
 {
     int64_t info;
@@ -4141,20 +4144,20 @@ int64_t ref_getrs<hipblasComplex>(char            trans,
                           (lapack_complex_float*)B,
                           ldb);
 #else
-    cgetrs_(&trans, &n, &nrhs, (hipblasComplex*)A, &lda, ipiv, (hipblasComplex*)B, &ldb, &info);
+    cgetrs_(&trans, &n, &nrhs, (std::complex<float>*)A, &lda, ipiv, (std::complex<float>*)B, &ldb, &info);
 #endif
 
     return info;
 }
 
 template <>
-int64_t ref_getrs<hipblasDoubleComplex>(char                  trans,
+int64_t ref_getrs<std::complex<double>>(char                  trans,
                                         int64_t               n,
                                         int64_t               nrhs,
-                                        hipblasDoubleComplex* A,
+                                        std::complex<double>* A,
                                         int64_t               lda,
                                         int64_t*              ipiv,
-                                        hipblasDoubleComplex* B,
+                                        std::complex<double>* B,
                                         int64_t               ldb)
 {
 
@@ -4174,10 +4177,10 @@ int64_t ref_getrs<hipblasDoubleComplex>(char                  trans,
     zgetrs_(&trans,
             &n,
             &nrhs,
-            (hipblasDoubleComplex*)A,
+            (std::complex<double>*)A,
             &lda,
             ipiv,
-            (hipblasDoubleComplex*)B,
+            (std::complex<double>*)B,
             &ldb,
             &info);
 #endif
@@ -4217,8 +4220,8 @@ int64_t
 }
 
 template <>
-int64_t ref_getri<hipblasComplex>(
-    int64_t n, hipblasComplex* A, int64_t lda, int64_t* ipiv, hipblasComplex* work, int64_t lwork)
+int64_t ref_getri<std::complex<float>>(
+    int64_t n, std::complex<float>* A, int64_t lda, int64_t* ipiv, std::complex<float>* work, int64_t lwork)
 {
     int64_t info;
 
@@ -4238,11 +4241,11 @@ int64_t ref_getri<hipblasComplex>(
 }
 
 template <>
-int64_t ref_getri<hipblasDoubleComplex>(int64_t               n,
-                                        hipblasDoubleComplex* A,
+int64_t ref_getri<std::complex<double>>(int64_t               n,
+                                        std::complex<double>* A,
                                         int64_t               lda,
                                         int64_t*              ipiv,
-                                        hipblasDoubleComplex* work,
+                                        std::complex<double>* work,
                                         int64_t               lwork)
 {
     int64_t info;
@@ -4293,12 +4296,12 @@ int64_t ref_geqrf<double>(
     return info;
 }
 template <>
-int64_t ref_geqrf<hipblasComplex>(int64_t         m,
+int64_t ref_geqrf<std::complex<float>>(int64_t         m,
                                   int64_t         n,
-                                  hipblasComplex* A,
+                                  std::complex<float>* A,
                                   int64_t         lda,
-                                  hipblasComplex* tau,
-                                  hipblasComplex* work,
+                                  std::complex<float>* tau,
+                                  std::complex<float>* work,
                                   int64_t         lwork)
 {
     int64_t info;
@@ -4320,12 +4323,12 @@ int64_t ref_geqrf<hipblasComplex>(int64_t         m,
 }
 
 template <>
-int64_t ref_geqrf<hipblasDoubleComplex>(int64_t               m,
+int64_t ref_geqrf<std::complex<double>>(int64_t               m,
                                         int64_t               n,
-                                        hipblasDoubleComplex* A,
+                                        std::complex<double>* A,
                                         int64_t               lda,
-                                        hipblasDoubleComplex* tau,
-                                        hipblasDoubleComplex* work,
+                                        std::complex<double>* tau,
+                                        std::complex<double>* work,
                                         int64_t               lwork)
 {
     int64_t info;
@@ -4394,15 +4397,15 @@ int64_t ref_gels<double>(char    trans,
 }
 
 template <>
-int64_t ref_gels<hipblasComplex>(char            trans,
+int64_t ref_gels<std::complex<float>>(char            trans,
                                  int64_t         m,
                                  int64_t         n,
                                  int64_t         nrhs,
-                                 hipblasComplex* A,
+                                 std::complex<float>* A,
                                  int64_t         lda,
-                                 hipblasComplex* B,
+                                 std::complex<float>* B,
                                  int64_t         ldb,
-                                 hipblasComplex* work,
+                                 std::complex<float>* work,
                                  int64_t         lwork)
 {
     int64_t info;
@@ -4426,15 +4429,15 @@ int64_t ref_gels<hipblasComplex>(char            trans,
 }
 
 template <>
-int64_t ref_gels<hipblasDoubleComplex>(char                  trans,
+int64_t ref_gels<std::complex<double>>(char                  trans,
                                        int64_t               m,
                                        int64_t               n,
                                        int64_t               nrhs,
-                                       hipblasDoubleComplex* A,
+                                       std::complex<double>* A,
                                        int64_t               lda,
-                                       hipblasDoubleComplex* B,
+                                       std::complex<double>* B,
                                        int64_t               ldb,
-                                       hipblasDoubleComplex* work,
+                                       std::complex<double>* work,
                                        int64_t               lwork)
 {
     int64_t info;

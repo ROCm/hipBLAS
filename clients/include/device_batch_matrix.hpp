@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2025 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -127,7 +127,7 @@ public:
     //! @brief Access to device data.
     //! @return Pointer to the device data.
     //!
-    T** ptr_on_device()
+    hipblas_internal_type<T>** ptr_on_device()
     {
         return m_device_data;
     }
@@ -136,7 +136,7 @@ public:
     //! @brief Const access to device data.
     //! @return Const pointer to the device data.
     //!
-    const T* const* ptr_on_device() const
+    const hipblas_internal_type<T>* const* ptr_on_device() const
     {
         return m_device_data;
     }
@@ -145,7 +145,7 @@ public:
     //! @brief access to device data.
     //! @return Const pointer to the device data.
     //!
-    T* const* const_batch_ptr()
+    hipblas_internal_type<T>* const* const_batch_ptr()
     {
         return m_device_data;
     }
@@ -155,7 +155,7 @@ public:
     //! @param batch_index The batch index.
     //! @return Pointer to the array on device.
     //!
-    T* operator[](int64_t batch_index)
+    hipblas_internal_type<T>* operator[](int64_t batch_index)
     {
 
         return m_data[batch_index];
@@ -166,7 +166,7 @@ public:
     //! @param batch_index The batch index.
     //! @return Constant pointer to the array on device.
     //!
-    const T* operator[](int64_t batch_index) const
+    const hipblas_internal_type<T>* operator[](int64_t batch_index) const
     {
 
         return m_data[batch_index];
@@ -175,7 +175,7 @@ public:
     //!
     //! @brief Const cast of the data on host.
     //!
-    operator const T* const *() const
+    operator const hipblas_internal_type<T>* const *() const
     {
         return m_data;
     }
@@ -184,7 +184,7 @@ public:
     //! @brief Cast of the data on host.
     //!
     // clang-format off
-    operator T**()
+    operator hipblas_internal_type<T>**()
     // clang-format on
     {
         return m_data;
@@ -213,7 +213,7 @@ public:
         {
             if(hipSuccess
                != (hip_err
-                   = hipMemcpy((*this)[0], that[0], sizeof(T) * m_nmemb * m_batch_count, kind)))
+                   = hipMemcpy((*this)[0], (hipblas_internal_type<T>*)that[0], sizeof(hipblas_internal_type<T>) * m_nmemb * m_batch_count, kind)))
             {
                 return hip_err;
             }
@@ -241,8 +241,8 @@ private:
     size_t  m_nmemb{};
     int64_t m_batch_count{};
     size_t  m_offset{};
-    T**     m_data{};
-    T**     m_device_data{};
+    hipblas_internal_type<T>**     m_data{};
+    hipblas_internal_type<T>**     m_device_data{};
 
     //!
     //! @brief Try to allocate the resources.
@@ -254,12 +254,12 @@ private:
 
         success
             = (hipSuccess
-               == (!this->use_HMM ? (hipMalloc)(&m_device_data, m_batch_count * sizeof(T*))
-                                  : hipMallocManaged(&m_device_data, m_batch_count * sizeof(T*))));
+               == (!this->use_HMM ? (hipMalloc)(&m_device_data, m_batch_count * sizeof(hipblas_internal_type<T>*))
+                                  : hipMallocManaged(&m_device_data, m_batch_count * sizeof(hipblas_internal_type<T>*))));
         if(success)
         {
             success = (nullptr
-                       != (m_data = !this->use_HMM ? (T**)calloc(m_batch_count, sizeof(T*))
+                       != (m_data = !this->use_HMM ? (hipblas_internal_type<T>**)calloc(m_batch_count, sizeof(hipblas_internal_type<T>*))
                                                    : m_device_data));
             if(success)
             {
@@ -290,7 +290,7 @@ private:
                     success = (hipSuccess
                                == hipMemcpy(m_device_data,
                                             m_data,
-                                            sizeof(T*) * m_batch_count,
+                                            sizeof(hipblas_internal_type<T>*) * m_batch_count,
                                             hipMemcpyHostToDevice));
 
                     if(m_offset)
