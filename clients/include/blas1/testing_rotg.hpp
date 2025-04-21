@@ -120,7 +120,12 @@ void testing_rotg(const Arguments& arg)
     if(arg.unit_check || arg.norm_check)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasRotgFn, (handle, ha.internal_type(), hb.internal_type(), hc.internal_type(), hs.internal_type()));
+        DAPI_CHECK(hipblasRotgFn,
+                   (handle,
+                    ha.internal_type(),
+                    hb.internal_type(),
+                    hc.internal_type(),
+                    hs.internal_type()));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));
         DAPI_CHECK(hipblasRotgFn, (handle, da, db, dc, ds));

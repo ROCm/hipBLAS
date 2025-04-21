@@ -201,11 +201,11 @@ public:
     }
 
 private:
-    size_t        m_n{};
-    int64_t       m_inc{};
-    hipblasStride m_stride{};
-    int64_t       m_batch_count{};
-    hipblas_internal_type<T>*            m_data{};
+    size_t                    m_n{};
+    int64_t                   m_inc{};
+    hipblasStride             m_stride{};
+    int64_t                   m_batch_count{};
+    hipblas_internal_type<T>* m_data{};
 
     static size_t calculate_nmemb(size_t n, int64_t inc, hipblasStride stride, int64_t batch_count)
     {

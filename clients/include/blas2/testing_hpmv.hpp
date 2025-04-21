@@ -40,7 +40,7 @@ inline void testname_hpmv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hpmv_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHpmvFn = FORTRAN ? hipblasHpmv<T, true> : hipblasHpmv<T, false>;
 
@@ -156,7 +156,7 @@ void testing_hpmv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hpmv(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHpmvFn = FORTRAN ? hipblasHpmv<T, true> : hipblasHpmv<T, false>;
     auto hipblasHpmvFn_64
@@ -240,7 +240,16 @@ void testing_hpmv(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasHpmvFn,
-                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dAp, dx, incx, reinterpret_cast<Ts*>(&h_beta), dy, incy));
+                   (handle,
+                    uplo,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dAp,
+                    dx,
+                    incx,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dy,
+                    incy));
 
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));
         CHECK_HIP_ERROR(dy.transfer_from(hy));

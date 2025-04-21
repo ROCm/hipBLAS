@@ -40,7 +40,7 @@ inline void testname_syr2(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_syr2_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSyr2Fn = arg.api == FORTRAN ? hipblasSyr2<T, true> : hipblasSyr2<T, false>;
     auto hipblasSyr2Fn_64
         = arg.api == FORTRAN_64 ? hipblasSyr2_64<T, true> : hipblasSyr2_64<T, false>;
@@ -135,7 +135,7 @@ void testing_syr2_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSyr2Fn = arg.api == FORTRAN ? hipblasSyr2<T, true> : hipblasSyr2<T, false>;
     auto hipblasSyr2Fn_64
         = arg.api == FORTRAN_64 ? hipblasSyr2_64<T, true> : hipblasSyr2_64<T, false>;
@@ -208,7 +208,8 @@ void testing_syr2(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasSyr2Fn, (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
+        DAPI_CHECK(hipblasSyr2Fn,
+                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
 
         CHECK_HIP_ERROR(hA_host.transfer_from(dA));
         CHECK_HIP_ERROR(dA.transfer_from(hA));

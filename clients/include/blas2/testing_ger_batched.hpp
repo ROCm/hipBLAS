@@ -41,7 +41,7 @@ inline void testname_ger_batched(const Arguments& arg, std::string& name)
 template <typename T, bool CONJ = false>
 void testing_ger_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGerBatchedFn
         = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)
@@ -190,7 +190,7 @@ void testing_ger_batched_bad_arg(const Arguments& arg)
 template <typename T, bool CONJ>
 void testing_ger_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGerBatchedFn
         = FORTRAN ? (CONJ ? hipblasGerBatched<T, true, true> : hipblasGerBatched<T, false, true>)

@@ -195,7 +195,8 @@ auto hipblas_blas1_ex_dispatch(const Arguments& arg)
            && Tex == HIPBLAS_C_32F)
         {
             // rot with complex x/y/compute and real cs
-            return TEST<std::complex<float>, std::complex<float>, float, std::complex<float>>{}(arg);
+            return TEST<std::complex<float>, std::complex<float>, float, std::complex<float>>{}(
+                arg);
         }
         else if(Ta == HIPBLAS_C_64F && Tx == HIPBLAS_C_64F && Ty == HIPBLAS_R_64F
                 && Tex == HIPBLAS_C_64F)

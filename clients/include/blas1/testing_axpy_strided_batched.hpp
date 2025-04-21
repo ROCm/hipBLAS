@@ -40,7 +40,7 @@ inline void testname_axpy_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_axpy_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyStridedBatchedFn
         = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
@@ -112,7 +112,7 @@ void testing_axpy_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_axpy_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasAxpyStridedBatchedFn
         = FORTRAN ? hipblasAxpyStridedBatched<T, true> : hipblasAxpyStridedBatched<T, false>;
@@ -188,7 +188,16 @@ void testing_axpy_strided_batched(const Arguments& arg)
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasAxpyStridedBatchedFn,
-                   (handle, N, reinterpret_cast<Ts*>(&alpha), dx, incx, stride_x, dy, incy, stride_y, batch_count));
+                   (handle,
+                    N,
+                    reinterpret_cast<Ts*>(&alpha),
+                    dx,
+                    incx,
+                    stride_x,
+                    dy,
+                    incy,
+                    stride_y,
+                    batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));

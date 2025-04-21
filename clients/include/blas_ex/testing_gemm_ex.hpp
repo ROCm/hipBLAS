@@ -99,7 +99,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
     device_matrix<To> dC(M, N, ldc);
 
     device_vector<Tex> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
-    Ts                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+    Ts                 h_alpha(1), h_beta(2), h_one(1), h_zero(0);
 
     if constexpr(std::is_same_v<Tex, hipblasHalf>)
         h_one = float_to_half(1.0f);
@@ -291,7 +291,7 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 template <typename Ti, typename To = Ti, typename Tex = To>
 void testing_gemm_ex(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<Tex>;
+    using Ts             = hipblas_internal_type<Tex>;
     auto hipblasGemmExFn = arg.api == FORTRAN ? hipblasGemmExFortran : hipblasGemmEx;
     auto hipblasGemmExWithFlagsFn
         = arg.api == FORTRAN ? hipblasGemmExWithFlagsFortran : hipblasGemmExWithFlags;

@@ -40,13 +40,13 @@ inline void testname_spr(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_spr_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts             = hipblas_internal_type<T>;
     auto hipblasSprFn    = arg.api == FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
     auto hipblasSprFn_64 = arg.api == FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
 
-    const Ts           h_alpha(1), h_zero(0);
-    const Ts*          alpha = &h_alpha;
-    const Ts*          zero  = &h_zero;
+    const Ts          h_alpha(1), h_zero(0);
+    const Ts*         alpha = &h_alpha;
+    const Ts*         zero  = &h_zero;
     hipblasFillMode_t uplo  = HIPBLAS_FILL_MODE_UPPER;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -117,7 +117,7 @@ void testing_spr_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_spr(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts             = hipblas_internal_type<T>;
     auto hipblasSprFn    = arg.api == FORTRAN ? hipblasSpr<T, true> : hipblasSpr<T, false>;
     auto hipblasSprFn_64 = arg.api == FORTRAN_64 ? hipblasSpr_64<T, true> : hipblasSpr_64<T, false>;
 

@@ -48,7 +48,7 @@ inline void testname_syr2_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_syr2_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSyr2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSyr2StridedBatched<T, true>
                                                              : hipblasSyr2StridedBatched<T, false>;
     auto hipblasSyr2StridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -281,7 +281,7 @@ void testing_syr2_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSyr2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSyr2StridedBatched<T, true>
                                                              : hipblasSyr2StridedBatched<T, false>;
     auto hipblasSyr2StridedBatchedFn_64 = arg.api == FORTRAN_64

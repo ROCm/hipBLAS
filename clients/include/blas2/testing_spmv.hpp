@@ -40,7 +40,7 @@ inline void testname_spmv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_spmv_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSpmvFn = arg.api == FORTRAN ? hipblasSpmv<T, true> : hipblasSpmv<T, false>;
     auto hipblasSpmvFn_64
         = arg.api == FORTRAN_64 ? hipblasSpmv_64<T, true> : hipblasSpmv_64<T, false>;
@@ -148,7 +148,7 @@ void testing_spmv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_spmv(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSpmvFn = arg.api == FORTRAN ? hipblasSpmv<T, true> : hipblasSpmv<T, false>;
     auto hipblasSpmvFn_64
         = arg.api == FORTRAN_64 ? hipblasSpmv_64<T, true> : hipblasSpmv_64<T, false>;
@@ -181,7 +181,7 @@ void testing_spmv(const Arguments& arg)
 
     T h_alpha = arg.get_alpha<T>();
 
-    T h_beta  = arg.get_beta<T>();
+    T h_beta = arg.get_beta<T>();
 
     // Naming: `h` is in CPU (host) memory(eg hAp), `d` is in GPU (device) memory (eg dAp).
     // Allocate host memory
@@ -233,7 +233,17 @@ void testing_spmv(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasSpmvFn, (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dAp, dx, incx, reinterpret_cast<Ts*>(&h_beta), dy, incy));
+        DAPI_CHECK(hipblasSpmvFn,
+                   (handle,
+                    uplo,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dAp,
+                    dx,
+                    incx,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dy,
+                    incy));
 
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));
         CHECK_HIP_ERROR(dy.transfer_from(hy));

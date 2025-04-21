@@ -743,11 +743,10 @@ struct perf_blas<T, U, std::enable_if_t<std::is_same<T, hipblasHalf>{}>> : hipbl
 };
 
 template <typename T, typename U>
-struct perf_blas<
-    T,
-    U,
-    std::enable_if_t<std::is_same<T, std::complex<double>>{} || std::is_same<T, std::complex<float>>{}>>
-    : hipblas_test_valid
+struct perf_blas<T,
+                 U,
+                 std::enable_if_t<std::is_same<T, std::complex<double>>{}
+                                  || std::is_same<T, std::complex<float>>{}>> : hipblas_test_valid
 {
     void operator()(const Arguments& arg)
     {
@@ -946,10 +945,12 @@ struct perf_blas_axpy_ex<
                 hipblasHalf> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
         || (std::is_same_v<
                 Ta,
-                std::complex<float>> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+                std::complex<
+                    float>> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
         || (std::is_same_v<
                 Ta,
-                std::complex<double>> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
+                std::complex<
+                    double>> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Ty, Tex>)
         || (std::is_same_v<
                 Ta,
                 hipblasHalf> && std::is_same_v<Ta, Tx> && std::is_same_v<Tx, Ty> && std::is_same_v<Tex, float>)
@@ -1164,7 +1165,8 @@ struct perf_blas_scal_ex<
         (std::is_same<Ta, float>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, double>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Tex>{})
-        || (std::is_same<Ta, std::complex<float>>{} && std::is_same<Ta, Tx>{} && std::is_same<Tx, Tex>{})
+        || (std::is_same<Ta, std::complex<float>>{} && std::is_same<Ta, Tx>{}
+            && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, std::complex<double>>{} && std::is_same<Ta, Tx>{}
             && std::is_same<Tx, Tex>{})
         || (std::is_same<Ta, hipblasHalf>{} && std::is_same<Ta, Tx>{} && std::is_same<Tex, float>{})

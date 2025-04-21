@@ -40,7 +40,7 @@ inline void testname_axpy_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_ex_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<Ta>;
+    using Ts                = hipblas_internal_type<Ta>;
     auto hipblasAxpyExFn    = arg.api == FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
     auto hipblasAxpyExFn_64 = arg.api == FORTRAN_64 ? hipblasAxpyEx_64Fortran : hipblasAxpyEx_64;
 
@@ -167,7 +167,7 @@ void testing_axpy_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Ty = Tx, typename Tex = Ty>
 void testing_axpy_ex(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<Ta>;
+    using Ts                = hipblas_internal_type<Ta>;
     auto hipblasAxpyExFn    = arg.api == FORTRAN ? hipblasAxpyExFortran : hipblasAxpyEx;
     auto hipblasAxpyExFn_64 = arg.api == FORTRAN_64 ? hipblasAxpyEx_64Fortran : hipblasAxpyEx_64;
 
@@ -238,7 +238,17 @@ void testing_axpy_ex(const Arguments& arg)
     =================================================================== */
     CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
     DAPI_CHECK(hipblasAxpyExFn,
-               (handle, N, reinterpret_cast<Ts*>(&h_alpha), alphaType, dx, xType, incx, dy, yType, incy, executionType));
+               (handle,
+                N,
+                reinterpret_cast<Ts*>(&h_alpha),
+                alphaType,
+                dx,
+                xType,
+                incx,
+                dy,
+                yType,
+                incy,
+                executionType));
 
     // copy output from device to CPU
     CHECK_HIP_ERROR(hy_host.transfer_from(dy));

@@ -40,7 +40,7 @@ inline void testname_ger(const Arguments& arg, std::string& name)
 template <typename T, bool CONJ = false>
 void testing_ger_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts          = hipblas_internal_type<T>;
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
@@ -134,7 +134,7 @@ void testing_ger_bad_arg(const Arguments& arg)
 template <typename T, bool CONJ>
 void testing_ger(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts          = hipblas_internal_type<T>;
     bool FORTRAN      = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGerFn = FORTRAN ? (CONJ ? hipblasGer<T, true, true> : hipblasGer<T, false, true>)
                                 : (CONJ ? hipblasGer<T, true, false> : hipblasGer<T, false, false>);
@@ -209,7 +209,8 @@ void testing_ger(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasGerFn, (handle, M, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
+        DAPI_CHECK(hipblasGerFn,
+                   (handle, M, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
 
         CHECK_HIP_ERROR(hA_host.transfer_from(dA));
         CHECK_HIP_ERROR(dA.transfer_from(hA));

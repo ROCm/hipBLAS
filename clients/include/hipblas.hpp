@@ -7301,41 +7301,52 @@ namespace
 {
     // Scal
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScal)(hipblasHandle_t handle, int n, const hipblas_internal_type<U>* alpha, hipblas_internal_type<T>* x, int incx);
+    hipblasStatus_t (*hipblasScal)(hipblasHandle_t                 handle,
+                                   int                             n,
+                                   const hipblas_internal_type<U>* alpha,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScalBatched)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<U>* alpha, hipblas_internal_type<T>* const x[], int incx, int batch_count);
+    hipblasStatus_t (*hipblasScalBatched)(hipblasHandle_t                 handle,
+                                          int                             n,
+                                          const hipblas_internal_type<U>* alpha,
+                                          hipblas_internal_type<T>* const x[],
+                                          int                             incx,
+                                          int                             batch_count);
 
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScalStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<U>*        alpha,
-                                                 hipblas_internal_type<T>*              x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasScalStridedBatched)(hipblasHandle_t                 handle,
+                                                 int                             n,
+                                                 const hipblas_internal_type<U>* alpha,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 int                             batch_count);
 
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScal_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<U>* alpha, hipblas_internal_type<T>* x, int64_t incx);
+    hipblasStatus_t (*hipblasScal_64)(hipblasHandle_t                 handle,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<U>* alpha,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScalBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             const hipblas_internal_type<U>*        alpha,
-                                             hipblas_internal_type<T>* const        x[],
-                                             int64_t         incx,
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasScalBatched_64)(hipblasHandle_t                 handle,
+                                             int64_t                         n,
+                                             const hipblas_internal_type<U>* alpha,
+                                             hipblas_internal_type<T>* const x[],
+                                             int64_t                         incx,
+                                             int64_t                         batch_count);
 
     template <typename T, typename U = T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasScalStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<U>*        alpha,
-                                                    hipblas_internal_type<T>*              x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasScalStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<U>* alpha,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasScal, float, float, hipblasSscal);
     MAP2CF_D64(hipblasScal, double, double, hipblasDscal);
@@ -7346,7 +7357,10 @@ namespace
 
     MAP2CF_D64(hipblasScalBatched, float, float, hipblasSscalBatched);
     MAP2CF_D64(hipblasScalBatched, double, double, hipblasDscalBatched);
-    MAP2CF_D64_V2(hipblasScalBatched, std::complex<float>, std::complex<float>, hipblasCscalBatched);
+    MAP2CF_D64_V2(hipblasScalBatched,
+                  std::complex<float>,
+                  std::complex<float>,
+                  hipblasCscalBatched);
     MAP2CF_D64_V2(hipblasScalBatched,
                   std::complex<double>,
                   std::complex<double>,
@@ -7364,7 +7378,10 @@ namespace
                   std::complex<double>,
                   std::complex<double>,
                   hipblasZscalStridedBatched);
-    MAP2CF_D64_V2(hipblasScalStridedBatched, std::complex<float>, float, hipblasCsscalStridedBatched);
+    MAP2CF_D64_V2(hipblasScalStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasCsscalStridedBatched);
     MAP2CF_D64_V2(hipblasScalStridedBatched,
                   std::complex<double>,
                   double,
@@ -7372,52 +7389,60 @@ namespace
 
     // Copy
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopy)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* x, int incx, hipblas_internal_type<T>* y, int incy);
+    hipblasStatus_t (*hipblasCopy)(hipblasHandle_t                 handle,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopyBatched)(hipblasHandle_t handle,
-                                          int             n,
-                                          const hipblas_internal_type<T>* const  x[],
-                                          int             incx,
-                                          hipblas_internal_type<T>* const        y[],
-                                          int             incy,
-                                          int             batch_count);
+    hipblasStatus_t (*hipblasCopyBatched)(hipblasHandle_t                       handle,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopyStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<T>*        x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 hipblas_internal_type<T>*              y,
-                                                 int             incy,
-                                                 hipblasStride   stridey,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasCopyStridedBatched)(hipblasHandle_t                 handle,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopy_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<T>* x, int64_t incx, hipblas_internal_type<T>* y, int64_t incy);
+    hipblasStatus_t (*hipblasCopy_64)(hipblasHandle_t                 handle,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopyBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             const hipblas_internal_type<T>* const  x[],
-                                             int64_t         incx,
-                                             hipblas_internal_type<T>* const        y[],
-                                             int64_t         incy,
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasCopyBatched_64)(hipblasHandle_t                       handle,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasCopyStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<T>*        x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    hipblas_internal_type<T>*              y,
-                                                    int64_t         incy,
-                                                    hipblasStride   stridey,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasCopyStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasCopy, float, hipblasScopy);
     MAP2CF_D64(hipblasCopy, double, hipblasDcopy);
@@ -7436,51 +7461,60 @@ namespace
 
     // Swap
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwap)(hipblasHandle_t handle, int n, hipblas_internal_type<T>* x, int incx, hipblas_internal_type<T>* y, int incy);
+    hipblasStatus_t (*hipblasSwap)(hipblasHandle_t           handle,
+                                   int                       n,
+                                   hipblas_internal_type<T>* x,
+                                   int                       incx,
+                                   hipblas_internal_type<T>* y,
+                                   int                       incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwapBatched)(hipblasHandle_t handle,
-                                          int             n,
-                                          hipblas_internal_type<T>* const        x[],
-                                          int             incx,
-                                          hipblas_internal_type<T>* const        y[],
-                                          int             incy,
-                                          int             batch_count);
+    hipblasStatus_t (*hipblasSwapBatched)(hipblasHandle_t                 handle,
+                                          int                             n,
+                                          hipblas_internal_type<T>* const x[],
+                                          int                             incx,
+                                          hipblas_internal_type<T>* const y[],
+                                          int                             incy,
+                                          int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwapStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 hipblas_internal_type<T>*              x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 hipblas_internal_type<T>*              y,
-                                                 int             incy,
-                                                 hipblasStride   stridey,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasSwapStridedBatched)(hipblasHandle_t           handle,
+                                                 int                       n,
+                                                 hipblas_internal_type<T>* x,
+                                                 int                       incx,
+                                                 hipblasStride             stridex,
+                                                 hipblas_internal_type<T>* y,
+                                                 int                       incy,
+                                                 hipblasStride             stridey,
+                                                 int                       batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwap_64)(
-        hipblasHandle_t handle, int64_t n, hipblas_internal_type<T>* x, int64_t incx, hipblas_internal_type<T>* y, int64_t incy);
+    hipblasStatus_t (*hipblasSwap_64)(hipblasHandle_t           handle,
+                                      int64_t                   n,
+                                      hipblas_internal_type<T>* x,
+                                      int64_t                   incx,
+                                      hipblas_internal_type<T>* y,
+                                      int64_t                   incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwapBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             hipblas_internal_type<T>* const        x[],
-                                             int64_t         incx,
-                                             hipblas_internal_type<T>* const        y[],
-                                             int64_t         incy,
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasSwapBatched_64)(hipblasHandle_t                 handle,
+                                             int64_t                         n,
+                                             hipblas_internal_type<T>* const x[],
+                                             int64_t                         incx,
+                                             hipblas_internal_type<T>* const y[],
+                                             int64_t                         incy,
+                                             int64_t                         batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSwapStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    hipblas_internal_type<T>*              x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    hipblas_internal_type<T>*              y,
-                                                    int64_t         incy,
-                                                    hipblasStride   stridey,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasSwapStridedBatched_64)(hipblasHandle_t           handle,
+                                                    int64_t                   n,
+                                                    hipblas_internal_type<T>* x,
+                                                    int64_t                   incx,
+                                                    hipblasStride             stridex,
+                                                    hipblas_internal_type<T>* y,
+                                                    int64_t                   incy,
+                                                    hipblasStride             stridey,
+                                                    int64_t                   batch_count);
 
     MAP2CF_D64(hipblasSwap, float, hipblasSswap);
     MAP2CF_D64(hipblasSwap, double, hipblasDswap);
@@ -7499,118 +7533,128 @@ namespace
 
     // Dot
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDot)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* x, int incx, const hipblas_internal_type<T>* y, int incy, hipblas_internal_type<T>* result);
+    hipblasStatus_t (*hipblasDot)(hipblasHandle_t                 handle,
+                                  int                             n,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  const hipblas_internal_type<T>* y,
+                                  int                             incy,
+                                  hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotc)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* x, int incx, const hipblas_internal_type<T>* y, int incy, hipblas_internal_type<T>* result);
+    hipblasStatus_t (*hipblasDotc)(hipblasHandle_t                 handle,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* y,
+                                   int                             incy,
+                                   hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotBatched)(hipblasHandle_t handle,
-                                         int             n,
-                                         const hipblas_internal_type<T>* const  x[],
-                                         int             incx,
-                                         const hipblas_internal_type<T>* const  y[],
-                                         int             incy,
-                                         int             batch_count,
-                                         hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotBatched)(hipblasHandle_t                       handle,
+                                         int                                   n,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         const hipblas_internal_type<T>* const y[],
+                                         int                                   incy,
+                                         int                                   batch_count,
+                                         hipblas_internal_type<T>*             result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotcBatched)(hipblasHandle_t handle,
-                                          int             n,
-                                          const hipblas_internal_type<T>* const  x[],
-                                          int             incx,
-                                          const hipblas_internal_type<T>* const  y[],
-                                          int             incy,
-                                          int             batch_count,
-                                          hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotcBatched)(hipblasHandle_t                       handle,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>* const y[],
+                                          int                                   incy,
+                                          int                                   batch_count,
+                                          hipblas_internal_type<T>*             result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotStridedBatched)(hipblasHandle_t handle,
-                                                int             n,
-                                                const hipblas_internal_type<T>*        x,
-                                                int             incx,
-                                                hipblasStride   stridex,
-                                                const hipblas_internal_type<T>*        y,
-                                                int             incy,
-                                                hipblasStride   stridey,
-                                                int             batch_count,
-                                                hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotStridedBatched)(hipblasHandle_t                 handle,
+                                                int                             n,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                const hipblas_internal_type<T>* y,
+                                                int                             incy,
+                                                hipblasStride                   stridey,
+                                                int                             batch_count,
+                                                hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotcStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<T>*        x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 const hipblas_internal_type<T>*        y,
-                                                 int             incy,
-                                                 hipblasStride   stridey,
-                                                 int             batch_count,
-                                                 hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotcStridedBatched)(hipblasHandle_t                 handle,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batch_count,
+                                                 hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDot_64)(hipblasHandle_t handle,
-                                     int64_t         n,
-                                     const hipblas_internal_type<T>*        x,
-                                     int64_t         incx,
-                                     const hipblas_internal_type<T>*        y,
-                                     int64_t         incy,
-                                     hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDot_64)(hipblasHandle_t                 handle,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     const hipblas_internal_type<T>* y,
+                                     int64_t                         incy,
+                                     hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotc_64)(hipblasHandle_t handle,
-                                      int64_t         n,
-                                      const hipblas_internal_type<T>*        x,
-                                      int64_t         incx,
-                                      const hipblas_internal_type<T>*        y,
-                                      int64_t         incy,
-                                      hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotc_64)(hipblasHandle_t                 handle,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* y,
+                                      int64_t                         incy,
+                                      hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotBatched_64)(hipblasHandle_t handle,
-                                            int64_t         n,
-                                            const hipblas_internal_type<T>* const  x[],
-                                            int64_t         incx,
-                                            const hipblas_internal_type<T>* const  y[],
-                                            int64_t         incy,
-                                            int64_t         batch_count,
-                                            hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotBatched_64)(hipblasHandle_t                       handle,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            const hipblas_internal_type<T>* const y[],
+                                            int64_t                               incy,
+                                            int64_t                               batch_count,
+                                            hipblas_internal_type<T>*             result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotcBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             const hipblas_internal_type<T>* const  x[],
-                                             int64_t         incx,
-                                             const hipblas_internal_type<T>* const  y[],
-                                             int64_t         incy,
-                                             int64_t         batch_count,
-                                             hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotcBatched_64)(hipblasHandle_t                       handle,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>* const y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count,
+                                             hipblas_internal_type<T>*             result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotStridedBatched_64)(hipblasHandle_t handle,
-                                                   int64_t         n,
-                                                   const hipblas_internal_type<T>*        x,
-                                                   int64_t         incx,
-                                                   hipblasStride   stridex,
-                                                   const hipblas_internal_type<T>*        y,
-                                                   int64_t         incy,
-                                                   hipblasStride   stridey,
-                                                   int64_t         batch_count,
-                                                   hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   const hipblas_internal_type<T>* y,
+                                                   int64_t                         incy,
+                                                   hipblasStride                   stridey,
+                                                   int64_t                         batch_count,
+                                                   hipblas_internal_type<T>*       result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDotcStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<T>*        x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    const hipblas_internal_type<T>*        y,
-                                                    int64_t         incy,
-                                                    hipblasStride   stridey,
-                                            hipblas_internal_type<        int64_t>         batch_count,
-                                                    hipblas_internal_type<T>*              result);
+    hipblasStatus_t (*hipblasDotcStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    hipblas_internal_type<int64_t>  batch_count,
+                                                    hipblas_internal_type<T>*       result);
 
     MAP2CF_D64(hipblasDot, hipblasHalf, hipblasHdot);
     MAP2CF_D64(hipblasDot, hipblasBfloat16, hipblasBfdot);
@@ -7641,42 +7685,52 @@ namespace
 
     // Asum
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsum)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T1>* x, int incx, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasAsum)(hipblasHandle_t                  handle,
+                                   int                              n,
+                                   const hipblas_internal_type<T1>* x,
+                                   int                              incx,
+                                   hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsumBatched)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T1>* const x[], int incx, int batch_count, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasAsumBatched)(hipblasHandle_t                        handle,
+                                          int                                    n,
+                                          const hipblas_internal_type<T1>* const x[],
+                                          int                                    incx,
+                                          int                                    batch_count,
+                                          hipblas_internal_type<T2>*             result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsumStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<T1>*       x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 int             batch_count,
-                                                 hipblas_internal_type<T2>*             result);
+    hipblasStatus_t (*hipblasAsumStridedBatched)(hipblasHandle_t                  handle,
+                                                 int                              n,
+                                                 const hipblas_internal_type<T1>* x,
+                                                 int                              incx,
+                                                 hipblasStride                    stridex,
+                                                 int                              batch_count,
+                                                 hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsum_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<T1>* x, int64_t incx, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasAsum_64)(hipblasHandle_t                  handle,
+                                      int64_t                          n,
+                                      const hipblas_internal_type<T1>* x,
+                                      int64_t                          incx,
+                                      hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsumBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
+    hipblasStatus_t (*hipblasAsumBatched_64)(hipblasHandle_t                        handle,
+                                             int64_t                                n,
                                              const hipblas_internal_type<T1>* const x[],
-                                             int64_t         incx,
-                                             int64_t         batch_count,
+                                             int64_t                                incx,
+                                             int64_t                                batch_count,
                                              hipblas_internal_type<T2>*             result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAsumStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<T1>*       x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    int64_t         batch_count,
-                                                    hipblas_internal_type<T2>*             result);
+    hipblasStatus_t (*hipblasAsumStridedBatched_64)(hipblasHandle_t                  handle,
+                                                    int64_t                          n,
+                                                    const hipblas_internal_type<T1>* x,
+                                                    int64_t                          incx,
+                                                    hipblasStride                    stridex,
+                                                    int64_t                          batch_count,
+                                                    hipblas_internal_type<T2>*       result);
 
     MAP2CF_D64(hipblasAsum, float, float, hipblasSasum);
     MAP2CF_D64(hipblasAsum, double, double, hipblasDasum);
@@ -7690,7 +7744,10 @@ namespace
 
     MAP2CF_D64(hipblasAsumStridedBatched, float, float, hipblasSasumStridedBatched);
     MAP2CF_D64(hipblasAsumStridedBatched, double, double, hipblasDasumStridedBatched);
-    MAP2CF_D64_V2(hipblasAsumStridedBatched, std::complex<float>, float, hipblasScasumStridedBatched);
+    MAP2CF_D64_V2(hipblasAsumStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasScasumStridedBatched);
     MAP2CF_D64_V2(hipblasAsumStridedBatched,
                   std::complex<double>,
                   double,
@@ -7698,42 +7755,52 @@ namespace
 
     // nrm2
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T1>* x, int incx, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasNrm2)(hipblasHandle_t                  handle,
+                                   int                              n,
+                                   const hipblas_internal_type<T1>* x,
+                                   int                              incx,
+                                   hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2Batched)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T1>* const x[], int incx, int batch_count, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasNrm2Batched)(hipblasHandle_t                        handle,
+                                          int                                    n,
+                                          const hipblas_internal_type<T1>* const x[],
+                                          int                                    incx,
+                                          int                                    batch_count,
+                                          hipblas_internal_type<T2>*             result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2StridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<T1>*       x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 int             batch_count,
-                                                 hipblas_internal_type<T2>*             result);
+    hipblasStatus_t (*hipblasNrm2StridedBatched)(hipblasHandle_t                  handle,
+                                                 int                              n,
+                                                 const hipblas_internal_type<T1>* x,
+                                                 int                              incx,
+                                                 hipblasStride                    stridex,
+                                                 int                              batch_count,
+                                                 hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<T1>* x, int64_t incx, hipblas_internal_type<T2>* result);
+    hipblasStatus_t (*hipblasNrm2_64)(hipblasHandle_t                  handle,
+                                      int64_t                          n,
+                                      const hipblas_internal_type<T1>* x,
+                                      int64_t                          incx,
+                                      hipblas_internal_type<T2>*       result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2Batched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
+    hipblasStatus_t (*hipblasNrm2Batched_64)(hipblasHandle_t                        handle,
+                                             int64_t                                n,
                                              const hipblas_internal_type<T1>* const x[],
-                                             int64_t         incx,
-                                             int64_t         batch_count,
+                                             int64_t                                incx,
+                                             int64_t                                batch_count,
                                              hipblas_internal_type<T2>*             result);
 
     template <typename T1, typename T2, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasNrm2StridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<T1>*       x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    int64_t         batch_count,
-                                                    hipblas_internal_type<T2>*             result);
+    hipblasStatus_t (*hipblasNrm2StridedBatched_64)(hipblasHandle_t                  handle,
+                                                    int64_t                          n,
+                                                    const hipblas_internal_type<T1>* x,
+                                                    int64_t                          incx,
+                                                    hipblasStride                    stridex,
+                                                    int64_t                          batch_count,
+                                                    hipblas_internal_type<T2>*       result);
 
     MAP2CF_D64(hipblasNrm2, float, float, hipblasSnrm2);
     MAP2CF_D64(hipblasNrm2, double, double, hipblasDnrm2);
@@ -7747,7 +7814,10 @@ namespace
 
     MAP2CF_D64(hipblasNrm2StridedBatched, float, float, hipblasSnrm2StridedBatched);
     MAP2CF_D64(hipblasNrm2StridedBatched, double, double, hipblasDnrm2StridedBatched);
-    MAP2CF_D64_V2(hipblasNrm2StridedBatched, std::complex<float>, float, hipblasScnrm2StridedBatched);
+    MAP2CF_D64_V2(hipblasNrm2StridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasScnrm2StridedBatched);
     MAP2CF_D64_V2(hipblasNrm2StridedBatched,
                   std::complex<double>,
                   double,
@@ -7755,66 +7825,72 @@ namespace
 
     // Rot
     template <typename T1, typename T2, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRot)(
-        hipblasHandle_t handle, int n, hipblas_internal_type<T1>* x, int incx, hipblas_internal_type<T1>* y, int incy, const hipblas_internal_type<T2>* c, const hipblas_internal_type<T3>* s);
+    hipblasStatus_t (*hipblasRot)(hipblasHandle_t                  handle,
+                                  int                              n,
+                                  hipblas_internal_type<T1>*       x,
+                                  int                              incx,
+                                  hipblas_internal_type<T1>*       y,
+                                  int                              incy,
+                                  const hipblas_internal_type<T2>* c,
+                                  const hipblas_internal_type<T3>* s);
 
     template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotBatched)(hipblasHandle_t handle,
-                                         int             n,
-                                         hipblas_internal_type<T1>* const       x[],
-                                         int             incx,
-                                         hipblas_internal_type<T1>* const       y[],
-                                         int             incy,
-                                         const hipblas_internal_type<T2>*       c,
-                                         const hipblas_internal_type<T3>*       s,
-                                         int             batch_count);
+    hipblasStatus_t (*hipblasRotBatched)(hipblasHandle_t                  handle,
+                                         int                              n,
+                                         hipblas_internal_type<T1>* const x[],
+                                         int                              incx,
+                                         hipblas_internal_type<T1>* const y[],
+                                         int                              incy,
+                                         const hipblas_internal_type<T2>* c,
+                                         const hipblas_internal_type<T3>* s,
+                                         int                              batch_count);
 
     template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotStridedBatched)(hipblasHandle_t handle,
-                                                int             n,
-                                                hipblas_internal_type<T1>*             x,
-                                                int             incx,
-                                                hipblasStride   stridex,
-                                                hipblas_internal_type<T1>*             y,
-                                                int             incy,
-                                                hipblasStride   stridey,
-                                                const hipblas_internal_type<T2>*       c,
-                                                const hipblas_internal_type<T3>*       s,
-                                                int             batch_count);
+    hipblasStatus_t (*hipblasRotStridedBatched)(hipblasHandle_t                  handle,
+                                                int                              n,
+                                                hipblas_internal_type<T1>*       x,
+                                                int                              incx,
+                                                hipblasStride                    stridex,
+                                                hipblas_internal_type<T1>*       y,
+                                                int                              incy,
+                                                hipblasStride                    stridey,
+                                                const hipblas_internal_type<T2>* c,
+                                                const hipblas_internal_type<T3>* s,
+                                                int                              batch_count);
 
     template <typename T1, typename T2, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRot_64)(hipblasHandle_t handle,
-                                     int64_t         n,
-                                     hipblas_internal_type<T1>*             x,
-                                     int64_t         incx,
-                                     hipblas_internal_type<T1>*             y,
-                                     int64_t         incy,
-                                     const hipblas_internal_type<T2>*       c,
-                                     const hipblas_internal_type<T3>*       s);
+    hipblasStatus_t (*hipblasRot_64)(hipblasHandle_t                  handle,
+                                     int64_t                          n,
+                                     hipblas_internal_type<T1>*       x,
+                                     int64_t                          incx,
+                                     hipblas_internal_type<T1>*       y,
+                                     int64_t                          incy,
+                                     const hipblas_internal_type<T2>* c,
+                                     const hipblas_internal_type<T3>* s);
 
     template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotBatched_64)(hipblasHandle_t handle,
-                                            int64_t         n,
-                                            hipblas_internal_type<T1>* const       x[],
-                                            int64_t         incx,
-                                            hipblas_internal_type<T1>* const       y[],
-                                            int64_t         incy,
-                                            const hipblas_internal_type<T2>*       c,
-                                            const hipblas_internal_type<T3>*       s,
-                                            int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotBatched_64)(hipblasHandle_t                  handle,
+                                            int64_t                          n,
+                                            hipblas_internal_type<T1>* const x[],
+                                            int64_t                          incx,
+                                            hipblas_internal_type<T1>* const y[],
+                                            int64_t                          incy,
+                                            const hipblas_internal_type<T2>* c,
+                                            const hipblas_internal_type<T3>* s,
+                                            int64_t                          batch_count);
 
     template <typename T1, typename T2 = T1, typename T3 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotStridedBatched_64)(hipblasHandle_t handle,
-                                                   int64_t         n,
-                                                   hipblas_internal_type<T1>*             x,
-                                                   int64_t         incx,
-                                                   hipblasStride   stridex,
-                                                   hipblas_internal_type<T1>*             y,
-                                                   int64_t         incy,
-                                                   hipblasStride   stridey,
-                                                   const hipblas_internal_type<T2>*       c,
-                                                   const hipblas_internal_type<T3>*       s,
-                                                   int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotStridedBatched_64)(hipblasHandle_t                  handle,
+                                                   int64_t                          n,
+                                                   hipblas_internal_type<T1>*       x,
+                                                   int64_t                          incx,
+                                                   hipblasStride                    stridex,
+                                                   hipblas_internal_type<T1>*       y,
+                                                   int64_t                          incy,
+                                                   hipblasStride                    stridey,
+                                                   const hipblas_internal_type<T2>* c,
+                                                   const hipblas_internal_type<T3>* s,
+                                                   int64_t                          batch_count);
 
     MAP2CF_D64(hipblasRot, float, float, float, hipblasSrot);
     MAP2CF_D64(hipblasRot, double, double, double, hipblasDrot);
@@ -7825,7 +7901,8 @@ namespace
 
     MAP2CF_D64(hipblasRotBatched, float, float, float, hipblasSrotBatched);
     MAP2CF_D64(hipblasRotBatched, double, double, double, hipblasDrotBatched);
-    MAP2CF_D64_V2(hipblasRotBatched, std::complex<float>, float, std::complex<float>, hipblasCrotBatched);
+    MAP2CF_D64_V2(
+        hipblasRotBatched, std::complex<float>, float, std::complex<float>, hipblasCrotBatched);
     MAP2CF_D64_V2(
         hipblasRotBatched, std::complex<double>, double, std::complex<double>, hipblasZrotBatched);
     MAP2CF_D64_V2(hipblasRotBatched, std::complex<float>, float, float, hipblasCsrotBatched);
@@ -7833,8 +7910,11 @@ namespace
 
     MAP2CF_D64(hipblasRotStridedBatched, float, float, float, hipblasSrotStridedBatched);
     MAP2CF_D64(hipblasRotStridedBatched, double, double, double, hipblasDrotStridedBatched);
-    MAP2CF_D64_V2(
-        hipblasRotStridedBatched, std::complex<float>, float, std::complex<float>, hipblasCrotStridedBatched);
+    MAP2CF_D64_V2(hipblasRotStridedBatched,
+                  std::complex<float>,
+                  float,
+                  std::complex<float>,
+                  hipblasCrotStridedBatched);
     MAP2CF_D64_V2(hipblasRotStridedBatched,
                   std::complex<double>,
                   double,
@@ -7847,50 +7927,58 @@ namespace
 
     // Rotg
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotg)(hipblasHandle_t handle, hipblas_internal_type<T1>* a, hipblas_internal_type<T1>* b, T2* c, hipblas_internal_type<T1>* s);
+    hipblasStatus_t (*hipblasRotg)(hipblasHandle_t            handle,
+                                   hipblas_internal_type<T1>* a,
+                                   hipblas_internal_type<T1>* b,
+                                   T2*                        c,
+                                   hipblas_internal_type<T1>* s);
 
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotgBatched)(hipblasHandle_t handle,
-                                          hipblas_internal_type<T1>* const       a[],
-                                          hipblas_internal_type<T1>* const       b[],
-                                          hipblas_internal_type<T2>* const       c[],
-                                          hipblas_internal_type<T1>* const       s[],
-                                          int             batch_count);
+    hipblasStatus_t (*hipblasRotgBatched)(hipblasHandle_t                  handle,
+                                          hipblas_internal_type<T1>* const a[],
+                                          hipblas_internal_type<T1>* const b[],
+                                          hipblas_internal_type<T2>* const c[],
+                                          hipblas_internal_type<T1>* const s[],
+                                          int                              batch_count);
 
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotgStridedBatched)(hipblasHandle_t handle,
-                                                 hipblas_internal_type<T1>*             a,
-                                                 hipblasStride   stridea,
-                                                 hipblas_internal_type<T1>*             b,
-                                                 hipblasStride   strideb,
-                                                 hipblas_internal_type<T2>*             c,
-                                                 hipblasStride   stridec,
-                                                 hipblas_internal_type<T1>*             s,
-                                                 hipblasStride   strides,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasRotgStridedBatched)(hipblasHandle_t            handle,
+                                                 hipblas_internal_type<T1>* a,
+                                                 hipblasStride              stridea,
+                                                 hipblas_internal_type<T1>* b,
+                                                 hipblasStride              strideb,
+                                                 hipblas_internal_type<T2>* c,
+                                                 hipblasStride              stridec,
+                                                 hipblas_internal_type<T1>* s,
+                                                 hipblasStride              strides,
+                                                 int                        batch_count);
 
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotg_64)(hipblasHandle_t handle, hipblas_internal_type<T1>* a, hipblas_internal_type<T1>* b, hipblas_internal_type<T2>* c, hipblas_internal_type<T1>* s);
+    hipblasStatus_t (*hipblasRotg_64)(hipblasHandle_t            handle,
+                                      hipblas_internal_type<T1>* a,
+                                      hipblas_internal_type<T1>* b,
+                                      hipblas_internal_type<T2>* c,
+                                      hipblas_internal_type<T1>* s);
 
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotgBatched_64)(hipblasHandle_t handle,
-                                             hipblas_internal_type<T1>* const       a[],
-                                             hipblas_internal_type<T1>* const       b[],
-                                             hipblas_internal_type<T2>* const       c[],
-                                             hipblas_internal_type<T1>* const       s[],
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotgBatched_64)(hipblasHandle_t                  handle,
+                                             hipblas_internal_type<T1>* const a[],
+                                             hipblas_internal_type<T1>* const b[],
+                                             hipblas_internal_type<T2>* const c[],
+                                             hipblas_internal_type<T1>* const s[],
+                                             int64_t                          batch_count);
 
     template <typename T1, typename T2 = T1, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotgStridedBatched_64)(hipblasHandle_t handle,
-                                                    hipblas_internal_type<T1>*             a,
-                                                    hipblasStride   stridea,
-                                                    hipblas_internal_type<T1>*             b,
-                                                    hipblasStride   strideb,
-                                                    hipblas_internal_type<T2>*             c,
-                                                    hipblasStride   stridec,
-                                                    hipblas_internal_type<T1>*             s,
-                                                    hipblasStride   strides,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotgStridedBatched_64)(hipblasHandle_t            handle,
+                                                    hipblas_internal_type<T1>* a,
+                                                    hipblasStride              stridea,
+                                                    hipblas_internal_type<T1>* b,
+                                                    hipblasStride              strideb,
+                                                    hipblas_internal_type<T2>* c,
+                                                    hipblasStride              stridec,
+                                                    hipblas_internal_type<T1>* s,
+                                                    hipblasStride              strides,
+                                                    int64_t                    batch_count);
 
     MAP2CF_D64(hipblasRotg, float, float, hipblasSrotg);
     MAP2CF_D64(hipblasRotg, double, double, hipblasDrotg);
@@ -7904,7 +7992,10 @@ namespace
 
     MAP2CF_D64(hipblasRotgStridedBatched, float, float, hipblasSrotgStridedBatched);
     MAP2CF_D64(hipblasRotgStridedBatched, double, double, hipblasDrotgStridedBatched);
-    MAP2CF_D64_V2(hipblasRotgStridedBatched, std::complex<float>, float, hipblasCrotgStridedBatched);
+    MAP2CF_D64_V2(hipblasRotgStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasCrotgStridedBatched);
     MAP2CF_D64_V2(hipblasRotgStridedBatched,
                   std::complex<double>,
                   double,
@@ -7912,58 +8003,68 @@ namespace
 
     // rotm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotm)(
-        hipblasHandle_t handle, int n, hipblas_internal_type<T>* x, int incx, hipblas_internal_type<T>* y, int incy, const hipblas_internal_type<T>* param);
+    hipblasStatus_t (*hipblasRotm)(hipblasHandle_t                 handle,
+                                   int                             n,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy,
+                                   const hipblas_internal_type<T>* param);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmBatched)(hipblasHandle_t handle,
-                                          int             n,
-                                          hipblas_internal_type<T>* const        x[],
-                                          int             incx,
-                                          hipblas_internal_type<T>* const        y[],
-                                          int             incy,
-                                          const hipblas_internal_type<T>* const  param[],
-                                          int             batch_count);
+    hipblasStatus_t (*hipblasRotmBatched)(hipblasHandle_t                       handle,
+                                          int                                   n,
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          const hipblas_internal_type<T>* const param[],
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 hipblas_internal_type<T>*              x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 hipblas_internal_type<T>*              y,
-                                                 int             incy,
-                                                 hipblasStride   stridey,
-                                                 const hipblas_internal_type<T>*        param,
-                                                 hipblasStride   strideparam,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasRotmStridedBatched)(hipblasHandle_t                 handle,
+                                                 int                             n,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 const hipblas_internal_type<T>* param,
+                                                 hipblasStride                   strideparam,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotm_64)(
-        hipblasHandle_t handle, int64_t n, hipblas_internal_type<T>* x, int64_t incx, hipblas_internal_type<T>* y, int64_t incy, const hipblas_internal_type<T>* param);
+    hipblasStatus_t (*hipblasRotm_64)(hipblasHandle_t                 handle,
+                                      int64_t                         n,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy,
+                                      const hipblas_internal_type<T>* param);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             hipblas_internal_type<T>* const        x[],
-                                             int64_t         incx,
-                                             hipblas_internal_type<T>* const        y[],
-                                             int64_t         incy,
-                                             const hipblas_internal_type<T>* const  param[],
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotmBatched_64)(hipblasHandle_t                       handle,
+                                             int64_t                               n,
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             const hipblas_internal_type<T>* const param[],
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    hipblas_internal_type<T>*              x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    hipblas_internal_type<T>*              y,
-                                                    int64_t         incy,
-                                                    hipblasStride   stridey,
-                                                    const hipblas_internal_type<T>*        param,
-                                                    hipblasStride   strideparam,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    int64_t                         n,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    const hipblas_internal_type<T>* param,
+                                                    hipblasStride                   strideparam,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasRotm, float, hipblasSrotm);
     MAP2CF_D64(hipblasRotm, double, hipblasDrotm);
@@ -7976,58 +8077,66 @@ namespace
 
     // rotmg
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmg)(
-        hipblasHandle_t handle, hipblas_internal_type<T>* d1, hipblas_internal_type<T>* d2, hipblas_internal_type<T>* x1, const hipblas_internal_type<T>* y1, hipblas_internal_type<T>* param);
+    hipblasStatus_t (*hipblasRotmg)(hipblasHandle_t                 handle,
+                                    hipblas_internal_type<T>*       d1,
+                                    hipblas_internal_type<T>*       d2,
+                                    hipblas_internal_type<T>*       x1,
+                                    const hipblas_internal_type<T>* y1,
+                                    hipblas_internal_type<T>*       param);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmgBatched)(hipblasHandle_t handle,
-                                           hipblas_internal_type<T>* const        d1[],
-                                           hipblas_internal_type<T>* const        d2[],
-                                           hipblas_internal_type<T>* const        x1[],
-                                           const hipblas_internal_type<T>* const  y1[],
-                                           hipblas_internal_type<T>* const        param[],
-                                           int             batch_count);
+    hipblasStatus_t (*hipblasRotmgBatched)(hipblasHandle_t                       handle,
+                                           hipblas_internal_type<T>* const       d1[],
+                                           hipblas_internal_type<T>* const       d2[],
+                                           hipblas_internal_type<T>* const       x1[],
+                                           const hipblas_internal_type<T>* const y1[],
+                                           hipblas_internal_type<T>* const       param[],
+                                           int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmgStridedBatched)(hipblasHandle_t handle,
-                                                  hipblas_internal_type<T>*              d1,
-                                                  hipblasStride   stride_d1,
-                                                  hipblas_internal_type<T>*              d2,
-                                                  hipblasStride   stride_d2,
-                                                  hipblas_internal_type<T>*              x1,
-                                                  hipblasStride   stride_x1,
-                                                  const hipblas_internal_type<T>*        y1,
-                                                  hipblasStride   stride_y1,
-                                                  hipblas_internal_type<T>*              param,
-                                                  hipblasStride   strideparam,
-                                                  int             batch_count);
+    hipblasStatus_t (*hipblasRotmgStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblas_internal_type<T>*       d1,
+                                                  hipblasStride                   stride_d1,
+                                                  hipblas_internal_type<T>*       d2,
+                                                  hipblasStride                   stride_d2,
+                                                  hipblas_internal_type<T>*       x1,
+                                                  hipblasStride                   stride_x1,
+                                                  const hipblas_internal_type<T>* y1,
+                                                  hipblasStride                   stride_y1,
+                                                  hipblas_internal_type<T>*       param,
+                                                  hipblasStride                   strideparam,
+                                                  int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmg_64)(
-        hipblasHandle_t handle, hipblas_internal_type<T>* d1, hipblas_internal_type<T>* d2, hipblas_internal_type<T>* x1, const hipblas_internal_type<T>* y1, hipblas_internal_type<T>* param);
+    hipblasStatus_t (*hipblasRotmg_64)(hipblasHandle_t                 handle,
+                                       hipblas_internal_type<T>*       d1,
+                                       hipblas_internal_type<T>*       d2,
+                                       hipblas_internal_type<T>*       x1,
+                                       const hipblas_internal_type<T>* y1,
+                                       hipblas_internal_type<T>*       param);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmgBatched_64)(hipblasHandle_t handle,
-                                              hipblas_internal_type<T>* const        d1[],
-                                              hipblas_internal_type<T>* const        d2[],
-                                              hipblas_internal_type<T>* const        x1[],
-                                              const hipblas_internal_type<T>* const  y1[],
-                                              hipblas_internal_type<T>* const        param[],
-                                              int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotmgBatched_64)(hipblasHandle_t                       handle,
+                                              hipblas_internal_type<T>* const       d1[],
+                                              hipblas_internal_type<T>* const       d2[],
+                                              hipblas_internal_type<T>* const       x1[],
+                                              const hipblas_internal_type<T>* const y1[],
+                                              hipblas_internal_type<T>* const       param[],
+                                              int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasRotmgStridedBatched_64)(hipblasHandle_t handle,
-                                                     hipblas_internal_type<T>*              d1,
-                                                     hipblasStride   stride_d1,
-                                                     hipblas_internal_type<T>*              d2,
-                                                     hipblasStride   stride_d2,
-                                                     hipblas_internal_type<T>*              x1,
-                                                     hipblasStride   stride_x1,
-                                                     const hipblas_internal_type<T>*        y1,
-                                                     hipblasStride   stride_y1,
-                                                     hipblas_internal_type<T>*              param,
-                                                     hipblasStride   strideparam,
-                                                     int64_t         batch_count);
+    hipblasStatus_t (*hipblasRotmgStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     hipblas_internal_type<T>*       d1,
+                                                     hipblasStride                   stride_d1,
+                                                     hipblas_internal_type<T>*       d2,
+                                                     hipblasStride                   stride_d2,
+                                                     hipblas_internal_type<T>*       x1,
+                                                     hipblasStride                   stride_x1,
+                                                     const hipblas_internal_type<T>* y1,
+                                                     hipblasStride                   stride_y1,
+                                                     hipblas_internal_type<T>*       param,
+                                                     hipblasStride                   strideparam,
+                                                     int64_t                         batch_count);
 
     MAP2CF_D64(hipblasRotmg, float, hipblasSrotmg);
     MAP2CF_D64(hipblasRotmg, double, hipblasDrotmg);
@@ -8044,38 +8153,45 @@ namespace
         hipblasHandle_t handle, int n, const hipblas_internal_type<T>* x, int incx, int* result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamaxBatched)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* const x[], int incx, int batch_count, int* result);
+    hipblasStatus_t (*hipblasIamaxBatched)(hipblasHandle_t                       handle,
+                                           int                                   n,
+                                           const hipblas_internal_type<T>* const x[],
+                                           int                                   incx,
+                                           int                                   batch_count,
+                                           int*                                  result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamaxStridedBatched)(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const hipblas_internal_type<T>*        x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  int             batch_count,
-                                                  int*            result);
+    hipblasStatus_t (*hipblasIamaxStridedBatched)(hipblasHandle_t                 handle,
+                                                  int                             n,
+                                                  const hipblas_internal_type<T>* x,
+                                                  int                             incx,
+                                                  hipblasStride                   stridex,
+                                                  int                             batch_count,
+                                                  int*                            result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamax_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<T>* x, int64_t incx, int64_t* result);
+    hipblasStatus_t (*hipblasIamax_64)(hipblasHandle_t                 handle,
+                                       int64_t                         n,
+                                       const hipblas_internal_type<T>* x,
+                                       int64_t                         incx,
+                                       int64_t*                        result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamaxBatched_64)(hipblasHandle_t handle,
-                                              int64_t         n,
-                                              const hipblas_internal_type<T>* const  x[],
-                                              int64_t         incx,
-                                              int64_t         batch_count,
-                                              int64_t*        result);
+    hipblasStatus_t (*hipblasIamaxBatched_64)(hipblasHandle_t                       handle,
+                                              int64_t                               n,
+                                              const hipblas_internal_type<T>* const x[],
+                                              int64_t                               incx,
+                                              int64_t                               batch_count,
+                                              int64_t*                              result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamaxStridedBatched_64)(hipblasHandle_t handle,
-                                                     int64_t         n,
-                                                     const hipblas_internal_type<T>*        x,
-                                                     int64_t         incx,
-                                                     hipblasStride   stridex,
-                                                     int64_t         batch_count,
-                                                     int64_t*        result);
+    hipblasStatus_t (*hipblasIamaxStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     int64_t                         n,
+                                                     const hipblas_internal_type<T>* x,
+                                                     int64_t                         incx,
+                                                     hipblasStride                   stridex,
+                                                     int64_t                         batch_count,
+                                                     int64_t*                        result);
 
     MAP2CF_D64(hipblasIamax, float, hipblasIsamax);
     MAP2CF_D64(hipblasIamax, double, hipblasIdamax);
@@ -8098,38 +8214,45 @@ namespace
         hipblasHandle_t handle, int n, const hipblas_internal_type<T>* x, int incx, int* result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIaminBatched)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* const x[], int incx, int batch_count, int* result);
+    hipblasStatus_t (*hipblasIaminBatched)(hipblasHandle_t                       handle,
+                                           int                                   n,
+                                           const hipblas_internal_type<T>* const x[],
+                                           int                                   incx,
+                                           int                                   batch_count,
+                                           int*                                  result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIaminStridedBatched)(hipblasHandle_t handle,
-                                                  int             n,
-                                                  const hipblas_internal_type<T>*        x,
-                                                  int             incx,
-                                                  hipblasStride   stridex,
-                                                  int             batch_count,
-                                                  int*            result);
+    hipblasStatus_t (*hipblasIaminStridedBatched)(hipblasHandle_t                 handle,
+                                                  int                             n,
+                                                  const hipblas_internal_type<T>* x,
+                                                  int                             incx,
+                                                  hipblasStride                   stridex,
+                                                  int                             batch_count,
+                                                  int*                            result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIamin_64)(
-        hipblasHandle_t handle, int64_t n, const hipblas_internal_type<T>* x, int64_t incx, int64_t* result);
+    hipblasStatus_t (*hipblasIamin_64)(hipblasHandle_t                 handle,
+                                       int64_t                         n,
+                                       const hipblas_internal_type<T>* x,
+                                       int64_t                         incx,
+                                       int64_t*                        result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIaminBatched_64)(hipblasHandle_t handle,
-                                              int64_t         n,
-                                              const hipblas_internal_type<T>* const  x[],
-                                              int64_t         incx,
-                                              int64_t         batch_count,
-                                              int64_t*        result);
+    hipblasStatus_t (*hipblasIaminBatched_64)(hipblasHandle_t                       handle,
+                                              int64_t                               n,
+                                              const hipblas_internal_type<T>* const x[],
+                                              int64_t                               incx,
+                                              int64_t                               batch_count,
+                                              int64_t*                              result);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasIaminStridedBatched_64)(hipblasHandle_t handle,
-                                                     int64_t         n,
-                                                     const hipblas_internal_type<T>*        x,
-                                                     int64_t         incx,
-                                                     hipblasStride   stridex,
-                                                     int64_t         batch_count,
-                                                     int64_t*        result);
+    hipblasStatus_t (*hipblasIaminStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     int64_t                         n,
+                                                     const hipblas_internal_type<T>* x,
+                                                     int64_t                         incx,
+                                                     hipblasStride                   stridex,
+                                                     int64_t                         batch_count,
+                                                     int64_t*                        result);
 
     MAP2CF_D64(hipblasIamin, float, hipblasIsamin);
     MAP2CF_D64(hipblasIamin, double, hipblasIdamin);
@@ -8148,61 +8271,66 @@ namespace
 
     // axpy
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpy)(
-        hipblasHandle_t handle, int n, const hipblas_internal_type<T>* alpha, const hipblas_internal_type<T>* x, int incx, hipblas_internal_type<T>* y, int incy);
+    hipblasStatus_t (*hipblasAxpy)(hipblasHandle_t                 handle,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpyBatched)(hipblasHandle_t handle,
-                                          int             n,
-                                          const hipblas_internal_type<T>*        alpha,
-                                          const hipblas_internal_type<T>* const  x[],
-                                          int             incx,
-                                          hipblas_internal_type<T>* const        y[],
-                                          int             incy,
-                                          int             batch_count);
+    hipblasStatus_t (*hipblasAxpyBatched)(hipblasHandle_t                       handle,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpyStridedBatched)(hipblasHandle_t handle,
-                                                 int             n,
-                                                 const hipblas_internal_type<T>*        alpha,
-                                                 const hipblas_internal_type<T>*        x,
-                                                 int             incx,
-                                                 hipblasStride   stridex,
-                                                 hipblas_internal_type<T>*              y,
-                                                 int             incy,
-                                                 hipblasStride   stridey,
-                                                 int             batch_count);
+    hipblasStatus_t (*hipblasAxpyStridedBatched)(hipblasHandle_t                 handle,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpy_64)(hipblasHandle_t handle,
-                                      int64_t         n,
-                                      const hipblas_internal_type<T>*        alpha,
-                                      const hipblas_internal_type<T>*        x,
-                                      int64_t         incx,
-                                      hipblas_internal_type<T>*              y,
-                                      int64_t         incy);
+    hipblasStatus_t (*hipblasAxpy_64)(hipblasHandle_t                 handle,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpyBatched_64)(hipblasHandle_t handle,
-                                             int64_t         n,
-                                             const hipblas_internal_type<T>*        alpha,
-                                             const hipblas_internal_type<T>* const  x[],
-                                             int64_t         incx,
-                                             hipblas_internal_type<T>* const        y[],
-                                             int64_t         incy,
-                                             int64_t         batch_count);
+    hipblasStatus_t (*hipblasAxpyBatched_64)(hipblasHandle_t                       handle,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasAxpyStridedBatched_64)(hipblasHandle_t handle,
-                                                    int64_t         n,
-                                                    const hipblas_internal_type<T>*        alpha,
-                                                    const hipblas_internal_type<T>*        x,
-                                                    int64_t         incx,
-                                                    hipblasStride   stridex,
-                                                    hipblas_internal_type<T>*              y,
-                                                    int64_t         incy,
-                                                    hipblasStride   stridey,
-                                                    int64_t         batch_count);
+    hipblasStatus_t (*hipblasAxpyStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasAxpy, hipblasHalf, hipblasHaxpy);
     MAP2CF_D64(hipblasAxpy, float, hipblasSaxpy);
@@ -8224,87 +8352,87 @@ namespace
 
     // ger
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGer)(hipblasHandle_t handle,
-                                  int             m,
-                                  int             n,
-                                  const hipblas_internal_type<T>*        alpha,
-                                  const hipblas_internal_type<T>*        x,
-                                  int             incx,
-                                  const hipblas_internal_type<T>*        y,
-                                  int             incy,
-                                  hipblas_internal_type<T>*              A,
-                                  int             lda);
+    hipblasStatus_t (*hipblasGer)(hipblasHandle_t                 handle,
+                                  int                             m,
+                                  int                             n,
+                                  const hipblas_internal_type<T>* alpha,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  const hipblas_internal_type<T>* y,
+                                  int                             incy,
+                                  hipblas_internal_type<T>*       A,
+                                  int                             lda);
 
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGerBatched)(hipblasHandle_t handle,
-                                         int             m,
-                                         int             n,
-                                         const hipblas_internal_type<T>*        alpha,
-                                         const hipblas_internal_type<T>* const  x[],
-                                         int             incx,
-                                         const hipblas_internal_type<T>* const  y[],
-                                         int             incy,
-                                         hipblas_internal_type<T>* const        A[],
-                                         int             lda,
-                                         int             batch_count);
+    hipblasStatus_t (*hipblasGerBatched)(hipblasHandle_t                       handle,
+                                         int                                   m,
+                                         int                                   n,
+                                         const hipblas_internal_type<T>*       alpha,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         const hipblas_internal_type<T>* const y[],
+                                         int                                   incy,
+                                         hipblas_internal_type<T>* const       A[],
+                                         int                                   lda,
+                                         int                                   batch_count);
 
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGerStridedBatched)(hipblasHandle_t handle,
-                                                int             m,
-                                                int             n,
-                                                const hipblas_internal_type<T>*        alpha,
-                                                const hipblas_internal_type<T>*        x,
-                                                int             incx,
-                                                hipblasStride   stridex,
-                                                const hipblas_internal_type<T>*        y,
-                                                int             incy,
-                                                hipblasStride   stridey,
-                                                hipblas_internal_type<T>*              A,
-                                                int             lda,
-                                                hipblasStride   strideA,
-                                                int             batch_count);
+    hipblasStatus_t (*hipblasGerStridedBatched)(hipblasHandle_t                 handle,
+                                                int                             m,
+                                                int                             n,
+                                                const hipblas_internal_type<T>* alpha,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                const hipblas_internal_type<T>* y,
+                                                int                             incy,
+                                                hipblasStride                   stridey,
+                                                hipblas_internal_type<T>*       A,
+                                                int                             lda,
+                                                hipblasStride                   strideA,
+                                                int                             batch_count);
 
     // ger_64
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGer_64)(hipblasHandle_t handle,
-                                     int64_t         m,
-                                     int64_t         n,
-                                     const hipblas_internal_type<T>*        alpha,
-                                     const hipblas_internal_type<T>*        x,
-                                     int64_t         incx,
-                                     const hipblas_internal_type<T>*        y,
-                                     int64_t         incy,
-                                     hipblas_internal_type<T>*              A,
-                                     int64_t         lda);
+    hipblasStatus_t (*hipblasGer_64)(hipblasHandle_t                 handle,
+                                     int64_t                         m,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<T>* alpha,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     const hipblas_internal_type<T>* y,
+                                     int64_t                         incy,
+                                     hipblas_internal_type<T>*       A,
+                                     int64_t                         lda);
 
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGerBatched_64)(hipblasHandle_t handle,
-                                            int64_t         m,
-                                            int64_t         n,
-                                            const hipblas_internal_type<T>*        alpha,
-                                            const hipblas_internal_type<T>* const  x[],
-                                            int64_t         incx,
-                                            const hipblas_internal_type<T>* const  y[],
-                                            int64_t         incy,
-                                            hipblas_internal_type<T>* const        A[],
-                                            int64_t         lda,
-                                            int64_t         batch_count);
+    hipblasStatus_t (*hipblasGerBatched_64)(hipblasHandle_t                       handle,
+                                            int64_t                               m,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<T>*       alpha,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            const hipblas_internal_type<T>* const y[],
+                                            int64_t                               incy,
+                                            hipblas_internal_type<T>* const       A[],
+                                            int64_t                               lda,
+                                            int64_t                               batch_count);
 
     template <typename T, bool CONJ, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGerStridedBatched_64)(hipblasHandle_t handle,
-                                                   int64_t         m,
-                                                   int64_t         n,
-                                                   const hipblas_internal_type<T>*        alpha,
-                                                   const hipblas_internal_type<T>*        x,
-                                                   int64_t         incx,
-                                                   hipblasStride   stridex,
-                                                   const hipblas_internal_type<T>*        y,
-                                                   int64_t         incy,
-                                                   hipblasStride   stridey,
-                                                   hipblas_internal_type<T>*              A,
-                                                   int64_t         lda,
-                                                   hipblasStride   strideA,
-                                                   int64_t         batch_count);
+    hipblasStatus_t (*hipblasGerStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   int64_t                         m,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<T>* alpha,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   const hipblas_internal_type<T>* y,
+                                                   int64_t                         incy,
+                                                   hipblasStride                   stridey,
+                                                   hipblas_internal_type<T>*       A,
+                                                   int64_t                         lda,
+                                                   hipblasStride                   strideA,
+                                                   int64_t                         batch_count);
 
     MAP2CF_D64(hipblasGer, float, false, hipblasSger);
     MAP2CF_D64(hipblasGer, double, false, hipblasDger);
@@ -8332,280 +8460,280 @@ namespace
 
     // hbmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   int               k,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasHbmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      int64_t           k,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasHbmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     MAP2CF_D64_V2(hipblasHbmv, std::complex<float>, hipblasChbmv);
     MAP2CF_D64_V2(hipblasHbmv, std::complex<double>, hipblasZhbmv);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          int               k,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasHbmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             int64_t           k,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasHbmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHbmvBatched, std::complex<float>, hipblasChbmvBatched);
     MAP2CF_D64_V2(hipblasHbmvBatched, std::complex<double>, hipblasZhbmvBatched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 int               k,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasHbmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHbmvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    int64_t           k,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasHbmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHbmvStridedBatched, std::complex<float>, hipblasChbmvStridedBatched);
     MAP2CF_D64_V2(hipblasHbmvStridedBatched, std::complex<double>, hipblasZhbmvStridedBatched);
 
     // hemv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasHemv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasHemv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     MAP2CF_D64_V2(hipblasHemv, std::complex<float>, hipblasChemv);
     MAP2CF_D64_V2(hipblasHemv, std::complex<double>, hipblasZhemv);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batch_count);
+    hipblasStatus_t (*hipblasHemvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batch_count);
+    hipblasStatus_t (*hipblasHemvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count);
 
     MAP2CF_D64_V2(hipblasHemvBatched, std::complex<float>, hipblasChemvBatched);
     MAP2CF_D64_V2(hipblasHemvBatched, std::complex<double>, hipblasZhemvBatched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     stride_a,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stride_x,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stride_y,
-                                                 int               batch_count);
+    hipblasStatus_t (*hipblasHemvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_a,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stride_y,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     stride_a,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stride_x,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stride_y,
-                                                    int64_t           batch_count);
+    hipblasStatus_t (*hipblasHemvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_a,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stride_y,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64_V2(hipblasHemvStridedBatched, std::complex<float>, hipblasChemvStridedBatched);
     MAP2CF_D64_V2(hipblasHemvStridedBatched, std::complex<double>, hipblasZhemvStridedBatched);
 
     // her
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer)(hipblasHandle_t   handle,
-                                  hipblasFillMode_t uplo,
-                                  int               n,
-                                  const hipblas_internal_type<U>*          alpha,
-                                  const hipblas_internal_type<T>*          x,
-                                  int               incx,
-                                  hipblas_internal_type<T>*                A,
-                                  int               lda);
+    hipblasStatus_t (*hipblasHer)(hipblasHandle_t                 handle,
+                                  hipblasFillMode_t               uplo,
+                                  int                             n,
+                                  const hipblas_internal_type<U>* alpha,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  hipblas_internal_type<T>*       A,
+                                  int                             lda);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer_64)(hipblasHandle_t   handle,
-                                     hipblasFillMode_t uplo,
-                                     int64_t           n,
-                                     const hipblas_internal_type<U>*          alpha,
-                                     const hipblas_internal_type<T>*          x,
-                                     int64_t           incx,
-                                     hipblas_internal_type<T>*                A,
-                                     int64_t           lda);
+    hipblasStatus_t (*hipblasHer_64)(hipblasHandle_t                 handle,
+                                     hipblasFillMode_t               uplo,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<U>* alpha,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     hipblas_internal_type<T>*       A,
+                                     int64_t                         lda);
 
     MAP2CF_D64_V2(hipblasHer, std::complex<float>, float, hipblasCher);
     MAP2CF_D64_V2(hipblasHer, std::complex<double>, double, hipblasZher);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerBatched)(hipblasHandle_t   handle,
-                                         hipblasFillMode_t uplo,
-                                         int               n,
-                                         const hipblas_internal_type<U>*          alpha,
-                                         const hipblas_internal_type<T>* const    x[],
-                                         int               incx,
-                                         hipblas_internal_type<T>* const          A[],
-                                         int               lda,
-                                         int               batchCount);
+    hipblasStatus_t (*hipblasHerBatched)(hipblasHandle_t                       handle,
+                                         hipblasFillMode_t                     uplo,
+                                         int                                   n,
+                                         const hipblas_internal_type<U>*       alpha,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         hipblas_internal_type<T>* const       A[],
+                                         int                                   lda,
+                                         int                                   batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerBatched_64)(hipblasHandle_t   handle,
-                                            hipblasFillMode_t uplo,
-                                            int64_t           n,
-                                            const hipblas_internal_type<U>*          alpha,
-                                            const hipblas_internal_type<T>* const    x[],
-                                            int64_t           incx,
-                                            hipblas_internal_type<T>* const          A[],
-                                            int64_t           lda,
-                                            int64_t           batchCount);
+    hipblasStatus_t (*hipblasHerBatched_64)(hipblasHandle_t                       handle,
+                                            hipblasFillMode_t                     uplo,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<U>*       alpha,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            hipblas_internal_type<T>* const       A[],
+                                            int64_t                               lda,
+                                            int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHerBatched, std::complex<float>, float, hipblasCherBatched);
     MAP2CF_D64_V2(hipblasHerBatched, std::complex<double>, double, hipblasZherBatched);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerStridedBatched)(hipblasHandle_t   handle,
-                                                hipblasFillMode_t uplo,
-                                                int               n,
-                                                const hipblas_internal_type<U>*          alpha,
-                                                const hipblas_internal_type<T>*          x,
-                                                int               incx,
-                                                hipblasStride     stridex,
-                                                hipblas_internal_type<T>*                A,
-                                                int               lda,
-                                                hipblasStride     strideA,
-                                                int               batchCount);
+    hipblasStatus_t (*hipblasHerStridedBatched)(hipblasHandle_t                 handle,
+                                                hipblasFillMode_t               uplo,
+                                                int                             n,
+                                                const hipblas_internal_type<U>* alpha,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                hipblas_internal_type<T>*       A,
+                                                int                             lda,
+                                                hipblasStride                   strideA,
+                                                int                             batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerStridedBatched_64)(hipblasHandle_t   handle,
-                                                   hipblasFillMode_t uplo,
-                                                   int64_t           n,
-                                                   const hipblas_internal_type<U>*          alpha,
-                                                   const hipblas_internal_type<T>*          x,
-                                                   int64_t           incx,
-                                                   hipblasStride     stridex,
-                                                   hipblas_internal_type<T>*                A,
-                                                   int64_t           lda,
-                                                   hipblasStride     strideA,
-                                                   int64_t           batchCount);
+    hipblasStatus_t (*hipblasHerStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   hipblasFillMode_t               uplo,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<U>* alpha,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   hipblas_internal_type<T>*       A,
+                                                   int64_t                         lda,
+                                                   hipblasStride                   strideA,
+                                                   int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHerStridedBatched, std::complex<float>, float, hipblasCherStridedBatched);
     MAP2CF_D64_V2(hipblasHerStridedBatched,
@@ -8615,256 +8743,256 @@ namespace
 
     // her2
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          y,
-                                   int               incy,
-                                   hipblas_internal_type<T>*                A,
-                                   int               lda);
+    hipblasStatus_t (*hipblasHer2)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* y,
+                                   int                             incy,
+                                   hipblas_internal_type<T>*       A,
+                                   int                             lda);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          y,
-                                      int64_t           incy,
-                                      hipblas_internal_type<T>*                A,
-                                      int64_t           lda);
+    hipblasStatus_t (*hipblasHer2_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* y,
+                                      int64_t                         incy,
+                                      hipblas_internal_type<T>*       A,
+                                      int64_t                         lda);
 
     MAP2CF_D64_V2(hipblasHer2, std::complex<float>, hipblasCher2);
     MAP2CF_D64_V2(hipblasHer2, std::complex<double>, hipblasZher2);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2Batched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>* const    y[],
-                                          int               incy,
-                                          hipblas_internal_type<T>* const          A[],
-                                          int               lda,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasHer2Batched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>* const y[],
+                                          int                                   incy,
+                                          hipblas_internal_type<T>* const       A[],
+                                          int                                   lda,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2Batched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>* const    y[],
-                                             int64_t           incy,
-                                             hipblas_internal_type<T>* const          A[],
-                                             int64_t           lda,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasHer2Batched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>* const y[],
+                                             int64_t                               incy,
+                                             hipblas_internal_type<T>* const       A[],
+                                             int64_t                               lda,
+                                             int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHer2Batched, std::complex<float>, hipblasCher2Batched);
     MAP2CF_D64_V2(hipblasHer2Batched, std::complex<double>, hipblasZher2Batched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2StridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 hipblas_internal_type<T>*                A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasHer2StridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 hipblas_internal_type<T>*       A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2StridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    hipblas_internal_type<T>*                A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasHer2StridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    hipblas_internal_type<T>*       A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHer2StridedBatched, std::complex<float>, hipblasCher2StridedBatched);
     MAP2CF_D64_V2(hipblasHer2StridedBatched, std::complex<double>, hipblasZher2StridedBatched);
 
     // hpmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          AP,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasHpmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* AP,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          AP,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasHpmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* AP,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     MAP2CF_D64_V2(hipblasHpmv, std::complex<float>, hipblasChpmv);
     MAP2CF_D64_V2(hipblasHpmv, std::complex<double>, hipblasZhpmv);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    AP[],
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasHpmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const AP[],
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    AP[],
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasHpmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const AP[],
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHpmvBatched, std::complex<float>, hipblasChpmvBatched);
     MAP2CF_D64_V2(hipblasHpmvBatched, std::complex<double>, hipblasZhpmvBatched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          AP,
-                                                 hipblasStride     strideAP,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasHpmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* AP,
+                                                 hipblasStride                   strideAP,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpmvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          AP,
-                                                    hipblasStride     strideAP,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasHpmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* AP,
+                                                    hipblasStride                   strideAP,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHpmvStridedBatched, std::complex<float>, hipblasChpmvStridedBatched);
     MAP2CF_D64_V2(hipblasHpmvStridedBatched, std::complex<double>, hipblasZhpmvStridedBatched);
 
     // hpr
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr)(hipblasHandle_t   handle,
-                                  hipblasFillMode_t uplo,
-                                  int               n,
-                                  const hipblas_internal_type<U>*          alpha,
-                                  const hipblas_internal_type<T>*          x,
-                                  int               incx,
-                                  hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasHpr)(hipblasHandle_t                 handle,
+                                  hipblasFillMode_t               uplo,
+                                  int                             n,
+                                  const hipblas_internal_type<U>* alpha,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  hipblas_internal_type<T>*       AP);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr_64)(hipblasHandle_t   handle,
-                                     hipblasFillMode_t uplo,
-                                     int64_t           n,
-                                     const hipblas_internal_type<U>*          alpha,
-                                     const hipblas_internal_type<T>*          x,
-                                     int64_t           incx,
-                                     hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasHpr_64)(hipblasHandle_t                 handle,
+                                     hipblasFillMode_t               uplo,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<U>* alpha,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     hipblas_internal_type<T>*       AP);
 
     MAP2CF_D64_V2(hipblasHpr, std::complex<float>, float, hipblasChpr);
     MAP2CF_D64_V2(hipblasHpr, std::complex<double>, double, hipblasZhpr);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHprBatched)(hipblasHandle_t   handle,
-                                         hipblasFillMode_t uplo,
-                                         int               n,
-                                         const hipblas_internal_type<U>*          alpha,
-                                         const hipblas_internal_type<T>* const    x[],
-                                         int               incx,
-                                         hipblas_internal_type<T>* const          AP[],
-                                         int               batchCount);
+    hipblasStatus_t (*hipblasHprBatched)(hipblasHandle_t                       handle,
+                                         hipblasFillMode_t                     uplo,
+                                         int                                   n,
+                                         const hipblas_internal_type<U>*       alpha,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         hipblas_internal_type<T>* const       AP[],
+                                         int                                   batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHprBatched_64)(hipblasHandle_t   handle,
-                                            hipblasFillMode_t uplo,
-                                            int64_t           n,
-                                            const hipblas_internal_type<U>*          alpha,
-                                            const hipblas_internal_type<T>* const    x[],
-                                            int64_t           incx,
-                                            hipblas_internal_type<T>* const          AP[],
-                                            int64_t           batchCount);
+    hipblasStatus_t (*hipblasHprBatched_64)(hipblasHandle_t                       handle,
+                                            hipblasFillMode_t                     uplo,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<U>*       alpha,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            hipblas_internal_type<T>* const       AP[],
+                                            int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHprBatched, std::complex<float>, float, hipblasChprBatched);
     MAP2CF_D64_V2(hipblasHprBatched, std::complex<double>, double, hipblasZhprBatched);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHprStridedBatched)(hipblasHandle_t   handle,
-                                                hipblasFillMode_t uplo,
-                                                int               n,
-                                                const hipblas_internal_type<U>*          alpha,
-                                                const hipblas_internal_type<T>*          x,
-                                                int               incx,
-                                                hipblasStride     stridex,
-                                                hipblas_internal_type<T>*                AP,
-                                                hipblasStride     strideAP,
-                                                int               batchCount);
+    hipblasStatus_t (*hipblasHprStridedBatched)(hipblasHandle_t                 handle,
+                                                hipblasFillMode_t               uplo,
+                                                int                             n,
+                                                const hipblas_internal_type<U>* alpha,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                hipblas_internal_type<T>*       AP,
+                                                hipblasStride                   strideAP,
+                                                int                             batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHprStridedBatched_64)(hipblasHandle_t   handle,
-                                                   hipblasFillMode_t uplo,
-                                                   int64_t           n,
-                                                   const hipblas_internal_type<U>*          alpha,
-                                                   const hipblas_internal_type<T>*          x,
-                                                   int64_t           incx,
-                                                   hipblasStride     stridex,
-                                                   hipblas_internal_type<T>*                AP,
-                                                   hipblasStride     strideAP,
-                                                   int64_t           batchCount);
+    hipblasStatus_t (*hipblasHprStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   hipblasFillMode_t               uplo,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<U>* alpha,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   hipblas_internal_type<T>*       AP,
+                                                   hipblasStride                   strideAP,
+                                                   int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHprStridedBatched, std::complex<float>, float, hipblasChprStridedBatched);
     MAP2CF_D64_V2(hipblasHprStridedBatched,
@@ -8874,183 +9002,183 @@ namespace
 
     // hpr2
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          y,
-                                   int               incy,
-                                   hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasHpr2)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* y,
+                                   int                             incy,
+                                   hipblas_internal_type<T>*       AP);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          y,
-                                      int64_t           incy,
-                                      hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasHpr2_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* y,
+                                      int64_t                         incy,
+                                      hipblas_internal_type<T>*       AP);
 
     MAP2CF_D64_V2(hipblasHpr2, std::complex<float>, hipblasChpr2);
     MAP2CF_D64_V2(hipblasHpr2, std::complex<double>, hipblasZhpr2);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2Batched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>* const    y[],
-                                          int               incy,
-                                          hipblas_internal_type<T>* const          AP[],
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasHpr2Batched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>* const y[],
+                                          int                                   incy,
+                                          hipblas_internal_type<T>* const       AP[],
+                                          int                                   batchCount);
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2Batched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>* const    y[],
-                                             int64_t           incy,
-                                             hipblas_internal_type<T>* const          AP[],
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasHpr2Batched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>* const y[],
+                                             int64_t                               incy,
+                                             hipblas_internal_type<T>* const       AP[],
+                                             int64_t                               batchCount);
 
     MAP2CF_D64_V2(hipblasHpr2Batched, std::complex<float>, hipblasChpr2Batched);
     MAP2CF_D64_V2(hipblasHpr2Batched, std::complex<double>, hipblasZhpr2Batched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2StridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 hipblas_internal_type<T>*                AP,
-                                                 hipblasStride     strideAP,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasHpr2StridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 hipblas_internal_type<T>*       AP,
+                                                 hipblasStride                   strideAP,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHpr2StridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    hipblas_internal_type<T>*                AP,
-                                                    hipblasStride     strideAP,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasHpr2StridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    hipblas_internal_type<T>*       AP,
+                                                    hipblasStride                   strideAP,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHpr2StridedBatched, std::complex<float>, hipblasChpr2StridedBatched);
     MAP2CF_D64_V2(hipblasHpr2StridedBatched, std::complex<double>, hipblasZhpr2StridedBatched);
 
     // sbmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   int               k,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasSbmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          int               k,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSbmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 int               k,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSbmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      int64_t           k,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasSbmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             int64_t           k,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSbmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSbmvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    int64_t           k,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSbmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSbmv, float, hipblasSsbmv);
     MAP2CF_D64(hipblasSbmv, double, hipblasDsbmv);
@@ -9063,86 +9191,86 @@ namespace
 
     // spmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          AP,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasSpmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* AP,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    AP[],
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSpmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const AP[],
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          AP,
-                                                 hipblasStride     strideAP,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSpmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* AP,
+                                                 hipblasStride                   strideAP,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          AP,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasSpmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* AP,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    AP[],
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSpmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const AP[],
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpmvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          AP,
-                                                    hipblasStride     strideAP,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSpmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* AP,
+                                                    hipblasStride                   strideAP,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSpmv, float, hipblasSspmv);
     MAP2CF_D64(hipblasSpmv, double, hipblasDspmv);
@@ -9155,66 +9283,66 @@ namespace
 
     // spr
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr)(hipblasHandle_t   handle,
-                                  hipblasFillMode_t uplo,
-                                  int               n,
-                                  const hipblas_internal_type<T>*          alpha,
-                                  const hipblas_internal_type<T>*          x,
-                                  int               incx,
-                                  hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasSpr)(hipblasHandle_t                 handle,
+                                  hipblasFillMode_t               uplo,
+                                  int                             n,
+                                  const hipblas_internal_type<T>* alpha,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  hipblas_internal_type<T>*       AP);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSprBatched)(hipblasHandle_t   handle,
-                                         hipblasFillMode_t uplo,
-                                         int               n,
-                                         const hipblas_internal_type<T>*          alpha,
-                                         const hipblas_internal_type<T>* const    x[],
-                                         int               incx,
-                                         hipblas_internal_type<T>* const          AP[],
-                                         int               batchCount);
+    hipblasStatus_t (*hipblasSprBatched)(hipblasHandle_t                       handle,
+                                         hipblasFillMode_t                     uplo,
+                                         int                                   n,
+                                         const hipblas_internal_type<T>*       alpha,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         hipblas_internal_type<T>* const       AP[],
+                                         int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSprStridedBatched)(hipblasHandle_t   handle,
-                                                hipblasFillMode_t uplo,
-                                                int               n,
-                                                const hipblas_internal_type<T>*          alpha,
-                                                const hipblas_internal_type<T>*          x,
-                                                int               incx,
-                                                hipblasStride     stridex,
-                                                hipblas_internal_type<T>*                AP,
-                                                hipblasStride     strideAP,
-                                                int               batchCount);
+    hipblasStatus_t (*hipblasSprStridedBatched)(hipblasHandle_t                 handle,
+                                                hipblasFillMode_t               uplo,
+                                                int                             n,
+                                                const hipblas_internal_type<T>* alpha,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                hipblas_internal_type<T>*       AP,
+                                                hipblasStride                   strideAP,
+                                                int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr_64)(hipblasHandle_t   handle,
-                                     hipblasFillMode_t uplo,
-                                     int64_t           n,
-                                     const hipblas_internal_type<T>*          alpha,
-                                     const hipblas_internal_type<T>*          x,
-                                     int64_t           incx,
-                                     hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasSpr_64)(hipblasHandle_t                 handle,
+                                     hipblasFillMode_t               uplo,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<T>* alpha,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     hipblas_internal_type<T>*       AP);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSprBatched_64)(hipblasHandle_t   handle,
-                                            hipblasFillMode_t uplo,
-                                            int64_t           n,
-                                            const hipblas_internal_type<T>*          alpha,
-                                            const hipblas_internal_type<T>* const    x[],
-                                            int64_t           incx,
-                                            hipblas_internal_type<T>* const          AP[],
-                                            int64_t           batchCount);
+    hipblasStatus_t (*hipblasSprBatched_64)(hipblasHandle_t                       handle,
+                                            hipblasFillMode_t                     uplo,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<T>*       alpha,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            hipblas_internal_type<T>* const       AP[],
+                                            int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSprStridedBatched_64)(hipblasHandle_t   handle,
-                                                   hipblasFillMode_t uplo,
-                                                   int64_t           n,
-                                                   const hipblas_internal_type<T>*          alpha,
-                                                   const hipblas_internal_type<T>*          x,
-                                                   int64_t           incx,
-                                                   hipblasStride     stridex,
-                                                   hipblas_internal_type<T>*                AP,
-                                                   hipblasStride     strideAP,
-                                                   int64_t           batchCount);
+    hipblasStatus_t (*hipblasSprStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   hipblasFillMode_t               uplo,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<T>* alpha,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   hipblas_internal_type<T>*       AP,
+                                                   hipblasStride                   strideAP,
+                                                   int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSpr, float, hipblasSspr);
     MAP2CF_D64(hipblasSpr, double, hipblasDspr);
@@ -9233,80 +9361,80 @@ namespace
 
     // spr2
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          y,
-                                   int               incy,
-                                   hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasSpr2)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* y,
+                                   int                             incy,
+                                   hipblas_internal_type<T>*       AP);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2Batched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>* const    y[],
-                                          int               incy,
-                                          hipblas_internal_type<T>* const          AP[],
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSpr2Batched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>* const y[],
+                                          int                                   incy,
+                                          hipblas_internal_type<T>* const       AP[],
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2StridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 hipblas_internal_type<T>*                AP,
-                                                 hipblasStride     strideAP,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSpr2StridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 hipblas_internal_type<T>*       AP,
+                                                 hipblasStride                   strideAP,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          y,
-                                      int64_t           incy,
-                                      hipblas_internal_type<T>*                AP);
+    hipblasStatus_t (*hipblasSpr2_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* y,
+                                      int64_t                         incy,
+                                      hipblas_internal_type<T>*       AP);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2Batched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>* const    y[],
-                                             int64_t           incy,
-                                             hipblas_internal_type<T>* const          AP[],
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSpr2Batched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>* const y[],
+                                             int64_t                               incy,
+                                             hipblas_internal_type<T>* const       AP[],
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSpr2StridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    hipblas_internal_type<T>*                AP,
-                                                    hipblasStride     strideAP,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSpr2StridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    hipblas_internal_type<T>*       AP,
+                                                    hipblasStride                   strideAP,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSpr2, float, hipblasSspr2);
     MAP2CF_D64(hipblasSpr2, double, hipblasDspr2);
@@ -9319,92 +9447,92 @@ namespace
 
     // symv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymv)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                y,
-                                   int               incy);
+    hipblasStatus_t (*hipblasSymv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymvBatched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          y[],
-                                          int               incy,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSymvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymvStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSymvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymv_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                y,
-                                      int64_t           incy);
+    hipblasStatus_t (*hipblasSymv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymvBatched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          y[],
-                                             int64_t           incy,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSymvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymvStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSymvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSymv, float, hipblasSsymv);
     MAP2CF_D64(hipblasSymv, double, hipblasDsymv);
@@ -9423,72 +9551,72 @@ namespace
 
     // syr
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr)(hipblasHandle_t   handle,
-                                  hipblasFillMode_t uplo,
-                                  int               n,
-                                  const hipblas_internal_type<T>*          alpha,
-                                  const hipblas_internal_type<T>*          x,
-                                  int               incx,
-                                  hipblas_internal_type<T>*                A,
-                                  int               lda);
+    hipblasStatus_t (*hipblasSyr)(hipblasHandle_t                 handle,
+                                  hipblasFillMode_t               uplo,
+                                  int                             n,
+                                  const hipblas_internal_type<T>* alpha,
+                                  const hipblas_internal_type<T>* x,
+                                  int                             incx,
+                                  hipblas_internal_type<T>*       A,
+                                  int                             lda);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrBatched)(hipblasHandle_t   handle,
-                                         hipblasFillMode_t uplo,
-                                         int               n,
-                                         const hipblas_internal_type<T>*          alpha,
-                                         const hipblas_internal_type<T>* const    x[],
-                                         int               incx,
-                                         hipblas_internal_type<T>* const          A[],
-                                         int               lda,
-                                         int               batch_count);
+    hipblasStatus_t (*hipblasSyrBatched)(hipblasHandle_t                       handle,
+                                         hipblasFillMode_t                     uplo,
+                                         int                                   n,
+                                         const hipblas_internal_type<T>*       alpha,
+                                         const hipblas_internal_type<T>* const x[],
+                                         int                                   incx,
+                                         hipblas_internal_type<T>* const       A[],
+                                         int                                   lda,
+                                         int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrStridedBatched)(hipblasHandle_t   handle,
-                                                hipblasFillMode_t uplo,
-                                                int               n,
-                                                const hipblas_internal_type<T>*          alpha,
-                                                const hipblas_internal_type<T>*          x,
-                                                int               incx,
-                                                hipblasStride     stridex,
-                                                hipblas_internal_type<T>*                A,
-                                                int               lda,
-                                                hipblasStride     strideA,
-                                                int               batch_count);
+    hipblasStatus_t (*hipblasSyrStridedBatched)(hipblasHandle_t                 handle,
+                                                hipblasFillMode_t               uplo,
+                                                int                             n,
+                                                const hipblas_internal_type<T>* alpha,
+                                                const hipblas_internal_type<T>* x,
+                                                int                             incx,
+                                                hipblasStride                   stridex,
+                                                hipblas_internal_type<T>*       A,
+                                                int                             lda,
+                                                hipblasStride                   strideA,
+                                                int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr_64)(hipblasHandle_t   handle,
-                                     hipblasFillMode_t uplo,
-                                     int64_t           n,
-                                     const hipblas_internal_type<T>*          alpha,
-                                     const hipblas_internal_type<T>*          x,
-                                     int64_t           incx,
-                                     hipblas_internal_type<T>*                A,
-                                     int64_t           lda);
+    hipblasStatus_t (*hipblasSyr_64)(hipblasHandle_t                 handle,
+                                     hipblasFillMode_t               uplo,
+                                     int64_t                         n,
+                                     const hipblas_internal_type<T>* alpha,
+                                     const hipblas_internal_type<T>* x,
+                                     int64_t                         incx,
+                                     hipblas_internal_type<T>*       A,
+                                     int64_t                         lda);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrBatched_64)(hipblasHandle_t   handle,
-                                            hipblasFillMode_t uplo,
-                                            int64_t           n,
-                                            const hipblas_internal_type<T>*          alpha,
-                                            const hipblas_internal_type<T>* const    x[],
-                                            int64_t           incx,
-                                            hipblas_internal_type<T>* const          A[],
-                                            int64_t           lda,
-                                            int64_t           batch_count);
+    hipblasStatus_t (*hipblasSyrBatched_64)(hipblasHandle_t                       handle,
+                                            hipblasFillMode_t                     uplo,
+                                            int64_t                               n,
+                                            const hipblas_internal_type<T>*       alpha,
+                                            const hipblas_internal_type<T>* const x[],
+                                            int64_t                               incx,
+                                            hipblas_internal_type<T>* const       A[],
+                                            int64_t                               lda,
+                                            int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrStridedBatched_64)(hipblasHandle_t   handle,
-                                                   hipblasFillMode_t uplo,
-                                                   int64_t           n,
-                                                   const hipblas_internal_type<T>*          alpha,
-                                                   const hipblas_internal_type<T>*          x,
-                                                   int64_t           incx,
-                                                   hipblasStride     stridex,
-                                                   hipblas_internal_type<T>*                A,
-                                                   int64_t           lda,
-                                                   hipblasStride     strideA,
-                                                   int64_t           batch_count);
+    hipblasStatus_t (*hipblasSyrStridedBatched_64)(hipblasHandle_t                 handle,
+                                                   hipblasFillMode_t               uplo,
+                                                   int64_t                         n,
+                                                   const hipblas_internal_type<T>* alpha,
+                                                   const hipblas_internal_type<T>* x,
+                                                   int64_t                         incx,
+                                                   hipblasStride                   stridex,
+                                                   hipblas_internal_type<T>*       A,
+                                                   int64_t                         lda,
+                                                   hipblasStride                   strideA,
+                                                   int64_t                         batch_count);
 
     MAP2CF_D64(hipblasSyr, float, hipblasSsyr);
     MAP2CF_D64(hipblasSyr, double, hipblasDsyr);
@@ -9507,86 +9635,86 @@ namespace
 
     // syr2
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2)(hipblasHandle_t   handle,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   const hipblas_internal_type<T>*          y,
-                                   int               incy,
-                                   hipblas_internal_type<T>*                A,
-                                   int               lda);
+    hipblasStatus_t (*hipblasSyr2)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* y,
+                                   int                             incy,
+                                   hipblas_internal_type<T>*       A,
+                                   int                             lda);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2Batched)(hipblasHandle_t   handle,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          const hipblas_internal_type<T>* const    y[],
-                                          int               incy,
-                                          hipblas_internal_type<T>* const          A[],
-                                          int               lda,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSyr2Batched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>* const y[],
+                                          int                                   incy,
+                                          hipblas_internal_type<T>* const       A[],
+                                          int                                   lda,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2StridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stridex,
-                                                 const hipblas_internal_type<T>*          y,
-                                                 int               incy,
-                                                 hipblasStride     stridey,
-                                                 hipblas_internal_type<T>*                A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSyr2StridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 const hipblas_internal_type<T>* y,
+                                                 int                             incy,
+                                                 hipblasStride                   stridey,
+                                                 hipblas_internal_type<T>*       A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2_64)(hipblasHandle_t   handle,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      const hipblas_internal_type<T>*          y,
-                                      int64_t           incy,
-                                      hipblas_internal_type<T>*                A,
-                                      int64_t           lda);
+    hipblasStatus_t (*hipblasSyr2_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* y,
+                                      int64_t                         incy,
+                                      hipblas_internal_type<T>*       A,
+                                      int64_t                         lda);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2Batched_64)(hipblasHandle_t   handle,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             const hipblas_internal_type<T>* const    y[],
-                                             int64_t           incy,
-                                             hipblas_internal_type<T>* const          A[],
-                                             int64_t           lda,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSyr2Batched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>* const y[],
+                                             int64_t                               incy,
+                                             hipblas_internal_type<T>* const       A[],
+                                             int64_t                               lda,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2StridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stridex,
-                                                    const hipblas_internal_type<T>*          y,
-                                                    int64_t           incy,
-                                                    hipblasStride     stridey,
-                                                    hipblas_internal_type<T>*                A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSyr2StridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    const hipblas_internal_type<T>* y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stridey,
+                                                    hipblas_internal_type<T>*       A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSyr2, float, hipblasSsyr2);
     MAP2CF_D64(hipblasSyr2, double, hipblasDsyr2);
@@ -9605,84 +9733,84 @@ namespace
 
     // tbmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                k,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTbmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          int                k,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasTbmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 int                k,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      stride_a,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stride_x,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasTbmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_a,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 int                             batch_count);
     //tbmv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      int64_t            k,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTbmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             int64_t            k,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasTbmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbmvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    int64_t            k,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      stride_a,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stride_x,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasTbmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_a,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasTbmv, float, hipblasStbmv);
     MAP2CF_D64(hipblasTbmv, double, hipblasDtbmv);
@@ -9701,85 +9829,85 @@ namespace
 
     // tbsv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                k,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTbsv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          int                k,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasTbsvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 int                k,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stridex,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasTbsvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 int                             batchCount);
 
     // tbsv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      int64_t            k,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTbsv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             int64_t            k,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasTbsvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTbsvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    int64_t            k,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stridex,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasTbsvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasTbsv, float, hipblasStbsv);
     MAP2CF_D64(hipblasTbsv, double, hipblasDtbsv);
@@ -9798,73 +9926,73 @@ namespace
 
     // tpmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   const hipblas_internal_type<T>*           AP,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTpmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   const hipblas_internal_type<T>* AP,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          const hipblas_internal_type<T>* const     AP[],
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasTpmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          const hipblas_internal_type<T>* const AP[],
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 const hipblas_internal_type<T>*           AP,
-                                                 hipblasStride      strideAP,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stridex,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasTpmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 const hipblas_internal_type<T>* AP,
+                                                 hipblasStride                   strideAP,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 int                             batchCount);
 
     // tpmv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      const hipblas_internal_type<T>*           AP,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTpmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      const hipblas_internal_type<T>* AP,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             const hipblas_internal_type<T>* const     AP[],
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasTpmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             const hipblas_internal_type<T>* const AP[],
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpmvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    const hipblas_internal_type<T>*           AP,
-                                                    hipblasStride      strideAP,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stridex,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasTpmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    const hipblas_internal_type<T>* AP,
+                                                    hipblasStride                   strideAP,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasTpmv, float, hipblasStpmv);
     MAP2CF_D64(hipblasTpmv, double, hipblasDtpmv);
@@ -9883,73 +10011,73 @@ namespace
 
     // tpsv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   const hipblas_internal_type<T>*           AP,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTpsv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   const hipblas_internal_type<T>* AP,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          const hipblas_internal_type<T>* const     AP[],
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasTpsvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          const hipblas_internal_type<T>* const AP[],
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 const hipblas_internal_type<T>*           AP,
-                                                 hipblasStride      strideAP,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stridex,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasTpsvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 const hipblas_internal_type<T>* AP,
+                                                 hipblasStride                   strideAP,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 int                             batchCount);
 
     // tpsv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      const hipblas_internal_type<T>*           AP,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTpsv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      const hipblas_internal_type<T>* AP,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             const hipblas_internal_type<T>* const     AP[],
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasTpsvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             const hipblas_internal_type<T>* const AP[],
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTpsvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    const hipblas_internal_type<T>*           AP,
-                                                    hipblasStride      strideAP,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stridex,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasTpsvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    const hipblas_internal_type<T>* AP,
+                                                    hipblasStride                   strideAP,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasTpsv, float, hipblasStpsv);
     MAP2CF_D64(hipblasTpsv, double, hipblasDtpsv);
@@ -9968,79 +10096,79 @@ namespace
 
     // trmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTrmv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasTrmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      stride_a,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stride_x,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasTrmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_a,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 int                             batch_count);
 
     // trmv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTrmv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      stride_a,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stride_x,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_a,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasTrmv, float, hipblasStrmv);
     MAP2CF_D64(hipblasTrmv, double, hipblasDtrmv);
@@ -10059,79 +10187,79 @@ namespace
 
     // trsv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsv)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   hipblas_internal_type<T>*                 x,
-                                   int                incx);
+    hipblasStatus_t (*hipblasTrsv)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   hipblas_internal_type<T>*       x,
+                                   int                             incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsvBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          hipblas_internal_type<T>* const           x[],
-                                          int                incx,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasTrsvBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          hipblas_internal_type<T>* const       x[],
+                                          int                                   incx,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 hipblas_internal_type<T>*                 x,
-                                                 int                incx,
-                                                 hipblasStride      stridex,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasTrsvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 hipblas_internal_type<T>*       x,
+                                                 int                             incx,
+                                                 hipblasStride                   stridex,
+                                                 int                             batch_count);
 
     // trsv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsv_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      hipblas_internal_type<T>*                 x,
-                                      int64_t            incx);
+    hipblasStatus_t (*hipblasTrsv_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      hipblas_internal_type<T>*       x,
+                                      int64_t                         incx);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             hipblas_internal_type<T>* const           x[],
-                                             int64_t            incx,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrsvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             hipblas_internal_type<T>* const       x[],
+                                             int64_t                               incx,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    hipblas_internal_type<T>*                 x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stridex,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrsvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    hipblas_internal_type<T>*       x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stridex,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasTrsv, float, hipblasStrsv);
     MAP2CF_D64(hipblasTrsv, double, hipblasDtrsv);
@@ -10150,111 +10278,111 @@ namespace
 
     // gbmv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmv)(hipblasHandle_t    handle,
-                                   hipblasOperation_t transA,
-                                   int                m,
-                                   int                n,
-                                   int                kl,
-                                   int                ku,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           x,
-                                   int                incx,
-                                   const hipblas_internal_type<T>*           beta,
-                                   hipblas_internal_type<T>*                 y,
-                                   int                incy);
+    hipblasStatus_t (*hipblasGbmv)(hipblasHandle_t                 handle,
+                                   hipblasOperation_t              transA,
+                                   int                             m,
+                                   int                             n,
+                                   int                             kl,
+                                   int                             ku,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmvBatched)(hipblasHandle_t    handle,
-                                          hipblasOperation_t transA,
-                                          int                m,
-                                          int                n,
-                                          int                kl,
-                                          int                ku,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>* const     x[],
-                                          int                incx,
-                                          const hipblas_internal_type<T>*           beta,
-                                          hipblas_internal_type<T>* const           y[],
-                                          int                incy,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasGbmvBatched)(hipblasHandle_t                       handle,
+                                          hipblasOperation_t                    transA,
+                                          int                                   m,
+                                          int                                   n,
+                                          int                                   kl,
+                                          int                                   ku,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasOperation_t transA,
-                                                 int                m,
-                                                 int                n,
-                                                 int                kl,
-                                                 int                ku,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      stride_a,
-                                                 const hipblas_internal_type<T>*           x,
-                                                 int                incx,
-                                                 hipblasStride      stride_x,
-                                                 const hipblas_internal_type<T>*           beta,
-                                                 hipblas_internal_type<T>*                 y,
-                                                 int                incy,
-                                                 hipblasStride      stride_y,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasGbmvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasOperation_t              transA,
+                                                 int                             m,
+                                                 int                             n,
+                                                 int                             kl,
+                                                 int                             ku,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_a,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stride_y,
+                                                 int                             batch_count);
 
     // gbmv_64
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmv_64)(hipblasHandle_t    handle,
-                                      hipblasOperation_t transA,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      int64_t            kl,
-                                      int64_t            ku,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           x,
-                                      int64_t            incx,
-                                      const hipblas_internal_type<T>*           beta,
-                                      hipblas_internal_type<T>*                 y,
-                                      int64_t            incy);
+    hipblasStatus_t (*hipblasGbmv_64)(hipblasHandle_t                 handle,
+                                      hipblasOperation_t              transA,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      int64_t                         kl,
+                                      int64_t                         ku,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasOperation_t transA,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             int64_t            kl,
-                                             int64_t            ku,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>* const     x[],
-                                             int64_t            incx,
-                                             const hipblas_internal_type<T>*           beta,
-                                             hipblas_internal_type<T>* const           y[],
-                                             int64_t            incy,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasGbmvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasOperation_t                    transA,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             int64_t                               kl,
+                                             int64_t                               ku,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGbmvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasOperation_t transA,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    int64_t            kl,
-                                                    int64_t            ku,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      stride_a,
-                                                    const hipblas_internal_type<T>*           x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stride_x,
-                                                    const hipblas_internal_type<T>*           beta,
-                                                    hipblas_internal_type<T>*                 y,
-                                                    int64_t            incy,
-                                                    hipblasStride      stride_y,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasGbmvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasOperation_t              transA,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    int64_t                         kl,
+                                                    int64_t                         ku,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_a,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stride_y,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasGbmv, float, hipblasSgbmv);
     MAP2CF_D64(hipblasGbmv, double, hipblasDgbmv);
@@ -10273,99 +10401,99 @@ namespace
 
     // gemv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemv)(hipblasHandle_t    handle,
-                                   hipblasOperation_t transA,
-                                   int                m,
-                                   int                n,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           x,
-                                   int                incx,
-                                   const hipblas_internal_type<T>*           beta,
-                                   hipblas_internal_type<T>*                 y,
-                                   int                incy);
+    hipblasStatus_t (*hipblasGemv)(hipblasHandle_t                 handle,
+                                   hipblasOperation_t              transA,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       y,
+                                   int                             incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemvBatched)(hipblasHandle_t    handle,
-                                          hipblasOperation_t transA,
-                                          int                m,
-                                          int                n,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>* const     x[],
-                                          int                incx,
-                                          const hipblas_internal_type<T>*           beta,
-                                          hipblas_internal_type<T>* const           y[],
-                                          int                incy,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasGemvBatched)(hipblasHandle_t                       handle,
+                                          hipblasOperation_t                    transA,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       y[],
+                                          int                                   incy,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemvStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasOperation_t transA,
-                                                 int                m,
-                                                 int                n,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      stride_a,
-                                                 const hipblas_internal_type<T>*           x,
-                                                 int                incx,
-                                                 hipblasStride      stride_x,
-                                                 const hipblas_internal_type<T>*           beta,
-                                                 hipblas_internal_type<T>*                 y,
-                                                 int                incy,
-                                                 hipblasStride      stride_y,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasGemvStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasOperation_t              transA,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_a,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       y,
+                                                 int                             incy,
+                                                 hipblasStride                   stride_y,
+                                                 int                             batch_count);
 
     // gemv
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemv_64)(hipblasHandle_t    handle,
-                                      hipblasOperation_t transA,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           x,
-                                      int64_t            incx,
-                                      const hipblas_internal_type<T>*           beta,
-                                      hipblas_internal_type<T>*                 y,
-                                      int64_t            incy);
+    hipblasStatus_t (*hipblasGemv_64)(hipblasHandle_t                 handle,
+                                      hipblasOperation_t              transA,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       y,
+                                      int64_t                         incy);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemvBatched_64)(hipblasHandle_t    handle,
-                                             hipblasOperation_t transA,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>* const     x[],
-                                             int64_t            incx,
-                                             const hipblas_internal_type<T>*           beta,
-                                             hipblas_internal_type<T>* const           y[],
-                                             int64_t            incy,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasGemvBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasOperation_t                    transA,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       y[],
+                                             int64_t                               incy,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemvStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasOperation_t transA,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      stride_a,
-                                                    const hipblas_internal_type<T>*           x,
-                                                    int64_t            incx,
-                                                    hipblasStride      stride_x,
-                                                    const hipblas_internal_type<T>*           beta,
-                                                    hipblas_internal_type<T>*                 y,
-                                                    int64_t            incy,
-                                                    hipblasStride      stride_y,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasGemvStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasOperation_t              transA,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_a,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       y,
+                                                    int64_t                         incy,
+                                                    hipblasStride                   stride_y,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasGemv, float, hipblasSgemv);
     MAP2CF_D64(hipblasGemv, double, hipblasDgemv);
@@ -10383,110 +10511,110 @@ namespace
     MAP2CF_D64_V2(hipblasGemvStridedBatched, std::complex<double>, hipblasZgemvStridedBatched);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemm)(hipblasHandle_t    handle,
-                                   hipblasOperation_t transA,
-                                   hipblasOperation_t transB,
-                                   int                m,
-                                   int                n,
-                                   int                k,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           B,
-                                   int                ldb,
-                                   const hipblas_internal_type<T>*           beta,
-                                   hipblas_internal_type<T>*                 C,
-                                   int                ldc);
+    hipblasStatus_t (*hipblasGemm)(hipblasHandle_t                 handle,
+                                   hipblasOperation_t              transA,
+                                   hipblasOperation_t              transB,
+                                   int                             m,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* B,
+                                   int                             ldb,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemmStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasOperation_t transA,
-                                                 hipblasOperation_t transB,
-                                                 int                m,
-                                                 int                n,
-                                                 int                k,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 int                bsa,
-                                                 const hipblas_internal_type<T>*           B,
-                                                 int                ldb,
-                                                 int                bsb,
-                                                 const hipblas_internal_type<T>*           beta,
-                                                 hipblas_internal_type<T>*                 C,
-                                                 int                ldc,
-                                                 int                bsc,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasGemmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasOperation_t              transB,
+                                                 int                             m,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 int                             bsa,
+                                                 const hipblas_internal_type<T>* B,
+                                                 int                             ldb,
+                                                 int                             bsb,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 int                             bsc,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemmBatched)(hipblasHandle_t    handle,
-                                          hipblasOperation_t transA,
-                                          hipblasOperation_t transB,
-                                          int                m,
-                                          int                n,
-                                          int                k,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>* const     B[],
-                                          int                ldb,
-                                          const hipblas_internal_type<T>*           beta,
-                                          hipblas_internal_type<T>* const           C[],
-                                          int                ldc,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasGemmBatched)(hipblasHandle_t                       handle,
+                                          hipblasOperation_t                    transA,
+                                          hipblasOperation_t                    transB,
+                                          int                                   m,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const B[],
+                                          int                                   ldb,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemm_64)(hipblasHandle_t    handle,
-                                      hipblasOperation_t transA,
-                                      hipblasOperation_t transB,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      int64_t            k,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           B,
-                                      int64_t            ldb,
-                                      const hipblas_internal_type<T>*           beta,
-                                      hipblas_internal_type<T>*                 C,
-                                      int64_t            ldc);
+    hipblasStatus_t (*hipblasGemm_64)(hipblasHandle_t                 handle,
+                                      hipblasOperation_t              transA,
+                                      hipblasOperation_t              transB,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* B,
+                                      int64_t                         ldb,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemmStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasOperation_t transA,
-                                                    hipblasOperation_t transB,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    int64_t            k,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    int64_t            bsa,
-                                                    const hipblas_internal_type<T>*           B,
-                                                    int64_t            ldb,
-                                                    int64_t            bsb,
-                                                    const hipblas_internal_type<T>*           beta,
-                                                    hipblas_internal_type<T>*                 C,
-                                                    int64_t            ldc,
-                                                    int64_t            bsc,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasGemmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasOperation_t              transB,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    int64_t                         bsa,
+                                                    const hipblas_internal_type<T>* B,
+                                                    int64_t                         ldb,
+                                                    int64_t                         bsb,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    int64_t                         bsc,
+                                                    int64_t                         batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGemmBatched_64)(hipblasHandle_t    handle,
-                                             hipblasOperation_t transA,
-                                             hipblasOperation_t transB,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             int64_t            k,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>* const     B[],
-                                             int64_t            ldb,
-                                             const hipblas_internal_type<T>*           beta,
-                                             hipblas_internal_type<T>* const           C[],
-                                             int64_t            ldc,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasGemmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasOperation_t                    transA,
+                                             hipblasOperation_t                    transB,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const B[],
+                                             int64_t                               ldb,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batch_count);
 
     MAP2CF_D64(hipblasGemm, hipblasHalf, hipblasHgemm);
     MAP2CF_D64(hipblasGemm, float, hipblasSgemm);
@@ -10508,90 +10636,90 @@ namespace
 
     // herk
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerk)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   int                n,
-                                   int                k,
-                                   const hipblas_internal_type<U>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<U>*           beta,
-                                   hipblas_internal_type<T>*                 C,
-                                   int                ldc);
+    hipblasStatus_t (*hipblasHerk)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<U>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<U>* beta,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          int                n,
-                                          int                k,
-                                          const hipblas_internal_type<U>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<U>*           beta,
-                                          hipblas_internal_type<T>* const           C[],
-                                          int                ldc,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasHerkBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<U>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<U>*       beta,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 int                n,
-                                                 int                k,
-                                                 const hipblas_internal_type<U>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 const hipblas_internal_type<U>*           beta,
-                                                 hipblas_internal_type<T>*                 C,
-                                                 int                ldc,
-                                                 hipblasStride      strideC,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasHerkStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<U>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<U>* beta,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerk_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      int64_t            n,
-                                      int64_t            k,
-                                      const hipblas_internal_type<U>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<U>*           beta,
-                                      hipblas_internal_type<T>*                 C,
-                                      int64_t            ldc);
+    hipblasStatus_t (*hipblasHerk_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<U>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<U>* beta,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             int64_t            n,
-                                             int64_t            k,
-                                             const hipblas_internal_type<U>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<U>*           beta,
-                                             hipblas_internal_type<T>* const           C[],
-                                             int64_t            ldc,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasHerkBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<U>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<U>*       beta,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    int64_t            n,
-                                                    int64_t            k,
-                                                    const hipblas_internal_type<U>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    const hipblas_internal_type<U>*           beta,
-                                                    hipblas_internal_type<T>*                 C,
-                                                    int64_t            ldc,
-                                                    hipblasStride      strideC,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasHerkStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<U>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<U>* beta,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHerk, std::complex<float>, float, hipblasCherk);
     MAP2CF_D64_V2(hipblasHerk, std::complex<double>, double, hipblasZherk);
@@ -10599,7 +10727,10 @@ namespace
     MAP2CF_D64_V2(hipblasHerkBatched, std::complex<float>, float, hipblasCherkBatched);
     MAP2CF_D64_V2(hipblasHerkBatched, std::complex<double>, double, hipblasZherkBatched);
 
-    MAP2CF_D64_V2(hipblasHerkStridedBatched, std::complex<float>, float, hipblasCherkStridedBatched);
+    MAP2CF_D64_V2(hipblasHerkStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasCherkStridedBatched);
     MAP2CF_D64_V2(hipblasHerkStridedBatched,
                   std::complex<double>,
                   double,
@@ -10607,104 +10738,104 @@ namespace
 
     // her2k
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2k)(hipblasHandle_t    handle,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    int                n,
-                                    int                k,
-                                    const hipblas_internal_type<T>*           alpha,
-                                    const hipblas_internal_type<T>*           A,
-                                    int                lda,
-                                    const hipblas_internal_type<T>*           B,
-                                    int                ldb,
-                                    const hipblas_internal_type<U>*           beta,
-                                    hipblas_internal_type<T>*                 C,
-                                    int                ldc);
+    hipblasStatus_t (*hipblasHer2k)(hipblasHandle_t                 handle,
+                                    hipblasFillMode_t               uplo,
+                                    hipblasOperation_t              transA,
+                                    int                             n,
+                                    int                             k,
+                                    const hipblas_internal_type<T>* alpha,
+                                    const hipblas_internal_type<T>* A,
+                                    int                             lda,
+                                    const hipblas_internal_type<T>* B,
+                                    int                             ldb,
+                                    const hipblas_internal_type<U>* beta,
+                                    hipblas_internal_type<T>*       C,
+                                    int                             ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2kBatched)(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           int                n,
-                                           int                k,
-                                           const hipblas_internal_type<T>*           alpha,
-                                           const hipblas_internal_type<T>* const     A[],
-                                           int                lda,
-                                           const hipblas_internal_type<T>* const     B[],
-                                           int                ldb,
-                                           const hipblas_internal_type<U>*           beta,
-                                           hipblas_internal_type<T>* const           C[],
-                                           int                ldc,
-                                           int                batchCount);
+    hipblasStatus_t (*hipblasHer2kBatched)(hipblasHandle_t                       handle,
+                                           hipblasFillMode_t                     uplo,
+                                           hipblasOperation_t                    transA,
+                                           int                                   n,
+                                           int                                   k,
+                                           const hipblas_internal_type<T>*       alpha,
+                                           const hipblas_internal_type<T>* const A[],
+                                           int                                   lda,
+                                           const hipblas_internal_type<T>* const B[],
+                                           int                                   ldb,
+                                           const hipblas_internal_type<U>*       beta,
+                                           hipblas_internal_type<T>* const       C[],
+                                           int                                   ldc,
+                                           int                                   batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2kStridedBatched)(hipblasHandle_t    handle,
-                                                  hipblasFillMode_t  uplo,
-                                                  hipblasOperation_t transA,
-                                                  int                n,
-                                                  int                k,
-                                                  const hipblas_internal_type<T>*           alpha,
-                                                  const hipblas_internal_type<T>*           A,
-                                                  int                lda,
-                                                  hipblasStride      strideA,
-                                                  const hipblas_internal_type<T>*           B,
-                                                  int                ldb,
-                                                  hipblasStride      strideB,
-                                                  const hipblas_internal_type<U>*           beta,
-                                                  hipblas_internal_type<T>*                 C,
-                                                  int                ldc,
-                                                  hipblasStride      strideC,
-                                                  int                batchCount);
+    hipblasStatus_t (*hipblasHer2kStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblasFillMode_t               uplo,
+                                                  hipblasOperation_t              transA,
+                                                  int                             n,
+                                                  int                             k,
+                                                  const hipblas_internal_type<T>* alpha,
+                                                  const hipblas_internal_type<T>* A,
+                                                  int                             lda,
+                                                  hipblasStride                   strideA,
+                                                  const hipblas_internal_type<T>* B,
+                                                  int                             ldb,
+                                                  hipblasStride                   strideB,
+                                                  const hipblas_internal_type<U>* beta,
+                                                  hipblas_internal_type<T>*       C,
+                                                  int                             ldc,
+                                                  hipblasStride                   strideC,
+                                                  int                             batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2k_64)(hipblasHandle_t    handle,
-                                       hipblasFillMode_t  uplo,
-                                       hipblasOperation_t transA,
-                                       int64_t            n,
-                                       int64_t            k,
-                                       const hipblas_internal_type<T>*           alpha,
-                                       const hipblas_internal_type<T>*           A,
-                                       int64_t            lda,
-                                       const hipblas_internal_type<T>*           B,
-                                       int64_t            ldb,
-                                       const hipblas_internal_type<U>*           beta,
-                                       hipblas_internal_type<T>*                 C,
-                                       int64_t            ldc);
+    hipblasStatus_t (*hipblasHer2k_64)(hipblasHandle_t                 handle,
+                                       hipblasFillMode_t               uplo,
+                                       hipblasOperation_t              transA,
+                                       int64_t                         n,
+                                       int64_t                         k,
+                                       const hipblas_internal_type<T>* alpha,
+                                       const hipblas_internal_type<T>* A,
+                                       int64_t                         lda,
+                                       const hipblas_internal_type<T>* B,
+                                       int64_t                         ldb,
+                                       const hipblas_internal_type<U>* beta,
+                                       hipblas_internal_type<T>*       C,
+                                       int64_t                         ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2kBatched_64)(hipblasHandle_t    handle,
-                                              hipblasFillMode_t  uplo,
-                                              hipblasOperation_t transA,
-                                              int64_t            n,
-                                              int64_t            k,
-                                              const hipblas_internal_type<T>*           alpha,
-                                              const hipblas_internal_type<T>* const     A[],
-                                              int64_t            lda,
-                                              const hipblas_internal_type<T>* const     B[],
-                                              int64_t            ldb,
-                                              const hipblas_internal_type<U>*           beta,
-                                              hipblas_internal_type<T>* const           C[],
-                                              int64_t            ldc,
-                                              int64_t            batchCount);
+    hipblasStatus_t (*hipblasHer2kBatched_64)(hipblasHandle_t                       handle,
+                                              hipblasFillMode_t                     uplo,
+                                              hipblasOperation_t                    transA,
+                                              int64_t                               n,
+                                              int64_t                               k,
+                                              const hipblas_internal_type<T>*       alpha,
+                                              const hipblas_internal_type<T>* const A[],
+                                              int64_t                               lda,
+                                              const hipblas_internal_type<T>* const B[],
+                                              int64_t                               ldb,
+                                              const hipblas_internal_type<U>*       beta,
+                                              hipblas_internal_type<T>* const       C[],
+                                              int64_t                               ldc,
+                                              int64_t                               batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHer2kStridedBatched_64)(hipblasHandle_t    handle,
-                                                     hipblasFillMode_t  uplo,
-                                                     hipblasOperation_t transA,
-                                                     int64_t            n,
-                                                     int64_t            k,
-                                                     const hipblas_internal_type<T>*           alpha,
-                                                     const hipblas_internal_type<T>*           A,
-                                                     int64_t            lda,
-                                                     hipblasStride      strideA,
-                                                     const hipblas_internal_type<T>*           B,
-                                                     int64_t            ldb,
-                                                     hipblasStride      strideB,
-                                                     const hipblas_internal_type<U>*           beta,
-                                                     hipblas_internal_type<T>*                 C,
-                                                     int64_t            ldc,
-                                                     hipblasStride      strideC,
-                                                     int64_t            batchCount);
+    hipblasStatus_t (*hipblasHer2kStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     hipblasFillMode_t               uplo,
+                                                     hipblasOperation_t              transA,
+                                                     int64_t                         n,
+                                                     int64_t                         k,
+                                                     const hipblas_internal_type<T>* alpha,
+                                                     const hipblas_internal_type<T>* A,
+                                                     int64_t                         lda,
+                                                     hipblasStride                   strideA,
+                                                     const hipblas_internal_type<T>* B,
+                                                     int64_t                         ldb,
+                                                     hipblasStride                   strideB,
+                                                     const hipblas_internal_type<U>* beta,
+                                                     hipblas_internal_type<T>*       C,
+                                                     int64_t                         ldc,
+                                                     hipblasStride                   strideC,
+                                                     int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHer2k, std::complex<float>, float, hipblasCher2k);
     MAP2CF_D64_V2(hipblasHer2k, std::complex<double>, double, hipblasZher2k);
@@ -10712,7 +10843,10 @@ namespace
     MAP2CF_D64_V2(hipblasHer2kBatched, std::complex<float>, float, hipblasCher2kBatched);
     MAP2CF_D64_V2(hipblasHer2kBatched, std::complex<double>, double, hipblasZher2kBatched);
 
-    MAP2CF_D64_V2(hipblasHer2kStridedBatched, std::complex<float>, float, hipblasCher2kStridedBatched);
+    MAP2CF_D64_V2(hipblasHer2kStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasCher2kStridedBatched);
     MAP2CF_D64_V2(hipblasHer2kStridedBatched,
                   std::complex<double>,
                   double,
@@ -10720,104 +10854,104 @@ namespace
 
     // herkx
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkx)(hipblasHandle_t    handle,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    int                n,
-                                    int                k,
-                                    const hipblas_internal_type<T>*           alpha,
-                                    const hipblas_internal_type<T>*           A,
-                                    int                lda,
-                                    const hipblas_internal_type<T>*           B,
-                                    int                ldb,
-                                    const hipblas_internal_type<U>*           beta,
-                                    hipblas_internal_type<T>*                 C,
-                                    int                ldc);
+    hipblasStatus_t (*hipblasHerkx)(hipblasHandle_t                 handle,
+                                    hipblasFillMode_t               uplo,
+                                    hipblasOperation_t              transA,
+                                    int                             n,
+                                    int                             k,
+                                    const hipblas_internal_type<T>* alpha,
+                                    const hipblas_internal_type<T>* A,
+                                    int                             lda,
+                                    const hipblas_internal_type<T>* B,
+                                    int                             ldb,
+                                    const hipblas_internal_type<U>* beta,
+                                    hipblas_internal_type<T>*       C,
+                                    int                             ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkxBatched)(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           int                n,
-                                           int                k,
-                                           const hipblas_internal_type<T>*           alpha,
-                                           const hipblas_internal_type<T>* const     A[],
-                                           int                lda,
-                                           const hipblas_internal_type<T>* const     B[],
-                                           int                ldb,
-                                           const hipblas_internal_type<U>*           beta,
-                                           hipblas_internal_type<T>* const           C[],
-                                           int                ldc,
-                                           int                batchCount);
+    hipblasStatus_t (*hipblasHerkxBatched)(hipblasHandle_t                       handle,
+                                           hipblasFillMode_t                     uplo,
+                                           hipblasOperation_t                    transA,
+                                           int                                   n,
+                                           int                                   k,
+                                           const hipblas_internal_type<T>*       alpha,
+                                           const hipblas_internal_type<T>* const A[],
+                                           int                                   lda,
+                                           const hipblas_internal_type<T>* const B[],
+                                           int                                   ldb,
+                                           const hipblas_internal_type<U>*       beta,
+                                           hipblas_internal_type<T>* const       C[],
+                                           int                                   ldc,
+                                           int                                   batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkxStridedBatched)(hipblasHandle_t    handle,
-                                                  hipblasFillMode_t  uplo,
-                                                  hipblasOperation_t transA,
-                                                  int                n,
-                                                  int                k,
-                                                  const hipblas_internal_type<T>*           alpha,
-                                                  const hipblas_internal_type<T>*           A,
-                                                  int                lda,
-                                                  hipblasStride      strideA,
-                                                  const hipblas_internal_type<T>*           B,
-                                                  int                ldb,
-                                                  hipblasStride      strideB,
-                                                  const hipblas_internal_type<U>*           beta,
-                                                  hipblas_internal_type<T>*                 C,
-                                                  int                ldc,
-                                                  hipblasStride      strideC,
-                                                  int                batchCount);
+    hipblasStatus_t (*hipblasHerkxStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblasFillMode_t               uplo,
+                                                  hipblasOperation_t              transA,
+                                                  int                             n,
+                                                  int                             k,
+                                                  const hipblas_internal_type<T>* alpha,
+                                                  const hipblas_internal_type<T>* A,
+                                                  int                             lda,
+                                                  hipblasStride                   strideA,
+                                                  const hipblas_internal_type<T>* B,
+                                                  int                             ldb,
+                                                  hipblasStride                   strideB,
+                                                  const hipblas_internal_type<U>* beta,
+                                                  hipblas_internal_type<T>*       C,
+                                                  int                             ldc,
+                                                  hipblasStride                   strideC,
+                                                  int                             batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkx_64)(hipblasHandle_t    handle,
-                                       hipblasFillMode_t  uplo,
-                                       hipblasOperation_t transA,
-                                       int64_t            n,
-                                       int64_t            k,
-                                       const hipblas_internal_type<T>*           alpha,
-                                       const hipblas_internal_type<T>*           A,
-                                       int64_t            lda,
-                                       const hipblas_internal_type<T>*           B,
-                                       int64_t            ldb,
-                                       const hipblas_internal_type<U>*           beta,
-                                       hipblas_internal_type<T>*                 C,
-                                       int64_t            ldc);
+    hipblasStatus_t (*hipblasHerkx_64)(hipblasHandle_t                 handle,
+                                       hipblasFillMode_t               uplo,
+                                       hipblasOperation_t              transA,
+                                       int64_t                         n,
+                                       int64_t                         k,
+                                       const hipblas_internal_type<T>* alpha,
+                                       const hipblas_internal_type<T>* A,
+                                       int64_t                         lda,
+                                       const hipblas_internal_type<T>* B,
+                                       int64_t                         ldb,
+                                       const hipblas_internal_type<U>* beta,
+                                       hipblas_internal_type<T>*       C,
+                                       int64_t                         ldc);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkxBatched_64)(hipblasHandle_t    handle,
-                                              hipblasFillMode_t  uplo,
-                                              hipblasOperation_t transA,
-                                              int64_t            n,
-                                              int64_t            k,
-                                              const hipblas_internal_type<T>*           alpha,
-                                              const hipblas_internal_type<T>* const     A[],
-                                              int64_t            lda,
-                                              const hipblas_internal_type<T>* const     B[],
-                                              int64_t            ldb,
-                                              const hipblas_internal_type<U>*           beta,
-                                              hipblas_internal_type<T>* const           C[],
-                                              int64_t            ldc,
-                                              int64_t            batchCount);
+    hipblasStatus_t (*hipblasHerkxBatched_64)(hipblasHandle_t                       handle,
+                                              hipblasFillMode_t                     uplo,
+                                              hipblasOperation_t                    transA,
+                                              int64_t                               n,
+                                              int64_t                               k,
+                                              const hipblas_internal_type<T>*       alpha,
+                                              const hipblas_internal_type<T>* const A[],
+                                              int64_t                               lda,
+                                              const hipblas_internal_type<T>* const B[],
+                                              int64_t                               ldb,
+                                              const hipblas_internal_type<U>*       beta,
+                                              hipblas_internal_type<T>* const       C[],
+                                              int64_t                               ldc,
+                                              int64_t                               batchCount);
 
     template <typename T, typename U, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHerkxStridedBatched_64)(hipblasHandle_t    handle,
-                                                     hipblasFillMode_t  uplo,
-                                                     hipblasOperation_t transA,
-                                                     int64_t            n,
-                                                     int64_t            k,
-                                                     const hipblas_internal_type<T>*           alpha,
-                                                     const hipblas_internal_type<T>*           A,
-                                                     int64_t            lda,
-                                                     hipblasStride      strideA,
-                                                     const hipblas_internal_type<T>*           B,
-                                                     int64_t            ldb,
-                                                     hipblasStride      strideB,
-                                                     const hipblas_internal_type<U>*           beta,
-                                                     hipblas_internal_type<T>*                 C,
-                                                     int64_t            ldc,
-                                                     hipblasStride      strideC,
-                                                     int64_t            batchCount);
+    hipblasStatus_t (*hipblasHerkxStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     hipblasFillMode_t               uplo,
+                                                     hipblasOperation_t              transA,
+                                                     int64_t                         n,
+                                                     int64_t                         k,
+                                                     const hipblas_internal_type<T>* alpha,
+                                                     const hipblas_internal_type<T>* A,
+                                                     int64_t                         lda,
+                                                     hipblasStride                   strideA,
+                                                     const hipblas_internal_type<T>* B,
+                                                     int64_t                         ldb,
+                                                     hipblasStride                   strideB,
+                                                     const hipblas_internal_type<U>* beta,
+                                                     hipblas_internal_type<T>*       C,
+                                                     int64_t                         ldc,
+                                                     hipblasStride                   strideC,
+                                                     int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHerkx, std::complex<float>, float, hipblasCherkx);
     MAP2CF_D64_V2(hipblasHerkx, std::complex<double>, double, hipblasZherkx);
@@ -10825,7 +10959,10 @@ namespace
     MAP2CF_D64_V2(hipblasHerkxBatched, std::complex<float>, float, hipblasCherkxBatched);
     MAP2CF_D64_V2(hipblasHerkxBatched, std::complex<double>, double, hipblasZherkxBatched);
 
-    MAP2CF_D64_V2(hipblasHerkxStridedBatched, std::complex<float>, float, hipblasCherkxStridedBatched);
+    MAP2CF_D64_V2(hipblasHerkxStridedBatched,
+                  std::complex<float>,
+                  float,
+                  hipblasCherkxStridedBatched);
     MAP2CF_D64_V2(hipblasHerkxStridedBatched,
                   std::complex<double>,
                   double,
@@ -10833,104 +10970,104 @@ namespace
 
     // symm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymm)(hipblasHandle_t   handle,
-                                   hipblasSideMode_t side,
-                                   hipblasFillMode_t uplo,
-                                   int               m,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          B,
-                                   int               ldb,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                C,
-                                   int               ldc);
+    hipblasStatus_t (*hipblasSymm)(hipblasHandle_t                 handle,
+                                   hipblasSideMode_t               side,
+                                   hipblasFillMode_t               uplo,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* B,
+                                   int                             ldb,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymmBatched)(hipblasHandle_t   handle,
-                                          hipblasSideMode_t side,
-                                          hipblasFillMode_t uplo,
-                                          int               m,
-                                          int               n,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    B[],
-                                          int               ldb,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          C[],
-                                          int               ldc,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasSymmBatched)(hipblasHandle_t                       handle,
+                                          hipblasSideMode_t                     side,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const B[],
+                                          int                                   ldb,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymmStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasSideMode_t side,
-                                                 hipblasFillMode_t uplo,
-                                                 int               m,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 const hipblas_internal_type<T>*          B,
-                                                 int               ldb,
-                                                 hipblasStride     strideB,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                C,
-                                                 int               ldc,
-                                                 hipblasStride     strideC,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasSymmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasSideMode_t               side,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* B,
+                                                 int                             ldb,
+                                                 hipblasStride                   strideB,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymm_64)(hipblasHandle_t   handle,
-                                      hipblasSideMode_t side,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           m,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          B,
-                                      int64_t           ldb,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                C,
-                                      int64_t           ldc);
+    hipblasStatus_t (*hipblasSymm_64)(hipblasHandle_t                 handle,
+                                      hipblasSideMode_t               side,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* B,
+                                      int64_t                         ldb,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymmBatched_64)(hipblasHandle_t   handle,
-                                             hipblasSideMode_t side,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           m,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    B[],
-                                             int64_t           ldb,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          C[],
-                                             int64_t           ldc,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasSymmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasSideMode_t                     side,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const B[],
+                                             int64_t                               ldb,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSymmStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasSideMode_t side,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           m,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    const hipblas_internal_type<T>*          B,
-                                                    int64_t           ldb,
-                                                    hipblasStride     strideB,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                C,
-                                                    int64_t           ldc,
-                                                    hipblasStride     strideC,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasSymmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasSideMode_t               side,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* B,
+                                                    int64_t                         ldb,
+                                                    hipblasStride                   strideB,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSymm, float, hipblasSsymm);
     MAP2CF_D64(hipblasSymm, double, hipblasDsymm);
@@ -10949,90 +11086,90 @@ namespace
 
     // syrk
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrk)(hipblasHandle_t    handle,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   int                n,
-                                   int                k,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           beta,
-                                   hipblas_internal_type<T>*                 C,
-                                   int                ldc);
+    hipblasStatus_t (*hipblasSyrk)(hipblasHandle_t                 handle,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkBatched)(hipblasHandle_t    handle,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          int                n,
-                                          int                k,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>*           beta,
-                                          hipblas_internal_type<T>* const           C[],
-                                          int                ldc,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasSyrkBatched)(hipblasHandle_t                       handle,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 int                n,
-                                                 int                k,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 const hipblas_internal_type<T>*           beta,
-                                                 hipblas_internal_type<T>*                 C,
-                                                 int                ldc,
-                                                 hipblasStride      strideC,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasSyrkStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrk_64)(hipblasHandle_t    handle,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      int64_t            n,
-                                      int64_t            k,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           beta,
-                                      hipblas_internal_type<T>*                 C,
-                                      int64_t            ldc);
+    hipblasStatus_t (*hipblasSyrk_64)(hipblasHandle_t                 handle,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkBatched_64)(hipblasHandle_t    handle,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             int64_t            n,
-                                             int64_t            k,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>*           beta,
-                                             hipblas_internal_type<T>* const           C[],
-                                             int64_t            ldc,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyrkBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    int64_t            n,
-                                                    int64_t            k,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    const hipblas_internal_type<T>*           beta,
-                                                    hipblas_internal_type<T>*                 C,
-                                                    int64_t            ldc,
-                                                    hipblasStride      strideC,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyrkStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSyrk, float, hipblasSsyrk);
     MAP2CF_D64(hipblasSyrk, double, hipblasDsyrk);
@@ -11051,104 +11188,104 @@ namespace
 
     // syr2k
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2k)(hipblasHandle_t    handle,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    int                n,
-                                    int                k,
-                                    const hipblas_internal_type<T>*           alpha,
-                                    const hipblas_internal_type<T>*           A,
-                                    int                lda,
-                                    const hipblas_internal_type<T>*           B,
-                                    int                ldb,
-                                    const hipblas_internal_type<T>*           beta,
-                                    hipblas_internal_type<T>*                 C,
-                                    int                ldc);
+    hipblasStatus_t (*hipblasSyr2k)(hipblasHandle_t                 handle,
+                                    hipblasFillMode_t               uplo,
+                                    hipblasOperation_t              transA,
+                                    int                             n,
+                                    int                             k,
+                                    const hipblas_internal_type<T>* alpha,
+                                    const hipblas_internal_type<T>* A,
+                                    int                             lda,
+                                    const hipblas_internal_type<T>* B,
+                                    int                             ldb,
+                                    const hipblas_internal_type<T>* beta,
+                                    hipblas_internal_type<T>*       C,
+                                    int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2kBatched)(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           int                n,
-                                           int                k,
-                                           const hipblas_internal_type<T>*           alpha,
-                                           const hipblas_internal_type<T>* const     A[],
-                                           int                lda,
-                                           const hipblas_internal_type<T>* const     B[],
-                                           int                ldb,
-                                           const hipblas_internal_type<T>*           beta,
-                                           hipblas_internal_type<T>* const           C[],
-                                           int                ldc,
-                                           int                batchCount);
+    hipblasStatus_t (*hipblasSyr2kBatched)(hipblasHandle_t                       handle,
+                                           hipblasFillMode_t                     uplo,
+                                           hipblasOperation_t                    transA,
+                                           int                                   n,
+                                           int                                   k,
+                                           const hipblas_internal_type<T>*       alpha,
+                                           const hipblas_internal_type<T>* const A[],
+                                           int                                   lda,
+                                           const hipblas_internal_type<T>* const B[],
+                                           int                                   ldb,
+                                           const hipblas_internal_type<T>*       beta,
+                                           hipblas_internal_type<T>* const       C[],
+                                           int                                   ldc,
+                                           int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2kStridedBatched)(hipblasHandle_t    handle,
-                                                  hipblasFillMode_t  uplo,
-                                                  hipblasOperation_t transA,
-                                                  int                n,
-                                                  int                k,
-                                                  const hipblas_internal_type<T>*           alpha,
-                                                  const hipblas_internal_type<T>*           A,
-                                                  int                lda,
-                                                  hipblasStride      strideA,
-                                                  const hipblas_internal_type<T>*           B,
-                                                  int                ldb,
-                                                  hipblasStride      strideB,
-                                                  const hipblas_internal_type<T>*           beta,
-                                                  hipblas_internal_type<T>*                 C,
-                                                  int                ldc,
-                                                  hipblasStride      strideC,
-                                                  int                batchCount);
+    hipblasStatus_t (*hipblasSyr2kStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblasFillMode_t               uplo,
+                                                  hipblasOperation_t              transA,
+                                                  int                             n,
+                                                  int                             k,
+                                                  const hipblas_internal_type<T>* alpha,
+                                                  const hipblas_internal_type<T>* A,
+                                                  int                             lda,
+                                                  hipblasStride                   strideA,
+                                                  const hipblas_internal_type<T>* B,
+                                                  int                             ldb,
+                                                  hipblasStride                   strideB,
+                                                  const hipblas_internal_type<T>* beta,
+                                                  hipblas_internal_type<T>*       C,
+                                                  int                             ldc,
+                                                  hipblasStride                   strideC,
+                                                  int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2k_64)(hipblasHandle_t    handle,
-                                       hipblasFillMode_t  uplo,
-                                       hipblasOperation_t transA,
-                                       int64_t            n,
-                                       int64_t            k,
-                                       const hipblas_internal_type<T>*           alpha,
-                                       const hipblas_internal_type<T>*           A,
-                                       int64_t            lda,
-                                       const hipblas_internal_type<T>*           B,
-                                       int64_t            ldb,
-                                       const hipblas_internal_type<T>*           beta,
-                                       hipblas_internal_type<T>*                 C,
-                                       int64_t            ldc);
+    hipblasStatus_t (*hipblasSyr2k_64)(hipblasHandle_t                 handle,
+                                       hipblasFillMode_t               uplo,
+                                       hipblasOperation_t              transA,
+                                       int64_t                         n,
+                                       int64_t                         k,
+                                       const hipblas_internal_type<T>* alpha,
+                                       const hipblas_internal_type<T>* A,
+                                       int64_t                         lda,
+                                       const hipblas_internal_type<T>* B,
+                                       int64_t                         ldb,
+                                       const hipblas_internal_type<T>* beta,
+                                       hipblas_internal_type<T>*       C,
+                                       int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2kBatched_64)(hipblasHandle_t    handle,
-                                              hipblasFillMode_t  uplo,
-                                              hipblasOperation_t transA,
-                                              int64_t            n,
-                                              int64_t            k,
-                                              const hipblas_internal_type<T>*           alpha,
-                                              const hipblas_internal_type<T>* const     A[],
-                                              int64_t            lda,
-                                              const hipblas_internal_type<T>* const     B[],
-                                              int64_t            ldb,
-                                              const hipblas_internal_type<T>*           beta,
-                                              hipblas_internal_type<T>* const           C[],
-                                              int64_t            ldc,
-                                              int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyr2kBatched_64)(hipblasHandle_t                       handle,
+                                              hipblasFillMode_t                     uplo,
+                                              hipblasOperation_t                    transA,
+                                              int64_t                               n,
+                                              int64_t                               k,
+                                              const hipblas_internal_type<T>*       alpha,
+                                              const hipblas_internal_type<T>* const A[],
+                                              int64_t                               lda,
+                                              const hipblas_internal_type<T>* const B[],
+                                              int64_t                               ldb,
+                                              const hipblas_internal_type<T>*       beta,
+                                              hipblas_internal_type<T>* const       C[],
+                                              int64_t                               ldc,
+                                              int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyr2kStridedBatched_64)(hipblasHandle_t    handle,
-                                                     hipblasFillMode_t  uplo,
-                                                     hipblasOperation_t transA,
-                                                     int64_t            n,
-                                                     int64_t            k,
-                                                     const hipblas_internal_type<T>*           alpha,
-                                                     const hipblas_internal_type<T>*           A,
-                                                     int64_t            lda,
-                                                     hipblasStride      strideA,
-                                                     const hipblas_internal_type<T>*           B,
-                                                     int64_t            ldb,
-                                                     hipblasStride      strideB,
-                                                     const hipblas_internal_type<T>*           beta,
-                                                     hipblas_internal_type<T>*                 C,
-                                                     int64_t            ldc,
-                                                     hipblasStride      strideC,
-                                                     int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyr2kStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     hipblasFillMode_t               uplo,
+                                                     hipblasOperation_t              transA,
+                                                     int64_t                         n,
+                                                     int64_t                         k,
+                                                     const hipblas_internal_type<T>* alpha,
+                                                     const hipblas_internal_type<T>* A,
+                                                     int64_t                         lda,
+                                                     hipblasStride                   strideA,
+                                                     const hipblas_internal_type<T>* B,
+                                                     int64_t                         ldb,
+                                                     hipblasStride                   strideB,
+                                                     const hipblas_internal_type<T>* beta,
+                                                     hipblas_internal_type<T>*       C,
+                                                     int64_t                         ldc,
+                                                     hipblasStride                   strideC,
+                                                     int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSyr2k, float, hipblasSsyr2k);
     MAP2CF_D64(hipblasSyr2k, double, hipblasDsyr2k);
@@ -11167,104 +11304,104 @@ namespace
 
     // syrkx
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkx)(hipblasHandle_t    handle,
-                                    hipblasFillMode_t  uplo,
-                                    hipblasOperation_t transA,
-                                    int                n,
-                                    int                k,
-                                    const hipblas_internal_type<T>*           alpha,
-                                    const hipblas_internal_type<T>*           A,
-                                    int                lda,
-                                    const hipblas_internal_type<T>*           B,
-                                    int                ldb,
-                                    const hipblas_internal_type<T>*           beta,
-                                    hipblas_internal_type<T>*                 C,
-                                    int                ldc);
+    hipblasStatus_t (*hipblasSyrkx)(hipblasHandle_t                 handle,
+                                    hipblasFillMode_t               uplo,
+                                    hipblasOperation_t              transA,
+                                    int                             n,
+                                    int                             k,
+                                    const hipblas_internal_type<T>* alpha,
+                                    const hipblas_internal_type<T>* A,
+                                    int                             lda,
+                                    const hipblas_internal_type<T>* B,
+                                    int                             ldb,
+                                    const hipblas_internal_type<T>* beta,
+                                    hipblas_internal_type<T>*       C,
+                                    int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkxBatched)(hipblasHandle_t    handle,
-                                           hipblasFillMode_t  uplo,
-                                           hipblasOperation_t transA,
-                                           int                n,
-                                           int                k,
-                                           const hipblas_internal_type<T>*           alpha,
-                                           const hipblas_internal_type<T>* const     A[],
-                                           int                lda,
-                                           const hipblas_internal_type<T>* const     B[],
-                                           int                ldb,
-                                           const hipblas_internal_type<T>*           beta,
-                                           hipblas_internal_type<T>* const           C[],
-                                           int                ldc,
-                                           int                batchCount);
+    hipblasStatus_t (*hipblasSyrkxBatched)(hipblasHandle_t                       handle,
+                                           hipblasFillMode_t                     uplo,
+                                           hipblasOperation_t                    transA,
+                                           int                                   n,
+                                           int                                   k,
+                                           const hipblas_internal_type<T>*       alpha,
+                                           const hipblas_internal_type<T>* const A[],
+                                           int                                   lda,
+                                           const hipblas_internal_type<T>* const B[],
+                                           int                                   ldb,
+                                           const hipblas_internal_type<T>*       beta,
+                                           hipblas_internal_type<T>* const       C[],
+                                           int                                   ldc,
+                                           int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkxStridedBatched)(hipblasHandle_t    handle,
-                                                  hipblasFillMode_t  uplo,
-                                                  hipblasOperation_t transA,
-                                                  int                n,
-                                                  int                k,
-                                                  const hipblas_internal_type<T>*           alpha,
-                                                  const hipblas_internal_type<T>*           A,
-                                                  int                lda,
-                                                  hipblasStride      strideA,
-                                                  const hipblas_internal_type<T>*           B,
-                                                  int                ldb,
-                                                  hipblasStride      strideB,
-                                                  const hipblas_internal_type<T>*           beta,
-                                                  hipblas_internal_type<T>*                 C,
-                                                  int                ldc,
-                                                  hipblasStride      strideC,
-                                                  int                batchCount);
+    hipblasStatus_t (*hipblasSyrkxStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblasFillMode_t               uplo,
+                                                  hipblasOperation_t              transA,
+                                                  int                             n,
+                                                  int                             k,
+                                                  const hipblas_internal_type<T>* alpha,
+                                                  const hipblas_internal_type<T>* A,
+                                                  int                             lda,
+                                                  hipblasStride                   strideA,
+                                                  const hipblas_internal_type<T>* B,
+                                                  int                             ldb,
+                                                  hipblasStride                   strideB,
+                                                  const hipblas_internal_type<T>* beta,
+                                                  hipblas_internal_type<T>*       C,
+                                                  int                             ldc,
+                                                  hipblasStride                   strideC,
+                                                  int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkx_64)(hipblasHandle_t    handle,
-                                       hipblasFillMode_t  uplo,
-                                       hipblasOperation_t transA,
-                                       int64_t            n,
-                                       int64_t            k,
-                                       const hipblas_internal_type<T>*           alpha,
-                                       const hipblas_internal_type<T>*           A,
-                                       int64_t            lda,
-                                       const hipblas_internal_type<T>*           B,
-                                       int64_t            ldb,
-                                       const hipblas_internal_type<T>*           beta,
-                                       hipblas_internal_type<T>*                 C,
-                                       int64_t            ldc);
+    hipblasStatus_t (*hipblasSyrkx_64)(hipblasHandle_t                 handle,
+                                       hipblasFillMode_t               uplo,
+                                       hipblasOperation_t              transA,
+                                       int64_t                         n,
+                                       int64_t                         k,
+                                       const hipblas_internal_type<T>* alpha,
+                                       const hipblas_internal_type<T>* A,
+                                       int64_t                         lda,
+                                       const hipblas_internal_type<T>* B,
+                                       int64_t                         ldb,
+                                       const hipblas_internal_type<T>* beta,
+                                       hipblas_internal_type<T>*       C,
+                                       int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkxBatched_64)(hipblasHandle_t    handle,
-                                              hipblasFillMode_t  uplo,
-                                              hipblasOperation_t transA,
-                                              int64_t            n,
-                                              int64_t            k,
-                                              const hipblas_internal_type<T>*           alpha,
-                                              const hipblas_internal_type<T>* const     A[],
-                                              int64_t            lda,
-                                              const hipblas_internal_type<T>* const     B[],
-                                              int64_t            ldb,
-                                              const hipblas_internal_type<T>*           beta,
-                                              hipblas_internal_type<T>* const           C[],
-                                              int64_t            ldc,
-                                              int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyrkxBatched_64)(hipblasHandle_t                       handle,
+                                              hipblasFillMode_t                     uplo,
+                                              hipblasOperation_t                    transA,
+                                              int64_t                               n,
+                                              int64_t                               k,
+                                              const hipblas_internal_type<T>*       alpha,
+                                              const hipblas_internal_type<T>* const A[],
+                                              int64_t                               lda,
+                                              const hipblas_internal_type<T>* const B[],
+                                              int64_t                               ldb,
+                                              const hipblas_internal_type<T>*       beta,
+                                              hipblas_internal_type<T>* const       C[],
+                                              int64_t                               ldc,
+                                              int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasSyrkxStridedBatched_64)(hipblasHandle_t    handle,
-                                                     hipblasFillMode_t  uplo,
-                                                     hipblasOperation_t transA,
-                                                     int64_t            n,
-                                                     int64_t            k,
-                                                     const hipblas_internal_type<T>*           alpha,
-                                                     const hipblas_internal_type<T>*           A,
-                                                     int64_t            lda,
-                                                     hipblasStride      strideA,
-                                                     const hipblas_internal_type<T>*           B,
-                                                     int64_t            ldb,
-                                                     hipblasStride      strideB,
-                                                     const hipblas_internal_type<T>*           beta,
-                                                     hipblas_internal_type<T>*                 C,
-                                                     int64_t            ldc,
-                                                     hipblasStride      strideC,
-                                                     int64_t            batchCount);
+    hipblasStatus_t (*hipblasSyrkxStridedBatched_64)(hipblasHandle_t                 handle,
+                                                     hipblasFillMode_t               uplo,
+                                                     hipblasOperation_t              transA,
+                                                     int64_t                         n,
+                                                     int64_t                         k,
+                                                     const hipblas_internal_type<T>* alpha,
+                                                     const hipblas_internal_type<T>* A,
+                                                     int64_t                         lda,
+                                                     hipblasStride                   strideA,
+                                                     const hipblas_internal_type<T>* B,
+                                                     int64_t                         ldb,
+                                                     hipblasStride                   strideB,
+                                                     const hipblas_internal_type<T>* beta,
+                                                     hipblas_internal_type<T>*       C,
+                                                     int64_t                         ldc,
+                                                     hipblasStride                   strideC,
+                                                     int64_t                         batchCount);
 
     MAP2CF_D64(hipblasSyrkx, float, hipblasSsyrkx);
     MAP2CF_D64(hipblasSyrkx, double, hipblasDsyrkx);
@@ -11283,104 +11420,104 @@ namespace
 
     // geam
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeam)(hipblasHandle_t    handle,
-                                   hipblasOperation_t transA,
-                                   hipblasOperation_t transB,
-                                   int                m,
-                                   int                n,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           beta,
-                                   const hipblas_internal_type<T>*           B,
-                                   int                ldb,
-                                   hipblas_internal_type<T>*                 C,
-                                   int                ldc);
+    hipblasStatus_t (*hipblasGeam)(hipblasHandle_t                 handle,
+                                   hipblasOperation_t              transA,
+                                   hipblasOperation_t              transB,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* beta,
+                                   const hipblas_internal_type<T>* B,
+                                   int                             ldb,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeamBatched)(hipblasHandle_t    handle,
-                                          hipblasOperation_t transA,
-                                          hipblasOperation_t transB,
-                                          int                m,
-                                          int                n,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>*           beta,
-                                          const hipblas_internal_type<T>* const     B[],
-                                          int                ldb,
-                                          hipblas_internal_type<T>* const           C[],
-                                          int                ldc,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasGeamBatched)(hipblasHandle_t                       handle,
+                                          hipblasOperation_t                    transA,
+                                          hipblasOperation_t                    transB,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>*       beta,
+                                          const hipblas_internal_type<T>* const B[],
+                                          int                                   ldb,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeamStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasOperation_t transA,
-                                                 hipblasOperation_t transB,
-                                                 int                m,
-                                                 int                n,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 const hipblas_internal_type<T>*           beta,
-                                                 const hipblas_internal_type<T>*           B,
-                                                 int                ldb,
-                                                 hipblasStride      strideB,
-                                                 hipblas_internal_type<T>*                 C,
-                                                 int                ldc,
-                                                 hipblasStride      strideC,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasGeamStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasOperation_t              transB,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 const hipblas_internal_type<T>* B,
+                                                 int                             ldb,
+                                                 hipblasStride                   strideB,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeam_64)(hipblasHandle_t    handle,
-                                      hipblasOperation_t transA,
-                                      hipblasOperation_t transB,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           beta,
-                                      const hipblas_internal_type<T>*           B,
-                                      int64_t            ldb,
-                                      hipblas_internal_type<T>*                 C,
-                                      int64_t            ldc);
+    hipblasStatus_t (*hipblasGeam_64)(hipblasHandle_t                 handle,
+                                      hipblasOperation_t              transA,
+                                      hipblasOperation_t              transB,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* beta,
+                                      const hipblas_internal_type<T>* B,
+                                      int64_t                         ldb,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeamBatched_64)(hipblasHandle_t    handle,
-                                             hipblasOperation_t transA,
-                                             hipblasOperation_t transB,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>*           beta,
-                                             const hipblas_internal_type<T>* const     B[],
-                                             int64_t            ldb,
-                                             hipblas_internal_type<T>* const           C[],
-                                             int64_t            ldc,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasGeamBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasOperation_t                    transA,
+                                             hipblasOperation_t                    transB,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>*       beta,
+                                             const hipblas_internal_type<T>* const B[],
+                                             int64_t                               ldb,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeamStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasOperation_t transA,
-                                                    hipblasOperation_t transB,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    const hipblas_internal_type<T>*           beta,
-                                                    const hipblas_internal_type<T>*           B,
-                                                    int64_t            ldb,
-                                                    hipblasStride      strideB,
-                                                    hipblas_internal_type<T>*                 C,
-                                                    int64_t            ldc,
-                                                    hipblasStride      strideC,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasGeamStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasOperation_t              transB,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    const hipblas_internal_type<T>* B,
+                                                    int64_t                         ldb,
+                                                    hipblasStride                   strideB,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasGeam, float, hipblasSgeam);
     MAP2CF_D64(hipblasGeam, double, hipblasDgeam);
@@ -11399,104 +11536,104 @@ namespace
 
     // hemm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemm)(hipblasHandle_t   handle,
-                                   hipblasSideMode_t side,
-                                   hipblasFillMode_t uplo,
-                                   int               n,
-                                   int               k,
-                                   const hipblas_internal_type<T>*          alpha,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          B,
-                                   int               ldb,
-                                   const hipblas_internal_type<T>*          beta,
-                                   hipblas_internal_type<T>*                C,
-                                   int               ldc);
+    hipblasStatus_t (*hipblasHemm)(hipblasHandle_t                 handle,
+                                   hipblasSideMode_t               side,
+                                   hipblasFillMode_t               uplo,
+                                   int                             n,
+                                   int                             k,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* B,
+                                   int                             ldb,
+                                   const hipblas_internal_type<T>* beta,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemmBatched)(hipblasHandle_t   handle,
-                                          hipblasSideMode_t side,
-                                          hipblasFillMode_t uplo,
-                                          int               n,
-                                          int               k,
-                                          const hipblas_internal_type<T>*          alpha,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    B[],
-                                          int               ldb,
-                                          const hipblas_internal_type<T>*          beta,
-                                          hipblas_internal_type<T>* const          C[],
-                                          int               ldc,
-                                          int               batchCount);
+    hipblasStatus_t (*hipblasHemmBatched)(hipblasHandle_t                       handle,
+                                          hipblasSideMode_t                     side,
+                                          hipblasFillMode_t                     uplo,
+                                          int                                   n,
+                                          int                                   k,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const B[],
+                                          int                                   ldb,
+                                          const hipblas_internal_type<T>*       beta,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemmStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasSideMode_t side,
-                                                 hipblasFillMode_t uplo,
-                                                 int               n,
-                                                 int               k,
-                                                 const hipblas_internal_type<T>*          alpha,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     strideA,
-                                                 const hipblas_internal_type<T>*          B,
-                                                 int               ldb,
-                                                 hipblasStride     strideB,
-                                                 const hipblas_internal_type<T>*          beta,
-                                                 hipblas_internal_type<T>*                C,
-                                                 int               ldc,
-                                                 hipblasStride     strideC,
-                                                 int               batchCount);
+    hipblasStatus_t (*hipblasHemmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasSideMode_t               side,
+                                                 hipblasFillMode_t               uplo,
+                                                 int                             n,
+                                                 int                             k,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* B,
+                                                 int                             ldb,
+                                                 hipblasStride                   strideB,
+                                                 const hipblas_internal_type<T>* beta,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemm_64)(hipblasHandle_t   handle,
-                                      hipblasSideMode_t side,
-                                      hipblasFillMode_t uplo,
-                                      int64_t           n,
-                                      int64_t           k,
-                                      const hipblas_internal_type<T>*          alpha,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          B,
-                                      int64_t           ldb,
-                                      const hipblas_internal_type<T>*          beta,
-                                      hipblas_internal_type<T>*                C,
-                                      int64_t           ldc);
+    hipblasStatus_t (*hipblasHemm_64)(hipblasHandle_t                 handle,
+                                      hipblasSideMode_t               side,
+                                      hipblasFillMode_t               uplo,
+                                      int64_t                         n,
+                                      int64_t                         k,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* B,
+                                      int64_t                         ldb,
+                                      const hipblas_internal_type<T>* beta,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemmBatched_64)(hipblasHandle_t   handle,
-                                             hipblasSideMode_t side,
-                                             hipblasFillMode_t uplo,
-                                             int64_t           n,
-                                             int64_t           k,
-                                             const hipblas_internal_type<T>*          alpha,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    B[],
-                                             int64_t           ldb,
-                                             const hipblas_internal_type<T>*          beta,
-                                             hipblas_internal_type<T>* const          C[],
-                                             int64_t           ldc,
-                                             int64_t           batchCount);
+    hipblasStatus_t (*hipblasHemmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasSideMode_t                     side,
+                                             hipblasFillMode_t                     uplo,
+                                             int64_t                               n,
+                                             int64_t                               k,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const B[],
+                                             int64_t                               ldb,
+                                             const hipblas_internal_type<T>*       beta,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasHemmStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasSideMode_t side,
-                                                    hipblasFillMode_t uplo,
-                                                    int64_t           n,
-                                                    int64_t           k,
-                                                    const hipblas_internal_type<T>*          alpha,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     strideA,
-                                                    const hipblas_internal_type<T>*          B,
-                                                    int64_t           ldb,
-                                                    hipblasStride     strideB,
-                                                    const hipblas_internal_type<T>*          beta,
-                                                    hipblas_internal_type<T>*                C,
-                                                    int64_t           ldc,
-                                                    hipblasStride     strideC,
-                                                    int64_t           batchCount);
+    hipblasStatus_t (*hipblasHemmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasSideMode_t               side,
+                                                    hipblasFillMode_t               uplo,
+                                                    int64_t                         n,
+                                                    int64_t                         k,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* B,
+                                                    int64_t                         ldb,
+                                                    hipblasStride                   strideB,
+                                                    const hipblas_internal_type<T>* beta,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64_V2(hipblasHemm, std::complex<float>, hipblasChemm);
     MAP2CF_D64_V2(hipblasHemm, std::complex<double>, hipblasZhemm);
@@ -11509,110 +11646,110 @@ namespace
 
     // trmm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmm)(hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   const hipblas_internal_type<T>*           B,
-                                   int                ldb,
-                                   hipblas_internal_type<T>*                 C,
-                                   int                ldc);
+    hipblasStatus_t (*hipblasTrmm)(hipblasHandle_t                 handle,
+                                   hipblasSideMode_t               side,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* B,
+                                   int                             ldb,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmmBatched)(hipblasHandle_t    handle,
-                                          hipblasSideMode_t  side,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          int                n,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          const hipblas_internal_type<T>* const     B[],
-                                          int                ldb,
-                                          hipblas_internal_type<T>* const           C[],
-                                          int                ldc,
-                                          int                batchCount);
+    hipblasStatus_t (*hipblasTrmmBatched)(hipblasHandle_t                       handle,
+                                          hipblasSideMode_t                     side,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const B[],
+                                          int                                   ldb,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmmStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasSideMode_t  side,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 int                n,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 const hipblas_internal_type<T>*           B,
-                                                 int                ldb,
-                                                 hipblasStride      strideB,
-                                                 hipblas_internal_type<T>*                 C,
-                                                 int                ldc,
-                                                 hipblasStride      strideC,
-                                                 int                batchCount);
+    hipblasStatus_t (*hipblasTrmmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasSideMode_t               side,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 const hipblas_internal_type<T>* B,
+                                                 int                             ldb,
+                                                 hipblasStride                   strideB,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   strideC,
+                                                 int                             batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmm_64)(hipblasHandle_t    handle,
-                                      hipblasSideMode_t  side,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      const hipblas_internal_type<T>*           B,
-                                      int64_t            ldb,
-                                      hipblas_internal_type<T>*                 C,
-                                      int64_t            ldc);
+    hipblasStatus_t (*hipblasTrmm_64)(hipblasHandle_t                 handle,
+                                      hipblasSideMode_t               side,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* B,
+                                      int64_t                         ldb,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmmBatched_64)(hipblasHandle_t    handle,
-                                             hipblasSideMode_t  side,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             const hipblas_internal_type<T>* const     B[],
-                                             int64_t            ldb,
-                                             hipblas_internal_type<T>* const           C[],
-                                             int64_t            ldc,
-                                             int64_t            batchCount);
+    hipblasStatus_t (*hipblasTrmmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasSideMode_t                     side,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const B[],
+                                             int64_t                               ldb,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrmmStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasSideMode_t  side,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    const hipblas_internal_type<T>*           B,
-                                                    int64_t            ldb,
-                                                    hipblasStride      strideB,
-                                                    hipblas_internal_type<T>*                 C,
-                                                    int64_t            ldc,
-                                                    hipblasStride      strideC,
-                                                    int64_t            batchCount);
+    hipblasStatus_t (*hipblasTrmmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasSideMode_t               side,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    const hipblas_internal_type<T>* B,
+                                                    int64_t                         ldb,
+                                                    hipblasStride                   strideB,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   strideC,
+                                                    int64_t                         batchCount);
 
     MAP2CF_D64(hipblasTrmm, float, hipblasStrmm);
     MAP2CF_D64(hipblasTrmm, double, hipblasDtrmm);
@@ -11631,96 +11768,96 @@ namespace
 
     // trsm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsm)(hipblasHandle_t    handle,
-                                   hipblasSideMode_t  side,
-                                   hipblasFillMode_t  uplo,
-                                   hipblasOperation_t transA,
-                                   hipblasDiagType_t  diag,
-                                   int                m,
-                                   int                n,
-                                   const hipblas_internal_type<T>*           alpha,
-                                   const hipblas_internal_type<T>*           A,
-                                   int                lda,
-                                   hipblas_internal_type<T>*                 B,
-                                   int                ldb);
+    hipblasStatus_t (*hipblasTrsm)(hipblasHandle_t                 handle,
+                                   hipblasSideMode_t               side,
+                                   hipblasFillMode_t               uplo,
+                                   hipblasOperation_t              transA,
+                                   hipblasDiagType_t               diag,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* alpha,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   hipblas_internal_type<T>*       B,
+                                   int                             ldb);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsmBatched)(hipblasHandle_t    handle,
-                                          hipblasSideMode_t  side,
-                                          hipblasFillMode_t  uplo,
-                                          hipblasOperation_t transA,
-                                          hipblasDiagType_t  diag,
-                                          int                m,
-                                          int                n,
-                                          const hipblas_internal_type<T>*           alpha,
-                                          const hipblas_internal_type<T>* const     A[],
-                                          int                lda,
-                                          hipblas_internal_type<T>* const           B[],
-                                          int                ldb,
-                                          int                batch_count);
+    hipblasStatus_t (*hipblasTrsmBatched)(hipblasHandle_t                       handle,
+                                          hipblasSideMode_t                     side,
+                                          hipblasFillMode_t                     uplo,
+                                          hipblasOperation_t                    transA,
+                                          hipblasDiagType_t                     diag,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>*       alpha,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          hipblas_internal_type<T>* const       B[],
+                                          int                                   ldb,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsmStridedBatched)(hipblasHandle_t    handle,
-                                                 hipblasSideMode_t  side,
-                                                 hipblasFillMode_t  uplo,
-                                                 hipblasOperation_t transA,
-                                                 hipblasDiagType_t  diag,
-                                                 int                m,
-                                                 int                n,
-                                                 const hipblas_internal_type<T>*           alpha,
-                                                 const hipblas_internal_type<T>*           A,
-                                                 int                lda,
-                                                 hipblasStride      strideA,
-                                                 hipblas_internal_type<T>*                 B,
-                                                 int                ldb,
-                                                 hipblasStride      strideB,
-                                                 int                batch_count);
+    hipblasStatus_t (*hipblasTrsmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasSideMode_t               side,
+                                                 hipblasFillMode_t               uplo,
+                                                 hipblasOperation_t              transA,
+                                                 hipblasDiagType_t               diag,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* alpha,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   strideA,
+                                                 hipblas_internal_type<T>*       B,
+                                                 int                             ldb,
+                                                 hipblasStride                   strideB,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsm_64)(hipblasHandle_t    handle,
-                                      hipblasSideMode_t  side,
-                                      hipblasFillMode_t  uplo,
-                                      hipblasOperation_t transA,
-                                      hipblasDiagType_t  diag,
-                                      int64_t            m,
-                                      int64_t            n,
-                                      const hipblas_internal_type<T>*           alpha,
-                                      const hipblas_internal_type<T>*           A,
-                                      int64_t            lda,
-                                      hipblas_internal_type<T>*                 B,
-                                      int64_t            ldb);
+    hipblasStatus_t (*hipblasTrsm_64)(hipblasHandle_t                 handle,
+                                      hipblasSideMode_t               side,
+                                      hipblasFillMode_t               uplo,
+                                      hipblasOperation_t              transA,
+                                      hipblasDiagType_t               diag,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* alpha,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      hipblas_internal_type<T>*       B,
+                                      int64_t                         ldb);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsmBatched_64)(hipblasHandle_t    handle,
-                                             hipblasSideMode_t  side,
-                                             hipblasFillMode_t  uplo,
-                                             hipblasOperation_t transA,
-                                             hipblasDiagType_t  diag,
-                                             int64_t            m,
-                                             int64_t            n,
-                                             const hipblas_internal_type<T>*           alpha,
-                                             const hipblas_internal_type<T>* const     A[],
-                                             int64_t            lda,
-                                             hipblas_internal_type<T>* const           B[],
-                                             int64_t            ldb,
-                                             int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrsmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasSideMode_t                     side,
+                                             hipblasFillMode_t                     uplo,
+                                             hipblasOperation_t                    transA,
+                                             hipblasDiagType_t                     diag,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>*       alpha,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             hipblas_internal_type<T>* const       B[],
+                                             int64_t                               ldb,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrsmStridedBatched_64)(hipblasHandle_t    handle,
-                                                    hipblasSideMode_t  side,
-                                                    hipblasFillMode_t  uplo,
-                                                    hipblasOperation_t transA,
-                                                    hipblasDiagType_t  diag,
-                                                    int64_t            m,
-                                                    int64_t            n,
-                                                    const hipblas_internal_type<T>*           alpha,
-                                                    const hipblas_internal_type<T>*           A,
-                                                    int64_t            lda,
-                                                    hipblasStride      strideA,
-                                                    hipblas_internal_type<T>*                 B,
-                                                    int64_t            ldb,
-                                                    hipblasStride      strideB,
-                                                    int64_t            batch_count);
+    hipblasStatus_t (*hipblasTrsmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasSideMode_t               side,
+                                                    hipblasFillMode_t               uplo,
+                                                    hipblasOperation_t              transA,
+                                                    hipblasDiagType_t               diag,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* alpha,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   strideA,
+                                                    hipblas_internal_type<T>*       B,
+                                                    int64_t                         ldb,
+                                                    hipblasStride                   strideB,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasTrsm, float, hipblasStrsm);
     MAP2CF_D64(hipblasTrsm, double, hipblasDtrsm);
@@ -11739,86 +11876,86 @@ namespace
 
     // dgmm
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmm)(hipblasHandle_t   handle,
-                                   hipblasSideMode_t side,
-                                   int               m,
-                                   int               n,
-                                   const hipblas_internal_type<T>*          A,
-                                   int               lda,
-                                   const hipblas_internal_type<T>*          x,
-                                   int               incx,
-                                   hipblas_internal_type<T>*                C,
-                                   int               ldc);
+    hipblasStatus_t (*hipblasDgmm)(hipblasHandle_t                 handle,
+                                   hipblasSideMode_t               side,
+                                   int                             m,
+                                   int                             n,
+                                   const hipblas_internal_type<T>* A,
+                                   int                             lda,
+                                   const hipblas_internal_type<T>* x,
+                                   int                             incx,
+                                   hipblas_internal_type<T>*       C,
+                                   int                             ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmmBatched)(hipblasHandle_t   handle,
-                                          hipblasSideMode_t side,
-                                          int               m,
-                                          int               n,
-                                          const hipblas_internal_type<T>* const    A[],
-                                          int               lda,
-                                          const hipblas_internal_type<T>* const    x[],
-                                          int               incx,
-                                          hipblas_internal_type<T>* const          C[],
-                                          int               ldc,
-                                          int               batch_count);
+    hipblasStatus_t (*hipblasDgmmBatched)(hipblasHandle_t                       handle,
+                                          hipblasSideMode_t                     side,
+                                          int                                   m,
+                                          int                                   n,
+                                          const hipblas_internal_type<T>* const A[],
+                                          int                                   lda,
+                                          const hipblas_internal_type<T>* const x[],
+                                          int                                   incx,
+                                          hipblas_internal_type<T>* const       C[],
+                                          int                                   ldc,
+                                          int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmmStridedBatched)(hipblasHandle_t   handle,
-                                                 hipblasSideMode_t side,
-                                                 int               m,
-                                                 int               n,
-                                                 const hipblas_internal_type<T>*          A,
-                                                 int               lda,
-                                                 hipblasStride     stride_A,
-                                                 const hipblas_internal_type<T>*          x,
-                                                 int               incx,
-                                                 hipblasStride     stride_x,
-                                                 hipblas_internal_type<T>*                C,
-                                                 int               ldc,
-                                                 hipblasStride     stride_C,
-                                                 int               batch_count);
+    hipblasStatus_t (*hipblasDgmmStridedBatched)(hipblasHandle_t                 handle,
+                                                 hipblasSideMode_t               side,
+                                                 int                             m,
+                                                 int                             n,
+                                                 const hipblas_internal_type<T>* A,
+                                                 int                             lda,
+                                                 hipblasStride                   stride_A,
+                                                 const hipblas_internal_type<T>* x,
+                                                 int                             incx,
+                                                 hipblasStride                   stride_x,
+                                                 hipblas_internal_type<T>*       C,
+                                                 int                             ldc,
+                                                 hipblasStride                   stride_C,
+                                                 int                             batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmm_64)(hipblasHandle_t   handle,
-                                      hipblasSideMode_t side,
-                                      int64_t           m,
-                                      int64_t           n,
-                                      const hipblas_internal_type<T>*          A,
-                                      int64_t           lda,
-                                      const hipblas_internal_type<T>*          x,
-                                      int64_t           incx,
-                                      hipblas_internal_type<T>*                C,
-                                      int64_t           ldc);
+    hipblasStatus_t (*hipblasDgmm_64)(hipblasHandle_t                 handle,
+                                      hipblasSideMode_t               side,
+                                      int64_t                         m,
+                                      int64_t                         n,
+                                      const hipblas_internal_type<T>* A,
+                                      int64_t                         lda,
+                                      const hipblas_internal_type<T>* x,
+                                      int64_t                         incx,
+                                      hipblas_internal_type<T>*       C,
+                                      int64_t                         ldc);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmmBatched_64)(hipblasHandle_t   handle,
-                                             hipblasSideMode_t side,
-                                             int64_t           m,
-                                             int64_t           n,
-                                             const hipblas_internal_type<T>* const    A[],
-                                             int64_t           lda,
-                                             const hipblas_internal_type<T>* const    x[],
-                                             int64_t           incx,
-                                             hipblas_internal_type<T>* const          C[],
-                                             int64_t           ldc,
-                                             int64_t           batch_count);
+    hipblasStatus_t (*hipblasDgmmBatched_64)(hipblasHandle_t                       handle,
+                                             hipblasSideMode_t                     side,
+                                             int64_t                               m,
+                                             int64_t                               n,
+                                             const hipblas_internal_type<T>* const A[],
+                                             int64_t                               lda,
+                                             const hipblas_internal_type<T>* const x[],
+                                             int64_t                               incx,
+                                             hipblas_internal_type<T>* const       C[],
+                                             int64_t                               ldc,
+                                             int64_t                               batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasDgmmStridedBatched_64)(hipblasHandle_t   handle,
-                                                    hipblasSideMode_t side,
-                                                    int64_t           m,
-                                                    int64_t           n,
-                                                    const hipblas_internal_type<T>*          A,
-                                                    int64_t           lda,
-                                                    hipblasStride     stride_A,
-                                                    const hipblas_internal_type<T>*          x,
-                                                    int64_t           incx,
-                                                    hipblasStride     stride_x,
-                                                    hipblas_internal_type<T>*                C,
-                                                    int64_t           ldc,
-                                                    hipblasStride     stride_C,
-                                                    int64_t           batch_count);
+    hipblasStatus_t (*hipblasDgmmStridedBatched_64)(hipblasHandle_t                 handle,
+                                                    hipblasSideMode_t               side,
+                                                    int64_t                         m,
+                                                    int64_t                         n,
+                                                    const hipblas_internal_type<T>* A,
+                                                    int64_t                         lda,
+                                                    hipblasStride                   stride_A,
+                                                    const hipblas_internal_type<T>* x,
+                                                    int64_t                         incx,
+                                                    hipblasStride                   stride_x,
+                                                    hipblas_internal_type<T>*       C,
+                                                    int64_t                         ldc,
+                                                    hipblasStride                   stride_C,
+                                                    int64_t                         batch_count);
 
     MAP2CF_D64(hipblasDgmm, float, hipblasSdgmm);
     MAP2CF_D64(hipblasDgmm, double, hipblasDdgmm);
@@ -11837,38 +11974,38 @@ namespace
 
     // trtri
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrtri)(hipblasHandle_t   handle,
-                                    hipblasFillMode_t uplo,
-                                    hipblasDiagType_t diag,
-                                    int               n,
-                                    const hipblas_internal_type<T>*          A,
-                                    int               lda,
-                                    hipblas_internal_type<T>*                invA,
-                                    int               ldinvA);
+    hipblasStatus_t (*hipblasTrtri)(hipblasHandle_t                 handle,
+                                    hipblasFillMode_t               uplo,
+                                    hipblasDiagType_t               diag,
+                                    int                             n,
+                                    const hipblas_internal_type<T>* A,
+                                    int                             lda,
+                                    hipblas_internal_type<T>*       invA,
+                                    int                             ldinvA);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrtriBatched)(hipblasHandle_t   handle,
-                                           hipblasFillMode_t uplo,
-                                           hipblasDiagType_t diag,
-                                           int               n,
-                                           const hipblas_internal_type<T>* const    A[],
-                                           int               lda,
-                                           hipblas_internal_type<T>*                invA[],
-                                           int               ldinvA,
-                                           int               batch_count);
+    hipblasStatus_t (*hipblasTrtriBatched)(hipblasHandle_t                       handle,
+                                           hipblasFillMode_t                     uplo,
+                                           hipblasDiagType_t                     diag,
+                                           int                                   n,
+                                           const hipblas_internal_type<T>* const A[],
+                                           int                                   lda,
+                                           hipblas_internal_type<T>*             invA[],
+                                           int                                   ldinvA,
+                                           int                                   batch_count);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasTrtriStridedBatched)(hipblasHandle_t   handle,
-                                                  hipblasFillMode_t uplo,
-                                                  hipblasDiagType_t diag,
-                                                  int               n,
-                                                  const hipblas_internal_type<T>*          A,
-                                                  int               lda,
-                                                  hipblasStride     stride_A,
-                                                  hipblas_internal_type<T>*                invA,
-                                                  int               ldinvA,
-                                                  hipblasStride     stride_invA,
-                                                  int               batch_count);
+    hipblasStatus_t (*hipblasTrtriStridedBatched)(hipblasHandle_t                 handle,
+                                                  hipblasFillMode_t               uplo,
+                                                  hipblasDiagType_t               diag,
+                                                  int                             n,
+                                                  const hipblas_internal_type<T>* A,
+                                                  int                             lda,
+                                                  hipblasStride                   stride_A,
+                                                  hipblas_internal_type<T>*       invA,
+                                                  int                             ldinvA,
+                                                  hipblasStride                   stride_invA,
+                                                  int                             batch_count);
 
     MAP2CF(hipblasTrtri, float, hipblasStrtri);
     MAP2CF(hipblasTrtri, double, hipblasDtrtri);
@@ -11889,28 +12026,32 @@ namespace
 
     // getrf
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrf)(
-        hipblasHandle_t handle, const int n, hipblas_internal_type<T>* A, const int lda, int* ipiv, int* info);
+    hipblasStatus_t (*hipblasGetrf)(hipblasHandle_t           handle,
+                                    const int                 n,
+                                    hipblas_internal_type<T>* A,
+                                    const int                 lda,
+                                    int*                      ipiv,
+                                    int*                      info);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrfBatched)(hipblasHandle_t handle,
-                                           const int       n,
-                                           hipblas_internal_type<T>* const        A[],
-                                           const int       lda,
-                                           int*            ipiv,
-                                           int*            info,
-                                           const int       batchCount);
+    hipblasStatus_t (*hipblasGetrfBatched)(hipblasHandle_t                 handle,
+                                           const int                       n,
+                                           hipblas_internal_type<T>* const A[],
+                                           const int                       lda,
+                                           int*                            ipiv,
+                                           int*                            info,
+                                           const int                       batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrfStridedBatched)(hipblasHandle_t     handle,
-                                                  const int           n,
-                                                  hipblas_internal_type<T>*                  A,
-                                                  const int           lda,
-                                                  const hipblasStride strideA,
-                                                  int*                ipiv,
-                                                  const hipblasStride strideP,
-                                                  int*                info,
-                                                  const int           batchCount);
+    hipblasStatus_t (*hipblasGetrfStridedBatched)(hipblasHandle_t           handle,
+                                                  const int                 n,
+                                                  hipblas_internal_type<T>* A,
+                                                  const int                 lda,
+                                                  const hipblasStride       strideA,
+                                                  int*                      ipiv,
+                                                  const hipblasStride       strideP,
+                                                  int*                      info,
+                                                  const int                 batchCount);
 
     MAP2CF(hipblasGetrf, float, hipblasSgetrf);
     MAP2CF(hipblasGetrf, double, hipblasDgetrf);
@@ -11929,45 +12070,45 @@ namespace
 
     // getrs
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrs)(hipblasHandle_t          handle,
-                                    const hipblasOperation_t trans,
-                                    const int                n,
-                                    const int                nrhs,
-                                    hipblas_internal_type<T>*                       A,
-                                    const int                lda,
-                                    const int*               ipiv,
-                                    hipblas_internal_type<T>*                       B,
-                                    const int                ldb,
-                                    int*                     info);
+    hipblasStatus_t (*hipblasGetrs)(hipblasHandle_t           handle,
+                                    const hipblasOperation_t  trans,
+                                    const int                 n,
+                                    const int                 nrhs,
+                                    hipblas_internal_type<T>* A,
+                                    const int                 lda,
+                                    const int*                ipiv,
+                                    hipblas_internal_type<T>* B,
+                                    const int                 ldb,
+                                    int*                      info);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrsBatched)(hipblasHandle_t          handle,
-                                           const hipblasOperation_t trans,
-                                           const int                n,
-                                           const int                nrhs,
-                                           hipblas_internal_type<T>* const                 A[],
-                                           const int                lda,
-                                           const int*               ipiv,
-                                           hipblas_internal_type<T>* const                 B[],
-                                           const int                ldb,
-                                           int*                     info,
-                                           const int                batchCount);
+    hipblasStatus_t (*hipblasGetrsBatched)(hipblasHandle_t                 handle,
+                                           const hipblasOperation_t        trans,
+                                           const int                       n,
+                                           const int                       nrhs,
+                                           hipblas_internal_type<T>* const A[],
+                                           const int                       lda,
+                                           const int*                      ipiv,
+                                           hipblas_internal_type<T>* const B[],
+                                           const int                       ldb,
+                                           int*                            info,
+                                           const int                       batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetrsStridedBatched)(hipblasHandle_t          handle,
-                                                  const hipblasOperation_t trans,
-                                                  const int                n,
-                                                  const int                nrhs,
-                                                  hipblas_internal_type<T>*                       A,
-                                                  const int                lda,
-                                                  const hipblasStride      strideA,
-                                                  const int*               ipiv,
-                                                  const hipblasStride      strideP,
-                                                  hipblas_internal_type<T>*                       B,
-                                                  const int                ldb,
-                                                  const hipblasStride      strideB,
-                                                  int*                     info,
-                                                  const int                batchCount);
+    hipblasStatus_t (*hipblasGetrsStridedBatched)(hipblasHandle_t           handle,
+                                                  const hipblasOperation_t  trans,
+                                                  const int                 n,
+                                                  const int                 nrhs,
+                                                  hipblas_internal_type<T>* A,
+                                                  const int                 lda,
+                                                  const hipblasStride       strideA,
+                                                  const int*                ipiv,
+                                                  const hipblasStride       strideP,
+                                                  hipblas_internal_type<T>* B,
+                                                  const int                 ldb,
+                                                  const hipblasStride       strideB,
+                                                  int*                      info,
+                                                  const int                 batchCount);
 
     MAP2CF(hipblasGetrs, float, hipblasSgetrs);
     MAP2CF(hipblasGetrs, double, hipblasDgetrs);
@@ -11986,15 +12127,15 @@ namespace
 
     // getri
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGetriBatched)(hipblasHandle_t handle,
-                                           const int       n,
-                                           hipblas_internal_type<T>* const        A[],
-                                           const int       lda,
-                                           int*            ipiv,
-                                           hipblas_internal_type<T>* const        C[],
-                                           const int       ldc,
-                                           int*            info,
-                                           const int       batchCount);
+    hipblasStatus_t (*hipblasGetriBatched)(hipblasHandle_t                 handle,
+                                           const int                       n,
+                                           hipblas_internal_type<T>* const A[],
+                                           const int                       lda,
+                                           int*                            ipiv,
+                                           hipblas_internal_type<T>* const C[],
+                                           const int                       ldc,
+                                           int*                            info,
+                                           const int                       batchCount);
 
     MAP2CF(hipblasGetriBatched, float, hipblasSgetriBatched);
     MAP2CF(hipblasGetriBatched, double, hipblasDgetriBatched);
@@ -12003,30 +12144,35 @@ namespace
 
     // geqrf
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeqrf)(
-        hipblasHandle_t handle, const int m, const int n, hipblas_internal_type<T>* A, const int lda, hipblas_internal_type<T>* ipiv, int* info);
+    hipblasStatus_t (*hipblasGeqrf)(hipblasHandle_t           handle,
+                                    const int                 m,
+                                    const int                 n,
+                                    hipblas_internal_type<T>* A,
+                                    const int                 lda,
+                                    hipblas_internal_type<T>* ipiv,
+                                    int*                      info);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeqrfBatched)(hipblasHandle_t handle,
-                                           const int       m,
-                                           const int       n,
-                                           hipblas_internal_type<T>* const        A[],
-                                           const int       lda,
-                                           hipblas_internal_type<T>* const        ipiv[],
-                                           int*            info,
-                                           const int       batchCount);
+    hipblasStatus_t (*hipblasGeqrfBatched)(hipblasHandle_t                 handle,
+                                           const int                       m,
+                                           const int                       n,
+                                           hipblas_internal_type<T>* const A[],
+                                           const int                       lda,
+                                           hipblas_internal_type<T>* const ipiv[],
+                                           int*                            info,
+                                           const int                       batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGeqrfStridedBatched)(hipblasHandle_t     handle,
-                                                  const int           m,
-                                                  const int           n,
-                                                  hipblas_internal_type<T>*                  A,
-                                                  const int           lda,
-                                                  const hipblasStride strideA,
-                                                  hipblas_internal_type<T>*                  ipiv,
-                                                  const hipblasStride strideP,
-                                                  int*                info,
-                                                  const int           batchCount);
+    hipblasStatus_t (*hipblasGeqrfStridedBatched)(hipblasHandle_t           handle,
+                                                  const int                 m,
+                                                  const int                 n,
+                                                  hipblas_internal_type<T>* A,
+                                                  const int                 lda,
+                                                  const hipblasStride       strideA,
+                                                  hipblas_internal_type<T>* ipiv,
+                                                  const hipblasStride       strideP,
+                                                  int*                      info,
+                                                  const int                 batchCount);
 
     MAP2CF(hipblasGeqrf, float, hipblasSgeqrf);
     MAP2CF(hipblasGeqrf, double, hipblasDgeqrf);
@@ -12045,47 +12191,47 @@ namespace
 
     // gels
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGels)(hipblasHandle_t    handle,
-                                   hipblasOperation_t trans,
-                                   const int          m,
-                                   const int          n,
-                                   const int          nrhs,
-                                   hipblas_internal_type<T>*                 A,
-                                   const int          lda,
-                                   hipblas_internal_type<T>*                 B,
-                                   const int          ldb,
-                                   int*               info,
-                                   int*               deviceInfo);
+    hipblasStatus_t (*hipblasGels)(hipblasHandle_t           handle,
+                                   hipblasOperation_t        trans,
+                                   const int                 m,
+                                   const int                 n,
+                                   const int                 nrhs,
+                                   hipblas_internal_type<T>* A,
+                                   const int                 lda,
+                                   hipblas_internal_type<T>* B,
+                                   const int                 ldb,
+                                   int*                      info,
+                                   int*                      deviceInfo);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGelsBatched)(hipblasHandle_t    handle,
-                                          hipblasOperation_t trans,
-                                          const int          m,
-                                          const int          n,
-                                          const int          nrhs,
-                                          hipblas_internal_type<T>* const           A[],
-                                          const int          lda,
-                                          hipblas_internal_type<T>* const           B[],
-                                          const int          ldb,
-                                          int*               info,
-                                          int*               deviceInfo,
-                                          const int          batchCount);
+    hipblasStatus_t (*hipblasGelsBatched)(hipblasHandle_t                 handle,
+                                          hipblasOperation_t              trans,
+                                          const int                       m,
+                                          const int                       n,
+                                          const int                       nrhs,
+                                          hipblas_internal_type<T>* const A[],
+                                          const int                       lda,
+                                          hipblas_internal_type<T>* const B[],
+                                          const int                       ldb,
+                                          int*                            info,
+                                          int*                            deviceInfo,
+                                          const int                       batchCount);
 
     template <typename T, bool FORTRAN = false>
-    hipblasStatus_t (*hipblasGelsStridedBatched)(hipblasHandle_t     handle,
-                                                 hipblasOperation_t  trans,
-                                                 const int           m,
-                                                 const int           n,
-                                                 const int           nrhs,
-                                                 hipblas_internal_type<T>*                  A,
-                                                 const int           lda,
-                                                 const hipblasStride strideA,
-                                                 hipblas_internal_type<T>*                  B,
-                                                 const int           ldb,
-                                                 const hipblasStride strideB,
-                                                 int*                info,
-                                                 int*                deviceInfo,
-                                                 const int           batchCount);
+    hipblasStatus_t (*hipblasGelsStridedBatched)(hipblasHandle_t           handle,
+                                                 hipblasOperation_t        trans,
+                                                 const int                 m,
+                                                 const int                 n,
+                                                 const int                 nrhs,
+                                                 hipblas_internal_type<T>* A,
+                                                 const int                 lda,
+                                                 const hipblasStride       strideA,
+                                                 hipblas_internal_type<T>* B,
+                                                 const int                 ldb,
+                                                 const hipblasStride       strideB,
+                                                 int*                      info,
+                                                 int*                      deviceInfo,
+                                                 const int                 batchCount);
 
     MAP2CF(hipblasGels, float, hipblasSgels);
     MAP2CF(hipblasGels, double, hipblasDgels);

@@ -76,7 +76,7 @@ void testing_syr2k_batched_bad_arg(const Arguments& arg)
     device_batch_matrix<T> dC(N, N, ldc, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1), d_beta(1), d_one(1);
-    const Ts          h_alpha(1), h_zero(0), h_beta(2), h_one(1);
+    const Ts         h_alpha(1), h_zero(0), h_beta(2), h_one(1);
 
     const Ts* alpha = &h_alpha;
     const Ts* beta  = &h_beta;

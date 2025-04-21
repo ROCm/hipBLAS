@@ -163,7 +163,14 @@ void testing_dot(const Arguments& arg)
         DAPI_CHECK(hipblasDotFn, (handle, N, dx, incx, dy, incy, d_hipblas_result));
 
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasDotFn, (handle, N, dx, incx, dy, incy, reinterpret_cast<hipblas_internal_type<T>*>(&h_hipblas_result_1)));
+        DAPI_CHECK(hipblasDotFn,
+                   (handle,
+                    N,
+                    dx,
+                    incx,
+                    dy,
+                    incy,
+                    reinterpret_cast<hipblas_internal_type<T>*>(&h_hipblas_result_1)));
 
         CHECK_HIP_ERROR(
             hipMemcpy(&h_hipblas_result_2, d_hipblas_result, sizeof(T), hipMemcpyDeviceToHost));

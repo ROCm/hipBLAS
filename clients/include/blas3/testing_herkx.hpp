@@ -42,7 +42,7 @@ template <typename T>
 void testing_herkx_bad_arg(const Arguments& arg)
 {
     using U             = real_t<T>;
-    using Ts = hipblas_internal_type<T>;
+    using Ts            = hipblas_internal_type<T>;
     auto hipblasHerkxFn = arg.api == FORTRAN ? hipblasHerkx<T, U, true> : hipblasHerkx<T, U, false>;
     auto hipblasHerkxFn_64
         = arg.api == FORTRAN_64 ? hipblasHerkx_64<T, U, true> : hipblasHerkx_64<T, U, false>;
@@ -67,12 +67,12 @@ void testing_herkx_bad_arg(const Arguments& arg)
 
     device_vector<T> d_alpha(1), d_zero(1);
     device_vector<U> d_beta(1), d_one(1);
-    const Ts          h_alpha(1), h_zero(0);
+    const Ts         h_alpha(1), h_zero(0);
     const U          h_beta(2), h_one(1);
 
     const Ts* alpha = &h_alpha;
-    const U* beta  = &h_beta;
-    const U* one   = &h_one;
+    const U*  beta  = &h_beta;
+    const U*  one   = &h_one;
     const Ts* zero  = &h_zero;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -212,7 +212,7 @@ template <typename T>
 void testing_herkx(const Arguments& arg)
 {
     using U             = real_t<T>;
-    using Ts = hipblas_internal_type<T>;
+    using Ts            = hipblas_internal_type<T>;
     auto hipblasHerkxFn = arg.api == FORTRAN ? hipblasHerkx<T, U, true> : hipblasHerkx<T, U, false>;
     auto hipblasHerkxFn_64
         = arg.api == FORTRAN_64 ? hipblasHerkx_64<T, U, true> : hipblasHerkx_64<T, U, false>;
@@ -308,7 +308,19 @@ void testing_herkx(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasHerkxFn,
-                   (handle, uplo, transA, N, K, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dB, ldb, &h_beta, dC, ldc));
+                   (handle,
+                    uplo,
+                    transA,
+                    N,
+                    K,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dB,
+                    ldb,
+                    &h_beta,
+                    dC,
+                    ldc));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hC_host.transfer_from(dC));

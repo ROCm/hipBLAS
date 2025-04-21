@@ -41,16 +41,16 @@ inline void testname_spr2_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_spr2_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSpr2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSpr2StridedBatched<T, true>
                                                              : hipblasSpr2StridedBatched<T, false>;
     auto hipblasSpr2StridedBatchedFn_64 = arg.api == FORTRAN_64
                                               ? hipblasSpr2StridedBatched_64<T, true>
                                               : hipblasSpr2StridedBatched_64<T, false>;
 
-    const Ts           h_alpha(1), h_zero(0);
-    const Ts*          alpha = &h_alpha;
-    const Ts*          zero  = &h_zero;
+    const Ts          h_alpha(1), h_zero(0);
+    const Ts*         alpha = &h_alpha;
+    const Ts*         zero  = &h_zero;
     hipblasFillMode_t uplo  = HIPBLAS_FILL_MODE_UPPER;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -266,7 +266,7 @@ void testing_spr2_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_spr2_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSpr2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSpr2StridedBatched<T, true>
                                                              : hipblasSpr2StridedBatched<T, false>;
     auto hipblasSpr2StridedBatchedFn_64 = arg.api == FORTRAN_64

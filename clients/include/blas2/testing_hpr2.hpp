@@ -40,7 +40,7 @@ inline void testname_hpr2(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hpr2_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHpr2Fn = FORTRAN ? hipblasHpr2<T, true> : hipblasHpr2<T, false>;
     auto hipblasHpr2Fn_64
@@ -134,7 +134,7 @@ void testing_hpr2_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hpr2(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHpr2Fn = FORTRAN ? hipblasHpr2<T, true> : hipblasHpr2<T, false>;
     auto hipblasHpr2Fn_64
@@ -212,7 +212,8 @@ void testing_hpr2(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasHpr2Fn, (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dAp));
+        DAPI_CHECK(hipblasHpr2Fn,
+                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dAp));
 
         CHECK_HIP_ERROR(hAp_host.transfer_from(dAp));
         CHECK_HIP_ERROR(dAp.transfer_from(hAp));

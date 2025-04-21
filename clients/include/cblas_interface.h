@@ -721,17 +721,17 @@ inline void ref_trsm<double>(hipblasSideMode_t  side,
 }
 
 template <>
-inline void ref_trsm<std::complex<float>>(hipblasSideMode_t     side,
-                                     hipblasFillMode_t     uplo,
-                                     hipblasOperation_t    transA,
-                                     hipblasDiagType_t     diag,
-                                     int64_t               m,
-                                     int64_t               n,
-                                     std::complex<float>        alpha,
-                                     const std::complex<float>* A,
-                                     int64_t               lda,
-                                     std::complex<float>*       B,
-                                     int64_t               ldb)
+inline void ref_trsm<std::complex<float>>(hipblasSideMode_t          side,
+                                          hipblasFillMode_t          uplo,
+                                          hipblasOperation_t         transA,
+                                          hipblasDiagType_t          diag,
+                                          int64_t                    m,
+                                          int64_t                    n,
+                                          std::complex<float>        alpha,
+                                          const std::complex<float>* A,
+                                          int64_t                    lda,
+                                          std::complex<float>*       B,
+                                          int64_t                    ldb)
 {
     cblas_ctrsm(CblasColMajor,
                 (CBLAS_SIDE)side,

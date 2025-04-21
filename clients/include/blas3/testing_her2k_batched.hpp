@@ -50,7 +50,7 @@ inline void testname_her2k_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_her2k_batched_bad_arg(const Arguments& arg)
 {
-    using U = real_t<T>;
+    using U  = real_t<T>;
     using Ts = hipblas_internal_type<T>;
     auto hipblasHer2kBatchedFn
         = arg.api == FORTRAN ? hipblasHer2kBatched<T, U, true> : hipblasHer2kBatched<T, U, false>;
@@ -78,12 +78,12 @@ void testing_her2k_batched_bad_arg(const Arguments& arg)
 
     device_vector<T> d_alpha(1), d_zero(1);
     device_vector<U> d_beta(1), d_one(1);
-    const Ts          h_alpha(1), h_zero(0);
+    const Ts         h_alpha(1), h_zero(0);
     const U          h_beta(2), h_one(1);
 
     const Ts* alpha = &h_alpha;
-    const U* beta  = &h_beta;
-    const U* one   = &h_one;
+    const U*  beta  = &h_beta;
+    const U*  one   = &h_one;
     const Ts* zero  = &h_zero;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -362,7 +362,7 @@ void testing_her2k_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_her2k_batched(const Arguments& arg)
 {
-    using U = real_t<T>;
+    using U  = real_t<T>;
     using Ts = hipblas_internal_type<T>;
     auto hipblasHer2kBatchedFn
         = arg.api == FORTRAN ? hipblasHer2kBatched<T, U, true> : hipblasHer2kBatched<T, U, false>;

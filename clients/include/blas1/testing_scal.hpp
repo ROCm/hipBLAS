@@ -39,7 +39,7 @@ inline void testname_scal(const Arguments& arg, std::string& name)
 template <typename T, typename U = T>
 void testing_scal_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts           = hipblas_internal_type<U>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
     auto hipblasScalFn_64
@@ -47,7 +47,7 @@ void testing_scal_bad_arg(const Arguments& arg)
 
     int64_t N     = 100;
     int64_t incx  = 1;
-    Ts       alpha = (Ts)0.6;
+    Ts      alpha = (Ts)0.6;
 
     hipblasLocalHandle handle(arg);
 
@@ -60,14 +60,17 @@ void testing_scal_bad_arg(const Arguments& arg)
         // Notably scal differs from axpy such that x can /never/ be a nullptr, regardless of alpha.
 
         // None of these test cases will write to result so using device pointer is fine for both modes
-        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED, hipblasScalFn, (nullptr, N, reinterpret_cast<Ts*>(&alpha), dx, incx));
+        DAPI_EXPECT(HIPBLAS_STATUS_NOT_INITIALIZED,
+                    hipblasScalFn,
+                    (nullptr, N, reinterpret_cast<Ts*>(&alpha), dx, incx));
 
         if(arg.bad_arg_all)
         {
             DAPI_EXPECT(
                 HIPBLAS_STATUS_INVALID_VALUE, hipblasScalFn, (handle, N, nullptr, dx, incx));
-            DAPI_EXPECT(
-                HIPBLAS_STATUS_INVALID_VALUE, hipblasScalFn, (handle, N, reinterpret_cast<Ts*>(&alpha), nullptr, incx));
+            DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
+                        hipblasScalFn,
+                        (handle, N, reinterpret_cast<Ts*>(&alpha), nullptr, incx));
         }
     }
 }
@@ -75,7 +78,7 @@ void testing_scal_bad_arg(const Arguments& arg)
 template <typename T, typename U = T>
 void testing_scal(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts           = hipblas_internal_type<U>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalFn = FORTRAN ? hipblasScal<T, U, true> : hipblasScal<T, U, false>;
     auto hipblasScalFn_64

@@ -41,7 +41,7 @@ inline void testname_symv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_symv_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSymvFn = arg.api == FORTRAN ? hipblasSymv<T, true> : hipblasSymv<T, false>;
     auto hipblasSymvFn_64
         = arg.api == FORTRAN_64 ? hipblasSymv_64<T, true> : hipblasSymv_64<T, false>;
@@ -150,7 +150,7 @@ void testing_symv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symv(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSymvFn = arg.api == FORTRAN ? hipblasSymv<T, true> : hipblasSymv<T, false>;
     auto hipblasSymvFn_64
         = arg.api == FORTRAN_64 ? hipblasSymv_64<T, true> : hipblasSymv_64<T, false>;
@@ -224,7 +224,17 @@ void testing_symv(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasSymvFn,
-                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dx, incx, reinterpret_cast<Ts*>(&h_beta), dy, incy));
+                   (handle,
+                    uplo,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dx,
+                    incx,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dy,
+                    incy));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));

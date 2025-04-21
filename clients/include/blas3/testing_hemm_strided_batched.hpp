@@ -51,7 +51,7 @@ inline void testname_hemm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasHemmStridedBatchedFn    = arg.api == FORTRAN ? hipblasHemmStridedBatched<T, true>
                                                              : hipblasHemmStridedBatched<T, false>;
     auto hipblasHemmStridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -81,7 +81,7 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
     device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
-    const Ts          h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+    const Ts         h_alpha(1), h_beta(2), h_one(1), h_zero(0);
 
     const Ts* alpha = &h_alpha;
     const Ts* beta  = &h_beta;
@@ -407,7 +407,7 @@ void testing_hemm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hemm_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasHemmStridedBatchedFn    = arg.api == FORTRAN ? hipblasHemmStridedBatched<T, true>
                                                              : hipblasHemmStridedBatched<T, false>;
     auto hipblasHemmStridedBatchedFn_64 = arg.api == FORTRAN_64

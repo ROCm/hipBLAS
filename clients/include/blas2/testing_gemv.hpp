@@ -41,7 +41,7 @@ inline void testname_gemv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_gemv_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
     auto hipblasGemvFn_64
@@ -171,7 +171,7 @@ void testing_gemv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_gemv(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasGemvFn = FORTRAN ? hipblasGemv<T, true> : hipblasGemv<T, false>;
     auto hipblasGemvFn_64
@@ -280,7 +280,18 @@ void testing_gemv(const Arguments& arg)
     {
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasGemvFn,
-                   (handle, transA, M, N, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dx, incx, reinterpret_cast<Ts*>(&h_beta), dy, incy));
+                   (handle,
+                    transA,
+                    M,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dx,
+                    incx,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dy,
+                    incy));
 
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));
         CHECK_HIP_ERROR(dy.transfer_from(hy));

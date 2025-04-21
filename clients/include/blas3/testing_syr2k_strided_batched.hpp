@@ -51,7 +51,7 @@ inline void testname_syr2k_strided_batched(const Arguments& arg, std::string& na
 template <typename T>
 void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                             = hipblas_internal_type<T>;
     auto hipblasSyrk2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSyr2kStridedBatched<T, true>
                                                               : hipblasSyr2kStridedBatched<T, false>;
     auto hipblasSyrk2StridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -82,7 +82,7 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
     device_strided_batch_matrix<T> dC(N, N, ldc, stride_C, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1), d_beta(1), d_one(1);
-    const Ts          h_alpha(1), h_zero(0), h_beta(2), h_one(1);
+    const Ts         h_alpha(1), h_zero(0), h_beta(2), h_one(1);
 
     const Ts* alpha = &h_alpha;
     const Ts* beta  = &h_beta;
@@ -391,7 +391,7 @@ void testing_syr2k_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr2k_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                             = hipblas_internal_type<T>;
     auto hipblasSyrk2StridedBatchedFn    = arg.api == FORTRAN ? hipblasSyr2kStridedBatched<T, true>
                                                               : hipblasSyr2kStridedBatched<T, false>;
     auto hipblasSyrk2StridedBatchedFn_64 = arg.api == FORTRAN_64

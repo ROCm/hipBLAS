@@ -429,9 +429,21 @@ void testing_trmm(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
 
-        DAPI_CHECK(
-            hipblasTrmmFn,
-            (handle, side, uplo, transA, diag, M, N, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dB, ldb, *dOut, ldOut));
+        DAPI_CHECK(hipblasTrmmFn,
+                   (handle,
+                    side,
+                    uplo,
+                    transA,
+                    diag,
+                    M,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dB,
+                    ldb,
+                    *dOut,
+                    ldOut));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hOut_host.transfer_from(*dOut));

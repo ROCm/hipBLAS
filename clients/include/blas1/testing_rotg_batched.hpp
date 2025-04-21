@@ -147,7 +147,13 @@ void testing_rotg_batched(const Arguments& arg)
         // hipBLAS
         // test host
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasRotgBatchedFn, (handle, ha.internal_type(), hb.internal_type(), hc.internal_type(), hs.internal_type(), batch_count));
+        DAPI_CHECK(hipblasRotgBatchedFn,
+                   (handle,
+                    ha.internal_type(),
+                    hb.internal_type(),
+                    hc.internal_type(),
+                    hs.internal_type(),
+                    batch_count));
 
         // test device
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_DEVICE));

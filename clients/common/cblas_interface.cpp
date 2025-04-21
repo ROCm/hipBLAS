@@ -51,7 +51,8 @@ void zpotrf_(char* uplo, int64_t* m, std::complex<double>* A, int64_t* lda, int6
 
 void sgetrf_(int64_t* m, int64_t* n, float* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 void dgetrf_(int64_t* m, int64_t* n, double* A, int64_t* lda, int64_t* ipiv, int64_t* info);
-void cgetrf_(int64_t* m, int64_t* n, std::complex<float>* A, int64_t* lda, int64_t* ipiv, int64_t* info);
+void cgetrf_(
+    int64_t* m, int64_t* n, std::complex<float>* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 void zgetrf_(
     int64_t* m, int64_t* n, std::complex<double>* A, int64_t* lda, int64_t* ipiv, int64_t* info);
 
@@ -73,15 +74,15 @@ void dgetrs_(char*    trans,
              double*  B,
              int64_t* ldb,
              int64_t* info);
-void cgetrs_(char*           trans,
-             int64_t*        n,
-             int64_t*        nrhs,
+void cgetrs_(char*                trans,
+             int64_t*             n,
+             int64_t*             nrhs,
              std::complex<float>* A,
-             int64_t*        lda,
-             int64_t*        ipiv,
+             int64_t*             lda,
+             int64_t*             ipiv,
              std::complex<float>* B,
-             int64_t*        ldb,
-             int64_t*        info);
+             int64_t*             ldb,
+             int64_t*             info);
 void zgetrs_(char*                 trans,
              int64_t*              n,
              int64_t*              nrhs,
@@ -101,13 +102,13 @@ void dgetri_(int64_t* n,
              double*  work,
              int64_t* lwork,
              int64_t* info);
-void cgetri_(int64_t*        n,
+void cgetri_(int64_t*             n,
              std::complex<float>* A,
-             int64_t*        lda,
-             int64_t*        ipiv,
+             int64_t*             lda,
+             int64_t*             ipiv,
              std::complex<float>* work,
-             int64_t*        lwork,
-             int64_t*        info);
+             int64_t*             lwork,
+             int64_t*             info);
 void zgetri_(int64_t*              n,
              std::complex<double>* A,
              int64_t*              lda,
@@ -132,14 +133,14 @@ void dgeqrf_(int64_t* m,
              double*  work,
              int64_t* lwork,
              int64_t* info);
-void cgeqrf_(int64_t*        m,
-             int64_t*        n,
+void cgeqrf_(int64_t*             m,
+             int64_t*             n,
              std::complex<float>* A,
-             int64_t*        lda,
+             int64_t*             lda,
              std::complex<float>* tau,
              std::complex<float>* work,
-             int64_t*        lwork,
-             int64_t*        info);
+             int64_t*             lwork,
+             int64_t*             info);
 void zgeqrf_(int64_t*              m,
              int64_t*              n,
              std::complex<double>* A,
@@ -171,17 +172,17 @@ void dgels_(char*    trans,
             double*  work,
             int64_t* lwork,
             int64_t* info);
-void cgels_(char*           trans,
-            int64_t*        m,
-            int64_t*        n,
-            int64_t*        nrhs,
+void cgels_(char*                trans,
+            int64_t*             m,
+            int64_t*             n,
+            int64_t*             nrhs,
             std::complex<float>* A,
-            int64_t*        lda,
+            int64_t*             lda,
             std::complex<float>* B,
-            int64_t*        ldb,
+            int64_t*             ldb,
             std::complex<float>* work,
-            int64_t*        lwork,
-            int64_t*        info);
+            int64_t*             lwork,
+            int64_t*             info);
 void zgels_(char*                 trans,
             int64_t*              m,
             int64_t*              n,
@@ -380,12 +381,12 @@ void ref_axpy<double, double>(
 }
 
 template <>
-void ref_axpy<std::complex<float>, std::complex<float>>(int64_t               n,
-                                              const std::complex<float>  alpha,
-                                              const std::complex<float>* x,
-                                              int64_t               incx,
-                                              std::complex<float>*       y,
-                                              int64_t               incy)
+void ref_axpy<std::complex<float>, std::complex<float>>(int64_t                    n,
+                                                        const std::complex<float>  alpha,
+                                                        const std::complex<float>* x,
+                                                        int64_t                    incx,
+                                                        std::complex<float>*       y,
+                                                        int64_t                    incy)
 {
     cblas_caxpy(n, &alpha, x, incx, y, incy);
 }
@@ -515,16 +516,19 @@ void ref_scal<double>(int64_t n, const double alpha, double* x, int64_t incx)
 }
 
 template <>
-void ref_scal<std::complex<float>>(int64_t              n,
-                              const std::complex<float> alpha,
-                              std::complex<float>*      x,
-                              int64_t              incx)
+void ref_scal<std::complex<float>>(int64_t                   n,
+                                   const std::complex<float> alpha,
+                                   std::complex<float>*      x,
+                                   int64_t                   incx)
 {
     cblas_cscal(n, &alpha, x, incx);
 }
 
 template <>
-void ref_scal<std::complex<float>, float>(int64_t n, const float alpha, std::complex<float>* x, int64_t incx)
+void ref_scal<std::complex<float>, float>(int64_t              n,
+                                          const float          alpha,
+                                          std::complex<float>* x,
+                                          int64_t              incx)
 {
     cblas_csscal(n, alpha, x, incx);
 }
@@ -659,12 +663,12 @@ void ref_dot<double>(
 }
 
 template <>
-void ref_dot<std::complex<float>>(int64_t               n,
-                             const std::complex<float>* x,
-                             int64_t               incx,
-                             const std::complex<float>* y,
-                             int64_t               incy,
-                             std::complex<float>*       result)
+void ref_dot<std::complex<float>>(int64_t                    n,
+                                  const std::complex<float>* x,
+                                  int64_t                    incx,
+                                  const std::complex<float>* y,
+                                  int64_t                    incy,
+                                  std::complex<float>*       result)
 {
     cblas_cdotu_sub(n, x, incx, y, incy, result);
 }
@@ -721,12 +725,12 @@ void ref_dotc<double>(
 }
 
 template <>
-void ref_dotc<std::complex<float>>(int64_t               n,
-                              const std::complex<float>* x,
-                              int64_t               incx,
-                              const std::complex<float>* y,
-                              int64_t               incy,
-                              std::complex<float>*       result)
+void ref_dotc<std::complex<float>>(int64_t                    n,
+                                   const std::complex<float>* x,
+                                   int64_t                    incx,
+                                   const std::complex<float>* y,
+                                   int64_t                    incy,
+                                   std::complex<float>*       result)
 {
     cblas_cdotc_sub(n, x, incx, y, incy, result);
 }
@@ -790,10 +794,10 @@ void ref_nrm2<double, double>(int64_t n, const double* x, int64_t incx, double* 
 }
 
 template <>
-void ref_nrm2<std::complex<float>, float>(int64_t               n,
-                                     const std::complex<float>* x,
-                                     int64_t               incx,
-                                     float*                result)
+void ref_nrm2<std::complex<float>, float>(int64_t                    n,
+                                          const std::complex<float>* x,
+                                          int64_t                    incx,
+                                          float*                     result)
 {
     *result = cblas_scnrm2(n, x, incx);
 }
@@ -812,20 +816,20 @@ void ref_nrm2<std::complex<double>, double>(int64_t                     n,
 ///////////////////
 // LAPACK fortran library functionality
 extern "C" {
-void crot_(const int64_t*        n,
+void crot_(const int64_t*             n,
            std::complex<float>*       cx,
-           const int64_t*        incx,
+           const int64_t*             incx,
            std::complex<float>*       cy,
-           const int64_t*        incy,
-           const float*          c,
+           const int64_t*             incy,
+           const float*               c,
            const std::complex<float>* s);
-void csrot_(const int64_t*  n,
+void csrot_(const int64_t*       n,
             std::complex<float>* cx,
-            const int64_t*  incx,
+            const int64_t*       incx,
             std::complex<float>* cy,
-            const int64_t*  incy,
-            const float*    c,
-            const float*    s);
+            const int64_t*       incy,
+            const float*         c,
+            const float*         s);
 void zrot_(const int64_t*              n,
            std::complex<double>*       cx,
            const int64_t*              incx,
@@ -936,33 +940,38 @@ void ref_rot<double>(
 }
 
 template <>
-void ref_rot<std::complex<float>>(int64_t         n,
-                             std::complex<float>* x,
-                             int64_t         incx,
-                             std::complex<float>* y,
-                             int64_t         incy,
-                             std::complex<float>  c,
-                             std::complex<float>  s)
+void ref_rot<std::complex<float>>(int64_t              n,
+                                  std::complex<float>* x,
+                                  int64_t              incx,
+                                  std::complex<float>* y,
+                                  int64_t              incy,
+                                  std::complex<float>  c,
+                                  std::complex<float>  s)
 {
     float c_real = std::real(c);
     lapack_xrot(n, x, incx, y, incy, c_real, s);
 }
 
 template <>
-void ref_rot<std::complex<float>, float>(int64_t         n,
-                                    std::complex<float>* x,
-                                    int64_t         incx,
-                                    std::complex<float>* y,
-                                    int64_t         incy,
-                                    float           c,
-                                    std::complex<float>  s)
+void ref_rot<std::complex<float>, float>(int64_t              n,
+                                         std::complex<float>* x,
+                                         int64_t              incx,
+                                         std::complex<float>* y,
+                                         int64_t              incy,
+                                         float                c,
+                                         std::complex<float>  s)
 {
     lapack_xrot(n, x, incx, y, incy, c, s);
 }
 
 template <>
-void ref_rot<std::complex<float>, float, float>(
-    int64_t n, std::complex<float>* x, int64_t incx, std::complex<float>* y, int64_t incy, float c, float s)
+void ref_rot<std::complex<float>, float, float>(int64_t              n,
+                                                std::complex<float>* x,
+                                                int64_t              incx,
+                                                std::complex<float>* y,
+                                                int64_t              incy,
+                                                float                c,
+                                                float                s)
 {
     lapack_xrot(n, x, incx, y, incy, c, s);
 }
@@ -1019,9 +1028,9 @@ void ref_rotg<double>(double* a, double* b, double* c, double* s)
 
 template <>
 void ref_rotg<std::complex<float>, float>(std::complex<float>* a,
-                                     std::complex<float>* b,
-                                     float*          c,
-                                     std::complex<float>* s)
+                                          std::complex<float>* b,
+                                          float*               c,
+                                          std::complex<float>* s)
 {
     lapack_xrotg(*a, *b, *c, *s);
 }
@@ -1240,19 +1249,19 @@ void ref_gbmv<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gbmv<std::complex<float>>(hipblasOperation_t transA,
-                              int64_t            m,
-                              int64_t            n,
-                              int64_t            kl,
-                              int64_t            ku,
-                              std::complex<float>     alpha,
-                              std::complex<float>*    A,
-                              int64_t            lda,
-                              std::complex<float>*    x,
-                              int64_t            incx,
-                              std::complex<float>     beta,
-                              std::complex<float>*    y,
-                              int64_t            incy)
+void ref_gbmv<std::complex<float>>(hipblasOperation_t   transA,
+                                   int64_t              m,
+                                   int64_t              n,
+                                   int64_t              kl,
+                                   int64_t              ku,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* A,
+                                   int64_t              lda,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* y,
+                                   int64_t              incy)
 {
     cblas_cgbmv(CblasColMajor,
                 (CBLAS_TRANSPOSE)transA,
@@ -1337,17 +1346,17 @@ void ref_gemv<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemv<std::complex<float>>(hipblasOperation_t transA,
-                              int64_t            m,
-                              int64_t            n,
-                              std::complex<float>     alpha,
-                              std::complex<float>*    A,
-                              int64_t            lda,
-                              std::complex<float>*    x,
-                              int64_t            incx,
-                              std::complex<float>     beta,
-                              std::complex<float>*    y,
-                              int64_t            incy)
+void ref_gemv<std::complex<float>>(hipblasOperation_t   transA,
+                                   int64_t              m,
+                                   int64_t              n,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* A,
+                                   int64_t              lda,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* y,
+                                   int64_t              incy)
 {
     cblas_cgemv(
         CblasColMajor, (CBLAS_TRANSPOSE)transA, m, n, &alpha, A, lda, x, incx, &beta, y, incy);
@@ -1400,29 +1409,29 @@ void ref_ger<double, false>(int64_t m,
 }
 
 template <>
-void ref_ger<std::complex<float>, false>(int64_t         m,
-                                    int64_t         n,
-                                    std::complex<float>  alpha,
-                                    std::complex<float>* x,
-                                    int64_t         incx,
-                                    std::complex<float>* y,
-                                    int64_t         incy,
-                                    std::complex<float>* A,
-                                    int64_t         lda)
+void ref_ger<std::complex<float>, false>(int64_t              m,
+                                         int64_t              n,
+                                         std::complex<float>  alpha,
+                                         std::complex<float>* x,
+                                         int64_t              incx,
+                                         std::complex<float>* y,
+                                         int64_t              incy,
+                                         std::complex<float>* A,
+                                         int64_t              lda)
 {
     cblas_cgeru(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
 
 template <>
-void ref_ger<std::complex<float>, true>(int64_t         m,
-                                   int64_t         n,
-                                   std::complex<float>  alpha,
-                                   std::complex<float>* x,
-                                   int64_t         incx,
-                                   std::complex<float>* y,
-                                   int64_t         incy,
-                                   std::complex<float>* A,
-                                   int64_t         lda)
+void ref_ger<std::complex<float>, true>(int64_t              m,
+                                        int64_t              n,
+                                        std::complex<float>  alpha,
+                                        std::complex<float>* x,
+                                        int64_t              incx,
+                                        std::complex<float>* y,
+                                        int64_t              incy,
+                                        std::complex<float>* A,
+                                        int64_t              lda)
 {
     cblas_cgerc(CblasColMajor, m, n, &alpha, x, incx, y, incy, A, lda);
 }
@@ -1457,17 +1466,17 @@ void ref_ger<std::complex<double>, true>(int64_t               m,
 
 // hbmv
 template <>
-void ref_hbmv<std::complex<float>>(hipblasFillMode_t uplo,
-                              int64_t           n,
-                              int64_t           k,
-                              std::complex<float>    alpha,
-                              std::complex<float>*   A,
-                              int64_t           lda,
-                              std::complex<float>*   x,
-                              int64_t           incx,
-                              std::complex<float>    beta,
-                              std::complex<float>*   y,
-                              int64_t           incy)
+void ref_hbmv<std::complex<float>>(hipblasFillMode_t    uplo,
+                                   int64_t              n,
+                                   int64_t              k,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* A,
+                                   int64_t              lda,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* y,
+                                   int64_t              incy)
 {
     cblas_chbmv(CblasColMajor, (CBLAS_UPLO)uplo, n, k, &alpha, A, lda, x, incx, &beta, y, incy);
 }
@@ -1490,16 +1499,16 @@ void ref_hbmv<std::complex<double>>(hipblasFillMode_t     uplo,
 
 // hemv
 template <>
-void ref_hemv<std::complex<float>>(hipblasFillMode_t uplo,
-                              int64_t           n,
-                              std::complex<float>    alpha,
-                              std::complex<float>*   A,
-                              int64_t           lda,
-                              std::complex<float>*   x,
-                              int64_t           incx,
-                              std::complex<float>    beta,
-                              std::complex<float>*   y,
-                              int64_t           incy)
+void ref_hemv<std::complex<float>>(hipblasFillMode_t    uplo,
+                                   int64_t              n,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* A,
+                                   int64_t              lda,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* y,
+                                   int64_t              incy)
 {
     cblas_chemv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, A, lda, x, incx, &beta, y, incy);
 }
@@ -1521,13 +1530,13 @@ void ref_hemv<std::complex<double>>(hipblasFillMode_t     uplo,
 
 // her
 template <>
-void ref_her<std::complex<float>, float>(hipblasFillMode_t uplo,
-                                    int64_t           n,
-                                    float             alpha,
-                                    std::complex<float>*   x,
-                                    int64_t           incx,
-                                    std::complex<float>*   A,
-                                    int64_t           lda)
+void ref_her<std::complex<float>, float>(hipblasFillMode_t    uplo,
+                                         int64_t              n,
+                                         float                alpha,
+                                         std::complex<float>* x,
+                                         int64_t              incx,
+                                         std::complex<float>* A,
+                                         int64_t              lda)
 {
     cblas_cher(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, A, lda);
 }
@@ -1546,15 +1555,15 @@ void ref_her<std::complex<double>, double>(hipblasFillMode_t     uplo,
 
 // her2
 template <>
-void ref_her2<std::complex<float>>(hipblasFillMode_t uplo,
-                              int64_t           n,
-                              std::complex<float>    alpha,
-                              std::complex<float>*   x,
-                              int64_t           incx,
-                              std::complex<float>*   y,
-                              int64_t           incy,
-                              std::complex<float>*   A,
-                              int64_t           lda)
+void ref_her2<std::complex<float>>(hipblasFillMode_t    uplo,
+                                   int64_t              n,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>* y,
+                                   int64_t              incy,
+                                   std::complex<float>* A,
+                                   int64_t              lda)
 {
     cblas_cher2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, A, lda);
 }
@@ -1575,15 +1584,15 @@ void ref_her2<std::complex<double>>(hipblasFillMode_t     uplo,
 
 // hpmv
 template <>
-void ref_hpmv<std::complex<float>>(hipblasFillMode_t uplo,
-                              int64_t           n,
-                              std::complex<float>    alpha,
-                              std::complex<float>*   AP,
-                              std::complex<float>*   x,
-                              int64_t           incx,
-                              std::complex<float>    beta,
-                              std::complex<float>*   y,
-                              int64_t           incy)
+void ref_hpmv<std::complex<float>>(hipblasFillMode_t    uplo,
+                                   int64_t              n,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* AP,
+                                   std::complex<float>* x,
+                                   int64_t              incx,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* y,
+                                   int64_t              incy)
 {
     cblas_chpmv(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, AP, x, incx, &beta, y, incy);
 }
@@ -1604,12 +1613,12 @@ void ref_hpmv<std::complex<double>>(hipblasFillMode_t     uplo,
 
 // hpr
 template <>
-void ref_hpr(hipblasFillMode_t uplo,
-             int64_t           n,
-             float             alpha,
-             std::complex<float>*   x,
-             int64_t           incx,
-             std::complex<float>*   AP)
+void ref_hpr(hipblasFillMode_t    uplo,
+             int64_t              n,
+             float                alpha,
+             std::complex<float>* x,
+             int64_t              incx,
+             std::complex<float>* AP)
 {
     cblas_chpr(CblasColMajor, (CBLAS_UPLO)uplo, n, alpha, x, incx, AP);
 }
@@ -1627,14 +1636,14 @@ void ref_hpr(hipblasFillMode_t     uplo,
 
 // hpr2
 template <>
-void ref_hpr2(hipblasFillMode_t uplo,
-              int64_t           n,
-              std::complex<float>    alpha,
-              std::complex<float>*   x,
-              int64_t           incx,
-              std::complex<float>*   y,
-              int64_t           incy,
-              std::complex<float>*   AP)
+void ref_hpr2(hipblasFillMode_t    uplo,
+              int64_t              n,
+              std::complex<float>  alpha,
+              std::complex<float>* x,
+              int64_t              incx,
+              std::complex<float>* y,
+              int64_t              incy,
+              std::complex<float>* AP)
 {
     cblas_chpr2(CblasColMajor, (CBLAS_UPLO)uplo, n, &alpha, x, incx, y, incy, AP);
 }
@@ -1728,12 +1737,12 @@ void ref_spr(hipblasFillMode_t uplo, int64_t n, double alpha, double* x, int64_t
 }
 
 template <>
-void ref_spr(hipblasFillMode_t uplo,
-             int64_t           n,
-             std::complex<float>    alpha,
-             std::complex<float>*   x,
-             int64_t           incx,
-             std::complex<float>*   AP)
+void ref_spr(hipblasFillMode_t    uplo,
+             int64_t              n,
+             std::complex<float>  alpha,
+             std::complex<float>* x,
+             int64_t              incx,
+             std::complex<float>* AP)
 {
     lapack_xspr(uplo, n, alpha, x, incx, AP);
 }
@@ -1808,16 +1817,16 @@ void ref_symv(hipblasFillMode_t uplo,
 }
 
 template <>
-void ref_symv(hipblasFillMode_t uplo,
-              int64_t           n,
-              std::complex<float>    alpha,
-              std::complex<float>*   A,
-              int64_t           lda,
-              std::complex<float>*   x,
-              int64_t           incx,
-              std::complex<float>    beta,
-              std::complex<float>*   y,
-              int64_t           incy)
+void ref_symv(hipblasFillMode_t    uplo,
+              int64_t              n,
+              std::complex<float>  alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              std::complex<float>* x,
+              int64_t              incx,
+              std::complex<float>  beta,
+              std::complex<float>* y,
+              int64_t              incy)
 {
     lapack_xsymv(uplo, n, alpha, A, lda, x, incx, beta, y, incy);
 }
@@ -1858,13 +1867,13 @@ void ref_syr<double>(hipblasFillMode_t uplo,
 }
 
 template <>
-void ref_syr(hipblasFillMode_t uplo,
-             int64_t           n,
-             std::complex<float>    alpha,
-             std::complex<float>*   xa,
-             int64_t           incx,
-             std::complex<float>*   A,
-             int64_t           lda)
+void ref_syr(hipblasFillMode_t    uplo,
+             int64_t              n,
+             std::complex<float>  alpha,
+             std::complex<float>* xa,
+             int64_t              incx,
+             std::complex<float>* A,
+             int64_t              lda)
 {
     lapack_xsyr(uplo, n, alpha, xa, incx, A, lda);
 }
@@ -1912,15 +1921,15 @@ void ref_syr2(hipblasFillMode_t uplo,
 }
 
 template <>
-void ref_syr2(hipblasFillMode_t uplo,
-              int64_t           n,
-              std::complex<float>    alpha,
-              std::complex<float>*   x,
-              int64_t           incx,
-              std::complex<float>*   y,
-              int64_t           incy,
-              std::complex<float>*   A,
-              int64_t           lda)
+void ref_syr2(hipblasFillMode_t    uplo,
+              int64_t              n,
+              std::complex<float>  alpha,
+              std::complex<float>* x,
+              int64_t              incx,
+              std::complex<float>* y,
+              int64_t              incy,
+              std::complex<float>* A,
+              int64_t              lda)
 {
     lapack_xsyr2(uplo, n, alpha, x, incx, y, incy, A, lda);
 }
@@ -1987,15 +1996,15 @@ void ref_tbmv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tbmv<std::complex<float>>(hipblasFillMode_t     uplo,
-                              hipblasOperation_t    transA,
-                              hipblasDiagType_t     diag,
-                              int64_t               m,
-                              int64_t               k,
-                              const std::complex<float>* A,
-                              int64_t               lda,
-                              std::complex<float>*       x,
-                              int64_t               incx)
+void ref_tbmv<std::complex<float>>(hipblasFillMode_t          uplo,
+                                   hipblasOperation_t         transA,
+                                   hipblasDiagType_t          diag,
+                                   int64_t                    m,
+                                   int64_t                    k,
+                                   const std::complex<float>* A,
+                                   int64_t                    lda,
+                                   std::complex<float>*       x,
+                                   int64_t                    incx)
 {
     cblas_ctbmv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -2080,15 +2089,15 @@ void ref_tbsv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tbsv<std::complex<float>>(hipblasFillMode_t     uplo,
-                              hipblasOperation_t    transA,
-                              hipblasDiagType_t     diag,
-                              int64_t               m,
-                              int64_t               k,
-                              const std::complex<float>* A,
-                              int64_t               lda,
-                              std::complex<float>*       x,
-                              int64_t               incx)
+void ref_tbsv<std::complex<float>>(hipblasFillMode_t          uplo,
+                                   hipblasOperation_t         transA,
+                                   hipblasDiagType_t          diag,
+                                   int64_t                    m,
+                                   int64_t                    k,
+                                   const std::complex<float>* A,
+                                   int64_t                    lda,
+                                   std::complex<float>*       x,
+                                   int64_t                    incx)
 {
     cblas_ctbsv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -2153,13 +2162,13 @@ void ref_tpmv(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tpmv(hipblasFillMode_t     uplo,
-              hipblasOperation_t    transA,
-              hipblasDiagType_t     diag,
-              int64_t               m,
+void ref_tpmv(hipblasFillMode_t          uplo,
+              hipblasOperation_t         transA,
+              hipblasDiagType_t          diag,
+              int64_t                    m,
               const std::complex<float>* A,
               std::complex<float>*       x,
-              int64_t               incx)
+              int64_t                    incx)
 {
     cblas_ctpmv(
         CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), m, A, x, incx);
@@ -2206,13 +2215,13 @@ void ref_tpsv(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_tpsv(hipblasFillMode_t     uplo,
-              hipblasOperation_t    transA,
-              hipblasDiagType_t     diag,
-              int64_t               n,
+void ref_tpsv(hipblasFillMode_t          uplo,
+              hipblasOperation_t         transA,
+              hipblasDiagType_t          diag,
+              int64_t                    n,
               const std::complex<float>* AP,
               std::complex<float>*       x,
-              int64_t               incx)
+              int64_t                    incx)
 {
     cblas_ctpsv(
         CblasColMajor, CBLAS_UPLO(uplo), CBLAS_TRANSPOSE(transA), CBLAS_DIAG(diag), n, AP, x, incx);
@@ -2275,14 +2284,14 @@ void ref_trmv<double>(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_trmv<std::complex<float>>(hipblasFillMode_t     uplo,
-                              hipblasOperation_t    transA,
-                              hipblasDiagType_t     diag,
-                              int64_t               m,
-                              const std::complex<float>* A,
-                              int64_t               lda,
-                              std::complex<float>*       x,
-                              int64_t               incx)
+void ref_trmv<std::complex<float>>(hipblasFillMode_t          uplo,
+                                   hipblasOperation_t         transA,
+                                   hipblasDiagType_t          diag,
+                                   int64_t                    m,
+                                   const std::complex<float>* A,
+                                   int64_t                    lda,
+                                   std::complex<float>*       x,
+                                   int64_t                    incx)
 {
     cblas_ctrmv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -2362,15 +2371,15 @@ void ref_trsv<double>(hipblasHandle_t    handle,
 }
 
 template <>
-void ref_trsv<std::complex<float>>(hipblasHandle_t       handle,
-                              hipblasFillMode_t     uplo,
-                              hipblasOperation_t    transA,
-                              hipblasDiagType_t     diag,
-                              int64_t               m,
-                              const std::complex<float>* A,
-                              int64_t               lda,
-                              std::complex<float>*       x,
-                              int64_t               incx)
+void ref_trsv<std::complex<float>>(hipblasHandle_t            handle,
+                                   hipblasFillMode_t          uplo,
+                                   hipblasOperation_t         transA,
+                                   hipblasDiagType_t          diag,
+                                   int64_t                    m,
+                                   const std::complex<float>* A,
+                                   int64_t                    lda,
+                                   std::complex<float>*       x,
+                                   int64_t                    incx)
 {
     cblas_ctrsv(CblasColMajor,
                 CBLAS_UPLO(uplo),
@@ -2506,15 +2515,15 @@ void ref_dgmm(hipblasSideMode_t side,
 }
 
 template <>
-void ref_dgmm(hipblasSideMode_t     side,
-              int64_t               M,
-              int64_t               N,
+void ref_dgmm(hipblasSideMode_t          side,
+              int64_t                    M,
+              int64_t                    N,
               const std::complex<float>* A,
-              int64_t               lda,
+              int64_t                    lda,
               const std::complex<float>* x,
-              int64_t               incx,
+              int64_t                    incx,
               std::complex<float>*       C,
-              int64_t               ldc)
+              int64_t                    ldc)
 {
     ref_dgmm_helper(side, M, N, A, lda, x, incx, C, ldc);
 }
@@ -2569,18 +2578,18 @@ void ref_geam(hipblasOperation_t transa,
 }
 
 template <>
-void ref_geam(hipblasOperation_t transa,
-              hipblasOperation_t transb,
-              int64_t            m,
-              int64_t            n,
-              std::complex<float>*    alpha,
-              std::complex<float>*    A,
-              int64_t            lda,
-              std::complex<float>*    beta,
-              std::complex<float>*    B,
-              int64_t            ldb,
-              std::complex<float>*    C,
-              int64_t            ldc)
+void ref_geam(hipblasOperation_t   transa,
+              hipblasOperation_t   transb,
+              int64_t              m,
+              int64_t              n,
+              std::complex<float>* alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              std::complex<float>* beta,
+              std::complex<float>* B,
+              int64_t              ldb,
+              std::complex<float>* C,
+              int64_t              ldc)
 {
     return ref_geam_helper(transa, transb, m, n, *alpha, A, lda, *beta, B, ldb, C, ldc);
 }
@@ -2958,19 +2967,19 @@ void ref_gemm<double>(hipblasOperation_t transA,
 }
 
 template <>
-void ref_gemm<std::complex<float>>(hipblasOperation_t transA,
-                              hipblasOperation_t transB,
-                              int64_t            m,
-                              int64_t            n,
-                              int64_t            k,
-                              std::complex<float>     alpha,
-                              std::complex<float>*    A,
-                              int64_t            lda,
-                              std::complex<float>*    B,
-                              int64_t            ldb,
-                              std::complex<float>     beta,
-                              std::complex<float>*    C,
-                              int64_t            ldc)
+void ref_gemm<std::complex<float>>(hipblasOperation_t   transA,
+                                   hipblasOperation_t   transB,
+                                   int64_t              m,
+                                   int64_t              n,
+                                   int64_t              k,
+                                   std::complex<float>  alpha,
+                                   std::complex<float>* A,
+                                   int64_t              lda,
+                                   std::complex<float>* B,
+                                   int64_t              ldb,
+                                   std::complex<float>  beta,
+                                   std::complex<float>* C,
+                                   int64_t              ldc)
 {
     //just directly cast, since transA, transB are integers in the enum
     cblas_cgemm(CblasColMajor,
@@ -3080,18 +3089,18 @@ void ref_gemm<int8_t, int32_t, int32_t>(hipblasOperation_t transA,
 
 // hemm
 template <>
-void ref_hemm(hipblasSideMode_t side,
-              hipblasFillMode_t uplo,
-              int64_t           m,
-              int64_t           n,
-              std::complex<float>    alpha,
-              std::complex<float>*   A,
-              int64_t           lda,
-              std::complex<float>*   B,
-              int64_t           ldb,
-              std::complex<float>    beta,
-              std::complex<float>*   C,
-              int64_t           ldc)
+void ref_hemm(hipblasSideMode_t    side,
+              hipblasFillMode_t    uplo,
+              int64_t              m,
+              int64_t              n,
+              std::complex<float>  alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              std::complex<float>* B,
+              int64_t              ldb,
+              std::complex<float>  beta,
+              std::complex<float>* C,
+              int64_t              ldc)
 {
     cblas_chemm(CblasColMajor,
                 (CBLAS_SIDE)side,
@@ -3139,16 +3148,16 @@ void ref_hemm(hipblasSideMode_t     side,
 
 // herk
 template <>
-void ref_herk(hipblasFillMode_t  uplo,
-              hipblasOperation_t transA,
-              int64_t            n,
-              int64_t            k,
-              float              alpha,
-              std::complex<float>*    A,
-              int64_t            lda,
-              float              beta,
-              std::complex<float>*    C,
-              int64_t            ldc)
+void ref_herk(hipblasFillMode_t    uplo,
+              hipblasOperation_t   transA,
+              int64_t              n,
+              int64_t              k,
+              float                alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              float                beta,
+              std::complex<float>* C,
+              int64_t              ldc)
 {
     cblas_cherk(CblasColMajor,
                 (CBLAS_UPLO)uplo,
@@ -3273,18 +3282,18 @@ void ref_herkx_local(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_herkx(hipblasFillMode_t  uplo,
-               hipblasOperation_t transA,
-               int64_t            n,
-               int64_t            k,
-               std::complex<float>     alpha,
-               std::complex<float>*    A,
-               int64_t            lda,
-               std::complex<float>*    B,
-               int64_t            ldb,
-               float              beta,
-               std::complex<float>*    C,
-               int64_t            ldc)
+void ref_herkx(hipblasFillMode_t    uplo,
+               hipblasOperation_t   transA,
+               int64_t              n,
+               int64_t              k,
+               std::complex<float>  alpha,
+               std::complex<float>* A,
+               int64_t              lda,
+               std::complex<float>* B,
+               int64_t              ldb,
+               float                beta,
+               std::complex<float>* C,
+               int64_t              ldc)
 {
     ref_herkx_local(uplo, transA, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 }
@@ -3308,18 +3317,18 @@ void ref_herkx(hipblasFillMode_t     uplo,
 
 // her2k
 template <>
-void ref_her2k(hipblasFillMode_t  uplo,
-               hipblasOperation_t transA,
-               int64_t            n,
-               int64_t            k,
-               std::complex<float>     alpha,
-               std::complex<float>*    A,
-               int64_t            lda,
-               std::complex<float>*    B,
-               int64_t            ldb,
-               float              beta,
-               std::complex<float>*    C,
-               int64_t            ldc)
+void ref_her2k(hipblasFillMode_t    uplo,
+               hipblasOperation_t   transA,
+               int64_t              n,
+               int64_t              k,
+               std::complex<float>  alpha,
+               std::complex<float>* A,
+               int64_t              lda,
+               std::complex<float>* B,
+               int64_t              ldb,
+               float                beta,
+               std::complex<float>* C,
+               int64_t              ldc)
 {
     cblas_cher2k(CblasColMajor,
                  (CBLAS_UPLO)uplo,
@@ -3425,18 +3434,18 @@ void ref_symm(hipblasSideMode_t side,
 }
 
 template <>
-void ref_symm(hipblasSideMode_t side,
-              hipblasFillMode_t uplo,
-              int64_t           m,
-              int64_t           n,
-              std::complex<float>    alpha,
-              std::complex<float>*   A,
-              int64_t           lda,
-              std::complex<float>*   B,
-              int64_t           ldb,
-              std::complex<float>    beta,
-              std::complex<float>*   C,
-              int64_t           ldc)
+void ref_symm(hipblasSideMode_t    side,
+              hipblasFillMode_t    uplo,
+              int64_t              m,
+              int64_t              n,
+              std::complex<float>  alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              std::complex<float>* B,
+              int64_t              ldb,
+              std::complex<float>  beta,
+              std::complex<float>* C,
+              int64_t              ldc)
 {
     cblas_csymm(CblasColMajor,
                 (CBLAS_SIDE)side,
@@ -3534,16 +3543,16 @@ void ref_syrk(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_syrk(hipblasFillMode_t  uplo,
-              hipblasOperation_t transA,
-              int64_t            n,
-              int64_t            k,
-              std::complex<float>     alpha,
-              std::complex<float>*    A,
-              int64_t            lda,
-              std::complex<float>     beta,
-              std::complex<float>*    C,
-              int64_t            ldc)
+void ref_syrk(hipblasFillMode_t    uplo,
+              hipblasOperation_t   transA,
+              int64_t              n,
+              int64_t              k,
+              std::complex<float>  alpha,
+              std::complex<float>* A,
+              int64_t              lda,
+              std::complex<float>  beta,
+              std::complex<float>* C,
+              int64_t              ldc)
 {
     cblas_csyrk(CblasColMajor,
                 (CBLAS_UPLO)uplo,
@@ -3643,18 +3652,18 @@ void ref_syr2k(hipblasFillMode_t  uplo,
 }
 
 template <>
-void ref_syr2k(hipblasFillMode_t  uplo,
-               hipblasOperation_t transA,
-               int64_t            n,
-               int64_t            k,
-               std::complex<float>     alpha,
-               std::complex<float>*    A,
-               int64_t            lda,
-               std::complex<float>*    B,
-               int64_t            ldb,
-               std::complex<float>     beta,
-               std::complex<float>*    C,
-               int64_t            ldc)
+void ref_syr2k(hipblasFillMode_t    uplo,
+               hipblasOperation_t   transA,
+               int64_t              n,
+               int64_t              k,
+               std::complex<float>  alpha,
+               std::complex<float>* A,
+               int64_t              lda,
+               std::complex<float>* B,
+               int64_t              ldb,
+               std::complex<float>  beta,
+               std::complex<float>* C,
+               int64_t              ldc)
 {
     cblas_csyr2k(CblasColMajor,
                  (CBLAS_UPLO)uplo,
@@ -3831,7 +3840,8 @@ void ref_trtri<double>(char uplo, char diag, int64_t n, double* A, int64_t lda)
 }
 
 template <>
-void ref_trtri<std::complex<float>>(char uplo, char diag, int64_t n, std::complex<float>* A, int64_t lda)
+void ref_trtri<std::complex<float>>(
+    char uplo, char diag, int64_t n, std::complex<float>* A, int64_t lda)
 {
     lapack_xtrtri(uplo, diag, n, A, lda);
 }
@@ -3901,17 +3911,17 @@ void ref_trmm<double>(hipblasSideMode_t  side,
 }
 
 template <>
-void ref_trmm<std::complex<float>>(hipblasSideMode_t     side,
-                              hipblasFillMode_t     uplo,
-                              hipblasOperation_t    transA,
-                              hipblasDiagType_t     diag,
-                              int64_t               m,
-                              int64_t               n,
-                              std::complex<float>        alpha,
-                              const std::complex<float>* A,
-                              int64_t               lda,
-                              std::complex<float>*       B,
-                              int64_t               ldb)
+void ref_trmm<std::complex<float>>(hipblasSideMode_t          side,
+                                   hipblasFillMode_t          uplo,
+                                   hipblasOperation_t         transA,
+                                   hipblasDiagType_t          diag,
+                                   int64_t                    m,
+                                   int64_t                    n,
+                                   std::complex<float>        alpha,
+                                   const std::complex<float>* A,
+                                   int64_t                    lda,
+                                   std::complex<float>*       B,
+                                   int64_t                    ldb)
 {
     cblas_ctrmm(CblasColMajor,
                 (CBLAS_SIDE)side,
@@ -4049,8 +4059,8 @@ int64_t ref_getrf<double>(int64_t m, int64_t n, double* A, int64_t lda, int64_t*
 }
 
 template <>
-int64_t
-    ref_getrf<std::complex<float>>(int64_t m, int64_t n, std::complex<float>* A, int64_t lda, int64_t* ipiv)
+int64_t ref_getrf<std::complex<float>>(
+    int64_t m, int64_t n, std::complex<float>* A, int64_t lda, int64_t* ipiv)
 {
     int64_t info;
 
@@ -4122,14 +4132,14 @@ int64_t ref_getrs<double>(char     trans,
 }
 
 template <>
-int64_t ref_getrs<std::complex<float>>(char            trans,
-                                  int64_t         n,
-                                  int64_t         nrhs,
-                                  std::complex<float>* A,
-                                  int64_t         lda,
-                                  int64_t*        ipiv,
-                                  std::complex<float>* B,
-                                  int64_t         ldb)
+int64_t ref_getrs<std::complex<float>>(char                 trans,
+                                       int64_t              n,
+                                       int64_t              nrhs,
+                                       std::complex<float>* A,
+                                       int64_t              lda,
+                                       int64_t*             ipiv,
+                                       std::complex<float>* B,
+                                       int64_t              ldb)
 {
     int64_t info;
 
@@ -4144,7 +4154,15 @@ int64_t ref_getrs<std::complex<float>>(char            trans,
                           (lapack_complex_float*)B,
                           ldb);
 #else
-    cgetrs_(&trans, &n, &nrhs, (std::complex<float>*)A, &lda, ipiv, (std::complex<float>*)B, &ldb, &info);
+    cgetrs_(&trans,
+            &n,
+            &nrhs,
+            (std::complex<float>*)A,
+            &lda,
+            ipiv,
+            (std::complex<float>*)B,
+            &ldb,
+            &info);
 #endif
 
     return info;
@@ -4220,8 +4238,12 @@ int64_t
 }
 
 template <>
-int64_t ref_getri<std::complex<float>>(
-    int64_t n, std::complex<float>* A, int64_t lda, int64_t* ipiv, std::complex<float>* work, int64_t lwork)
+int64_t ref_getri<std::complex<float>>(int64_t              n,
+                                       std::complex<float>* A,
+                                       int64_t              lda,
+                                       int64_t*             ipiv,
+                                       std::complex<float>* work,
+                                       int64_t              lwork)
 {
     int64_t info;
 
@@ -4296,13 +4318,13 @@ int64_t ref_geqrf<double>(
     return info;
 }
 template <>
-int64_t ref_geqrf<std::complex<float>>(int64_t         m,
-                                  int64_t         n,
-                                  std::complex<float>* A,
-                                  int64_t         lda,
-                                  std::complex<float>* tau,
-                                  std::complex<float>* work,
-                                  int64_t         lwork)
+int64_t ref_geqrf<std::complex<float>>(int64_t              m,
+                                       int64_t              n,
+                                       std::complex<float>* A,
+                                       int64_t              lda,
+                                       std::complex<float>* tau,
+                                       std::complex<float>* work,
+                                       int64_t              lwork)
 {
     int64_t info;
 
@@ -4397,16 +4419,16 @@ int64_t ref_gels<double>(char    trans,
 }
 
 template <>
-int64_t ref_gels<std::complex<float>>(char            trans,
-                                 int64_t         m,
-                                 int64_t         n,
-                                 int64_t         nrhs,
-                                 std::complex<float>* A,
-                                 int64_t         lda,
-                                 std::complex<float>* B,
-                                 int64_t         ldb,
-                                 std::complex<float>* work,
-                                 int64_t         lwork)
+int64_t ref_gels<std::complex<float>>(char                 trans,
+                                      int64_t              m,
+                                      int64_t              n,
+                                      int64_t              nrhs,
+                                      std::complex<float>* A,
+                                      int64_t              lda,
+                                      std::complex<float>* B,
+                                      int64_t              ldb,
+                                      std::complex<float>* work,
+                                      int64_t              lwork)
 {
     int64_t info;
 #ifdef FLA_ENABLE_ILP64

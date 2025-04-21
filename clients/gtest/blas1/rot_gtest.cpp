@@ -102,44 +102,44 @@ namespace
 
     // This tells whether the BLAS1 tests are enabled
     template <blas1 BLAS1, typename Ti, typename To, typename Tc>
-    using rot_enabled
-        = std::integral_constant<
-            bool,
-            ((BLAS1 == blas1::rot || BLAS1 == blas1::rot_batched
-              || BLAS1 == blas1::rot_strided_batched)
-             && ((std::is_same_v<Ti, float> && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>)
-                 || (std::is_same_v<Ti, double> && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>)
-                 || (std::is_same_v<
-                         Ti,
-                         std::complex<float>> && std::is_same_v<To, float> && std::is_same_v<Tc, std::complex<float>>)
-                 || (std::is_same_v<
-                         Ti,
-                         std::complex<float>> && std::is_same_v<To, float> && std::is_same_v<Tc, float>)
-                 || (std::is_same_v<
-                         Ti,
-                         std::complex<double>> && std::is_same_v<To, double> && std::is_same_v<Tc, std::complex<double>>)
-                 || (std::is_same_v<
-                         Ti,
-                         std::complex<double>> && std::is_same_v<To, double> && std::is_same_v<Tc, double>)))
+    using rot_enabled = std::integral_constant<
+        bool,
+        ((BLAS1 == blas1::rot || BLAS1 == blas1::rot_batched || BLAS1 == blas1::rot_strided_batched)
+         && ((std::is_same_v<Ti, float> && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>)
+             || (std::is_same_v<Ti, double> && std::is_same_v<Ti, To> && std::is_same_v<To, Tc>)
+             || (std::is_same_v<
+                     Ti,
+                     std::complex<
+                         float>> && std::is_same_v<To, float> && std::is_same_v<Tc, std::complex<float>>)
+             || (std::is_same_v<
+                     Ti,
+                     std::complex<float>> && std::is_same_v<To, float> && std::is_same_v<Tc, float>)
+             || (std::is_same_v<
+                     Ti,
+                     std::complex<
+                         double>> && std::is_same_v<To, double> && std::is_same_v<Tc, std::complex<double>>)
+             || (std::is_same_v<
+                     Ti,
+                     std::complex<
+                         double>> && std::is_same_v<To, double> && std::is_same_v<Tc, double>)))
 
-                || ((BLAS1 == blas1::rotg || BLAS1 == blas1::rotg_batched
-                     || BLAS1 == blas1::rotg_strided_batched)
-                    && std::
-                        is_same_v<
-                            To,
-                            Tc> && ((std::is_same_v<Ti, float> && std::is_same_v<Ti, To>) || (std::is_same_v<Ti, double> && std::is_same_v<Ti, To>) || (std::is_same_v<Ti, std::complex<float>> && std::is_same_v<To, float>) || (std::is_same_v<Ti, std::complex<double>> && std::is_same_v<To, double>)))
+            || ((BLAS1 == blas1::rotg || BLAS1 == blas1::rotg_batched
+                 || BLAS1 == blas1::rotg_strided_batched)
+                && std::
+                    is_same_v<To,
+                              Tc> && ((std::is_same_v<Ti, float> && std::is_same_v<Ti, To>) || (std::is_same_v<Ti, double> && std::is_same_v<Ti, To>) || (std::is_same_v<Ti, std::complex<float>> && std::is_same_v<To, float>) || (std::is_same_v<Ti, std::complex<double>> && std::is_same_v<To, double>)))
 
-                || ((BLAS1 == blas1::rotm || BLAS1 == blas1::rotm_batched
-                     || BLAS1 == blas1::rotm_strided_batched)
-                    && std::is_same_v<
-                        To,
-                        Ti> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))
+            || ((BLAS1 == blas1::rotm || BLAS1 == blas1::rotm_batched
+                 || BLAS1 == blas1::rotm_strided_batched)
+                && std::is_same_v<
+                    To,
+                    Ti> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))
 
-                || ((BLAS1 == blas1::rotmg || BLAS1 == blas1::rotmg_batched
-                     || BLAS1 == blas1::rotmg_strided_batched)
-                    && std::is_same_v<
-                        To,
-                        Ti> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
+            || ((BLAS1 == blas1::rotmg || BLAS1 == blas1::rotmg_batched
+                 || BLAS1 == blas1::rotmg_strided_batched)
+                && std::is_same_v<
+                    To,
+                    Ti> && std::is_same_v<To, Tc> && (std::is_same_v<Ti, float> || std::is_same_v<Ti, double>))>;
 
 // Creates tests for one of the BLAS 1 functions
 // ARG passes 1-3 template arguments to the testing_* function

@@ -52,7 +52,7 @@ inline void testname_trsm_batched_ex(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                    = hipblas_internal_type<T>;
     bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmBatchedExFn = FORTRAN ? hipblasTrsmBatchedExFortran : hipblasTrsmBatchedEx;
 
@@ -78,7 +78,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
     device_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1);
-    const Ts          h_alpha(1), h_zero(0);
+    const Ts         h_alpha(1), h_zero(0);
 
     const Ts* alpha = &h_alpha;
     const Ts* zero  = &h_zero;
@@ -347,7 +347,7 @@ void testing_trsm_batched_ex_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trsm_batched_ex(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                    = hipblas_internal_type<T>;
     bool FORTRAN                = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasTrsmBatchedExFn = FORTRAN ? hipblasTrsmBatchedExFortran : hipblasTrsmBatchedEx;
 

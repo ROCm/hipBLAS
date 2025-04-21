@@ -41,7 +41,7 @@ inline void testname_syr_strided_batched(const Arguments& arg, std::string& name
 template <typename T>
 void testing_syr_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                           = hipblas_internal_type<T>;
     auto hipblasSyrStridedBatchedFn    = arg.api == FORTRAN ? hipblasSyrStridedBatched<T, true>
                                                             : hipblasSyrStridedBatched<T, false>;
     auto hipblasSyrStridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -168,7 +168,7 @@ void testing_syr_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_syr_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                           = hipblas_internal_type<T>;
     auto hipblasSyrStridedBatchedFn    = arg.api == FORTRAN ? hipblasSyrStridedBatched<T, true>
                                                             : hipblasSyrStridedBatched<T, false>;
     auto hipblasSyrStridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -261,7 +261,17 @@ void testing_syr_strided_batched(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasSyrStridedBatchedFn,
-                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, stride_x, dA, lda, stride_A, batch_count));
+                   (handle,
+                    uplo,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dx,
+                    incx,
+                    stride_x,
+                    dA,
+                    lda,
+                    stride_A,
+                    batch_count));
 
         CHECK_HIP_ERROR(hA_host.transfer_from(dA));
         CHECK_HIP_ERROR(dA.transfer_from(hA));

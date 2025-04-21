@@ -210,9 +210,17 @@ void testing_scal_strided_batched_ex(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(
-            hipblasScalStridedBatchedExFn,
-            (handle, N, reinterpret_cast<Ts*>(&h_alpha), alphaType, dx, xType, incx, stridex, batch_count, executionType));
+        DAPI_CHECK(hipblasScalStridedBatchedExFn,
+                   (handle,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    alphaType,
+                    dx,
+                    xType,
+                    incx,
+                    stridex,
+                    batch_count,
+                    executionType));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx_host.transfer_from(dx));

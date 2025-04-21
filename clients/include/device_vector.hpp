@@ -139,9 +139,9 @@ public:
     }
 
 private:
-    size_t  m_n{};
-    int64_t m_inc{};
-    hipblas_internal_type<T>*      m_data{};
+    size_t                    m_n{};
+    int64_t                   m_inc{};
+    hipblas_internal_type<T>* m_data{};
 
     static size_t calculate_nmemb(size_t n, int64_t inc)
     {

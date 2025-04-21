@@ -40,7 +40,7 @@ inline void testname_scal_batched(const Arguments& arg, std::string& name)
 template <typename T, typename U = T>
 void testing_scal_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts     = hipblas_internal_type<U>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedFn
         = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
@@ -50,7 +50,7 @@ void testing_scal_batched_bad_arg(const Arguments& arg)
     int64_t N           = 100;
     int64_t incx        = 1;
     int64_t batch_count = 2;
-    Ts       alpha       = (Ts)0.6;
+    Ts      alpha       = (Ts)0.6;
 
     hipblasLocalHandle handle(arg);
 
@@ -78,7 +78,7 @@ void testing_scal_batched_bad_arg(const Arguments& arg)
 template <typename T, typename U = T>
 void testing_scal_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts     = hipblas_internal_type<U>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalBatchedFn
         = FORTRAN ? hipblasScalBatched<T, U, true> : hipblasScalBatched<T, U, false>;
@@ -126,8 +126,9 @@ void testing_scal_batched(const Arguments& arg)
         /* =====================================================================
             HIPBLAS
         =================================================================== */
-        DAPI_CHECK(hipblasScalBatchedFn,
-                   (handle, N, reinterpret_cast<Ts*>(&alpha), dx.ptr_on_device(), incx, batch_count));
+        DAPI_CHECK(
+            hipblasScalBatchedFn,
+            (handle, N, reinterpret_cast<Ts*>(&alpha), dx.ptr_on_device(), incx, batch_count));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx.transfer_from(dx));
@@ -164,8 +165,9 @@ void testing_scal_batched(const Arguments& arg)
             if(iter == arg.cold_iters)
                 gpu_time_used = get_time_us_sync(stream);
 
-            DAPI_CHECK(hipblasScalBatchedFn,
-                       (handle, N, reinterpret_cast<Ts*>(&alpha), dx.ptr_on_device(), incx, batch_count));
+            DAPI_CHECK(
+                hipblasScalBatchedFn,
+                (handle, N, reinterpret_cast<Ts*>(&alpha), dx.ptr_on_device(), incx, batch_count));
         }
         gpu_time_used = get_time_us_sync(stream) - gpu_time_used;
 

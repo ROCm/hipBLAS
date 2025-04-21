@@ -40,7 +40,7 @@ inline void testname_scal_strided_batched(const Arguments& arg, std::string& nam
 template <typename T, typename U = T>
 void testing_scal_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts     = hipblas_internal_type<U>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedFn
         = FORTRAN ? hipblasScalStridedBatched<T, U, true> : hipblasScalStridedBatched<T, U, false>;
@@ -52,7 +52,7 @@ void testing_scal_strided_batched_bad_arg(const Arguments& arg)
     int64_t       incx        = 1;
     int64_t       batch_count = 2;
     hipblasStride stride_x    = N * incx;
-    Ts             alpha       = (Ts)0.6;
+    Ts            alpha       = (Ts)0.6;
 
     hipblasLocalHandle handle(arg);
 
@@ -71,16 +71,17 @@ void testing_scal_strided_batched_bad_arg(const Arguments& arg)
         DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
                     hipblasScalStridedBatchedFn,
                     (handle, N, nullptr, dx, incx, stride_x, batch_count));
-        DAPI_EXPECT(HIPBLAS_STATUS_INVALID_VALUE,
-                    hipblasScalStridedBatchedFn,
-                    (handle, N, reinterpret_cast<Ts*>(&alpha), nullptr, incx, stride_x, batch_count));
+        DAPI_EXPECT(
+            HIPBLAS_STATUS_INVALID_VALUE,
+            hipblasScalStridedBatchedFn,
+            (handle, N, reinterpret_cast<Ts*>(&alpha), nullptr, incx, stride_x, batch_count));
     }
 }
 
 template <typename T, typename U = T>
 void testing_scal_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<U>;
+    using Ts     = hipblas_internal_type<U>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasScalStridedBatchedFn
         = FORTRAN ? hipblasScalStridedBatched<T, U, true> : hipblasScalStridedBatched<T, U, false>;

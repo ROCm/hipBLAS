@@ -50,7 +50,7 @@ inline void testname_trmm_batched(const Arguments& arg, std::string& name)
 template <typename T>
 inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                     = hipblas_internal_type<T>;
     auto hipblasTrmmBatchedFn    = arg.api == hipblas_client_api::FORTRAN
                                        ? hipblasTrmmBatched<T, true>
                                        : hipblasTrmmBatched<T, false>;
@@ -409,7 +409,7 @@ inline void testing_trmm_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                     = hipblas_internal_type<T>;
     auto hipblasTrmmBatchedFn    = arg.api == hipblas_client_api::FORTRAN
                                        ? hipblasTrmmBatched<T, true>
                                        : hipblasTrmmBatched<T, false>;

@@ -204,10 +204,10 @@ void unit_check_general(
 }
 
 template <>
-void unit_check_general(int64_t          M,
-                        int64_t          N,
-                        int64_t          batch_count,
-                        int64_t          lda,
+void unit_check_general(int64_t               M,
+                        int64_t               N,
+                        int64_t               batch_count,
+                        int64_t               lda,
                         std::complex<float>** hCPU,
                         std::complex<float>** hGPU)
 {
@@ -282,10 +282,10 @@ void unit_check_general(int64_t             M,
 }
 
 template <>
-void unit_check_general(int64_t                     M,
-                        int64_t                     N,
-                        int64_t                     batch_count,
-                        int64_t                     lda,
+void unit_check_general(int64_t                          M,
+                        int64_t                          N,
+                        int64_t                          batch_count,
+                        int64_t                          lda,
                         host_vector<std::complex<float>> hCPU[],
                         host_vector<std::complex<float>> hGPU[])
 {
@@ -353,11 +353,11 @@ void unit_check_general(int64_t       M,
 }
 
 template <>
-void unit_check_general(int64_t         M,
-                        int64_t         N,
-                        int64_t         batch_count,
-                        int64_t         lda,
-                        hipblasStride   strideA,
+void unit_check_general(int64_t              M,
+                        int64_t              N,
+                        int64_t              batch_count,
+                        int64_t              lda,
+                        hipblasStride        strideA,
                         std::complex<float>* hCPU,
                         std::complex<float>* hGPU)
 {

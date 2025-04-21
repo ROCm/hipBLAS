@@ -49,7 +49,7 @@ inline void testname_symv_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_symv_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSymvStridedBatchedFn    = arg.api == FORTRAN ? hipblasSymvStridedBatched<T, true>
                                                              : hipblasSymvStridedBatched<T, false>;
     auto hipblasSymvStridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -335,7 +335,7 @@ void testing_symv_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symv_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasSymvStridedBatchedFn    = arg.api == FORTRAN ? hipblasSymvStridedBatched<T, true>
                                                              : hipblasSymvStridedBatched<T, false>;
     auto hipblasSymvStridedBatchedFn_64 = arg.api == FORTRAN_64

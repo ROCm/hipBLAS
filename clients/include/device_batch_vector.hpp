@@ -198,8 +198,10 @@ public:
         if(m_batch_count > 0)
         {
             if(hipSuccess
-               != (hip_err
-                   = hipMemcpy((*this)[0], (hipblas_internal_type<T>*)that[0], sizeof(hipblas_internal_type<T>) * m_nmemb * m_batch_count, kind)))
+               != (hip_err = hipMemcpy((*this)[0],
+                                       (hipblas_internal_type<T>*)that[0],
+                                       sizeof(hipblas_internal_type<T>) * m_nmemb * m_batch_count,
+                                       kind)))
             {
                 return hip_err;
             }
@@ -221,12 +223,12 @@ public:
     }
 
 private:
-    size_t  m_n{};
-    int64_t m_inc{};
-    size_t  m_nmemb{}; // in one batch
-    int64_t m_batch_count{};
-    hipblas_internal_type<T>**     m_data{};
-    hipblas_internal_type<T>**     m_device_data{};
+    size_t                     m_n{};
+    int64_t                    m_inc{};
+    size_t                     m_nmemb{}; // in one batch
+    int64_t                    m_batch_count{};
+    hipblas_internal_type<T>** m_data{};
+    hipblas_internal_type<T>** m_device_data{};
 
     static size_t calculate_nmemb(size_t n, int64_t inc)
     {
@@ -242,14 +244,17 @@ private:
     {
         bool success = false;
 
-        success
-            = (hipSuccess
-               == (!this->use_HMM ? (hipMalloc)(&m_device_data, m_batch_count * sizeof(hipblas_internal_type<T>*))
-                                  : hipMallocManaged(&m_device_data, m_batch_count * sizeof(hipblas_internal_type<T>*))));
+        success = (hipSuccess
+                   == (!this->use_HMM
+                           ? (hipMalloc)(&m_device_data,
+                                         m_batch_count * sizeof(hipblas_internal_type<T>*))
+                           : hipMallocManaged(&m_device_data,
+                                              m_batch_count * sizeof(hipblas_internal_type<T>*))));
         if(success)
         {
             success = (nullptr
-                       != (m_data = !this->use_HMM ? (hipblas_internal_type<T>**)calloc(m_batch_count, sizeof(hipblas_internal_type<T>*))
+                       != (m_data = !this->use_HMM ? (hipblas_internal_type<T>**)calloc(
+                                        m_batch_count, sizeof(hipblas_internal_type<T>*))
                                                    : m_device_data));
             if(success)
             {

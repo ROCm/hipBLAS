@@ -54,7 +54,7 @@ inline void testname_gemm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_gemm_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasGemmStridedBatchedFn    = arg.api == FORTRAN ? hipblasGemmStridedBatched<T, true>
                                                              : hipblasGemmStridedBatched<T, false>;
     auto hipblasGemmStridedBatchedFn_64 = arg.api == FORTRAN_64
@@ -89,7 +89,7 @@ void testing_gemm_strided_batched_bad_arg(const Arguments& arg)
     device_strided_batch_matrix<T> dC(M, N, ldc, stride_C, batch_count);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
-    Ts                h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+    Ts               h_alpha(1), h_beta(2), h_one(1), h_zero(0);
 
     if constexpr(std::is_same_v<T, hipblasHalf>)
         h_one = float_to_half(1.0f);
@@ -438,7 +438,7 @@ void testing_gemm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_gemm_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasGemmStridedBatchedFn    = arg.api == FORTRAN ? hipblasGemmStridedBatched<T, true>
                                                              : hipblasGemmStridedBatched<T, false>;
     auto hipblasGemmStridedBatchedFn_64 = arg.api == FORTRAN_64

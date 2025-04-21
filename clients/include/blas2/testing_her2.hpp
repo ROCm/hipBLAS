@@ -40,7 +40,7 @@ inline void testname_her2(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_her2_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2Fn = FORTRAN ? hipblasHer2<T, true> : hipblasHer2<T, false>;
     auto hipblasHer2Fn_64
@@ -125,7 +125,7 @@ void testing_her2_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_her2(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2Fn = FORTRAN ? hipblasHer2<T, true> : hipblasHer2<T, false>;
     auto hipblasHer2Fn_64
@@ -196,7 +196,8 @@ void testing_her2(const Arguments& arg)
             HIPBLAS
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
-        DAPI_CHECK(hipblasHer2Fn, (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
+        DAPI_CHECK(hipblasHer2Fn,
+                   (handle, uplo, N, reinterpret_cast<Ts*>(&h_alpha), dx, incx, dy, incy, dA, lda));
 
         CHECK_HIP_ERROR(hA_host.transfer_from(dA));
         CHECK_HIP_ERROR(dA.transfer_from(hA));

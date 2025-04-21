@@ -41,7 +41,7 @@ inline void testname_hbmv(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_hbmv_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHbmvFn = FORTRAN ? hipblasHbmv<T, true> : hipblasHbmv<T, false>;
     auto hipblasHbmvFn_64
@@ -154,7 +154,7 @@ void testing_hbmv_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_hbmv(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     bool FORTRAN       = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHbmvFn = FORTRAN ? hipblasHbmv<T, true> : hipblasHbmv<T, false>;
     auto hipblasHbmvFn_64
@@ -235,7 +235,18 @@ void testing_hbmv(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasHbmvFn,
-                   (handle, uplo, N, K, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dx, incx, reinterpret_cast<Ts*>(&h_beta), dy, incy));
+                   (handle,
+                    uplo,
+                    N,
+                    K,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dx,
+                    incx,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dy,
+                    incy));
 
         CHECK_HIP_ERROR(hy_host.transfer_from(dy));
         CHECK_HIP_ERROR(dy.transfer_from(hy));

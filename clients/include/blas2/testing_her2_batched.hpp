@@ -41,7 +41,7 @@ inline void testname_her2_batched(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_her2_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2BatchedFn
         = FORTRAN ? hipblasHer2Batched<T, true> : hipblasHer2Batched<T, false>;
@@ -200,7 +200,7 @@ void testing_her2_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_her2_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts     = hipblas_internal_type<T>;
     bool FORTRAN = arg.api == hipblas_client_api::FORTRAN;
     auto hipblasHer2BatchedFn
         = FORTRAN ? hipblasHer2Batched<T, true> : hipblasHer2Batched<T, false>;

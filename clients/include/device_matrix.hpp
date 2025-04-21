@@ -149,8 +149,8 @@ public:
     }
 
 private:
-    size_t m_m   = 0;
-    size_t m_n   = 0;
-    size_t m_lda = 0;
-    hipblas_internal_type<T>*     m_data{};
+    size_t                    m_m   = 0;
+    size_t                    m_n   = 0;
+    size_t                    m_lda = 0;
+    hipblas_internal_type<T>* m_data{};
 };

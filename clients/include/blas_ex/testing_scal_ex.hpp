@@ -39,7 +39,7 @@ inline void testname_scal_ex(const Arguments& arg, std::string& name)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_ex_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<Ta>;
+    using Ts                = hipblas_internal_type<Ta>;
     auto hipblasScalExFn    = arg.api == FORTRAN ? hipblasScalExFortran : hipblasScalEx;
     auto hipblasScalExFn_64 = arg.api == FORTRAN_64 ? hipblasScalEx_64Fortran : hipblasScalEx_64;
 
@@ -89,7 +89,7 @@ void testing_scal_ex_bad_arg(const Arguments& arg)
 template <typename Ta, typename Tx = Ta, typename Tex = Tx>
 void testing_scal_ex(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<Ta>;
+    using Ts                = hipblas_internal_type<Ta>;
     auto hipblasScalExFn    = arg.api == FORTRAN ? hipblasScalExFortran : hipblasScalEx;
     auto hipblasScalExFn_64 = arg.api == FORTRAN_64 ? hipblasScalEx_64Fortran : hipblasScalEx_64;
 
@@ -151,7 +151,14 @@ void testing_scal_ex(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasScalExFn,
-                   (handle, N, reinterpret_cast<Ts*>(&h_alpha), alphaType, dx, xType, incx, executionType));
+                   (handle,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    alphaType,
+                    dx,
+                    xType,
+                    incx,
+                    executionType));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hx_host.transfer_from(dx));

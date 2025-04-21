@@ -89,7 +89,8 @@ namespace
                      std::complex<float>> && std::is_same_v<T2, float> && std::is_same_v<T3, float>)
              || (std::is_same_v<
                      T1,
-                     std::complex<double>> && std::is_same_v<T2, double> && std::is_same_v<T3, double>)
+                     std::complex<
+                         double>> && std::is_same_v<T2, double> && std::is_same_v<T3, double>)
              || (std::is_same_v<
                      T1,
                      hipblasHalf> && std::is_same_v<T2, hipblasHalf> && std::is_same_v<T3, float>)

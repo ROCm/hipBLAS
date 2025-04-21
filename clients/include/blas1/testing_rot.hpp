@@ -145,7 +145,8 @@ void testing_rot(const Arguments& arg)
             // copy data from CPU to device
             CHECK_HIP_ERROR(dx.transfer_from(hx));
             CHECK_HIP_ERROR(dy.transfer_from(hy));
-            DAPI_CHECK(hipblasRotFn, (handle, N, dx, incx, dy, incy, hc.internal_type(), hs.internal_type()));
+            DAPI_CHECK(hipblasRotFn,
+                       (handle, N, dx, incx, dy, incy, hc.internal_type(), hs.internal_type()));
 
             host_vector<T> rx(N, incx);
             host_vector<T> ry(N, incy);

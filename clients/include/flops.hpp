@@ -144,7 +144,8 @@ constexpr double rot_gflop_count(int64_t n)
     return (6.0 * n) / 1e9; //4 real multiplication, 1 addition , 1 subtraction
 }
 template <>
-constexpr double rot_gflop_count<std::complex<float>, std::complex<float>, float, std::complex<float>>(int64_t n)
+constexpr double
+    rot_gflop_count<std::complex<float>, std::complex<float>, float, std::complex<float>>(int64_t n)
 {
     return (20.0 * n)
            / 1e9; // (6*2 n for c-c multiply)+(2*2 n for real-complex multiply) + 2n for c-c add + 2n for c-c sub
@@ -316,7 +317,8 @@ constexpr double gemv_gflop_count(hipblasOperation_t transA, int64_t m, int64_t 
     return (2.0 * m * n + 2.0 * (transA == HIPBLAS_OP_N ? m : n)) / 1e9;
 }
 template <>
-constexpr double gemv_gflop_count<std::complex<float>>(hipblasOperation_t transA, int64_t m, int64_t n)
+constexpr double
+    gemv_gflop_count<std::complex<float>>(hipblasOperation_t transA, int64_t m, int64_t n)
 {
     return (8.0 * m * n + 6.0 * (transA == HIPBLAS_OP_N ? m : n)) / 1e9;
 }

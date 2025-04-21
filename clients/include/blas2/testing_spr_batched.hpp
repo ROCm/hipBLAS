@@ -46,9 +46,9 @@ void testing_spr_batched_bad_arg(const Arguments& arg)
     auto hipblasSprBatchedFn_64
         = arg.api == FORTRAN_64 ? hipblasSprBatched_64<T, true> : hipblasSprBatched_64<T, false>;
 
-    const Ts           h_alpha(1), h_zero(0);
-    const Ts*          alpha = &h_alpha;
-    const Ts*          zero  = &h_zero;
+    const Ts          h_alpha(1), h_zero(0);
+    const Ts*         alpha = &h_alpha;
+    const Ts*         zero  = &h_zero;
     hipblasFillMode_t uplo  = HIPBLAS_FILL_MODE_UPPER;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})

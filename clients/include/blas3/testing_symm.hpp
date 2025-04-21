@@ -41,7 +41,7 @@ inline void testname_symm(const Arguments& arg, std::string& name)
 template <typename T>
 void testing_symm_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSymmFn = arg.api == FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
     auto hipblasSymmFn_64
         = arg.api == FORTRAN_64 ? hipblasSymm_64<T, true> : hipblasSymm_64<T, false>;
@@ -64,7 +64,7 @@ void testing_symm_bad_arg(const Arguments& arg)
     device_matrix<T> dC(M, N, ldc);
 
     device_vector<T> d_alpha(1), d_beta(1), d_one(1), d_zero(1);
-    const Ts          h_alpha(1), h_beta(2), h_one(1), h_zero(0);
+    const Ts         h_alpha(1), h_beta(2), h_one(1), h_zero(0);
 
     const Ts* alpha = &h_alpha;
     const Ts* beta  = &h_beta;
@@ -196,7 +196,7 @@ void testing_symm_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_symm(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts           = hipblas_internal_type<T>;
     auto hipblasSymmFn = arg.api == FORTRAN ? hipblasSymm<T, true> : hipblasSymm<T, false>;
     auto hipblasSymmFn_64
         = arg.api == FORTRAN_64 ? hipblasSymm_64<T, true> : hipblasSymm_64<T, false>;
@@ -276,7 +276,19 @@ void testing_symm(const Arguments& arg)
         =================================================================== */
         CHECK_HIPBLAS_ERROR(hipblasSetPointerMode(handle, HIPBLAS_POINTER_MODE_HOST));
         DAPI_CHECK(hipblasSymmFn,
-                   (handle, side, uplo, M, N, reinterpret_cast<Ts*>(&h_alpha), dA, lda, dB, ldb, reinterpret_cast<Ts*>(&h_beta), dC, ldc));
+                   (handle,
+                    side,
+                    uplo,
+                    M,
+                    N,
+                    reinterpret_cast<Ts*>(&h_alpha),
+                    dA,
+                    lda,
+                    dB,
+                    ldb,
+                    reinterpret_cast<Ts*>(&h_beta),
+                    dC,
+                    ldc));
 
         // copy output from device to CPU
         CHECK_HIP_ERROR(hC_host.transfer_from(dC));

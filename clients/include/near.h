@@ -122,7 +122,9 @@ HIPBLAS_CLANG_STATIC constexpr double
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    sum_error_tolerance_for_gfx11<std::complex<float>, std::complex<float>, std::complex<float>> = 1 / 10000.0;
+    sum_error_tolerance_for_gfx11<std::complex<float>,
+                                  std::complex<float>,
+                                  std::complex<float>> = 1 / 10000.0;
 
 template <>
 HIPBLAS_CLANG_STATIC constexpr double

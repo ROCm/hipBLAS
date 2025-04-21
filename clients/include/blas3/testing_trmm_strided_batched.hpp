@@ -51,7 +51,7 @@ inline void testname_trmm_strided_batched(const Arguments& arg, std::string& nam
 template <typename T>
 void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasTrmmStridedBatchedFn    = arg.api == hipblas_client_api::FORTRAN
                                               ? hipblasTrmmStridedBatched<T, true>
                                               : hipblasTrmmStridedBatched<T, false>;
@@ -462,7 +462,7 @@ void testing_trmm_strided_batched_bad_arg(const Arguments& arg)
 template <typename T>
 void testing_trmm_strided_batched(const Arguments& arg)
 {
-    using Ts = hipblas_internal_type<T>;
+    using Ts                            = hipblas_internal_type<T>;
     auto hipblasTrmmStridedBatchedFn    = arg.api == hipblas_client_api::FORTRAN
                                               ? hipblasTrmmStridedBatched<T, true>
                                               : hipblasTrmmStridedBatched<T, false>;

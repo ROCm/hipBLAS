@@ -124,14 +124,18 @@ double norm_check_general<double>(
 }
 
 template <>
-double norm_check_general<std::complex<float>>(
-    char norm_type, int64_t M, int64_t N, int64_t lda, std::complex<float>* hCPU, std::complex<float>* hGPU)
+double norm_check_general<std::complex<float>>(char                 norm_type,
+                                               int64_t              M,
+                                               int64_t              N,
+                                               int64_t              lda,
+                                               std::complex<float>* hCPU,
+                                               std::complex<float>* hGPU)
 {
     //norm type can be M', 'I', 'F', 'l': 'F' (Frobenius norm) is used mostly
 
     host_vector<double> work(std::max(int64_t(1), M));
     int64_t             incx  = 1;
-    std::complex<float>      alpha = -1.0f;
+    std::complex<float> alpha = -1.0f;
     int64_t             size  = lda * N;
 
     double cpu_norm = lapack_xlange(norm_type, M, N, hCPU, lda, work.data());

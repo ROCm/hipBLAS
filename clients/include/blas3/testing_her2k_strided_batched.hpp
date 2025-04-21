@@ -52,7 +52,7 @@ template <typename T>
 void testing_her2k_strided_batched_bad_arg(const Arguments& arg)
 {
     using U                              = real_t<T>;
-    using Ts = hipblas_internal_type<T>;
+    using Ts                             = hipblas_internal_type<T>;
     auto hipblasHer2kStridedBatchedFn    = arg.api == FORTRAN
                                                ? hipblasHer2kStridedBatched<T, U, true>
                                                : hipblasHer2kStridedBatched<T, U, false>;
@@ -85,12 +85,12 @@ void testing_her2k_strided_batched_bad_arg(const Arguments& arg)
 
     device_vector<T> d_alpha(1), d_zero(1);
     device_vector<U> d_beta(1), d_one(1);
-    const Ts          h_alpha(1), h_zero(0);
+    const Ts         h_alpha(1), h_zero(0);
     const U          h_beta(2), h_one(1);
 
     const Ts* alpha = &h_alpha;
-    const U* beta  = &h_beta;
-    const U* one   = &h_one;
+    const U*  beta  = &h_beta;
+    const U*  one   = &h_one;
     const Ts* zero  = &h_zero;
 
     for(auto pointer_mode : {HIPBLAS_POINTER_MODE_HOST, HIPBLAS_POINTER_MODE_DEVICE})
@@ -415,7 +415,7 @@ template <typename T>
 void testing_her2k_strided_batched(const Arguments& arg)
 {
     using U                              = real_t<T>;
-    using Ts = hipblas_internal_type<T>;
+    using Ts                             = hipblas_internal_type<T>;
     auto hipblasHer2kStridedBatchedFn    = arg.api == FORTRAN
                                                ? hipblasHer2kStridedBatched<T, U, true>
                                                : hipblasHer2kStridedBatched<T, U, false>;
