@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2023-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,13 +83,13 @@ namespace
           || BLAS1_EX == blas1_ex::scal_strided_batched_ex)
          && ((std::is_same_v<
                   T1,
-                  T2> && std::is_same_v<T2, T3> && (std::is_same_v<T1, float> || std::is_same_v<T1, double> || std::is_same_v<T1, hipblasHalf> || std::is_same_v<T1, hipComplex> || std::is_same_v<T1, hipDoubleComplex>))
+                  T2> && std::is_same_v<T2, T3> && (std::is_same_v<T1, float> || std::is_same_v<T1, double> || std::is_same_v<T1, hipblasHalf> || std::is_same_v<T1, hipblasComplex> || std::is_same_v<T1, hipblasDoubleComplex>))
              || (std::is_same_v<
                      T2,
-                     T3> && std::is_same_v<T1, float> && std::is_same_v<T2, hipComplex>)
+                     T3> && std::is_same_v<T1, float> && std::is_same_v<T2, hipblasComplex>)
              || (std::is_same_v<
                      T2,
-                     T3> && std::is_same_v<T1, double> && std::is_same_v<T2, hipDoubleComplex>)
+                     T3> && std::is_same_v<T1, double> && std::is_same_v<T2, hipblasDoubleComplex>)
              || (std::is_same_v<T1,
                                 T2> && std::is_same_v<T1, hipblasHalf> && std::is_same_v<T3, float>)
              || (std::is_same_v<T1,

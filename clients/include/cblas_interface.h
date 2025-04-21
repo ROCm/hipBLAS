@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,13 +81,13 @@ inline void ref_asum(int64_t n, const double* x, int64_t incx, double* result)
 }
 
 template <>
-inline void ref_asum(int64_t n, const hipComplex* x, int64_t incx, float* result)
+inline void ref_asum(int64_t n, const hipblasComplex* x, int64_t incx, float* result)
 {
     *result = cblas_scasum(n, x, incx);
 }
 
 template <>
-inline void ref_asum(int64_t n, const hipDoubleComplex* x, int64_t incx, double* result)
+inline void ref_asum(int64_t n, const hipblasDoubleComplex* x, int64_t incx, double* result)
 {
     *result = cblas_dzasum(n, x, incx);
 }
@@ -721,16 +721,16 @@ inline void ref_trsm<double>(hipblasSideMode_t  side,
 }
 
 template <>
-inline void ref_trsm<hipComplex>(hipblasSideMode_t     side,
+inline void ref_trsm<hipblasComplex>(hipblasSideMode_t     side,
                                      hipblasFillMode_t     uplo,
                                      hipblasOperation_t    transA,
                                      hipblasDiagType_t     diag,
                                      int64_t               m,
                                      int64_t               n,
-                                     hipComplex        alpha,
-                                     const hipComplex* A,
+                                     hipblasComplex        alpha,
+                                     const hipblasComplex* A,
                                      int64_t               lda,
-                                     hipComplex*       B,
+                                     hipblasComplex*       B,
                                      int64_t               ldb)
 {
     cblas_ctrsm(CblasColMajor,
@@ -748,16 +748,16 @@ inline void ref_trsm<hipComplex>(hipblasSideMode_t     side,
 }
 
 template <>
-inline void ref_trsm<hipDoubleComplex>(hipblasSideMode_t           side,
+inline void ref_trsm<hipblasDoubleComplex>(hipblasSideMode_t           side,
                                            hipblasFillMode_t           uplo,
                                            hipblasOperation_t          transA,
                                            hipblasDiagType_t           diag,
                                            int64_t                     m,
                                            int64_t                     n,
-                                           hipDoubleComplex        alpha,
-                                           const hipDoubleComplex* A,
+                                           hipblasDoubleComplex        alpha,
+                                           const hipblasDoubleComplex* A,
                                            int64_t                     lda,
-                                           hipDoubleComplex*       B,
+                                           hipblasDoubleComplex*       B,
                                            int64_t                     ldb)
 {
     cblas_ztrsm(CblasColMajor,

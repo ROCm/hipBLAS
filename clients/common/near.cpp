@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,8 +83,8 @@
     do                                          \
     {                                           \
         auto ta = (a), tb = (b);                \
-        ASSERT_NEAR(hipblasReal(ta), hipblasReal(tb), err); \
-        ASSERT_NEAR(hipblasImag(ta), hipblasImag(tb), err); \
+        ASSERT_NEAR(ta.real(), tb.real(), err); \
+        ASSERT_NEAR(ta.imag(), tb.imag(), err); \
     } while(0)
 
 template <>
@@ -128,7 +128,7 @@ void near_check_general(int64_t          M,
 
 template <>
 void near_check_general(
-    int64_t M, int64_t N, int64_t lda, hipComplex* hCPU, hipComplex* hGPU, double abs_error)
+    int64_t M, int64_t N, int64_t lda, hipblasComplex* hCPU, hipblasComplex* hGPU, double abs_error)
 {
     abs_error *= sqrthalf;
     NEAR_CHECK(M, N, 1, lda, 0, hCPU, hGPU, abs_error, NEAR_ASSERT_COMPLEX);
@@ -138,8 +138,8 @@ template <>
 void near_check_general(int64_t               M,
                         int64_t               N,
                         int64_t               lda,
-                        hipDoubleComplex* hCPU,
-                        hipDoubleComplex* hGPU,
+                        hipblasDoubleComplex* hCPU,
+                        hipblasDoubleComplex* hGPU,
                         double                abs_error)
 {
     abs_error *= sqrthalf;
@@ -217,8 +217,8 @@ void near_check_general(int64_t         M,
                         int64_t         batch_count,
                         int64_t         lda,
                         hipblasStride   strideA,
-                        hipComplex* hCPU,
-                        hipComplex* hGPU,
+                        hipblasComplex* hCPU,
+                        hipblasComplex* hGPU,
                         double          abs_error)
 {
     abs_error *= sqrthalf;
@@ -231,8 +231,8 @@ void near_check_general(int64_t               M,
                         int64_t               batch_count,
                         int64_t               lda,
                         hipblasStride         strideA,
-                        hipDoubleComplex* hCPU,
-                        hipDoubleComplex* hGPU,
+                        hipblasDoubleComplex* hCPU,
+                        hipblasDoubleComplex* hGPU,
                         double                abs_error)
 {
     abs_error *= sqrthalf;
@@ -303,8 +303,8 @@ void near_check_general(int64_t                     M,
                         int64_t                     N,
                         int64_t                     batch_count,
                         int64_t                     lda,
-                        host_vector<hipComplex> hCPU[],
-                        host_vector<hipComplex> hGPU[],
+                        host_vector<hipblasComplex> hCPU[],
+                        host_vector<hipblasComplex> hGPU[],
                         double                      abs_error)
 {
     abs_error *= sqrthalf;
@@ -316,8 +316,8 @@ void near_check_general(int64_t                           M,
                         int64_t                           N,
                         int64_t                           batch_count,
                         int64_t                           lda,
-                        host_vector<hipDoubleComplex> hCPU[],
-                        host_vector<hipDoubleComplex> hGPU[],
+                        host_vector<hipblasDoubleComplex> hCPU[],
+                        host_vector<hipblasDoubleComplex> hGPU[],
                         double                            abs_error)
 {
     abs_error *= sqrthalf;
@@ -389,8 +389,8 @@ void near_check_general(int64_t         M,
                         int64_t         N,
                         int64_t         batch_count,
                         int64_t         lda,
-                        hipComplex* hCPU[],
-                        hipComplex* hGPU[],
+                        hipblasComplex* hCPU[],
+                        hipblasComplex* hGPU[],
                         double          abs_error)
 {
     abs_error *= sqrthalf;
@@ -402,8 +402,8 @@ void near_check_general(int64_t               M,
                         int64_t               N,
                         int64_t               batch_count,
                         int64_t               lda,
-                        hipDoubleComplex* hCPU[],
-                        hipDoubleComplex* hGPU[],
+                        hipblasDoubleComplex* hCPU[],
+                        hipblasDoubleComplex* hGPU[],
                         double                abs_error)
 {
     abs_error *= sqrthalf;

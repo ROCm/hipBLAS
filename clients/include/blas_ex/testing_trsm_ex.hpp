@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ void testing_trsm_ex_bad_arg(const Arguments& arg)
     hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_LOWER;
     hipblasOperation_t transA      = HIPBLAS_OP_N;
     hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
-    hipDataType  computeType = arg.compute_type;
+    hipblasDatatype_t  computeType = arg.compute_type;
 
     int64_t K        = side == HIPBLAS_SIDE_LEFT ? M : N;
     int64_t invAsize = TRSM_BLOCK * K;
@@ -181,7 +181,7 @@ void testing_trsm_ex_bad_arg(const Arguments& arg)
                                               ldb,
                                               dinvA,
                                               invAsize,
-                                              HIP_R_16F),
+                                              HIPBLAS_R_16F),
                               HIPBLAS_STATUS_NOT_SUPPORTED);
 
         EXPECT_HIPBLAS_STATUS(hipblasTrsmExFn(handle,

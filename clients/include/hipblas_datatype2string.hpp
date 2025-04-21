@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 #define hipblas_DATATYPE2STRING_H_
 
 #include "hipblas.h"
-#include "type_utils.h"
 #include <ostream>
 #include <string>
 
@@ -58,15 +57,15 @@ inline std::ostream& operator<<(std::ostream& os, hipblas_initialization init)
 }
 
 // Complex output
-inline std::ostream& operator<<(std::ostream& os, const hipComplex& x)
+inline std::ostream& operator<<(std::ostream& os, const hipblasComplex& x)
 {
-    os << "'(" << hipblasReal(x) << ":" << hipblasImag(x) << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const hipDoubleComplex& x)
+inline std::ostream& operator<<(std::ostream& os, const hipblasDoubleComplex& x)
 {
-    os << "'(" << hipblasReal(x) << ":" << hipblasImag(x) << ")'";
+    os << "'(" << x.real() << ":" << x.imag() << ")'";
     return os;
 }
 
@@ -92,49 +91,53 @@ hipblasDiagType_t char2hipblas_diagonal(char value);
 
 hipblasSideMode_t char2hipblas_side(char value);
 
-hipDataType string2hipdatatype(const std::string& value);
+hipblasDatatype_t string2hipblas_datatype(const std::string& value);
 
 hipblasComputeType_t string2hipblas_computetype(const std::string& value);
 
 // return precision string for hipblas_datatype
-inline constexpr auto hipdatatype2string(hipDataType type)
+inline constexpr auto hipblas_datatype2string(hipblasDatatype_t type)
 {
     switch(type)
     {
-    case HIP_R_16F:
+    case HIPBLAS_R_16F:
         return "f16_r";
-    case HIP_R_32F:
+    case HIPBLAS_R_32F:
         return "f32_r";
-    case HIP_R_64F:
+    case HIPBLAS_R_64F:
         return "f64_r";
-    case HIP_C_16F:
+    case HIPBLAS_C_16F:
         return "f16_c";
-    case HIP_C_32F:
+    case HIPBLAS_C_32F:
         return "f32_c";
-    case HIP_C_64F:
+    case HIPBLAS_C_64F:
         return "f64_c";
-    case HIP_R_8I:
+    case HIPBLAS_R_8I:
         return "i8_r";
-    case HIP_R_8U:
+    case HIPBLAS_R_8U:
         return "u8_r";
-    case HIP_R_32I:
+    case HIPBLAS_R_32I:
         return "i32_r";
-    case HIP_R_32U:
+    case HIPBLAS_R_32U:
         return "u32_r";
-    case HIP_C_8I:
+    case HIPBLAS_C_8I:
         return "i8_c";
-    case HIP_C_8U:
+    case HIPBLAS_C_8U:
         return "u8_c";
-    case HIP_C_32I:
+    case HIPBLAS_C_32I:
         return "i32_c";
-    case HIP_C_32U:
+    case HIPBLAS_C_32U:
         return "u32_c";
-    case HIP_R_16BF:
+    case HIPBLAS_R_16B:
         return "bf16_r";
-    case HIP_C_16BF:
+    case HIPBLAS_C_16B:
         return "bf16_c";
+#ifndef HIPBLAS_V2
+    case HIPBLAS_DATATYPE_INVALID:
+        return "invalid";
+#endif
     default:
-        // Missing some datatypes for hipDataType. Types included
+        // Missing some datatypes for hipDataType with HIPBLAS_V2. Types included
         // here are thorough for our use cases for now, can be expanded on once hipDataType
         // is used more regularly and is stable.
         return "invalid";

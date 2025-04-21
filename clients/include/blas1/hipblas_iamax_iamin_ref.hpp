@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,15 +33,15 @@ namespace hipblas_iamax_iamin_ref
     }
 
     template <>
-    inline float iamax_iamin_abs(const hipComplex& c)
+    inline float iamax_iamin_abs(const hipblasComplex& c)
     {
-        return hipblas_abs(hipblasReal(c)) + hipblas_abs(hipblasImag(c));
+        return hipblas_abs(c.real()) + hipblas_abs(c.imag());
     }
 
     template <>
-    inline double iamax_iamin_abs(const hipDoubleComplex& c)
+    inline double iamax_iamin_abs(const hipblasDoubleComplex& c)
     {
-        return hipblas_abs(hipblasReal(c)) + hipblas_abs(hipblasImag(c));
+        return hipblas_abs(c.real()) + hipblas_abs(c.imag());
     }
 
     template <typename T>

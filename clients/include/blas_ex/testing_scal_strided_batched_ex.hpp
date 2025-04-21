@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,9 +52,9 @@ void testing_scal_strided_batched_ex_bad_arg(const Arguments& arg)
                                                 ? hipblasScalStridedBatchedEx_64Fortran
                                                 : hipblasScalStridedBatchedEx_64;
 
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     int64_t N           = 100;
     int64_t incx        = 1;
@@ -152,9 +152,9 @@ void testing_scal_strided_batched_ex(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    hipDataType alphaType     = arg.a_type;
-    hipDataType xType         = arg.b_type;
-    hipDataType executionType = arg.compute_type;
+    hipblasDatatype_t alphaType     = arg.a_type;
+    hipblasDatatype_t xType         = arg.b_type;
+    hipblasDatatype_t executionType = arg.compute_type;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory

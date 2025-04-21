@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -93,7 +93,7 @@ void syrkx_reference(hipblasFillMode_t  uplo,
         {
             if(alpha == 0 && beta == 0)
             {
-                c[i1 * c_s1 + i2 * c_s2] = hipblasSetReal<T>(0.0);
+                c[i1 * c_s1 + i2 * c_s2] = 0.0;
             }
             else if(alpha == 0)
             {
@@ -101,7 +101,7 @@ void syrkx_reference(hipblasFillMode_t  uplo,
             }
             else
             {
-                T t = hipblasSetReal<T>(0.0);
+                T t = 0;
                 for(int i3 = 0; i3 < k; i3++)
                 {
                     t += a[i1 * a_s1 + i3 * a_s2] * b[i2 * b_s1 + i3 * b_s2];

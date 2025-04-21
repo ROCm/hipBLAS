@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2018-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2018-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -108,7 +108,7 @@ void lapack_xlassq(int64_t n, T* X, int64_t incx, double& scale, double& sumsq)
         double abs_X = 0.0;
         for(int64_t i = 0; i < n; i++)
         {
-            abs_X = hipblas_abs(hipblasReal(X[i * incx]));
+            abs_X = hipblas_abs(is_complex<T> ? std::real(X[i * incx]) : X[i * incx]);
             if(abs_X > 0 || hipblas_isnan(abs_X))
             {
                 if(scale < abs_X)
@@ -123,7 +123,7 @@ void lapack_xlassq(int64_t n, T* X, int64_t incx, double& scale, double& sumsq)
             }
             if(is_complex<T>)
             {
-                abs_X = hipblas_abs(hipblasImag(X[i * incx]));
+                abs_X = hipblas_abs(std::imag(X[i * incx]));
                 if(abs_X > 0 || hipblas_isnan(abs_X))
                 {
                     if(scale < abs_X || hipblas_isnan(abs_X))
@@ -225,7 +225,7 @@ double lapack_xlansy(char norm_type, char uplo, int64_t n, T* A, int64_t lda, do
                     sum     = sum + abs_A;
                     work[i] = work[i] + abs_A;
                 }
-                work[j] = sum + hipblas_abs(HERM ? hipblasReal(A[j + j * lda]) : A[j + j * lda]);
+                work[j] = sum + hipblas_abs(HERM ? std::real(A[j + j * lda]) : A[j + j * lda]);
             }
             for(int64_t i = 0; i < n; i++)
             {
@@ -240,7 +240,7 @@ double lapack_xlansy(char norm_type, char uplo, int64_t n, T* A, int64_t lda, do
                 work[i] = 0.0;
             for(int64_t j = 0; j < n; j++)
             {
-                sum = work[j] + hipblas_abs(HERM ? hipblasReal(A[j + j * lda]) : A[j + j * lda]);
+                sum = work[j] + hipblas_abs(HERM ? std::real(A[j + j * lda]) : A[j + j * lda]);
                 for(int64_t i = j + 1; j < n; j++)
                 {
                     abs_A   = hipblas_abs(A[i + j * lda]);
@@ -290,9 +290,9 @@ double lapack_xlansy(char norm_type, char uplo, int64_t n, T* A, int64_t lda, do
         {
             for(int64_t i = 0; i < n; i++)
             {
-                if(hipblasReal(A[i + i * lda]) != 0)
+                if(std::real(A[i + i * lda]) != 0)
                 {
-                    abs_A = hipblas_abs(hipblasReal(A[i + i * lda]));
+                    abs_A = hipblas_abs(std::real(A[i + i * lda]));
                     if(ssq[0] < abs_A)
                     {
                         ssq[1] = 1.0 + ssq[1] * std::sqrt(ssq[0] / abs_A);
@@ -329,7 +329,7 @@ void lapack_xrot(
         for(int64_t i = 0; i < n; i++)
         {
             stemp = c * cx[i] + s * cy[i];
-            cy[i] = c * cy[i] - (is_complex<V> ? hipblasConj(s) : s) * cx[i];
+            cy[i] = c * cy[i] - (is_complex<V> ? hipblas_conjugate(s) : s) * cx[i];
             cx[i] = stemp;
         }
     }
@@ -343,7 +343,7 @@ void lapack_xrot(
         {
             stemp = c * cx[i * incx] + s * cy[i * incy];
             cy[i * incy]
-                = c * cy[i * incy] - (is_complex<V> ? hipblasConj(s) : s) * cx[i * incx];
+                = c * cy[i * incy] - (is_complex<V> ? hipblas_conjugate(s) : s) * cx[i * incx];
             cx[i * incx] = stemp;
         }
     }
@@ -360,7 +360,7 @@ void lapack_xrotg(T& ca, T& cb, U& c, T& s)
                                    + (hipblas_abs(cb / scale)) * (hipblas_abs(cb / scale)));
         T alpha = ca / hipblas_abs(ca);
         c       = hipblas_abs(ca) / norm;
-        s       = alpha * hipblasConj(cb) / norm;
+        s       = alpha * hipblas_conjugate(cb) / norm;
         ca      = alpha * norm;
     }
     else

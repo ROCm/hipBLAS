@@ -84,10 +84,10 @@ HIPBLAS_CLANG_STATIC constexpr double
     hipblas_type_epsilon<double> = std::numeric_limits<double>::epsilon();
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    hipblas_type_epsilon<hipComplex> = std::numeric_limits<float>::epsilon();
+    hipblas_type_epsilon<hipblasComplex> = std::numeric_limits<float>::epsilon();
 template <>
 HIPBLAS_CLANG_STATIC constexpr double
-    hipblas_type_epsilon<hipDoubleComplex> = std::numeric_limits<double>::epsilon();
+    hipblas_type_epsilon<hipblasDoubleComplex> = std::numeric_limits<double>::epsilon();
 template <>
 HIPBLAS_CLANG_STATIC constexpr double hipblas_type_epsilon<
     hipblasHalf> = 0.0009765625; // in fp16 diff between 0x3C00 (1.0) and fp16 0x3C01
@@ -174,13 +174,13 @@ public:
     }
 
     // Random NaN Complex
-    explicit operator hipComplex()
+    explicit operator hipblasComplex()
     {
         return {float(*this), float(*this)};
     }
 
     // Random NaN Double Complex
-    explicit operator hipDoubleComplex()
+    explicit operator hipblasDoubleComplex()
     {
         return {double(*this), double(*this)};
     }
@@ -258,18 +258,18 @@ inline hipblasBfloat16 random_generator<hipblasBfloat16>()
         float((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 }
 
-// for hipComplex, generate 2 floats
+// for hipblasComplex, generate 2 floats
 /*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
 template <>
-inline hipComplex random_generator<hipComplex>()
+inline hipblasComplex random_generator<hipblasComplex>()
 {
     return {float(rand() % 10 + 1), float(rand() % 10 + 1)};
 }
 
-// for hipDoubleComplex, generate 2 doubles
+// for hipblasDoubleComplex, generate 2 doubles
 /*! \brief  generate two random numbers in range [1,2,3,4,5,6,7,8,9,10] */
 template <>
-inline hipDoubleComplex random_generator<hipDoubleComplex>()
+inline hipblasDoubleComplex random_generator<hipblasDoubleComplex>()
 {
     return {double(rand() % 10 + 1), double(rand() % 10 + 1)};
 }
@@ -303,13 +303,13 @@ inline hipblasBfloat16 random_generator_negative<hipblasBfloat16>()
 *           imaginary value in range [-1, -10]
 */
 template <>
-inline hipComplex random_generator_negative<hipComplex>()
+inline hipblasComplex random_generator_negative<hipblasComplex>()
 {
     return {float(-(rand() % 10 + 1)), float(-(rand() % 10 + 1))};
 }
 
 template <>
-inline hipDoubleComplex random_generator_negative<hipDoubleComplex>()
+inline hipblasDoubleComplex random_generator_negative<hipblasDoubleComplex>()
 {
     return {double(-(rand() % 10 + 1)), double(-(rand() % 10 + 1))};
 }
@@ -336,23 +336,6 @@ inline hipblasHalf random_hpl_generator()
 {
     return hipblasHalf(
         float_to_half(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
-}
-
-// for complex types, generate random floats for real and imag portion
-template <>
-inline hipComplex random_hpl_generator()
-{
-    auto r = std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng);
-    auto i = std::uniform_real_distribution<float>(-0.5, 0.5)(hipblas_rng);
-    return {r, i};
-}
-
-template <>
-inline hipDoubleComplex random_hpl_generator()
-{
-    auto r = std::uniform_real_distribution<double>(-0.5, 0.5)(hipblas_rng);
-    auto i = std::uniform_real_distribution<double>(-0.5, 0.5)(hipblas_rng);
-    return {r, i};
 }
 
 /* ============================================================================================= */
@@ -425,10 +408,10 @@ void print_matrix(const std::vector<T>& CPU_result,
             printf("matrix  col %ld, row %ld, CPU result=(%.8g,%.8g), GPU result=(%.8g,%.8g)\n",
                    i,
                    j,
-                   double(hipblasReal(CPU_result[j + i * lda])),
-                   double(hipblasImag(CPU_result[j + i * lda])),
-                   double(hipblasReal(GPU_result[j + i * lda])),
-                   double(hipblasImag(GPU_result[j + i * lda])));
+                   double(CPU_result[j + i * lda].real()),
+                   double(CPU_result[j + i * lda].imag()),
+                   double(GPU_result[j + i * lda].real()),
+                   double(GPU_result[j + i * lda].imag()));
 }
 
 /* ============================================================================================= */

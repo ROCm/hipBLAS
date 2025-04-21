@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2016-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2016-2024 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,11 +67,14 @@ void testing_gemm_batched_ex_bad_arg(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    hipDataType aType = arg.a_type;
-    hipDataType bType = arg.b_type;
-    hipDataType cType = arg.c_type;
+    hipblasDatatype_t aType = arg.a_type;
+    hipblasDatatype_t bType = arg.b_type;
+    hipblasDatatype_t cType = arg.c_type;
+#ifdef HIPBLAS_V2
     hipblasComputeType_t computeType = arg.compute_type_gemm;
-
+#else
+    hipblasDatatype_t computeType  = arg.compute_type;
+#endif
     hipblasGemmFlags_t flags = HIPBLAS_GEMM_FLAGS_NONE;
     hipblasGemmAlgo_t  algo  = HIPBLAS_GEMM_DEFAULT;
 
@@ -321,12 +324,15 @@ void testing_gemm_batched_ex(const Arguments& arg)
 
     int64_t batch_count = arg.batch_count;
 
-    hipDataType a_type = arg.a_type;
-    hipDataType b_type = arg.b_type;
-    hipDataType c_type = arg.c_type;
+    hipblasDatatype_t a_type = arg.a_type;
+    hipblasDatatype_t b_type = arg.b_type;
+    hipblasDatatype_t c_type = arg.c_type;
 
+#ifdef HIPBLAS_V2
     hipblasComputeType_t compute_type = arg.compute_type_gemm;
-
+#else
+    hipblasDatatype_t compute_type = arg.compute_type;
+#endif
     hipblasGemmFlags_t flags = hipblasGemmFlags_t(arg.flags);
 
     Tex h_alpha_Tex = arg.get_alpha<Tex>();

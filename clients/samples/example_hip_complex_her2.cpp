@@ -1,5 +1,5 @@
 /* ************************************************************************
- * Copyright (C) 2021-2025 Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (C) 2021-2023 Advanced Micro Devices, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <vector>
 
+#define ROCM_MATHLIBS_API_USE_HIP_COMPLEX
 #include <hipblas/hipblas.h>
 
 #ifndef CHECK_HIP_ERROR
