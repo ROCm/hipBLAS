@@ -27,7 +27,7 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-#include <complex>
+#include "complex.hpp"
 #include <cmath>
 #include <cstdio>
 #include <immintrin.h>

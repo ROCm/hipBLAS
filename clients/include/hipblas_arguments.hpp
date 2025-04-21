@@ -25,10 +25,10 @@
 #ifndef _HIPBLAS_ARGUMENTS_HPP_
 #define _HIPBLAS_ARGUMENTS_HPP_
 
+#include "complex.hpp"
 #include "hipblas.h"
 #include "hipblas_datatype2string.hpp"
 #include "utility.h"
-#include <complex>
 #include <cmath>
 #include <immintrin.h>
 #include <random>
