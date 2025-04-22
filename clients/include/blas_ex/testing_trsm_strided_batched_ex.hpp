@@ -84,7 +84,7 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
     device_strided_batch_matrix<T> dinvA(TRSM_BLOCK, TRSM_BLOCK, K, strideInvA, batch_count);
 
     device_vector<T> d_alpha(1), d_zero(1);
-    const Ts         h_alpha(1), h_zero(0);
+    const Ts         h_alpha{1}, h_zero{0};
 
     const Ts* alpha = &h_alpha;
     const Ts* zero  = &h_zero;
