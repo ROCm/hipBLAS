@@ -69,7 +69,7 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
     hipblasFillMode_t  uplo        = HIPBLAS_FILL_MODE_LOWER;
     hipblasOperation_t transA      = HIPBLAS_OP_N;
     hipblasDiagType_t  diag        = HIPBLAS_DIAG_NON_UNIT;
-    hipblasDatatype_t  computeType = arg.compute_type;
+    hipDataType        computeType = arg.compute_type;
 
     int64_t K        = side == HIPBLAS_SIDE_LEFT ? M : N;
     int64_t invAsize = TRSM_BLOCK * K;
@@ -224,7 +224,7 @@ void testing_trsm_strided_batched_ex_bad_arg(const Arguments& arg)
                                                             dinvA,
                                                             invAsize,
                                                             strideInvA,
-                                                            HIPBLAS_R_16F),
+                                                            HIP_R_16F),
                               HIPBLAS_STATUS_NOT_SUPPORTED);
 
         EXPECT_HIPBLAS_STATUS(hipblasTrsmStridedBatchedExFn(handle,

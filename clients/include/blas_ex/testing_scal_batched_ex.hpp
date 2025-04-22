@@ -46,9 +46,9 @@ void testing_scal_batched_ex_bad_arg(const Arguments& arg)
     auto hipblasScalBatchedExFn_64
         = arg.api == FORTRAN_64 ? hipblasScalBatchedEx_64Fortran : hipblasScalBatchedEx_64;
 
-    hipblasDatatype_t alphaType     = arg.a_type;
-    hipblasDatatype_t xType         = arg.b_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType alphaType     = arg.a_type;
+    hipDataType xType         = arg.b_type;
+    hipDataType executionType = arg.compute_type;
 
     int64_t N           = 100;
     int64_t incx        = 1;
@@ -121,9 +121,9 @@ void testing_scal_batched_ex(const Arguments& arg)
 
     hipblasLocalHandle handle(arg);
 
-    hipblasDatatype_t alphaType     = arg.a_type;
-    hipblasDatatype_t xType         = arg.b_type;
-    hipblasDatatype_t executionType = arg.compute_type;
+    hipDataType alphaType     = arg.a_type;
+    hipDataType xType         = arg.b_type;
+    hipDataType executionType = arg.compute_type;
 
     // argument sanity check, quick return if input parameters are invalid before allocating invalid
     // memory
