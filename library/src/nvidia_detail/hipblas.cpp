@@ -2854,6 +2854,17 @@ catch(...)
 }
 
 hipblasStatus_t
+    hipblasDnrm2(hipblasHandle_t handle, int n, const double* x, int incx, double* result)
+try
+{
+    return hipblasConvertStatus(cublasDnrm2((cublasHandle_t)handle, n, x, incx, result));
+}
+catch(...)
+{
+    return hipblas_exception_to_status();
+}
+
+hipblasStatus_t
     hipblasScnrm2(hipblasHandle_t handle, int n, const hipComplex* x, int incx, float* result)
 try
 {
