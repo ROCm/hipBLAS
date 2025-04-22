@@ -165,6 +165,7 @@ hipblasSideMode_t char2hipblas_side(char value)
 }
 
 // clang-format off
+/*! \brief Convert string to a hipDataType. Returns HIP_R_32F if invalid string. */
 hipDataType string2hip_datatype(const std::string& value)
 {
     return
@@ -187,6 +188,7 @@ hipDataType string2hip_datatype(const std::string& value)
         HIP_R_32F;
 }
 
+/*! \brief Convert string to a hipblasComputeType_t. Returns HIPBLAS_COMPUTE_32F if invalid string. */
 hipblasComputeType_t string2hipblas_computetype(const std::string& value)
 {
     return value == "c16f"           ? HIPBLAS_COMPUTE_16F :

@@ -33,6 +33,10 @@ Datatypes:
         i64_c:  25
         u64_r:  26
         u64_c:  27
+        f8_r: 28
+        bf8_r: 29
+        f8_r_fnuz: 1000
+        bf8_r_fnuz: 1001
   - { half: f16_r, single: f32_r, double: f64_r }
   - { half complex: f16_c, single complex: f32_c, double complex: f64_c }
   - hipblas_initialization:
