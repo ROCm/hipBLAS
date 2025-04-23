@@ -99,6 +99,8 @@ void testing_gemm_ex_bad_arg(const Arguments& arg)
 
     if constexpr(std::is_same_v<Tex, hipblasHalf>)
         h_one = float_to_half(1.0f);
+    else if constexpr(is_complex<Tex>)
+        h_one = {1, 0};
 
     const Ts* alpha = &h_alpha;
     const Ts* beta  = &h_beta;
