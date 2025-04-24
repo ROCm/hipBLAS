@@ -139,10 +139,8 @@ Similarly, if CUDA cuBLAS is the backend, see the cuBLAS documentation.
 Custom data types
 =================
 
-hipBlas defines the ``hipblasBfloat16``, ``hipblasComplex``, and
-``hipblasDoubleComplex`` data types.
-
-For more details, see :ref:`custom_types`.
+hipBlas defines the ``hipblasBfloat16``. For more details, see
+:ref:`custom_types`.
 
 *************
 hipBLAS types

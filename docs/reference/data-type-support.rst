@@ -300,10 +300,10 @@ Level-2 functions perform matrix-vector operations.
         *
           - :ref:`GERU and GERC <hipblas_ger>`
           - Generalized rank-1 update for unconjugated or conjugated complex numbers: :math:`A = \alpha x y^T + A`
-          - ❌
-          - ❌
-          - ❌
-          - ❌
+          - NA
+          - NA
+          - NA
+          - NA
 
         *
           - :ref:`SBMV <hipblas_sbmv>`, :ref:`SPMV <hipblas_spmv>`
@@ -424,8 +424,8 @@ Level-2 functions perform matrix-vector operations.
         *
           - :ref:`GER <hipblas_ger>`
           - Generalized rank-1 update: :math:`A = \alpha x y^T + A`
-          - ❌
-          - ❌
+          - NA
+          - NA
 
         *
           - :ref:`GERU and GERC <hipblas_ger>`
@@ -679,8 +679,8 @@ libraries for Level-3 GEMMs (matrix matrix multiplication).
         * 
           - :ref:`TRTRI <hipblas_trtri>`
           - Triangular matrix inversion.
-          - ❌
-          - ❌
+          - ✅
+          - ✅
 
         * 
           - :ref:`DGMM <hipblas_dgmm>`
@@ -742,8 +742,8 @@ inverses, and performing matrix factorizations.
           - Compute the inverse of a matrix using its LU factorization.
           - ❌
           - ❌
-          - ✅
-          - ✅
+          - ⚠️ [#getri]_
+          - ⚠️ [#getri]_
 
         * 
           - :ref:`GEQRF <hipblas_geqrf>`
@@ -789,8 +789,8 @@ inverses, and performing matrix factorizations.
         * 
           - :ref:`GETRI <hipblas_getri>`
           - Compute the inverse of a matrix using its LU factorization.
-          - ✅
-          - ✅
+          - ⚠️ [#getri]_
+          - ⚠️ [#getri]_
 
         * 
           - :ref:`GEQRF <hipblas_geqrf>`
@@ -803,3 +803,7 @@ inverses, and performing matrix factorizations.
           - Solve overdetermined or underdetermined linear systems using the QR factorization of a matrix.
           - ✅
           - ✅
+
+.. rubric:: Footnotes
+
+.. [#getri] Only the batched GETR functions are supported.
