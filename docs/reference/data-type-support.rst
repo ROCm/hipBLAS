@@ -806,4 +806,4 @@ inverses, and performing matrix factorizations.
 
 .. rubric:: Footnotes
 
-.. [#getri] Only the batched GETR functions are supported.
+.. [#getri] Only the batched GETRI functions are supported.
