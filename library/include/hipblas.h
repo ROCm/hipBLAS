@@ -100,18 +100,7 @@
 /*! \brief hipblasHanlde_t is a void pointer, to store the library context (either rocBLAS or cuBLAS)*/
 typedef void* hipblasHandle_t;
 
-/*! \brief To specify the datatype to be unsigned short */
-
-#if __cplusplus < 201103L || !defined(HIPBLAS_USE_HIP_HALF)
-
-typedef uint16_t hipblasHalf;
-
-#else
-
-#include <hip/hip_fp16.h>
-typedef __half hipblasHalf;
-
-#endif
+typedef _Float16 hipblasHalf;
 
 /*! \brief  To specify the datatype to be signed char */
 typedef int8_t hipblasInt8;

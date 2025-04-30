@@ -144,9 +144,6 @@ if (NOT WIN32)
     target_link_libraries( hipblas-test PRIVATE hipblas_fortran_client )
 endif()
 
-# need mf16c flag for float->half convertion
-target_compile_options( hipblas-test PRIVATE -mf16c ) # -Wno-deprecated-declarations )
-
 target_compile_options(hipblas-test PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${COMMON_CXX_OPTIONS}>)
 
 target_compile_definitions( hipblas-test PRIVATE ${COMMON_DEFINES} )

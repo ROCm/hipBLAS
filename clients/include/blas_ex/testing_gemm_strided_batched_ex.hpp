@@ -108,7 +108,7 @@ void testing_gemm_strided_batched_ex_bad_arg(const Arguments& arg)
     Ts                 h_alpha{1}, h_beta{2}, h_one{1}, h_zero{0};
 
     if constexpr(std::is_same_v<Tex, hipblasHalf>)
-        h_one = float_to_half(1.0f);
+        h_one = hipblasHalf(1.0f);
     else if constexpr(is_complex<Tex>)
         h_one = {1, 0};
 

@@ -71,9 +71,6 @@ if(HIP_PLATFORM STREQUAL amd)
   target_compile_options(hipblas-example-bfdot-hip-bfloat16 PRIVATE -DHIPBLAS_USE_HIP_BFLOAT16)
 endif()
 
-target_compile_options( hipblas-example-hgemm-half PRIVATE -DHIPBLAS_USE_HIP_HALF )
-target_compile_options( hipblas-example-gemmEx PRIVATE -DHIPBLAS_USE_HIP_HALF )
-
 # HIP on Windows: xhip is required with clang++ to get __half defined
 if ( WIN32 )
 target_compile_options( hipblas-example-hgemm-half PRIVATE -xhip )
@@ -90,7 +87,7 @@ foreach( exe IN LISTS hipblas-example-executables)
 
   target_include_directories( ${exe} PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> )
 
-  target_compile_options( ${exe} PRIVATE -mf16c -DHIPBLAS_BFLOAT16_CLASS )
+  target_compile_options( ${exe} PRIVATE -DHIPBLAS_BFLOAT16_CLASS )
   target_compile_definitions( ${exe} PRIVATE HIPBLAS_NO_DEPRECATED_WARNINGS )
 
   target_link_libraries( ${exe} PRIVATE roc::hipblas )

@@ -79,7 +79,7 @@ int main()
     // Testing scalEx with alpha_type == x_type == f16_r; execution_type = f32_r
     int             N = 10240;
     hipblasStatus_t status;
-    hipblasHalf     alpha = float_to_half(10.0f);
+    hipblasHalf     alpha = hipblasHalf(10.0f);
 
     // Naming: dX is in GPU (device) memory. hK is in CPU (host) memory, plz follow this practice
     std::vector<hipblasHalf> hx(N);
@@ -128,13 +128,13 @@ int main()
     bool error_in_element = false;
     for(int i = 0; i < N; i++)
     {
-        hipblasHalf cpu_res = float_to_half(half_to_float(hz[i]) * half_to_float(alpha));
+        hipblasHalf cpu_res = hipblasHalf(float(hz[i]) * float(alpha));
         if(cpu_res != hx[i])
         {
             printf("error in element %d: CPU=%f, GPU=%f ",
                    i,
-                   half_to_float(cpu_res),
-                   half_to_float(hx[i]));
+                   float(cpu_res),
+                   float(hx[i]));
             error_in_element = true;
             break;
         }

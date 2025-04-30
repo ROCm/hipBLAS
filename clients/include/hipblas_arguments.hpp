@@ -88,7 +88,7 @@ inline hipblasBfloat16 convert_alpha_beta<hipblasBfloat16>(double r, double i)
 template <>
 inline hipblasHalf convert_alpha_beta<hipblasHalf>(double r, double i)
 {
-    return float_to_half(r);
+    return hipblasHalf(r);
 }
 
 template <>

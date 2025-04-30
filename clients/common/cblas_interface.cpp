@@ -331,15 +331,15 @@ void ref_axpy<hipblasHalf, hipblasHalf>(int64_t            n,
 
     for(size_t i = 0; i < n; i++)
     {
-        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
-        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+        x_float[i * abs_incx] = float(x[i * abs_incx]);
+        y_float[i * abs_incy] = float(y[i * abs_incy]);
     }
 
-    cblas_saxpy(n, half_to_float(alpha), x_float.data(), incx, y_float.data(), incy);
+    cblas_saxpy(n, float(alpha), x_float.data(), incx, y_float.data(), incy);
 
     for(size_t i = 0; i < n; i++)
     {
-        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
+        y[i * abs_incy] = hipblasHalf(y_float[i * abs_incy]);
     }
 }
 
@@ -354,15 +354,15 @@ void ref_axpy<float, hipblasHalf>(
 
     for(size_t i = 0; i < n; i++)
     {
-        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
-        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+        x_float[i * abs_incx] = float(x[i * abs_incx]);
+        y_float[i * abs_incy] = float(y[i * abs_incy]);
     }
 
     cblas_saxpy(n, alpha, x_float.data(), incx, y_float.data(), incy);
 
     for(size_t i = 0; i < n; i++)
     {
-        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
+        y[i * abs_incy] = hipblasHalf(y_float[i * abs_incy]);
     }
 }
 
@@ -438,12 +438,12 @@ void ref_scal<hipblasHalf>(int64_t n, const hipblasHalf alpha, hipblasHalf* x, i
     std::vector<float> x_float(n * incx);
 
     for(size_t i = 0; i < n; i++)
-        x_float[i * incx] = half_to_float(x[i * incx]);
+        x_float[i * incx] = float(x[i * incx]);
 
-    cblas_sscal(n, half_to_float(alpha), x_float.data(), incx);
+    cblas_sscal(n, float(alpha), x_float.data(), incx);
 
     for(size_t i = 0; i < n; i++)
-        x[i * incx] = float_to_half(x_float[i * incx]);
+        x[i * incx] = hipblasHalf(x_float[i * incx]);
 }
 
 template <>
@@ -475,12 +475,12 @@ void ref_scal<hipblasHalf, float>(int64_t n, const float alpha, hipblasHalf* x, 
     std::vector<float> x_float(n * incx);
 
     for(size_t i = 0; i < n; i++)
-        x_float[i * incx] = half_to_float(x[i * incx]);
+        x_float[i * incx] = float(x[i * incx]);
 
     cblas_sscal(n, alpha, x_float.data(), incx);
 
     for(size_t i = 0; i < n; i++)
-        x[i * incx] = float_to_half(x_float[i * incx]);
+        x[i * incx] = hipblasHalf(x_float[i * incx]);
 }
 
 template <>
@@ -621,10 +621,10 @@ void ref_dot<hipblasHalf>(int64_t            n,
 
     for(size_t i = 0; i < n; i++)
     {
-        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
-        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+        x_float[i * abs_incx] = float(x[i * abs_incx]);
+        y_float[i * abs_incy] = float(y[i * abs_incy]);
     }
-    *result = float_to_half(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
+    *result = hipblasHalf(cblas_sdot(n, x_float.data(), incx, y_float.data(), incy));
 }
 
 template <>
@@ -759,9 +759,9 @@ void ref_nrm2<hipblasHalf, hipblasHalf>(int64_t            n,
     std::vector<float> x_float(n * incx);
 
     for(size_t i = 0; i < n; i++)
-        x_float[i * incx] = half_to_float(x[i * incx]);
+        x_float[i * incx] = float(x[i * incx]);
 
-    *result = float_to_half(cblas_snrm2(n, x_float.data(), incx));
+    *result = hipblasHalf(cblas_snrm2(n, x_float.data(), incx));
 }
 
 template <>
@@ -872,19 +872,19 @@ void ref_rot<hipblasHalf>(int64_t      n,
 
     for(size_t i = 0; i < n; i++)
     {
-        x_float[i * abs_incx] = half_to_float(x[i * abs_incx]);
-        y_float[i * abs_incy] = half_to_float(y[i * abs_incy]);
+        x_float[i * abs_incx] = float(x[i * abs_incx]);
+        y_float[i * abs_incy] = float(y[i * abs_incy]);
     }
 
-    const float c_float = half_to_float(c);
-    const float s_float = half_to_float(s);
+    const float c_float = float(c);
+    const float s_float = float(s);
 
     cblas_srot(n, x_float.data(), incx, y_float.data(), incy, c_float, s_float);
 
     for(size_t i = 0; i < n; i++)
     {
-        x[i * abs_incx] = float_to_half(x_float[i * abs_incx]);
-        y[i * abs_incy] = float_to_half(y_float[i * abs_incy]);
+        x[i * abs_incx] = hipblasHalf(x_float[i * abs_incx]);
+        y[i * abs_incy] = hipblasHalf(y_float[i * abs_incy]);
     }
 }
 
@@ -2629,8 +2629,8 @@ void ref_gemm<hipblasHalf>(hipblasOperation_t transA,
 {
     // cblas does not support hipblasHalf, so convert to higher precision float
     // This will give more precise result which is acceptable for testing
-    float alpha_float = half_to_float(alpha);
-    float beta_float  = half_to_float(beta);
+    float alpha_float = float(alpha);
+    float beta_float  = float(beta);
 
     size_t sizeA = transA == HIPBLAS_OP_N ? size_t(k) * lda : size_t(m) * lda;
     size_t sizeB = transB == HIPBLAS_OP_N ? size_t(n) * ldb : size_t(k) * ldb;
@@ -2642,15 +2642,15 @@ void ref_gemm<hipblasHalf>(hipblasOperation_t transA,
 
     for(size_t i = 0; i < sizeA; i++)
     {
-        A_float[i] = half_to_float(A[i]);
+        A_float[i] = float(A[i]);
     }
     for(size_t i = 0; i < sizeB; i++)
     {
-        B_float[i] = half_to_float(B[i]);
+        B_float[i] = float(B[i]);
     }
     for(size_t i = 0; i < sizeC; i++)
     {
-        C_float[i] = half_to_float(C[i]);
+        C_float[i] = float(C[i]);
     }
 
     // just directly cast, since transA, transB are integers in the enum
@@ -2672,7 +2672,7 @@ void ref_gemm<hipblasHalf>(hipblasOperation_t transA,
 
     for(size_t i = 0; i < sizeC; i++)
     {
-        C[i] = float_to_half(C_float[i]);
+        C[i] = hipblasHalf(C_float[i]);
     }
 }
 
@@ -2704,15 +2704,15 @@ void ref_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
 
     for(size_t i = 0; i < sizeA; i++)
     {
-        A_float[i] = half_to_float(A[i]);
+        A_float[i] = float(A[i]);
     }
     for(size_t i = 0; i < sizeB; i++)
     {
-        B_float[i] = half_to_float(B[i]);
+        B_float[i] = float(B[i]);
     }
     for(size_t i = 0; i < sizeC; i++)
     {
-        C_float[i] = half_to_float(C[i]);
+        C_float[i] = float(C[i]);
     }
 
     // just directly cast, since transA, transB are integers in the enum
@@ -2734,7 +2734,7 @@ void ref_gemm<hipblasHalf, hipblasHalf, float>(hipblasOperation_t transA,
 
     for(size_t i = 0; i < sizeC; i++)
     {
-        C[i] = float_to_half(C_float[i]);
+        C[i] = hipblasHalf(C_float[i]);
     }
 }
 
@@ -2764,11 +2764,11 @@ void ref_gemm<hipblasHalf, float, float>(hipblasOperation_t transA,
 
     for(size_t i = 0; i < sizeA; i++)
     {
-        A_float[i] = half_to_float(A[i]);
+        A_float[i] = float(A[i]);
     }
     for(size_t i = 0; i < sizeB; i++)
     {
-        B_float[i] = half_to_float(B[i]);
+        B_float[i] = float(B[i]);
     }
 
     // just directly cast, since transA, transB are integers in the enum

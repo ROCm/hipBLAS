@@ -257,7 +257,7 @@ inline T random_nan_generator()
 template <>
 inline hipblasHalf random_generator<hipblasHalf>()
 {
-    return float_to_half(float((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
+    return hipblasHalf(float((rand() % 3 + 1))); // generate an integer number in range [1,2,3]
 };
 
 // for hipblasBfloat16, generate float, and convert to hipblasBfloat16
@@ -297,7 +297,7 @@ inline T random_generator_negative()
 template <>
 inline hipblasHalf random_generator_negative<hipblasHalf>()
 {
-    return float_to_half(-float((rand() % 3 + 1)));
+    return hipblasHalf(-float((rand() % 3 + 1)));
 };
 
 // for hipblasBfloat16, generate float, and convert to hipblasBfloat16
@@ -345,7 +345,7 @@ template <>
 inline hipblasHalf random_hpl_generator()
 {
     return hipblasHalf(
-        float_to_half(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
+        hipblasHalf(std::uniform_real_distribution<float>(-0.5f, 0.5f)(hipblas_rng)));
 }
 
 /* ============================================================================================= */

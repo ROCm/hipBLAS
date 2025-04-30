@@ -79,13 +79,13 @@ void mat_mat_mult_hpa_half(float   alpha,
                            int     M,
                            int     N,
                            int     K,
-                           __half* A,
+                           _Float16* A,
                            size_t  As1,
                            size_t  As2,
-                           __half* B,
+                           _Float16* B,
                            size_t  Bs1,
                            size_t  Bs2,
-                           __half* C,
+                           _Float16* C,
                            size_t  Cs1,
                            size_t  Cs2)
 {
@@ -96,14 +96,14 @@ void mat_mat_mult_hpa_half(float   alpha,
         for(int i2 = 0; i2 < N; i2++)
         {
             float t     = 0.0;
-            float C_val = __half2float(C[i1 * Cs1 + i2 * Cs2]);
+            float C_val = float(C[i1 * Cs1 + i2 * Cs2]);
             for(int i3 = 0; i3 < K; i3++)
             {
-                float A_val = __half2float(A[i1 * As1 + i3 * As2]);
-                float B_val = __half2float(B[i3 * Bs1 + i2 * Bs2]);
+                float A_val = float(A[i1 * As1 + i3 * As2]);
+                float B_val = float(B[i3 * Bs1 + i2 * Bs2]);
                 t += A_val * B_val;
             }
-            C[i1 * Cs1 + i2 * Cs2] = __float2half(beta_float * C_val + alpha_float * t);
+            C[i1 * Cs1 + i2 * Cs2] = _Float16(beta_float * C_val + alpha_float * t);
         }
     }
 }
@@ -120,7 +120,7 @@ int main()
     hipblasGemmAlgo_t algo = HIPBLAS_GEMM_DEFAULT;
 
     // HPA
-    using T                           = __half;
+    using T                           = _Float16;
     using Tex                         = float;
     hipDataType          a_type       = HIP_R_16F;
     hipDataType          b_type       = HIP_R_16F;
@@ -176,15 +176,15 @@ int main()
     for(int i = 0; i < size_a; ++i)
     {
         // random number in [-2, 2]
-        ha[i] = __float2half(rand() % 5 - 2.0f);
+        ha[i] = _Float16(rand() % 5 - 2.0f);
     }
     for(int i = 0; i < size_b; ++i)
     {
-        hb[i] = __float2half(rand() % 5 - 2.0f);
+        hb[i] = _Float16(rand() % 5 - 2.0f);
     }
     for(int i = 0; i < size_c; ++i)
     {
-        hc[i] = __float2half(rand() % 5 - 2.0f);
+        hc[i] = _Float16(rand() % 5 - 2.0f);
     }
     hc_gold = hc;
 
@@ -250,8 +250,8 @@ int main()
 
     for(int i = 0; i < size_c; i++)
     {
-        float hc_gold_val    = __half2float(hc_gold[i]);
-        float hc_val         = __half2float(hc[i]);
+        float hc_gold_val    = float(hc_gold[i]);
+        float hc_val         = float(hc[i]);
         float relative_error = hc_gold_val == 0 ? std::abs(hc_gold_val - hc_val)
                                                 : (hc_gold_val - hc_val) / hc_gold_val;
         relative_error       = relative_error > 0 ? relative_error : -relative_error;

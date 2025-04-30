@@ -76,7 +76,7 @@
 
 #endif
 
-#define NEAR_ASSERT_HALF(a, b, err) ASSERT_NEAR(half_to_float(a), half_to_float(b), err)
+#define NEAR_ASSERT_HALF(a, b, err) ASSERT_NEAR(float(a), float(b), err)
 #define NEAR_ASSERT_BF16(a, b, err) ASSERT_NEAR(bfloat16_to_float(a), bfloat16_to_float(b), err)
 
 #define NEAR_ASSERT_COMPLEX(a, b, err)          \

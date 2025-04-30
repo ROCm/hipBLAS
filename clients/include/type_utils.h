@@ -71,16 +71,6 @@ inline bool hipblas_isnan(std::complex<double> arg)
     return std::isnan(arg.real()) || std::isnan(arg.imag());
 }
 
-inline hipblasHalf float_to_half(float val)
-{
-#ifdef HIPBLAS_USE_HIP_HALF
-    return __float2half(val);
-#else
-    uint16_t a = _cvtss_sh(val, 0);
-    return a;
-#endif
-}
-
 inline float bfloat16_to_float(hipblasBfloat16 bf)
 {
     union
@@ -111,15 +101,6 @@ inline hipblasBfloat16 float_to_bfloat16(float f)
     return rv;
 }
 
-inline float half_to_float(hipblasHalf val)
-{
-#ifdef HIPBLAS_USE_HIP_HALF
-    return __half2float(val);
-#else
-    return _cvtsh_ss(val);
-#endif
-}
-
 /* =============================================================================================== */
 /* Absolute values                                                                                 */
 // template <typename T>
@@ -131,7 +112,7 @@ inline float half_to_float(hipblasHalf val)
 // template <>
 // inline double hipblas_abs(const hipblasHalf& x)
 // {
-//     return std::abs(half_to_float(x));
+//     return std::abs(float(x));
 // }
 
 // template <>

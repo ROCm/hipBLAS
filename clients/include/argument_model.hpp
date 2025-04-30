@@ -34,6 +34,12 @@ namespace ArgumentLogging
     const double NA_value = -1.0; // invalid for time, GFlop, GB
 }
 
+// iostream operator << does not print _Float16. Overload << to cast from _Float16 to float
+std::ostream& operator<<(std::ostream& os, const _Float16& value) {
+    os << float(value);
+    return os;
+}
+
 // these aren't static as ArgumentModel is instantiated for many Arg lists
 void ArgumentModel_set_log_function_name(bool f);
 bool ArgumentModel_get_log_function_name();
