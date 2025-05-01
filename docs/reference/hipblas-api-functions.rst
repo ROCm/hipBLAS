@@ -147,7 +147,7 @@ hipBLAS types
 *************
 
 For information about the ``hipblasStatus_t``, ``hipblasComputeType_t``, and ``hipblasOperation_t`` enumerations,
-see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/develop/library/include/hipblas-common/hipblas-common.h>`_ GitHub repository.
+see the `hipblas-common <https://github.com/ROCm/hipBLAS-common/blob/dfc946b9d56773f44cd107facd2f1cfafcc5b52f/library/include/hipblas-common/hipblas-common.h>`_ GitHub repository.
 
 Definitions
 ===========
