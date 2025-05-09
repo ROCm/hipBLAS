@@ -58,6 +58,18 @@ function( get_cblas cblas_libs cblas_inc )
   set( ${cblas_libs} ${libs} PARENT_SCOPE )
 endfunction( )
 
+function( apply_omp_settings lib_target_ )
+  if (TARGET OpenMP::OpenMP_CXX)
+    set_target_properties( ${lib_target_} PROPERTIES
+      BUILD_RPATH "${HIP_CLANG_ROOT}/lib"
+    )
+    set_target_properties( ${lib_target_} PROPERTIES
+      INSTALL_RPATH "$ORIGIN/../llvm/lib"
+    )
+  endif()
+endfunction()
+
+
 # Consider removing this in the future
 # This should appear before the project command, because it does not use FORCE
 if( WIN32 )
@@ -123,7 +135,7 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     if(HIP_PLATFORM STREQUAL amd)
       list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
       if (NOT WIN32)
-        list( APPEND COMMON_LINK_LIBS "-Wl,-rpath=${HIP_CLANG_ROOT}/lib -lomp")
+        list( APPEND COMMON_LINK_LIBS "-lomp")
       else()
         list( APPEND COMMON_LINK_LIBS "libomp")
       endif()
