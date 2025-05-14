@@ -195,7 +195,7 @@ if (WIN32)
   if(DEFINED ROCBLAS_PATH)
     add_custom_command( TARGET hipblas-test POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${ROCBLAS_PATH}/bin/rocblas/library/ ${PROJECT_BINARY_DIR}/staging/library/)
   else()
-    message(WARNING "ROCBLAS_PATH not set, tests may be missing .dlls")
+    message(WARNING "ROCBLAS_PATH not set. rocBLAS Tensile runtime kernels will not be copied to client staging directory (insitu testing affected).")
   endif()
 endif()
 
