@@ -12,14 +12,14 @@ Documentation for hipBLAS is available at
 
 ### Changed
 
-* HIPBLAS_V2 API is now the only available API using hipComplex and hipDatatype types
+* HIPBLAS_V2 API is now the only available API using `hipComplex` and `hipDatatype` types
 * Documentation updates
-* Verbose compilation for hipblas.cpp
+* Verbose compilation for `hipblas.cpp`
 
 ### Removed
 
-* hipblasDatatype_t type
-* hipComplex and hipDoubleComplex types
+* `hipblasDatatype_t` type
+* `hipComplex` and `hipDoubleComplex` types
 * Support code for non-production gfx targets
 
 ### Resolved issues
