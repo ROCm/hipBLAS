@@ -39,6 +39,7 @@
 #include <hip/library_types.h>
 #include <hipblas-common/hipblas-common.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __HIP_PLATFORM_NVCC__
 #include <cublas_v2.h>
