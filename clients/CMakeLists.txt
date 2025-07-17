@@ -59,7 +59,7 @@ function( get_cblas cblas_libs cblas_inc )
 endfunction( )
 
 function( apply_omp_settings lib_target_ )
-  if( CMAKE_CXX_COMPILER_ID MATCHES "Clang"  )
+  if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if (TARGET OpenMP::OpenMP_CXX)
       set_target_properties( ${lib_target_} PROPERTIES
         BUILD_RPATH "${HIP_CLANG_ROOT}/lib"
@@ -136,7 +136,7 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
   find_package(Threads REQUIRED)
 
   # Look for openmp config in ROCm install to populate openmp_LIB_DIR and openmp_LIB_INSTALL_DIR
-  if( CMAKE_CXX_COMPILER_ID MATCHES "Clang"  )
+  if( CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     find_package(OpenMP CONFIG PATHS "${HIP_CLANG_ROOT}/lib/cmake")
   endif()
 
@@ -150,9 +150,13 @@ if( BUILD_CLIENTS_BENCHMARKS OR BUILD_CLIENTS_TESTS)
     if (TARGET OpenMP::OpenMP_CXX)
       set( COMMON_LINK_LIBS "OpenMP::OpenMP_CXX")
       if(HIP_PLATFORM STREQUAL amd)
-        list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
         if (NOT WIN32)
-          list( APPEND COMMON_LINK_LIBS "-lomp")
+          if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            list( APPEND COMMON_LINK_LIBS "-L\"${HIP_CLANG_ROOT}/lib\"")
+            list( APPEND COMMON_LINK_LIBS "-lomp")
+          else()
+            list( APPEND COMMON_LINK_LIBS "-lgomp")
+          endif()
         else()
           list( APPEND COMMON_LINK_LIBS "libomp")
         endif()
