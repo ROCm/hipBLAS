@@ -1,5 +1,9 @@
 # hipBLAS
 
+> [!CAUTION]
+> The hipBLAS repository is retired, please use the [ROCm/rocm-libraries](https://github.com/ROCm/rocm-libraries) repository
+
+
 hipBLAS is a Basic Linear Algebra Subprograms (BLAS) marshalling library with multiple supported
 backends. It sits between your application and a 'worker' BLAS library, where it marshals inputs to the
 backend library and marshals results to your application.  hipBLAS exports an interface that doesn't
